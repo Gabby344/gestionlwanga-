@@ -3,76 +3,195 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Ajouter un élève</title>
-  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600&display=swap" rel="stylesheet">
+  <title>Enregistrer un Nouvel Élève - Institut Saint Charles Lwanga</title>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700;800&display=swap" rel="stylesheet">
   <style>
     :root {
-      --bleu: #1e3a8a;
-      --gris: #374151;
-      --vert: #065f46;
-      --fond: #f9fafb;
+      --bleu-fonce: #1e40af; /* Bleu Principal */
+      --gris-fonce: #1f2937;
+      --vert-action: #10b981; /* Bouton d'action positif (Enregistrer) */
+      --gris-clair: #f4f6f8; /* Fond principal */
+      --gris-bordure: #d1d5db; /* Bordure des champs */
+      --ombre-form: rgba(0,0,0,0.1);
     }
     body {
       font-family: 'Inter', sans-serif;
-      background-color: var(--fond);
+      background-color: var(--gris-clair);
       margin: 0;
-      padding: 2rem;
-      color: var(--gris);
+      padding: 2rem 1rem;
+      color: var(--gris-fonce);
     }
-    h1 {
-      text-align: center;
-      color: var(--bleu);
-      margin-bottom: 1rem;
+    
+    .header {
+        text-align: center;
+        margin-bottom: 2rem;
     }
-    form {
-      max-width: 400px;
-      margin: auto;
+    .header h1 {
+      font-size: 2rem;
+      color: var(--bleu-fonce);
+      margin-bottom: 0.25rem;
+    }
+    .header p {
+        font-size: 1rem;
+        color: #6b7280;
+    }
+
+    /* --- CONTENEUR ET FORMULAIRE --- */
+    .container {
+        max-width: 700px;
+        margin: auto;
+    }
+    .form-card {
       background: white;
-      padding: 1.5rem;
-      border-radius: 8px;
-      box-shadow: 0 0 10px rgba(0,0,0,0.05);
+      padding: 2rem;
+      border-radius: 12px;
+      box-shadow: 0 4px 12px var(--ombre-form);
+      border-top: 5px solid var(--bleu-fonce);
     }
-    input, select, button {
+    
+    .form-grid {
+      display: grid;
+      grid-template-columns: 1fr;
+      gap: 1.5rem; /* Espacement professionnel */
+    }
+    @media (min-width: 500px) {
+        .form-grid {
+            grid-template-columns: 1fr 1fr; /* 2 colonnes sur desktop */
+        }
+    }
+    .full-width {
+        grid-column: 1 / -1;
+    }
+
+    /* --- CHAMPS DE FORMULAIRE --- */
+    .form-group label {
+      display: block;
+      font-weight: 600;
+      margin-bottom: 0.5rem;
+      font-size: 0.95rem;
+      color: var(--gris-fonce);
+    }
+    input[type="text"], input[type="date"], select {
       width: 100%;
-      padding: 0.75rem;
-      margin-bottom: 1rem;
-      border: 1px solid var(--gris);
-      border-radius: 4px;
+      padding: 0.9rem; /* Plus grand padding pour une meilleure ergonomie */
+      border: 1px solid var(--gris-bordure);
+      border-radius: 8px; /* Bords légèrement plus arrondis */
+      box-sizing: border-box;
       font-size: 1rem;
+      background-color: #f9fafb;
+      transition: border-color 0.2s, box-shadow 0.2s;
     }
-    button {
-      background-color: var(--vert);
+    input:focus, select:focus {
+        border-color: var(--bleu-fonce);
+        box-shadow: 0 0 0 3px rgba(30, 64, 175, 0.1);
+        outline: none;
+        background-color: white;
+    }
+    
+    /* --- BOUTON D'ACTION PRINCIPAL --- */
+    .btn-submit {
+      grid-column: 1 / -1; /* Prend toute la largeur */
+      background-color: var(--vert-action);
       color: white;
-      font-weight: bold;
+      font-weight: 700;
+      padding: 1rem;
+      border: none;
+      border-radius: 8px;
+      font-size: 1.1rem;
       cursor: pointer;
+      margin-top: 1rem;
+      transition: background-color 0.2s;
     }
-    button:hover {
-      background-color: #047857;
+    .btn-submit:hover {
+      background-color: #059669;
     }
+
+    /* --- Message et Retour --- */
     #message {
       text-align: center;
-      margin-top: 1rem;
+      margin-top: 1.5rem;
+      font-weight: 600;
+    }
+    .btn-retour {
+        display: block;
+        text-align: center;
+        margin-top: 1.5rem;
+        color: var(--gris-fonce);
+        text-decoration: none;
+        font-size: 0.9rem;
+        padding: 0.5rem;
+    }
+    .btn-retour:hover {
+        color: var(--bleu-fonce);
     }
   </style>
 </head>
 <body>
-  <h1>➕ Ajouter un élève</h1>
-  <form id="eleveForm">
-    <input type="text" id="nom" placeholder="Nom" required />
-    <input type="text" id="prenom" placeholder="Prénom" required />
-    <input type="text" id="classe" placeholder="Classe (ex: 6e A)" required />
-    <input type="date" id="dateNaissance" required />
-    <select id="statutPaiement">
-      <option value="">Statut de paiement</option>
-      <option value="Payé">Payé</option>
-      <option value="Partiel">Partiel</option>
-      <option value="Non payé">Non payé</option>
-    </select>
-    <button type="submit">Enregistrer</button>
-  </form>
-  <p id="message"></p>
+  
+  <div class="header">
+    <h1>➕ Enregistrer un Nouvel Élève</h1>
+    <p>Remplissez les informations d'inscription pour créer un dossier élève complet.</p>
+  </div>
 
-  <!-- Firebase SDK -->
+  <div class="container">
+    <div class="form-card">
+        <form id="eleveForm">
+            <div class="form-grid">
+                
+                <div class="form-group">
+                    <label for="nom">Nom de Famille *</label>
+                    <input type="text" id="nom" placeholder="Ex: UMBA" required />
+                </div>
+                
+                <div class="form-group">
+                    <label for="prenom">Prénoms *</label>
+                    <input type="text" id="prenom" placeholder="Ex: Gabby" required />
+                </div>
+                
+                <div class="form-group">
+                    <label for="classe">Classe d'Affectation *</label>
+                    <select id="classe" required>
+                        <option value="">-- Sélectionner une classe --</option>
+                        <option value="6A">6ème Commerciale A</option>
+                        <option value="5S">5ème Scientifique</option>
+                        <option value="4H">4ème Humanités</option>
+                        </select>
+                </div>
+                
+                <div class="form-group">
+                    <label for="dateNaissance">Date de Naissance *</label>
+                    <input type="date" id="dateNaissance" required />
+                </div>
+                
+                <div class="form-group">
+                    <label for="sexe">Sexe</label>
+                    <select id="sexe">
+                        <option value="">-- Sexe --</option>
+                        <option value="M">Masculin</option>
+                        <option value="F">Féminin</option>
+                    </select>
+                </div>
+
+                <div class="form-group">
+                    <label for="statutPaiement">Statut Initial de Paiement *</label>
+                    <select id="statutPaiement" required>
+                        <option value="">-- Statut de paiement --</option>
+                        <option value="Payé">✅ Payé intégralement</option>
+                        <option value="Partiel">⚠️ Partiel</option>
+                        <option value="Non payé">❌ Non payé (Dossier en attente)</option>
+                    </select>
+                </div>
+                
+                <button type="submit" class="btn-submit">
+                    💾 Enregistrer le Nouvel Élève
+                </button>
+            </div>
+        </form>
+    </div>
+    <p id="message"></p>
+    <a href="eleves.html" class="btn-retour">← Retour à la Gestion des Élèves</a>
+  </div>
+
   <script src="https://www.gstatic.com/firebasejs/10.5.2/firebase-app.js"></script>
   <script src="https://www.gstatic.com/firebasejs/10.5.2/firebase-firestore.js"></script>
 
@@ -87,23 +206,35 @@
 
     document.getElementById('eleveForm').addEventListener('submit', function(e) {
       e.preventDefault();
+      
+      // Récupération des données du formulaire
       const nom = document.getElementById('nom').value;
       const prenom = document.getElementById('prenom').value;
       const classe = document.getElementById('classe').value;
       const dateNaissance = document.getElementById('dateNaissance').value;
       const statutPaiement = document.getElementById('statutPaiement').value;
+      const sexe = document.getElementById('sexe').value; // Nouveau champ
+
+      // Simulation de la génération du matricule
+      const annee = new Date().getFullYear().toString().slice(-2);
+      const randomID = Math.floor(Math.random() * 900) + 100;
+      const matricule = `${annee}/${classe}-${randomID}`;
+
 
       db.collection("eleves").add({
         nom,
         prenom,
+        matricule, // Ajout du matricule
         classe,
         dateNaissance,
-        statutPaiement
+        sexe,
+        statutPaiement,
+        dateInscription: firebase.firestore.FieldValue.serverTimestamp() // Bonne pratique
       }).then(() => {
-        document.getElementById('message').textContent = "✅ Élève ajouté avec succès !";
+        document.getElementById('message').innerHTML = `✅ **Élève ${nom} ${prenom} enregistré !**<br>Matricule attribué : ${matricule}`;
         document.getElementById('eleveForm').reset();
       }).catch((error) => {
-        document.getElementById('message').textContent = "❌ Erreur : " + error.message;
+        document.getElementById('message').innerHTML = "❌ Erreur d'enregistrement : " + error.message;
       });
     });
   </script>
