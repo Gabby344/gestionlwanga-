@@ -3,76 +3,78 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Gestion des Bulletins & Notes - Institut Saint Charles Lwanga</title>
-  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700&display=swap" rel="stylesheet">
+  <title>Menu Notes & Bulletins - Institut Saint Charles Lwanga</title>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700;800&display=swap" rel="stylesheet">
   <style>
     :root {
-      --bleu-fonce: #1e40af;
+      --bleu-fonce: #1e40af; 
       --gris-fonce: #1f2937;
-      --orange: #f97316; /* Couleur pour les notes/bulletins */
-      --fond: #f4f6f8;
+      --orange-notes: #f59e0b; /* Couleur d'accent pour le module Notes */
+      --fond-principal: #f4f6f8;
+      --ombre-forte: rgba(0,0,0,0.15);
       --ombre-legere: rgba(0,0,0,0.05);
-      --ombre-moyenne: rgba(0,0,0,0.1);
     }
     body {
       font-family: 'Inter', sans-serif;
-      background-color: var(--fond);
+      background-color: var(--fond-principal);
       margin: 0;
       padding: 2rem 1rem;
       color: var(--gris-fonce);
       text-align: center;
     }
+    .header {
+        max-width: 900px;
+        margin: auto;
+        margin-bottom: 2rem;
+    }
     h1 {
-      font-size: 1.8rem;
+      font-size: 2rem;
       color: var(--bleu-fonce);
-      margin-bottom: 0.5rem;
+      margin-bottom: 0.25rem;
     }
     h2 {
-      font-size: 1rem;
-      font-weight: normal;
+      font-size: 1.1rem;
+      font-weight: 400;
       color: #6b7280;
       margin-bottom: 2rem;
     }
     
-    .menu-grid {
+    /* --- GRILLE DE NAVIGATION DES MODULES --- */
+    .modules-grid {
       display: grid;
-      grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+      grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
       gap: 1.5rem;
-      max-width: 800px;
+      max-width: 900px;
       margin: auto;
     }
-    
-    .menu-card {
+    .module-card {
       display: block;
       background-color: white;
-      padding: 2rem;
+      padding: 1.5rem;
       border-radius: 12px;
       text-decoration: none;
       color: var(--gris-fonce);
-      box-shadow: 0 4px 6px -1px var(--ombre-moyenne);
+      box-shadow: 0 4px 10px var(--ombre-legere);
       transition: transform 0.2s, box-shadow 0.2s;
-      border-top: 5px solid var(--orange); /* Accent de couleur */
+      border-left: 5px solid var(--orange-notes); /* Accent de couleur spécifique */
       text-align: left;
     }
-    .menu-card:hover {
+    .module-card:hover {
       transform: translateY(-5px);
-      box-shadow: 0 8px 15px rgba(0,0,0,0.15);
+      box-shadow: 0 8px 20px var(--ombre-forte);
     }
-
-    .icon {
+    .card-icon {
         font-size: 2.5rem;
-        color: var(--orange);
+        color: var(--orange-notes);
         margin-bottom: 0.5rem;
         line-height: 1;
     }
-
     .card-title {
         font-size: 1.25rem;
         font-weight: 700;
         margin-bottom: 0.5rem;
         color: var(--gris-fonce);
     }
-
     .card-description {
         font-size: 0.9rem;
         color: #6b7280;
@@ -93,50 +95,42 @@
     .btn-retour:hover {
         background-color: #d1d5db;
     }
-
-    footer {
-      margin-top: 4rem;
-      font-size: 0.85rem;
-      color: #6b7280;
-    }
   </style>
 </head>
 <body>
-  <h1>Gestion des Notes et Bulletins</h1>
-  <h2>Outils pour la saisie, l'édition et l'impression des résultats scolaires.</h2>
+  <div class="header">
+    <h1>📄 Notes, Évaluations & Bulletins</h1>
+    <h2>Gérez la saisie des cotes, la validation et l'impression des documents scolaires officiels.</h2>
+  </div>
 
-  <div class="menu-grid">
+  <div class="modules-grid">
     
-    <a href="saisie-notes.html" class="menu-card">
-        <div class="icon">📝</div>
-        <div class="card-title">Saisie des Notes</div>
-        <div class="card-description">Entrer et valider les notes par classe et par cours.</div>
+    <a href="saisie-notes.html" class="module-card">
+        <div class="card-icon">✍️</div>
+        <div class="card-title">Saisie des Cotes par Classe/Matière</div>
+        <div class="card-description">Interface pour l'enregistrement rapide des notes d'interrogations, examens et travaux.</div>
     </a>
     
-    <a href="generer-bulletins.html" class="menu-card">
-        <div class="icon">🖨️</div>
-        <div class="card-title">Génération & Impression</div>
-        <div class="card-description">Produire les bulletins finaux par trimestre/semestre.</div>
+    <a href="validation-bulletins.html" class="module-card">
+        <div class="card-icon">✅</div>
+        <div class="card-title">Validation des Résultats et Moyennes</div>
+        <div class="card-description">Vérification, calcul automatique des moyennes trimestrielles et validation pour publication.</div>
     </a>
     
-    <a href="resultats-globaux.html" class="menu-card">
-        <div class="icon">📈</div>
-        <div class="card-title">Résultats Globaux</div>
-        <div class="card-description">Voir les moyennes de l'institut et les palmarès des classes.</div>
+    <a href="impression-bulletins.html" class="module-card">
+        <div class="card-icon">🖨️</div>
+        <div class="card-title">Génération et Impression des Bulletins</div>
+        <div class="card-description">Prévisualisation et impression des bulletins de notes officiels par classe ou par élève.</div>
     </a>
     
-    <a href="parametres-notes.html" class="menu-card">
-        <div class="icon">⚙️</div>
-        <div class="card-title">Paramètres de Notation</div>
-        <div class="card-description">Configurer les barèmes de points et les pondérations.</div>
+    <a href="#" class="module-card" onclick="alert('Historique en développement')">
+        <div class="card-icon">📜</div>
+        <div class="card-title">Historique Scolaire et Relevés</div>
+        <div class="card-description">Consultation des résultats des années précédentes et génération des relevés de notes.</div>
     </a>
     
   </div>
 
-  <a href="dashboard.html" class="btn-retour">← Retour au Tableau de Bord</a>
-
-  <footer>
-    &copy; 2025 Gabby Umba · Projet éducatif numérique · Lubumbashi
-  </footer>
+  <a href="dashboard.html" class="btn-retour">← Retour au Tableau de Bord Principal</a>
 </body>
 </html>
