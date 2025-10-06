@@ -1,0 +1,160 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Ajouter un enseignant - Institut Saint Charles Lwanga</title>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600&display=swap" rel="stylesheet">
+  <style>
+    :root {
+      --bleu: #1e3a8a;
+      --gris: #374151;
+      --vert: #10b981; /* Couleur pour le bouton principal */
+      --rouge: #ef4444; 
+      --fond: #f9fafb;
+      --ombre: rgba(0,0,0,0.05);
+    }
+    body {
+      font-family: 'Inter', sans-serif;
+      background-color: var(--fond);
+      margin: 0;
+      padding: 2rem 1rem;
+      color: var(--gris);
+      text-align: center;
+    }
+    h1 {
+      font-size: 1.6rem;
+      color: var(--bleu);
+      margin-bottom: 0.5rem;
+    }
+    h2 {
+      font-size: 0.9rem;
+      font-weight: normal;
+      color: #6b7280;
+      margin-bottom: 2rem;
+    }
+    .container {
+      max-width: 400px;
+      margin: auto;
+      text-align: left;
+      background-color: white;
+      padding: 1.5rem;
+      border-radius: 8px;
+      box-shadow: 0 4px 6px -1px var(--ombre);
+    }
+    .form-group {
+      margin-bottom: 1rem;
+    }
+    label {
+      display: block;
+      font-weight: 600;
+      margin-bottom: 0.3rem;
+      font-size: 0.9rem;
+      color: var(--gris);
+    }
+    input[type="text"],
+    input[type="email"],
+    input[type="tel"],
+    select {
+      width: 100%;
+      padding: 0.75rem;
+      border: 1px solid #d1d5db;
+      border-radius: 6px;
+      box-sizing: border-box; /* Pour inclure padding et border dans la largeur */
+      font-size: 1rem;
+      transition: border-color 0.2s;
+    }
+    input:focus, select:focus {
+      outline: none;
+      border-color: var(--bleu);
+    }
+    .btn {
+      display: block;
+      width: 100%;
+      padding: 0.75rem;
+      border: none;
+      border-radius: 6px;
+      font-weight: 600;
+      cursor: pointer;
+      margin-top: 1.5rem;
+      transition: opacity 0.2s;
+    }
+    .btn-principal {
+      background-color: var(--vert);
+      color: white;
+    }
+    .btn-principal:hover {
+      background-color: #059669;
+    }
+    .btn-retour {
+        display: block;
+        text-align: center;
+        margin-top: 1rem;
+        color: var(--gris);
+        text-decoration: none;
+        font-size: 0.9rem;
+        padding: 0.5rem;
+    }
+    .btn-retour:hover {
+        color: var(--bleu);
+    }
+    footer {
+      margin-top: 3rem;
+      font-size: 0.85rem;
+      color: #6b7280;
+    }
+  </style>
+</head>
+<body>
+  <h1>Ajouter un nouvel enseignant</h1>
+  <h2>Veuillez remplir le formulaire d'enregistrement</h2>
+
+  <div class="container">
+    <form>
+      
+      <div class="form-group">
+        <label for="nom">Nom :</label>
+        <input type="text" id="nom" name="nom" required>
+      </div>
+      
+      <div class="form-group">
+        <label for="prenom">Prénom(s) :</label>
+        <input type="text" id="prenom" name="prenom" required>
+      </div>
+      
+      <div class="form-group">
+        <label for="genre">Genre :</label>
+        <select id="genre" name="genre" required>
+          <option value="">Sélectionner</option>
+          <option value="H">Homme</option>
+          <option value="F">Femme</option>
+        </select>
+      </div>
+      
+      <div class="form-group">
+        <label for="matiere">Matière principale enseignée :</label>
+        <input type="text" id="matiere" name="matiere" placeholder="Ex: Mathématiques, Français">
+      </div>
+      
+      <div class="form-group">
+        <label for="telephone">Téléphone :</label>
+        <input type="tel" id="telephone" name="telephone" placeholder="+243 00 000 0000">
+      </div>
+      
+      <div class="form-group">
+        <label for="email">E-mail (Optionnel) :</label>
+        <input type="email" id="email" name="email">
+      </div>
+      
+      <button type="submit" class="btn btn-principal">💾 Enregistrer l'enseignant</button>
+      
+    </form>
+    
+    <a href="enseignants.html" class="btn-retour">← Retour à la gestion des enseignants</a>
+  </div>
+
+  <footer>
+    &copy; 2025 Gabby Umba · Projet éducatif numérique · Lubumbashi
+  </footer>
+</body>
+</html>
