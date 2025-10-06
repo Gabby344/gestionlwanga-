@@ -3,20 +3,21 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Saisie des Notes - Institut Saint Charles Lwanga</title>
-  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700&display=swap" rel="stylesheet">
+  <title>Saisie des Cotes - Institut Saint Charles Lwanga (SIGS)</title>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700;800&display=swap" rel="stylesheet">
   <style>
     :root {
-      --bleu-fonce: #1e40af;
+      --bleu-fonce: #1e40af; 
       --gris-fonce: #1f2937;
-      --orange: #f97316;
-      --vert: #10b981; 
-      --fond: #f4f6f8;
+      --orange-notes: #f59e0b; /* Accent Notes */
+      --vert-succes: #10b981; /* Bouton d'enregistrement */
+      --fond-principal: #f4f6f8;
+      --gris-bordure: #d1d5db; 
       --ombre-legere: rgba(0,0,0,0.08);
     }
     body {
       font-family: 'Inter', sans-serif;
-      background-color: var(--fond);
+      background-color: var(--fond-principal);
       margin: 0;
       padding: 2rem 1rem;
       color: var(--gris-fonce);
@@ -34,225 +35,316 @@
       color: #6b7280;
       margin-bottom: 2rem;
     }
-    
     .container {
-      max-width: 900px;
-      margin: auto;
-      background-color: white;
-      padding: 1.5rem;
-      border-radius: 12px;
-      box-shadow: 0 4px 10px var(--ombre-legere);
+        max-width: 1200px;
+        margin: auto;
     }
 
-    /* --- SECTION SÉLECTION DES PARAMÈTRES --- */
-    .selection-form {
-      display: grid;
-      grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
-      gap: 1rem;
-      margin-bottom: 2rem;
-      padding-bottom: 1rem;
-      border-bottom: 1px solid #e5e7eb;
+    /* --- BARRE DE FILTRE ET CONTEXTE --- */
+    .filter-bar {
+        background-color: white;
+        padding: 1.5rem;
+        border-radius: 8px;
+        box-shadow: 0 4px 6px var(--ombre-legere);
+        margin-bottom: 1.5rem;
+        display: grid;
+        gap: 1.5rem;
+        grid-template-columns: 1fr;
     }
-    .form-group label {
-      display: block;
-      font-weight: 600;
-      margin-bottom: 0.3rem;
-      font-size: 0.9rem;
+    @media (min-width: 768px) {
+        .filter-bar {
+            grid-template-columns: repeat(4, 1fr); /* 4 colonnes pour les filtres */
+        }
     }
-    select {
-      width: 100%;
-      padding: 0.75rem;
-      border: 1px solid #d1d5db;
-      border-radius: 6px;
-      box-sizing: border-box; 
-      font-size: 1rem;
-    }
-
-    /* --- TABLEAU DE SAISIE DES NOTES --- */
-    .notes-table-container {
-      overflow-x: auto;
-    }
-    table {
-      width: 100%;
-      border-collapse: collapse;
-      font-size: 0.9rem;
-    }
-    th, td {
-      padding: 0.75rem 0.5rem;
-      border: 1px solid #e5e7eb;
-      text-align: left;
-    }
-    th {
-      background-color: var(--bleu-fonce);
-      color: white;
-      font-weight: 600;
-      text-transform: uppercase;
-      font-size: 0.75rem;
-      position: sticky; /* Pour garder les en-têtes visibles si le tableau défile */
-      top: 0; 
-    }
-    
-    /* Champ de note dans le tableau */
-    .note-input {
-      width: 100%;
-      padding: 0.4rem;
-      border: none;
-      text-align: center;
-      box-sizing: border-box;
-      font-weight: 600;
-    }
-    .note-input:focus {
-        background-color: #f0f9ff;
-    }
-    
-    /* Bouton d'enregistrement */
-    .btn-save {
-      display: block;
-      width: 100%;
-      padding: 1rem;
-      margin-top: 2rem;
-      background-color: var(--vert);
-      color: white;
-      border: none;
-      border-radius: 8px;
-      font-weight: 700;
-      font-size: 1.1rem;
-      cursor: pointer;
-      transition: background-color 0.2s;
-    }
-    .btn-save:hover {
-      background-color: #059669;
-    }
-
-    /* Bouton de retour */
-    .btn-retour {
+    .input-group label {
         display: block;
-        text-align: center;
-        margin-top: 1.5rem;
-        color: var(--gris-fonce);
-        text-decoration: none;
-        font-size: 0.9rem;
-        padding: 0.5rem;
+        font-size: 0.85rem;
+        font-weight: 600;
+        color: #6b7280;
+        margin-bottom: 0.4rem;
     }
-    .btn-retour:hover {
+    .input-group select {
+        width: 100%;
+        padding: 0.75rem;
+        border: 1px solid var(--gris-bordure);
+        border-radius: 6px;
+        box-sizing: border-box;
+        background-color: #f9fafb;
+    }
+    .btn-charger-liste {
+        padding: 0.75rem 1rem;
+        border: none;
+        border-radius: 6px;
+        font-weight: 700;
+        cursor: pointer;
+        background-color: var(--orange-notes);
+        color: white;
+        align-self: flex-end; /* Aligner le bouton sur la ligne de base des champs */
+        transition: background-color 0.2s;
+    }
+    .btn-charger-liste:hover { background-color: #d97706; }
+
+    /* --- GRILLE DE SAISIE DES NOTES --- */
+    .notes-saisie-card {
+        background-color: white;
+        border-radius: 8px;
+        box-shadow: 0 4px 10px var(--ombre-legere);
+        padding: 1.5rem;
+    }
+    .notes-table-wrapper {
+        overflow-x: auto;
+        max-height: 60vh; /* Limiter la hauteur pour les longues listes */
+        margin-bottom: 1rem;
+    }
+    .notes-table {
+        width: 100%;
+        border-collapse: separate;
+        border-spacing: 0;
+        min-width: 700px;
+    }
+    .notes-table th, .notes-table td {
+        padding: 0.75rem 1rem;
+        border-bottom: 1px solid #e5e7eb;
+        text-align: center;
+    }
+    .notes-table th {
+        background-color: #f3f4f6;
+        color: var(--gris-fonce);
+        font-weight: 600;
+        text-transform: uppercase;
+        font-size: 0.8rem;
+        position: sticky; /* Entêtes fixes lors du défilement */
+        top: 0;
+        z-index: 10;
+    }
+    .notes-table td:first-child {
+        text-align: left;
+        font-weight: 600;
+        width: 30%;
         color: var(--bleu-fonce);
     }
+    .note-input {
+        width: 80px; /* Taille fixe pour la note */
+        padding: 0.5rem;
+        border: 1px solid var(--gris-bordure);
+        border-radius: 4px;
+        text-align: center;
+        transition: border-color 0.2s;
+    }
+    .note-input:focus {
+        border-color: var(--orange-notes);
+        box-shadow: 0 0 0 2px rgba(245, 158, 11, 0.2);
+        outline: none;
+    }
 
-    footer {
-      margin-top: 4rem;
-      font-size: 0.85rem;
-      color: #6b7280;
-      text-align: center;
+    /* --- BAS DE PAGE ET BOUTON SAUVEGARDE --- */
+    .footer-actions {
+        text-align: center;
+        padding-top: 1rem;
+        border-top: 1px solid #e5e7eb;
+    }
+    .btn-sauvegarder {
+        padding: 1rem 3rem;
+        font-size: 1.1rem;
+        font-weight: 700;
+        border: none;
+        border-radius: 8px;
+        cursor: pointer;
+        background-color: var(--vert-succes);
+        color: white;
+        transition: background-color 0.2s;
+    }
+    .btn-sauvegarder:hover {
+        background-color: #059669;
+    }
+    
+    .message-info {
+        margin-top: 1.5rem;
+        font-size: 0.9rem;
+        color: #6b7280;
     }
   </style>
 </head>
 <body>
-  <h1>Saisie des Notes</h1>
-  <h2>Sélectionnez les paramètres pour afficher la grille de notation.</h2>
-
   <div class="container">
-    
-    <div class="selection-form">
-      <div class="form-group">
-        <label for="classe">Classe :</label>
-        <select id="classe" name="classe">
-          <option value="">Sélectionner une classe...</option>
-          <option value="4eme">4ème Année</option>
-          <option value="5eme">5ème Année</option>
-          <option value="6eme" selected>6ème Année</option>
-        </select>
-      </div>
-      <div class="form-group">
-        <label for="matiere">Matière :</label>
-        <select id="matiere" name="matiere">
-          <option value="">Sélectionner une matière...</option>
-          <option value="info">Informatique</option>
-          <option value="math" selected>Mathématiques</option>
-          <option value="physique">Physique</option>
-        </select>
-      </div>
-      <div class="form-group">
-        <label for="periode">Période :</label>
-        <select id="periode" name="periode">
-          <option value="t1">Trimestre 1</option>
-          <option value="t2">Trimestre 2</option>
-          <option value="t3" selected>Trimestre 3</option>
-        </select>
-      </div>
-      <div class="form-group">
-        <label for="max">Note Max (Barème) :</label>
-        <select id="max" name="max">
-            <option value="10">/10</option>
-            <option value="20" selected>/20</option>
-            <option value="100">/100</option>
-          </select>
-      </div>
-    </div>
-    
-    <div class="notes-table-container">
-      <table>
-        <thead>
-          <tr>
-            <th style="width: 50px;">N°</th>
-            <th style="width: 250px;">Nom & Post-nom de l'élève</th>
-            <th>Note (/<span id="bar-max">20</span>)</th>
-            <th style="width: 150px;">Observation</th>
-          </tr>
-        </thead>
-        <tbody>
-          <tr>
-            <td>1</td>
-            <td>Gabby Umba</td>
-            <td><input type="number" class="note-input" min="0" max="20" value="18" placeholder="Saisir note"></td>
-            <td>Très Bien</td>
-          </tr>
-          <tr>
-            <td>2</td>
-            <td>Ndaya Kabulo</td>
-            <td><input type="number" class="note-input" min="0" max="20" value="12" placeholder="Saisir note"></td>
-            <td>Passable</td>
-          </tr>
-          <tr>
-            <td>3</td>
-            <td>Tshibola Kasongo</td>
-            <td><input type="number" class="note-input" min="0" max="20" placeholder="Saisir note"></td>
-            <td></td>
-          </tr>
-          </tbody>
-      </table>
+    <h1>✍️ Saisie des Cotes des Élèves</h1>
+    <h2>Sélectionnez le contexte d'évaluation pour charger la liste des élèves.</h2>
+
+    <div class="filter-bar">
+        <div class="input-group">
+            <label for="anneeScolaire">Année Scolaire</label>
+            <select id="anneeScolaire">
+                <option>2024-2025</option>
+                <option>2023-2024</option>
+            </select>
+        </div>
+        <div class="input-group">
+            <label for="trimestre">Trimestre</label>
+            <select id="trimestre">
+                <option>1er Trimestre</option>
+                <option>2ème Trimestre</option>
+                <option>3ème Trimestre</option>
+            </select>
+        </div>
+        <div class="input-group">
+            <label for="classe">Classe & Matière</label>
+            <select id="classe">
+                <option value="6A-MATH">6ème A - Mathématiques</option>
+                <option value="5S-FR">5ème S - Français</option>
+                <option value="4H-HG">4ème H - Histoire Géographie</option>
+            </select>
+        </div>
+        <button class="btn-charger-liste" onclick="chargerListe()">Charger la Grille</button>
     </div>
 
-    <button class="btn-save">💾 Enregistrer les Notes (6ème Année - Maths - T3)</button>
-    
-    <a href="bulletins.html" class="btn-retour">← Retour au menu Bulletins & Notes</a>
+    <div id="notesSection" style="display: none;">
+        <div class="notes-saisie-card">
+            <h3>Saisie des Notes pour: <span id="currentContext">6ème A - Mathématiques | 1er Trimestre</span></h3>
+            
+            <div class="notes-table-wrapper">
+                <table class="notes-table">
+                    <thead>
+                        <tr>
+                            <th>Nom & Prénom Élève</th>
+                            <th>Interro 1 (20)</th>
+                            <th>Interro 2 (20)</th>
+                            <th>Examen (60)</th>
+                            <th>Total (100)</th>
+                        </tr>
+                    </thead>
+                    <tbody id="notesBody">
+                        </tbody>
+                </table>
+            </div>
+
+            <div class="footer-actions">
+                <button class="btn-sauvegarder" onclick="sauvegarderNotes()">Enregistrer les Cotes</button>
+                <p id="saveMessage" class="message-info"></p>
+            </div>
+        </div>
+    </div>
+
+    <a href="bulletins.html" class="btn-retour" style="display: block; text-align: center; margin-top: 2rem;">← Retour au Menu Notes & Bulletins</a>
   </div>
 
   <script>
-    // --- Code JavaScript pour l'interactivité (facultatif mais Pro) ---
-    document.addEventListener('DOMContentLoaded', () => {
-        const selectMax = document.getElementById('max');
-        const barMaxDisplay = document.getElementById('bar-max');
-        const noteInputs = document.querySelectorAll('.note-input');
+    // --- SIMULATION DE DONNÉES ET FONCTIONS ---
+    
+    // Exemple de données d'élèves pour une classe
+    const elevesExemple = [
+        { id: '101', nom: 'UMBA', prenom: 'Gabby' },
+        { id: '102', nom: 'KABULO', prenom: 'Ndaya' },
+        { id: '103', nom: 'MUTOMBO', prenom: 'Kalubi' },
+        { id: '104', nom: 'KASONGO', prenom: 'Tshibola' },
+    ];
 
-        // Mise à jour de la note maximale affichée dans le tableau et des limites
-        selectMax.addEventListener('change', (e) => {
-            const newMax = e.target.value;
-            barMaxDisplay.textContent = newMax;
+    // Simule le chargement de la liste
+    function chargerListe() {
+        const context = document.getElementById('classe').options[document.getElementById('classe').selectedIndex].text + " | " + document.getElementById('trimestre').value;
+        document.getElementById('currentContext').textContent = context;
+        document.getElementById('notesSection').style.display = 'block';
+        document.getElementById('saveMessage').textContent = 'Liste chargée. Vous pouvez commencer la saisie.';
+        
+        renderNotesTable(elevesExemple);
+    }
+    
+    // Génère les lignes du tableau
+    function renderNotesTable(eleves) {
+        const notesBody = document.getElementById('notesBody');
+        notesBody.innerHTML = '';
+        
+        eleves.forEach(eleve => {
+            const row = notesBody.insertRow();
+            row.id = `eleve-${eleve.id}`;
             
-            // Mise à jour des limites min/max de tous les champs de note
-            noteInputs.forEach(input => {
-                input.max = newMax;
-                // Réinitialise la note si elle dépasse le nouveau maximum
-                if (parseFloat(input.value) > newMax) {
-                    input.value = '';
-                }
+            // Cellule Nom
+            row.insertCell().textContent = `${eleve.nom} ${eleve.prenom}`;
+            
+            // Cellules de Saisie des Cotes (Interro 1, Interro 2, Examen)
+            ['interro1', 'interro2', 'examen'].forEach((type, index) => {
+                const max = (index < 2) ? 20 : 60; // Max 20 pour interro, 60 pour examen
+                const cell = row.insertCell();
+                cell.innerHTML = `
+                    <input type="number" 
+                           class="note-input" 
+                           data-eleve-id="${eleve.id}" 
+                           data-type="${type}" 
+                           min="0" max="${max}" 
+                           oninput="calculerTotal('${eleve.id}')"
+                           placeholder="${max}"
+                    />`;
             });
-        });
-    });
-  </script>
 
-  <footer>
-    &copy; 2025 Gabby Umba · Projet éducatif numérique · Lubumbashi
-  </footer>
+            // Cellule Total (Lecture seule)
+            const totalCell = row.insertCell();
+            totalCell.id = `total-${eleve.id}`;
+            totalCell.textContent = '0';
+        });
+    }
+    
+    // Calcule le total d'un élève
+    function calculerTotal(eleveId) {
+        let total = 0;
+        const inputs = document.querySelectorAll(`#eleve-${eleveId} .note-input`);
+        
+        inputs.forEach(input => {
+            const note = parseFloat(input.value) || 0;
+            const max = parseFloat(input.max);
+            
+            // Validation simple
+            if (note > max) {
+                input.style.borderColor = 'var(--rouge-danger)';
+                alert(`La note ne peut pas dépasser ${max}.`);
+                input.value = max;
+                total += max;
+            } else {
+                input.style.borderColor = 'var(--gris-bordure)';
+                total += note;
+            }
+        });
+        
+        document.getElementById(`total-${eleveId}`).textContent = total.toFixed(0);
+        
+        // Mise en évidence du total (ex: si le total est faible)
+        const totalElement = document.getElementById(`total-${eleveId}`);
+        if (total < 50) {
+            totalElement.style.color = 'var(--rouge-danger)';
+        } else {
+            totalElement.style.color = 'var(--vert-succes)';
+        }
+    }
+
+    // Sauvegarde les notes (Simulation)
+    function sauvegarderNotes() {
+        const notesASauver = [];
+        const rows = document.getElementById('notesBody').rows;
+        
+        // Simuler la collecte des données pour l'envoi au backend
+        for (let i = 0; i < rows.length; i++) {
+            const row = rows[i];
+            const eleveId = row.id.replace('eleve-', '');
+            const inputs = row.querySelectorAll('.note-input');
+            const total = parseFloat(document.getElementById(`total-${eleveId}`).textContent);
+            
+            const notes = { eleveId, total, details: {} };
+            
+            inputs.forEach(input => {
+                notes.details[input.dataset.type] = parseFloat(input.value) || 0;
+            });
+            notesASauver.push(notes);
+        }
+
+        console.log("Notes prêtes à être sauvegardées:", notesASauver);
+        
+        document.getElementById('saveMessage').style.color = 'var(--vert-succes)';
+        document.getElementById('saveMessage').textContent = '✅ Toutes les notes ont été enregistrées avec succès dans la base de données!';
+    }
+
+    // Chargement initial
+    document.addEventListener('DOMContentLoaded', () => {
+        document.getElementById('compteur').textContent = 'Veuillez sélectionner le contexte pour charger la grille de saisie.';
+    });
+
+  </script>
 </body>
 </html>
