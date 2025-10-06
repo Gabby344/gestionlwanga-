@@ -1,1 +1,81 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Gestion des élèves</title>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600&display=swap" rel="stylesheet">
+  <style>
+    :root {
+      --bleu: #1e3a8a;
+      --gris: #374151;
+      --fond: #f9fafb;
+    }
+    body {
+      font-family: 'Inter', sans-serif;
+      background-color: var(--fond);
+      margin: 0;
+      padding: 1rem;
+      color: var(--gris);
+    }
+    h1 {
+      text-align: center;
+      color: var(--bleu);
+      margin-bottom: 1rem;
+    }
+    .eleve-card {
+      background: white;
+      border-radius: 8px;
+      padding: 1rem;
+      margin-bottom: 1rem;
+      box-shadow: 0 0 5px rgba(0,0,0,0.05);
+    }
+    .eleve-card h2 {
+      margin: 0;
+      font-size: 1.1rem;
+      color: var(--gris);
+    }
+    .eleve-card p {
+      margin: 0.25rem 0;
+      font-size: 0.95rem;
+    }
+  </style>
+</head>
+<body>
+  <h1>📚 Élèves</h1>
+  <div id="elevesContainer">Chargement...</div>
 
+  <!-- Firebase SDK -->
+  <script src="https://www.gstatic.com/firebasejs/10.5.2/firebase-app.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/10.5.2/firebase-firestore.js"></script>
+
+  <script>
+    const firebaseConfig = {
+      apiKey: "TON_API_KEY",
+      authDomain: "TON_DOMAINE.firebaseapp.com",
+      projectId: "TON_PROJECT_ID",
+    };
+    firebase.initializeApp(firebaseConfig);
+    const db = firebase.firestore();
+
+    const container = document.getElementById('elevesContainer');
+    db.collection("eleves").get().then((querySnapshot) => {
+      container.innerHTML = "";
+      querySnapshot.forEach((doc) => {
+        const data = doc.data();
+        const card = document.createElement("div");
+        card.className = "eleve-card";
+        card.innerHTML = `
+          <h2>${data.nom} ${data.prenom}</h2>
+          <p>Classe : ${data.classe}</p>
+          <p>Date de naissance : ${data.dateNaissance}</p>
+          <p>Statut paiement : ${data.statutPaiement || "N/A"}</p>
+        `;
+        container.appendChild(card);
+      });
+    }).catch((error) => {
+      container.innerHTML = "Erreur de chargement : " + error.message;
+    });
+  </script>
+</body>
+</html>
