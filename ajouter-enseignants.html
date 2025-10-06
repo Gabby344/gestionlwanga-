@@ -3,158 +3,242 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Ajouter un enseignant - Institut Saint Charles Lwanga</title>
-  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600&display=swap" rel="stylesheet">
+  <title>Ajouter un Membre du Personnel - Institut Saint Charles Lwanga (SIGS)</title>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700;800&display=swap" rel="stylesheet">
   <style>
     :root {
-      --bleu: #1e3a8a;
-      --gris: #374151;
-      --vert: #10b981; /* Couleur pour le bouton principal */
-      --rouge: #ef4444; 
-      --fond: #f9fafb;
-      --ombre: rgba(0,0,0,0.05);
+      --bleu-fonce: #1e40af; /* Principal */
+      --gris-fonce: #1f2937;
+      --indigo-enseignants: #4f46e5; /* Bouton d'action positif (Enregistrer) */
+      --gris-clair: #f4f6f8; /* Fond principal */
+      --gris-bordure: #d1d5db; 
+      --ombre-form: rgba(0,0,0,0.1);
     }
     body {
       font-family: 'Inter', sans-serif;
-      background-color: var(--fond);
+      background-color: var(--gris-clair);
       margin: 0;
       padding: 2rem 1rem;
-      color: var(--gris);
-      text-align: center;
+      color: var(--gris-fonce);
     }
-    h1 {
-      font-size: 1.6rem;
-      color: var(--bleu);
-      margin-bottom: 0.5rem;
+    
+    .header {
+        text-align: center;
+        margin-bottom: 2rem;
     }
-    h2 {
-      font-size: 0.9rem;
-      font-weight: normal;
-      color: #6b7280;
-      margin-bottom: 2rem;
+    .header h1 {
+      font-size: 2rem;
+      color: var(--bleu-fonce);
+      margin-bottom: 0.25rem;
     }
+    .header p {
+        font-size: 1rem;
+        color: #6b7280;
+    }
+
+    /* --- CONTENEUR ET FORMULAIRE --- */
     .container {
-      max-width: 400px;
-      margin: auto;
-      text-align: left;
-      background-color: white;
-      padding: 1.5rem;
-      border-radius: 8px;
-      box-shadow: 0 4px 6px -1px var(--ombre);
+        max-width: 800px;
+        margin: auto;
     }
-    .form-group {
-      margin-bottom: 1rem;
+    .form-card {
+      background: white;
+      padding: 2rem;
+      border-radius: 12px;
+      box-shadow: 0 4px 12px var(--ombre-form);
+      border-top: 5px solid var(--indigo-enseignants); /* Bordure accentuée */
     }
-    label {
+    
+    .form-grid {
+      display: grid;
+      grid-template-columns: 1fr;
+      gap: 1.5rem; 
+    }
+    @media (min-width: 600px) {
+        .form-grid {
+            grid-template-columns: 1fr 1fr; /* 2 colonnes sur desktop */
+        }
+    }
+    .full-width {
+        grid-column: 1 / -1;
+    }
+
+    /* --- CHAMPS DE FORMULAIRE --- */
+    .form-group label {
       display: block;
       font-weight: 600;
-      margin-bottom: 0.3rem;
-      font-size: 0.9rem;
-      color: var(--gris);
+      margin-bottom: 0.5rem;
+      font-size: 0.95rem;
+      color: var(--gris-fonce);
     }
-    input[type="text"],
-    input[type="email"],
-    input[type="tel"],
-    select {
+    input[type="text"], input[type="date"], input[type="email"], input[type="tel"], select {
       width: 100%;
-      padding: 0.75rem;
-      border: 1px solid #d1d5db;
-      border-radius: 6px;
-      box-sizing: border-box; /* Pour inclure padding et border dans la largeur */
+      padding: 0.9rem; 
+      border: 1px solid var(--gris-bordure);
+      border-radius: 8px; 
+      box-sizing: border-box;
       font-size: 1rem;
-      transition: border-color 0.2s;
+      background-color: #f9fafb;
+      transition: border-color 0.2s, box-shadow 0.2s;
     }
     input:focus, select:focus {
-      outline: none;
-      border-color: var(--bleu);
+        border-color: var(--indigo-enseignants);
+        box-shadow: 0 0 0 3px rgba(79, 70, 229, 0.1);
+        outline: none;
+        background-color: white;
     }
-    .btn {
-      display: block;
-      width: 100%;
-      padding: 0.75rem;
-      border: none;
-      border-radius: 6px;
-      font-weight: 600;
-      cursor: pointer;
-      margin-top: 1.5rem;
-      transition: opacity 0.2s;
-    }
-    .btn-principal {
-      background-color: var(--vert);
+    
+    /* --- BOUTON D'ACTION PRINCIPAL --- */
+    .btn-submit {
+      grid-column: 1 / -1; /* Prend toute la largeur */
+      background-color: var(--indigo-enseignants);
       color: white;
+      font-weight: 700;
+      padding: 1rem;
+      border: none;
+      border-radius: 8px;
+      font-size: 1.1rem;
+      cursor: pointer;
+      margin-top: 1rem;
+      transition: background-color 0.2s;
     }
-    .btn-principal:hover {
-      background-color: #059669;
+    .btn-submit:hover {
+      background-color: #3730a3;
+    }
+
+    /* --- Message et Retour --- */
+    #message {
+      text-align: center;
+      margin-top: 1.5rem;
+      font-weight: 600;
     }
     .btn-retour {
         display: block;
         text-align: center;
-        margin-top: 1rem;
-        color: var(--gris);
+        margin-top: 1.5rem;
+        color: var(--gris-fonce);
         text-decoration: none;
         font-size: 0.9rem;
         padding: 0.5rem;
     }
-    .btn-retour:hover {
-        color: var(--bleu);
-    }
-    footer {
-      margin-top: 3rem;
-      font-size: 0.85rem;
-      color: #6b7280;
-    }
   </style>
 </head>
 <body>
-  <h1>Ajouter un nouvel enseignant</h1>
-  <h2>Veuillez remplir le formulaire d'enregistrement</h2>
-
-  <div class="container">
-    <form>
-      
-      <div class="form-group">
-        <label for="nom">Nom :</label>
-        <input type="text" id="nom" name="nom" required>
-      </div>
-      
-      <div class="form-group">
-        <label for="prenom">Prénom(s) :</label>
-        <input type="text" id="prenom" name="prenom" required>
-      </div>
-      
-      <div class="form-group">
-        <label for="genre">Genre :</label>
-        <select id="genre" name="genre" required>
-          <option value="">Sélectionner</option>
-          <option value="H">Homme</option>
-          <option value="F">Femme</option>
-        </select>
-      </div>
-      
-      <div class="form-group">
-        <label for="matiere">Matière principale enseignée :</label>
-        <input type="text" id="matiere" name="matiere" placeholder="Ex: Mathématiques, Français">
-      </div>
-      
-      <div class="form-group">
-        <label for="telephone">Téléphone :</label>
-        <input type="tel" id="telephone" name="telephone" placeholder="+243 00 000 0000">
-      </div>
-      
-      <div class="form-group">
-        <label for="email">E-mail (Optionnel) :</label>
-        <input type="email" id="email" name="email">
-      </div>
-      
-      <button type="submit" class="btn btn-principal">💾 Enregistrer l'enseignant</button>
-      
-    </form>
-    
-    <a href="enseignants.html" class="btn-retour">← Retour à la gestion des enseignants</a>
+  
+  <div class="header">
+    <h1>➕ Enregistrer un Nouveau Membre du Personnel</h1>
+    <p>Formulaire d'enregistrement des informations personnelles et professionnelles.</p>
   </div>
 
-  <footer>
-    &copy; 2025 Gabby Umba · Projet éducatif numérique · Lubumbashi
-  </footer>
+  <div class="container">
+    <div class="form-card">
+        <form id="personnelForm">
+            <div class="form-grid">
+                
+                <div class="form-group">
+                    <label for="nom">Nom de Famille *</label>
+                    <input type="text" id="nom" placeholder="Ex: UMBA" required />
+                </div>
+                
+                <div class="form-group">
+                    <label for="prenom">Prénoms *</label>
+                    <input type="text" id="prenom" placeholder="Ex: Gabby" required />
+                </div>
+                
+                <div class="form-group">
+                    <label for="dateNaissance">Date de Naissance *</label>
+                    <input type="date" id="dateNaissance" required />
+                </div>
+                
+                <div class="form-group">
+                    <label for="sexe">Sexe *</label>
+                    <select id="sexe" required>
+                        <option value="">-- Sélectionner --</option>
+                        <option value="M">Masculin</option>
+                        <option value="F">Féminin</option>
+                    </select>
+                </div>
+
+                <div class="form-group">
+                    <label for="email">Adresse E-mail Professionnelle *</label>
+                    <input type="email" id="email" placeholder="Ex: g.umba@stcharles.com" required />
+                </div>
+
+                <div class="form-group">
+                    <label for="telephone">Téléphone</label>
+                    <input type="tel" id="telephone" placeholder="Ex: +243 99 999 9999" />
+                </div>
+
+                <div class="form-group full-width">
+                    <label for="titre">Titre / Fonction *</label>
+                    <select id="titre" required>
+                        <option value="">-- Choisir une fonction --</option>
+                        <option value="Professeur">Professeur</option>
+                        <option value="Directeur">Directeur</option>
+                        <option value="Secrétaire">Secrétaire</option>
+                        <option value="Comptable">Comptable</option>
+                    </select>
+                </div>
+                
+                <div class="form-group">
+                    <label for="statutContrat">Statut du Contrat *</label>
+                    <select id="statutContrat" required>
+                        <option value="">-- Statut --</option>
+                        <option value="Permanent">Permanent</option>
+                        <option value="Vacataire">Vacataire</option>
+                        <option value="Administratif">Administratif</option>
+                    </select>
+                </div>
+                
+                <div class="form-group">
+                    <label for="qualification">Plus Haute Qualification</label>
+                    <input type="text" id="qualification" placeholder="Ex: Licence en Pédagogie" />
+                </div>
+                
+                <button type="submit" class="btn-submit">
+                    💾 Enregistrer le Personnel et Créer la Fiche
+                </button>
+            </div>
+        </form>
+    </div>
+    <p id="message"></p>
+    <a href="enseignants.html" class="btn-retour">← Retour au Menu du Personnel</a>
+  </div>
+
+  <script>
+    // NOTE: En production, utilisez les vrais SDK et un appel API sécurisé
+
+    document.getElementById('personnelForm').addEventListener('submit', function(e) {
+      e.preventDefault();
+      
+      const nom = document.getElementById('nom').value;
+      const prenom = document.getElementById('prenom').value;
+      const titre = document.getElementById('titre').value;
+      const statutContrat = document.getElementById('statutContrat').value;
+
+      // SIMULATION DE LA CRÉATION D'ID
+      const prefix = (titre === 'Professeur') ? 'PR' : 'AD';
+      const randomID = Math.floor(Math.random() * 9000) + 1000;
+      const matriculePersonnel = `${prefix}-${randomID}`;
+
+
+      // --- SIMULATION D'ENREGISTREMENT EN BASE DE DONNÉES ---
+      console.log('Données à envoyer:', {
+          matricule: matriculePersonnel,
+          nom,
+          prenom,
+          titre,
+          statutContrat,
+          // ... autres champs
+      });
+
+      document.getElementById('message').innerHTML = `
+        ✅ **Personnel enregistré avec succès!**<br>
+        Fiche créée pour ${nom} ${prenom}. Matricule: **${matriculePersonnel}**
+      `;
+      document.getElementById('message').style.color = 'var(--indigo-enseignants)';
+      document.getElementById('personnelForm').reset();
+    });
+  </script>
 </body>
 </html>
