@@ -1,0 +1,262 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Planning des Cours - Institut Saint Charles Lwanga</title>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700&display=swap" rel="stylesheet">
+  <style>
+    :root {
+      --bleu-fonce: #1e40af;
+      --gris-fonce: #1f2937;
+      --orange: #f59e0b; /* Couleur principale du module Cours */
+      --vert: #10b981; 
+      --fond: #f4f6f8;
+      --ombre-legere: rgba(0,0,0,0.08);
+    }
+    body {
+      font-family: 'Inter', sans-serif;
+      background-color: var(--fond);
+      margin: 0;
+      padding: 2rem 1rem;
+      color: var(--gris-fonce);
+    }
+    h1 {
+      text-align: center;
+      font-size: 1.8rem;
+      color: var(--bleu-fonce);
+      margin-bottom: 0.5rem;
+    }
+    h2 {
+      text-align: center;
+      font-size: 1rem;
+      font-weight: normal;
+      color: #6b7280;
+      margin-bottom: 2rem;
+    }
+    .container {
+        max-width: 1000px;
+        margin: auto;
+    }
+
+    /* --- CONTROLES (Sélection & Actions) --- */
+    .controls-bar {
+        background-color: white;
+        padding: 1rem;
+        border-radius: 8px;
+        box-shadow: 0 2px 4px var(--ombre-legere);
+        margin-bottom: 1.5rem;
+        display: flex;
+        gap: 1rem;
+        align-items: center;
+        justify-content: space-between;
+        flex-wrap: wrap; /* Pour la réactivité mobile */
+    }
+    .input-group label {
+        font-weight: 600;
+        margin-right: 0.5rem;
+        color: var(--gris-fonce);
+    }
+    select {
+        padding: 0.6rem;
+        border: 1px solid #d1d5db;
+        border-radius: 4px;
+    }
+    .btn-action {
+        padding: 0.75rem 1rem;
+        border: none;
+        border-radius: 4px;
+        font-weight: 600;
+        cursor: pointer;
+        transition: background-color 0.2s;
+    }
+    .btn-imprimer {
+        background-color: var(--vert);
+        color: white;
+    }
+    .btn-imprimer:hover { background-color: #059669; }
+
+    /* --- PLANNING TABLEAU --- */
+    #planningContainer {
+        overflow-x: auto;
+        background-color: white;
+        border-radius: 8px;
+        box-shadow: 0 4px 10px var(--ombre-legere);
+    }
+    .planning-table {
+        width: 100%;
+        border-collapse: collapse;
+        min-width: 700px; /* Assure la lisibilité sur les petits écrans en forçant le défilement */
+    }
+    th, td {
+        border: 1px solid #e5e7eb;
+        padding: 0.5rem;
+        text-align: center;
+        height: 80px; /* Donne de l'espace pour le contenu */
+    }
+    th {
+        background-color: var(--bleu-fonce);
+        color: white;
+        font-weight: 700;
+        text-transform: uppercase;
+        font-size: 0.8rem;
+        position: sticky;
+        top: 0;
+    }
+    .heure-col {
+        background-color: #f3f4f6;
+        color: var(--gris-fonce);
+        font-weight: 600;
+        width: 80px;
+        font-size: 0.9rem;
+    }
+
+    /* Style des cellules de cours */
+    .cours-cell {
+        background-color: #fffbeb; /* Jaune très clair pour les cours */
+        cursor: pointer;
+        transition: background-color 0.1s;
+    }
+    .cours-cell:hover {
+        background-color: #fef3c7;
+    }
+    .cours-cell strong {
+        display: block;
+        color: var(--orange);
+        font-size: 0.95rem;
+        margin-bottom: 0.2rem;
+    }
+    .cours-cell span {
+        font-size: 0.75rem;
+        color: #6b7280;
+    }
+    .cours-cell.pause {
+        background-color: #e5e7eb;
+        color: #9ca3af;
+        font-style: italic;
+        font-weight: 500;
+    }
+    .cours-cell.libre {
+        background-color: white;
+        color: #9ca3af;
+    }
+    
+    /* Bouton de retour */
+    .btn-retour {
+        display: block;
+        text-align: center;
+        margin-top: 1.5rem;
+        color: var(--gris-fonce);
+        text-decoration: none;
+        font-size: 0.9rem;
+    }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <h1>📆 Emploi du Temps des Classes</h1>
+    <h2>Visualisation du planning hebdomadaire par niveau.</h2>
+
+    <div class="controls-bar">
+        <div class="input-group">
+            <label for="selectClasse">Afficher l'emploi du temps de :</label>
+            <select id="selectClasse" onchange="loadPlanning(this.value)">
+                <option value="6A" selected>6ème Commerciale A</option>
+                <option value="6B">6ème Commerciale B</option>
+                <option value="5S">5ème Scientifique</option>
+                <option value="4H">4ème Humanités</option>
+            </select>
+        </div>
+        
+        <button class="btn-action btn-imprimer">🖨️ Imprimer ce Planning</button>
+    </div>
+
+    <div id="planningContainer">
+        </div>
+
+    <a href="cours.html" class="btn-retour">← Retour au menu Cours & Planning</a>
+  </div>
+
+
+  <script>
+    // SIMULATION DE DONNÉES DU PLANNING (Ceci serait chargé depuis le Backend)
+    const planningData = {
+      '6A': {
+        '07:30-08:20': { lun: 'Mathématiques', mar: 'Anglais', mer: 'Français', jeu: 'Histoire', ven: 'Physique' },
+        '08:20-09:10': { lun: 'Chimie', mar: 'Mathématiques', mer: 'Géographie', jeu: 'Anglais', ven: 'Économie' },
+        '09:10-09:30': { lun: 'Pause', mar: 'Pause', mer: 'Pause', jeu: 'Pause', ven: 'Pause' },
+        '09:30-10:20': { lun: 'Français', mar: 'Informatique', mer: 'Mathématiques', jeu: 'Chimie', ven: 'Philosophie' },
+        '10:20-11:10': { lun: 'Biologie', mar: 'Français', mer: 'Informatique', jeu: 'Mathématiques', ven: 'Sport' },
+        '11:10-12:00': { lun: 'Éducation Civique', mar: 'Libre', mer: 'Biologie', jeu: 'Libre', ven: 'Histoire' }
+      },
+      '5S': {
+        '07:30-08:20': { lun: 'Physique', mar: 'Chimie', mer: 'Mathématiques', jeu: 'Biologie', ven: 'Physique' },
+        '08:20-09:10': { lun: 'Mathématiques', mar: 'Physique', mer: 'Chimie', jeu: 'Mathématiques', ven: 'Anglais' },
+        '09:10-09:30': { lun: 'Pause', mar: 'Pause', mer: 'Pause', jeu: 'Pause', ven: 'Pause' },
+        // ... (Le reste du planning pour 5S serait ici)
+        '09:30-10:20': { lun: 'Anglais', mar: 'Mathématiques', mer: 'Histoire', jeu: 'Français', ven: 'Sport' },
+        '10:20-11:10': { lun: 'Informatique', mar: 'Français', mer: 'Libre', jeu: 'Chimie', ven: 'Biologie' },
+        '11:10-12:00': { lun: 'Français', mar: 'Histoire', mer: 'Physique', jeu: 'Libre', ven: 'Libre' }
+      }
+    };
+    
+    // Fonction pour charger le planning dans le tableau
+    function loadPlanning(classeKey) {
+        const planning = planningData[classeKey] || planningData['6A'];
+        const jours = ['lun', 'mar', 'mer', 'jeu', 'ven'];
+        const joursAffichage = ['Lundi', 'Mardi', 'Mercredi', 'Jeudi', 'Vendredi'];
+        
+        let tableHTML = `<table class="planning-table">
+                            <thead>
+                                <tr>
+                                    <th>Heures</th>`;
+        joursAffichage.forEach(jour => {
+            tableHTML += `<th>${jour}</th>`;
+        });
+        tableHTML += `</tr></thead><tbody>`;
+
+        // Itérer sur les heures (lignes)
+        for (const heure in planning) {
+            tableHTML += `<tr><td class="heure-col">${heure}</td>`;
+            
+            // Itérer sur les jours (colonnes)
+            jours.forEach(jour => {
+                const cours = planning[heure][jour];
+                let cellClass = 'cours-cell';
+                let cellContent = '';
+                
+                if (cours === 'Pause') {
+                    cellClass += ' pause';
+                    cellContent = 'Pause / Récréation';
+                } else if (cours === 'Libre') {
+                    cellClass += ' libre';
+                    cellContent = 'Libre';
+                } else {
+                    // Simuler l'enseignant et la salle
+                    const enseignant = (cours === 'Mathématiques' || cours === 'Physique') ? 'M. Gabby' : 'Mme Ndaya';
+                    const salle = (cours === 'Informatique') ? 'S-Info 1' : 'A-201';
+                    
+                    cellContent = `
+                        <strong>${cours}</strong>
+                        <span>${enseignant}</span>
+                        <span>Salle: ${salle}</span>
+                    `;
+                }
+                
+                tableHTML += `<td class="${cellClass}" onclick="if(this.dataset.cours) alert('Détails du cours : ' + this.dataset.cours)">${cellContent}</td>`;
+            });
+            
+            tableHTML += `</tr>`;
+        }
+
+        tableHTML += `</tbody></table>`;
+        document.getElementById('planningContainer').innerHTML = tableHTML;
+    }
+    
+    // Chargement initial au démarrage
+    document.addEventListener('DOMContentLoaded', () => {
+        loadPlanning(document.getElementById('selectClasse').value);
+    });
+  </script>
+</body>
+</html>
