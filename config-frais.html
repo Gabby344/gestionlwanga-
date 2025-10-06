@@ -1,1 +1,297 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Configuration des Frais Scolaires - Institut Saint Charles Lwanga (SIGS)</title>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700;800&display=swap" rel="stylesheet">
+  <style>
+    :root {
+      --bleu-fonce: #1e40af; 
+      --gris-fonce: #1f2937;
+      --vert-finance: #047857; /* Accent Principal (Sauvegarde) */
+      --gris-bordure: #d1d5db; 
+      --ombre-legere: rgba(0,0,0,0.08);
+      --jaune-alerte: #fcd34d; /* Bouton d'édition */
+    }
+    body {
+      font-family: 'Inter', sans-serif;
+      background-color: #f4f6f8;
+      margin: 0;
+      padding: 2rem 1rem;
+      color: var(--gris-fonce);
+    }
+    h1 {
+      text-align: center;
+      font-size: 1.8rem;
+      color: var(--bleu-fonce);
+      margin-bottom: 0.5rem;
+    }
+    h2 {
+      text-align: center;
+      font-size: 1rem;
+      font-weight: normal;
+      color: #6b7280;
+      margin-bottom: 2rem;
+    }
+    .container {
+        max-width: 1000px;
+        margin: auto;
+    }
 
+    /* --- CARTE DE CONFIGURATION --- */
+    .config-card {
+        background-color: white;
+        padding: 2rem;
+        border-radius: 12px;
+        box-shadow: 0 4px 10px var(--ombre-legere);
+        border-top: 5px solid var(--vert-finance);
+    }
+    
+    /* --- TABLEAU DES FRAIS --- */
+    .frais-table-wrapper {
+        overflow-x: auto; 
+    }
+    .frais-table {
+        width: 100%;
+        border-collapse: collapse;
+        min-width: 700px;
+    }
+    .frais-table th, .frais-table td {
+        padding: 1rem;
+        text-align: left;
+        border-bottom: 1px solid #e5e7eb;
+    }
+    .frais-table th {
+        background-color: #f3f4f6;
+        color: var(--gris-fonce);
+        font-weight: 600;
+        text-transform: uppercase;
+        font-size: 0.8rem;
+    }
+    
+    /* Champs de saisie du montant */
+    .montant-input {
+        width: 100px;
+        padding: 0.5rem;
+        border: 1px solid var(--gris-bordure);
+        border-radius: 4px;
+        text-align: right;
+        font-weight: 600;
+    }
+
+    /* Boutons d'action */
+    .btn-edit, .btn-save, .btn-cancel {
+        padding: 0.5rem 0.8rem;
+        border: none;
+        border-radius: 4px;
+        cursor: pointer;
+        font-size: 0.85rem;
+        font-weight: 600;
+        margin-right: 0.5rem;
+    }
+    .btn-edit { background-color: var(--jaune-alerte); color: var(--gris-fonce); }
+    .btn-save { background-color: var(--vert-finance); color: white; }
+    .btn-cancel { background-color: #e5e7eb; color: var(--gris-fonce); }
+    
+    /* Bouton d'ajout d'une nouvelle ligne */
+    .btn-add-row {
+        margin-top: 1.5rem;
+        padding: 0.75rem 1.5rem;
+        background-color: var(--vert-finance);
+        color: white;
+        border: none;
+        border-radius: 8px;
+        font-weight: 600;
+        cursor: pointer;
+    }
+    .btn-add-row:hover { background-color: #059669; }
+
+    /* Message de succès/erreur */
+    #message {
+        margin-top: 1rem;
+        padding: 1rem;
+        border-radius: 8px;
+        text-align: center;
+        display: none;
+    }
+    .msg-success { background-color: #d1fae5; color: var(--vert-finance); }
+    
+    .btn-retour {
+        display: block;
+        text-align: center;
+        margin-top: 2rem;
+        color: var(--gris-fonce);
+        text-decoration: none;
+        font-size: 0.9rem;
+    }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <h1>⚙️ Configuration des Frais Scolaires</h1>
+    <h2>Définissez les montants pour l'année en cours (en USD).</h2>
+
+    <div class="config-card">
+        
+        <div class="frais-table-wrapper">
+            <table class="frais-table">
+                <thead>
+                    <tr>
+                        <th>Poste de Dépense</th>
+                        <th>Niveau/Section</th>
+                        <th>Montant (USD)</th>
+                        <th>Fréquence</th>
+                        <th>Action</th>
+                    </tr>
+                </thead>
+                <tbody id="fraisBody">
+                    </tbody>
+            </table>
+        </div>
+
+        <button class="btn-add-row" onclick="addRow()">+ Ajouter un Nouveau Frais</button>
+        
+        <div id="message"></div>
+
+    </div>
+
+    <a href="finance.html" class="btn-retour">← Retour au Menu Gestion Financière</a>
+  </div>
+
+  <script>
+    // --- SIMULATION DE DONNÉES ET FONCTIONS ---
+    
+    // Données de configuration actuelles (Simule la lecture de la base de données)
+    let fraisConfig = [
+        { id: 1, poste: 'Minerval Annuel', niveau: 'Secondaire', montant: 300, frequence: 'Annuel', editable: false },
+        { id: 2, poste: 'Frais d\'Inscription', niveau: 'Toutes', montant: 25, frequence: 'Unique', editable: false },
+        { id: 3, poste: 'Minerval Annuel', niveau: 'Primaire', montant: 150, frequence: 'Annuel', editable: false },
+        { id: 4, poste: 'Fournitures Scolaires', niveau: 'Primaire', montant: 15, frequence: 'Trimestriel', editable: false },
+    ];
+    
+    let nextId = 5;
+
+    function renderTable() {
+        const body = document.getElementById('fraisBody');
+        body.innerHTML = '';
+        
+        fraisConfig.forEach(frais => {
+            const row = body.insertRow();
+            row.id = `row-${frais.id}`;
+
+            // Cellules de données
+            const posteCell = row.insertCell();
+            const niveauCell = row.insertCell();
+            const montantCell = row.insertCell();
+            const frequenceCell = row.insertCell();
+            const actionCell = row.insertCell();
+
+            if (frais.editable) {
+                // Mode Édition
+                posteCell.innerHTML = `<input type="text" id="poste-${frais.id}" value="${frais.poste}" />`;
+                niveauCell.innerHTML = `<input type="text" id="niveau-${frais.id}" value="${frais.niveau}" />`;
+                montantCell.innerHTML = `<input type="number" id="montant-${frais.id}" class="montant-input" value="${frais.montant}" min="0" />`;
+                frequenceCell.innerHTML = `<select id="frequence-${frais.id}">
+                                            <option value="Annuel" ${frais.frequence === 'Annuel' ? 'selected' : ''}>Annuel</option>
+                                            <option value="Trimestriel" ${frais.frequence === 'Trimestriel' ? 'selected' : ''}>Trimestriel</option>
+                                            <option value="Unique" ${frais.frequence === 'Unique' ? 'selected' : ''}>Unique</option>
+                                        </select>`;
+                
+                actionCell.innerHTML = `
+                    <button class="btn-save" onclick="saveRow(${frais.id})">💾 Sauvegarder</button>
+                    <button class="btn-cancel" onclick="cancelEdit(${frais.id})">✖️ Annuler</button>
+                `;
+            } else {
+                // Mode Lecture
+                posteCell.textContent = frais.poste;
+                niveauCell.textContent = frais.niveau;
+                montantCell.innerHTML = `${frais.montant.toFixed(2)} USD`;
+                frequenceCell.textContent = frais.frequence;
+
+                actionCell.innerHTML = `
+                    <button class="btn-edit" onclick="editRow(${frais.id})">✏️ Modifier</button>
+                `;
+            }
+        });
+    }
+
+    function editRow(id) {
+        const index = fraisConfig.findIndex(f => f.id === id);
+        if (index !== -1) {
+            fraisConfig[index].editable = true;
+            renderTable();
+        }
+    }
+
+    function cancelEdit(id) {
+        const index = fraisConfig.findIndex(f => f.id === id);
+        if (index !== -1) {
+            // Si la ligne est nouvelle (n'a pas encore d'ID réel), on la supprime
+            if (id >= nextId) {
+                fraisConfig.splice(index, 1);
+            } else {
+                // Sinon, on annule simplement le mode édition
+                fraisConfig[index].editable = false;
+            }
+            renderTable();
+        }
+    }
+
+    function saveRow(id) {
+        const index = fraisConfig.findIndex(f => f.id === id);
+        if (index !== -1) {
+            // Récupérer les nouvelles valeurs
+            const newPoste = document.getElementById(`poste-${id}`).value;
+            const newNiveau = document.getElementById(`niveau-${id}`).value;
+            const newMontant = parseFloat(document.getElementById(`montant-${id}`).value);
+            const newFrequence = document.getElementById(`frequence-${id}`).value;
+
+            if (!newPoste || !newNiveau || isNaN(newMontant)) {
+                 showMessage("Veuillez remplir tous les champs obligatoires avec des valeurs valides.", false);
+                 return;
+            }
+
+            // Mettre à jour les données
+            fraisConfig[index].poste = newPoste;
+            fraisConfig[index].niveau = newNiveau;
+            fraisConfig[index].montant = newMontant;
+            fraisConfig[index].frequence = newFrequence;
+            fraisConfig[index].editable = false; // Sortir du mode édition
+
+            // Simuler l'envoi à la base de données
+            console.log("Sauvegarde en base de données:", fraisConfig[index]);
+
+            renderTable();
+            showMessage("✅ Configuration des frais sauvegardée avec succès!", true);
+        }
+    }
+
+    function addRow() {
+        const newFrais = { 
+            id: nextId++, 
+            poste: '', 
+            niveau: '', 
+            montant: 0, 
+            frequence: 'Annuel', 
+            editable: true 
+        };
+        fraisConfig.push(newFrais);
+        renderTable();
+    }
+
+    function showMessage(text, success) {
+        const messageDiv = document.getElementById('message');
+        messageDiv.textContent = text;
+        messageDiv.className = success ? 'msg-success' : 'msg-error';
+        messageDiv.style.display = 'block';
+        setTimeout(() => {
+            messageDiv.style.display = 'none';
+        }, 3000);
+    }
+
+    // Chargement initial
+    document.addEventListener('DOMContentLoaded', renderTable);
+  </script>
+</body>
+</html>
