@@ -1,1 +1,71 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Tableau de bord - Admin</title>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600&display=swap" rel="stylesheet">
+  <style>
+    :root {
+      --bleu: #1e3a8a;
+      --gris: #374151;
+      --vert: #065f46;
+      --fond: #f9fafb;
+    }
+    body {
+      font-family: 'Inter', sans-serif;
+      background-color: var(--fond);
+      margin: 0;
+      padding: 2rem;
+      color: var(--gris);
+    }
+    h1 {
+      text-align: center;
+      color: var(--bleu);
+      margin-bottom: 2rem;
+    }
+    .menu {
+      display: grid;
+      gap: 1rem;
+    }
+    .btn {
+      background-color: var(--vert);
+      color: white;
+      padding: 1rem;
+      border: none;
+      border-radius: 6px;
+      font-size: 1.1rem;
+      font-weight: bold;
+      text-align: center;
+      cursor: pointer;
+    }
+    .btn:hover {
+      background-color: #047857;
+    }
+  </style>
+</head>
+<body>
+  <h1>Tableau de bord</h1>
+  <div class="menu">
+    <button class="btn" onclick="navigate('eleves')">📚 Élèves</button>
+    <button class="btn" onclick="navigate('enseignants')">👨‍🏫 Enseignants</button>
+    <button class="btn" onclick="navigate('cours')">📆 Cours</button>
+    <button class="btn" onclick="navigate('notes')">🧮 Notes</button>
+    <button class="btn" onclick="navigate('paiements')">💰 Paiements</button>
+    <button class="btn" onclick="logout()">🚪 Déconnexion</button>
+  </div>
 
+  <script>
+    function navigate(section) {
+      alert("Redirection vers la section : " + section);
+      // Ici tu peux utiliser window.location.href = 'section.html';
+    }
+
+    function logout() {
+      // Firebase signOut ici si tu veux
+      alert("Déconnecté !");
+      window.location.href = 'admin.html';
+    }
+  </script>
+</body>
+</html>
