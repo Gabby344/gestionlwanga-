@@ -1,1 +1,176 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Liste des enseignants - Institut Saint Charles Lwanga</title>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600&display=swap" rel="stylesheet">
+  <style>
+    :root {
+      --bleu: #1e3a8a;
+      --gris: #374151;
+      --vert: #10b981;
+      --rouge: #ef4444; 
+      --fond: #f9fafb;
+      --ombre: rgba(0,0,0,0.05);
+    }
+    body {
+      font-family: 'Inter', sans-serif;
+      background-color: var(--fond);
+      margin: 0;
+      padding: 2rem 1rem;
+      color: var(--gris);
+      text-align: center;
+    }
+    h1 {
+      font-size: 1.6rem;
+      color: var(--bleu);
+      margin-bottom: 0.5rem;
+    }
+    h2 {
+      font-size: 0.9rem;
+      font-weight: normal;
+      color: #6b7280;
+      margin-bottom: 2rem;
+    }
+    .container {
+      max-width: 800px; /* Élargissement pour le tableau */
+      margin: auto;
+      background-color: white;
+      padding: 1rem;
+      border-radius: 8px;
+      box-shadow: 0 4px 6px -1px var(--ombre);
+      overflow-x: auto; /* Permet le défilement horizontal sur mobile */
+    }
+    
+    /* Styles pour le tableau */
+    table {
+      width: 100%;
+      border-collapse: collapse;
+      font-size: 0.9rem;
+    }
+    th, td {
+      padding: 0.75rem 0.5rem;
+      border-bottom: 1px solid #e5e7eb;
+      text-align: left;
+    }
+    th {
+      background-color: #f3f4f6;
+      color: var(--gris);
+      font-weight: 600;
+      text-transform: uppercase;
+      font-size: 0.75rem;
+    }
+    tr:last-child td {
+      border-bottom: none;
+    }
+    
+    /* Bouton d'action dans le tableau (Exemple) */
+    .btn-modifier {
+        display: inline-block;
+        padding: 0.3rem 0.6rem;
+        background-color: var(--bleu);
+        color: white;
+        border-radius: 4px;
+        text-decoration: none;
+        font-size: 0.8rem;
+        transition: background-color 0.2s;
+    }
+    .btn-modifier:hover {
+        background-color: #1c3374;
+    }
 
+    /* Boutons de navigation en bas */
+    .navigation {
+        display: flex;
+        justify-content: space-between;
+        gap: 1rem;
+        margin-top: 2rem;
+        padding: 0 1rem;
+        max-width: 800px;
+        margin-left: auto;
+        margin-right: auto;
+    }
+    .navigation a {
+      flex: 1;
+      display: block;
+      padding: 0.75rem;
+      border-radius: 6px;
+      font-weight: 600;
+      text-decoration: none;
+      transition: background-color 0.2s;
+    }
+    .btn-retour {
+        background-color: #e5e7eb;
+        color: var(--gris);
+    }
+    .btn-retour:hover {
+        background-color: #d1d5db;
+    }
+    .btn-ajouter {
+        background-color: var(--vert);
+        color: white;
+    }
+    .btn-ajouter:hover {
+        background-color: #059669;
+    }
+    
+    footer {
+      margin-top: 3rem;
+      font-size: 0.85rem;
+      color: #6b7280;
+    }
+  </style>
+</head>
+<body>
+  <h1>Liste des enseignants</h1>
+  <h2>Aperçu de tous les professeurs enregistrés à l'institut</h2>
+
+  <div class="container">
+    <table>
+      <thead>
+        <tr>
+          <th>Nom & Prénom</th>
+          <th>Genre</th>
+          <th>Matière</th>
+          <th>Contact</th>
+          <th>Action</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr>
+          <td>Gabby Umba</td>
+          <td>H</td>
+          <td>Informatique</td>
+          <td>+243 99 123 4567</td>
+          <td><a href="modifier-enseignant.html?id=1" class="btn-modifier">Modifier</a></td>
+        </tr>
+        <tr>
+          <td>Mme Tshibola</td>
+          <td>F</td>
+          <td>Français</td>
+          <td>+243 81 234 5678</td>
+          <td><a href="modifier-enseignant.html?id=2" class="btn-modifier">Modifier</a></td>
+        </tr>
+        <tr>
+          <td>M. Kabulo</td>
+          <td>H</td>
+          <td>Mathématiques</td>
+          <td>+243 97 345 6789</td>
+          <td><a href="modifier-enseignant.html?id=3" class="btn-modifier">Modifier</a></td>
+        </tr>
+        </tbody>
+    </table>
+    
+    </div>
+  
+  <div class="navigation">
+    <a href="enseignants.html" class="btn-retour">← Retour</a>
+    <a href="ajouter-enseignant.html" class="btn-ajouter">➕ Ajouter un enseignant</a>
+  </div>
+
+  <footer>
+    &copy; 2025 Gabby Umba · Projet éducatif numérique · Lubumbashi
+  </footer>
+</body>
+</html>
