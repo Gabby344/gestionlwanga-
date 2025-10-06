@@ -1,1 +1,142 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Gestion des Bulletins & Notes - Institut Saint Charles Lwanga</title>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700&display=swap" rel="stylesheet">
+  <style>
+    :root {
+      --bleu-fonce: #1e40af;
+      --gris-fonce: #1f2937;
+      --orange: #f97316; /* Couleur pour les notes/bulletins */
+      --fond: #f4f6f8;
+      --ombre-legere: rgba(0,0,0,0.05);
+      --ombre-moyenne: rgba(0,0,0,0.1);
+    }
+    body {
+      font-family: 'Inter', sans-serif;
+      background-color: var(--fond);
+      margin: 0;
+      padding: 2rem 1rem;
+      color: var(--gris-fonce);
+      text-align: center;
+    }
+    h1 {
+      font-size: 1.8rem;
+      color: var(--bleu-fonce);
+      margin-bottom: 0.5rem;
+    }
+    h2 {
+      font-size: 1rem;
+      font-weight: normal;
+      color: #6b7280;
+      margin-bottom: 2rem;
+    }
+    
+    .menu-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+      gap: 1.5rem;
+      max-width: 800px;
+      margin: auto;
+    }
+    
+    .menu-card {
+      display: block;
+      background-color: white;
+      padding: 2rem;
+      border-radius: 12px;
+      text-decoration: none;
+      color: var(--gris-fonce);
+      box-shadow: 0 4px 6px -1px var(--ombre-moyenne);
+      transition: transform 0.2s, box-shadow 0.2s;
+      border-top: 5px solid var(--orange); /* Accent de couleur */
+      text-align: left;
+    }
+    .menu-card:hover {
+      transform: translateY(-5px);
+      box-shadow: 0 8px 15px rgba(0,0,0,0.15);
+    }
 
+    .icon {
+        font-size: 2.5rem;
+        color: var(--orange);
+        margin-bottom: 0.5rem;
+        line-height: 1;
+    }
+
+    .card-title {
+        font-size: 1.25rem;
+        font-weight: 700;
+        margin-bottom: 0.5rem;
+        color: var(--gris-fonce);
+    }
+
+    .card-description {
+        font-size: 0.9rem;
+        color: #6b7280;
+    }
+
+    /* Bouton de retour */
+    .btn-retour {
+        display: inline-block;
+        padding: 0.75rem 1.5rem;
+        background-color: #e5e7eb;
+        color: var(--gris-fonce);
+        border-radius: 8px;
+        text-decoration: none;
+        font-weight: 600;
+        margin-top: 3rem;
+        transition: background-color 0.2s;
+    }
+    .btn-retour:hover {
+        background-color: #d1d5db;
+    }
+
+    footer {
+      margin-top: 4rem;
+      font-size: 0.85rem;
+      color: #6b7280;
+    }
+  </style>
+</head>
+<body>
+  <h1>Gestion des Notes et Bulletins</h1>
+  <h2>Outils pour la saisie, l'édition et l'impression des résultats scolaires.</h2>
+
+  <div class="menu-grid">
+    
+    <a href="saisie-notes.html" class="menu-card">
+        <div class="icon">📝</div>
+        <div class="card-title">Saisie des Notes</div>
+        <div class="card-description">Entrer et valider les notes par classe et par cours.</div>
+    </a>
+    
+    <a href="generer-bulletins.html" class="menu-card">
+        <div class="icon">🖨️</div>
+        <div class="card-title">Génération & Impression</div>
+        <div class="card-description">Produire les bulletins finaux par trimestre/semestre.</div>
+    </a>
+    
+    <a href="resultats-globaux.html" class="menu-card">
+        <div class="icon">📈</div>
+        <div class="card-title">Résultats Globaux</div>
+        <div class="card-description">Voir les moyennes de l'institut et les palmarès des classes.</div>
+    </a>
+    
+    <a href="parametres-notes.html" class="menu-card">
+        <div class="icon">⚙️</div>
+        <div class="card-title">Paramètres de Notation</div>
+        <div class="card-description">Configurer les barèmes de points et les pondérations.</div>
+    </a>
+    
+  </div>
+
+  <a href="dashboard.html" class="btn-retour">← Retour au Tableau de Bord</a>
+
+  <footer>
+    &copy; 2025 Gabby Umba · Projet éducatif numérique · Lubumbashi
+  </footer>
+</body>
+</html>
