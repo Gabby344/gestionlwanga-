@@ -1,0 +1,90 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Gestion des enseignants - Institut Saint Charles Lwanga</title>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600&display=swap" rel="stylesheet">
+  <style>
+    :root {
+      --bleu: #1e3a8a;
+      --gris: #374151;
+      --fond: #f9fafb;
+      --ombre: rgba(0,0,0,0.05);
+      --rouge: #ef4444; /* Nouvelle couleur pour le retour */
+    }
+    body {
+      font-family: 'Inter', sans-serif;
+      background-color: var(--fond);
+      margin: 0;
+      padding: 2rem 1rem;
+      color: var(--gris);
+      text-align: center;
+    }
+    h1 {
+      font-size: 1.8rem;
+      color: var(--bleu);
+      margin-bottom: 0.5rem;
+    }
+    h2 {
+      font-size: 1rem;
+      font-weight: normal;
+      color: var(--gris);
+      margin-bottom: 2rem;
+    }
+    .menu {
+      display: flex;
+      flex-direction: column;
+      gap: 1rem;
+      max-width: 400px;
+      margin: auto;
+    }
+    a {
+      display: block;
+      background-color: white;
+      padding: 1rem;
+      border-radius: 8px;
+      text-decoration: none;
+      color: var(--bleu);
+      font-weight: 600;
+      box-shadow: 0 0 5px var(--ombre);
+      transition: background-color 0.2s;
+    }
+    a:hover {
+      background-color: #e0e7ff;
+    }
+    .retour {
+        background-color: var(--rouge) !important;
+        color: white !important;
+        margin-top: 2rem;
+        box-shadow: 0 0 5px rgba(239, 68, 68, 0.3) !important;
+    }
+    .retour:hover {
+        background-color: #dc2626 !important;
+    }
+    footer {
+      margin-top: 3rem;
+      font-size: 0.85rem;
+      color: #6b7280;
+    }
+  </style>
+</head>
+<body>
+  <h1>Gestion des enseignants</h1>
+  <h2>Opérations disponibles pour les professeurs</h2>
+
+  <div class="menu">
+    <a href="ajouter-enseignant.html">➕ Ajouter un nouvel enseignant</a> 
+    
+    <a href="liste-enseignants.html">📜 Voir la liste des enseignants</a>
+    
+    <a href="modifier-enseignant.html">✏️ Modifier/Supprimer un enseignant</a>
+    
+    <a href="index.html" class="retour">🏠 Retour au menu principal</a>
+  </div>
+
+  <footer>
+    &copy; 2025 Gabby Umba · Projet éducatif numérique · Lubumbashi
+  </footer>
+</body>
+</html>
