@@ -1,1 +1,171 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Modifier un enseignant - Institut Saint Charles Lwanga</title>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600&display=swap" rel="stylesheet">
+  <style>
+    :root {
+      --bleu: #1e3a8a;
+      --gris: #374151;
+      --vert: #10b981; 
+      --rouge: #ef4444; /* Utilisé pour le bouton de suppression */
+      --fond: #f9fafb;
+      --ombre: rgba(0,0,0,0.05);
+    }
+    body {
+      font-family: 'Inter', sans-serif;
+      background-color: var(--fond);
+      margin: 0;
+      padding: 2rem 1rem;
+      color: var(--gris);
+      text-align: center;
+    }
+    h1 {
+      font-size: 1.6rem;
+      color: var(--bleu);
+      margin-bottom: 0.5rem;
+    }
+    h2 {
+      font-size: 0.9rem;
+      font-weight: normal;
+      color: #6b7280;
+      margin-bottom: 2rem;
+    }
+    .container {
+      max-width: 400px;
+      margin: auto;
+      text-align: left;
+      background-color: white;
+      padding: 1.5rem;
+      border-radius: 8px;
+      box-shadow: 0 4px 6px -1px var(--ombre);
+    }
+    .form-group {
+      margin-bottom: 1rem;
+    }
+    label {
+      display: block;
+      font-weight: 600;
+      margin-bottom: 0.3rem;
+      font-size: 0.9rem;
+      color: var(--gris);
+    }
+    input[type="text"],
+    input[type="email"],
+    input[type="tel"],
+    select {
+      width: 100%;
+      padding: 0.75rem;
+      border: 1px solid #d1d5db;
+      border-radius: 6px;
+      box-sizing: border-box; 
+      font-size: 1rem;
+      transition: border-color 0.2s;
+    }
+    input:focus, select:focus {
+      outline: none;
+      border-color: var(--bleu);
+    }
+    .btn-group {
+        display: flex;
+        gap: 1rem;
+        margin-top: 1.5rem;
+    }
+    .btn {
+      flex: 1; /* Permet aux boutons d'occuper la même largeur */
+      padding: 0.75rem;
+      border: none;
+      border-radius: 6px;
+      font-weight: 600;
+      cursor: pointer;
+      transition: opacity 0.2s;
+    }
+    .btn-modification {
+      background-color: var(--bleu); /* Bleu pour la modification */
+      color: white;
+    }
+    .btn-modification:hover {
+      background-color: #1c3374;
+    }
+    .btn-suppression {
+        background-color: var(--rouge);
+        color: white;
+    }
+    .btn-suppression:hover {
+        background-color: #dc2626;
+    }
+    .btn-retour {
+        display: block;
+        text-align: center;
+        margin-top: 1rem;
+        color: var(--gris);
+        text-decoration: none;
+        font-size: 0.9rem;
+        padding: 0.5rem;
+    }
+    .btn-retour:hover {
+        color: var(--bleu);
+    }
+    footer {
+      margin-top: 3rem;
+      font-size: 0.85rem;
+      color: #6b7280;
+    }
+  </style>
+</head>
+<body>
+  <h1>Modifier les informations</h1>
+  <h2>Enseignant: Gabby Umba (ID #1)</h2>
 
+  <div class="container">
+    <form>
+      
+      <div class="form-group">
+        <label for="nom">Nom :</label>
+        <input type="text" id="nom" name="nom" value="Gabby" required> 
+      </div>
+      
+      <div class="form-group">
+        <label for="prenom">Prénom(s) :</label>
+        <input type="text" id="prenom" name="prenom" value="Umba" required>
+      </div>
+      
+      <div class="form-group">
+        <label for="genre">Genre :</label>
+        <select id="genre" name="genre" required>
+          <option value="H" selected>Homme</option> <option value="F">Femme</option>
+        </select>
+      </div>
+      
+      <div class="form-group">
+        <label for="matiere">Matière principale enseignée :</label>
+        <input type="text" id="matiere" name="matiere" value="Informatique">
+      </div>
+      
+      <div class="form-group">
+        <label for="telephone">Téléphone :</label>
+        <input type="tel" id="telephone" name="telephone" value="+243 99 123 4567">
+      </div>
+      
+      <div class="form-group">
+        <label for="email">E-mail (Optionnel) :</label>
+        <input type="email" id="email" name="email" value="gabby.umba@lwanga.com">
+      </div>
+      
+      <div class="btn-group">
+        <button type="submit" class="btn btn-modification">✅ Enregistrer la modification</button>
+        <button type="button" class="btn btn-suppression" onclick="alert('Fonction de suppression à implémenter !')">🗑️ Supprimer</button>
+      </div>
+      
+    </form>
+    
+    <a href="liste-enseignants.html" class="btn-retour">← Retour à la liste</a>
+  </div>
+
+  <footer>
+    &copy; 2025 Gabby Umba · Projet éducatif numérique · Lubumbashi
+  </footer>
+</body>
+</html>
