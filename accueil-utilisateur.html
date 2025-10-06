@@ -1,0 +1,82 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Espace Élève · Institut Saint Charles Lwanga</title>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600&display=swap" rel="stylesheet">
+  <style>
+    :root {
+      --bleu: #1e3a8a;
+      --gris: #374151;
+      --fond: #f9fafb;
+      --ombre: rgba(0,0,0,0.05);
+    }
+    body {
+      font-family: 'Inter', sans-serif;
+      background-color: var(--fond);
+      margin: 0;
+      padding: 2rem 1rem;
+      color: var(--gris);
+    }
+    header {
+      text-align: center;
+      margin-bottom: 2rem;
+    }
+    header h1 {
+      font-size: 1.6rem;
+      color: var(--bleu);
+      margin-bottom: 0.3rem;
+    }
+    header p {
+      font-size: 0.95rem;
+      color: var(--gris);
+    }
+    .menu {
+      display: flex;
+      flex-direction: column;
+      gap: 1rem;
+      max-width: 400px;
+      margin: auto;
+    }
+    .menu a {
+      display: block;
+      background-color: white;
+      padding: 1rem;
+      border-radius: 8px;
+      text-decoration: none;
+      color: var(--bleu);
+      font-weight: 600;
+      box-shadow: 0 0 5px var(--ombre);
+      transition: background-color 0.2s;
+    }
+    .menu a:hover {
+      background-color: #e0e7ff;
+    }
+    footer {
+      margin-top: 3rem;
+      text-align: center;
+      font-size: 0.85rem;
+      color: #6b7280;
+    }
+  </style>
+</head>
+<body>
+  <header>
+    <h1>Espace Élève</h1>
+    <p>Institut Saint Charles Lwanga · Lubumbashi</p>
+  </header>
+
+  <div class="menu">
+    <a href="voir-bulletin.html">📄 Consulter mon bulletin</a>
+    <a href="voir-planning.html">📅 Voir mon emploi du temps</a>
+    <a href="voir-paiement.html">💰 Suivi des paiements</a>
+    <a href="voir-messages.html">📬 Messages & annonces</a>
+    <a href="voir-profil.html">👤 Mon profil</a>
+  </div>
+
+  <footer>
+    &copy; 2025 · Tous droits réservés · Version élève
+  </footer>
+</body>
+</html>
