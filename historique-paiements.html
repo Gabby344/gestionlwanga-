@@ -1,0 +1,307 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Historique des Paiements - Institut Saint Charles Lwanga (SIGS)</title>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700;800&display=swap" rel="stylesheet">
+  <style>
+    :root {
+      --bleu-fonce: #1e40af; 
+      --gris-fonce: #1f2937;
+      --vert-finance: #047857; /* Accent Principal */
+      --gris-bordure: #d1d5db; 
+      --ombre-legere: rgba(0,0,0,0.08);
+      --jaune-alerte: #f59e0b; /* Statut Partiel */
+      --vert-succes: #10b981; /* Statut Payé */
+    }
+    body {
+      font-family: 'Inter', sans-serif;
+      background-color: #f4f6f8;
+      margin: 0;
+      padding: 2rem 1rem;
+      color: var(--gris-fonce);
+    }
+    h1 {
+      text-align: center;
+      font-size: 1.8rem;
+      color: var(--bleu-fonce);
+      margin-bottom: 0.5rem;
+    }
+    h2 {
+      text-align: center;
+      font-size: 1rem;
+      font-weight: normal;
+      color: #6b7280;
+      margin-bottom: 2rem;
+    }
+    .container {
+        max-width: 1300px;
+        margin: auto;
+    }
+
+    /* --- BARRE DE FILTRE ET CONTRÔLES --- */
+    .controls-bar {
+        background-color: white;
+        padding: 1.5rem;
+        border-radius: 8px;
+        box-shadow: 0 2px 4px var(--ombre-legere);
+        margin-bottom: 1.5rem;
+        display: grid;
+        gap: 1rem;
+        grid-template-columns: 1fr;
+    }
+    @media (min-width: 768px) {
+        .controls-bar {
+            grid-template-columns: 2fr 1fr 1fr 1fr; /* Mise en page desktop */
+            align-items: center;
+        }
+    }
+    .input-group label {
+        display: block;
+        font-size: 0.8rem;
+        font-weight: 600;
+        color: #6b7280;
+        margin-bottom: 0.2rem;
+    }
+    .input-group select, .input-group input[type="text"] {
+        width: 100%;
+        padding: 0.7rem;
+        border: 1px solid var(--gris-bordure);
+        border-radius: 4px;
+        box-sizing: border-box;
+    }
+    .btn-rechercher {
+        padding: 0.75rem 1rem;
+        border: none;
+        border-radius: 4px;
+        font-weight: 600;
+        cursor: pointer;
+        background-color: var(--vert-finance);
+        color: white;
+        text-decoration: none;
+        align-self: flex-end;
+    }
+    .btn-rechercher:hover { background-color: #059669; }
+
+    /* --- TABLEAU DE RÉSULTATS --- */
+    #paiementsContainer {
+        background-color: white;
+        border-radius: 8px;
+        box-shadow: 0 4px 10px var(--ombre-legere);
+        overflow-x: auto; 
+    }
+
+    .paiements-table {
+        width: 100%;
+        border-collapse: collapse;
+        min-width: 1000px;
+    }
+    .paiements-table th, .paiements-table td {
+        padding: 0.75rem 1rem;
+        text-align: left;
+        border-bottom: 1px solid #e5e7eb;
+    }
+    .paiements-table th {
+        background-color: #f3f4f6;
+        color: var(--gris-fonce);
+        font-weight: 600;
+        text-transform: uppercase;
+        font-size: 0.75rem;
+    }
+    
+    /* Statuts de paiement et solde */
+    td.statut-paye { color: var(--vert-succes); font-weight: 600; }
+    td.statut-partiel { color: var(--jaune-alerte); font-weight: 600; }
+    td.statut-du { color: var(--rouge-danger); font-weight: 600; }
+    
+    .btn-recu {
+        background-color: var(--bleu-fonce);
+        color: white;
+        padding: 0.5rem 0.8rem;
+        border: none;
+        border-radius: 4px;
+        cursor: pointer;
+        font-size: 0.8rem;
+    }
+    .btn-recu:hover { background-color: #1f3a8a; }
+
+    /* Bouton de retour */
+    .btn-retour {
+        display: block;
+        text-align: center;
+        margin-top: 1.5rem;
+        color: var(--gris-fonce);
+        text-decoration: none;
+        font-size: 0.9rem;
+    }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <h1>📜 Historique des Paiements et Relevés</h1>
+    <h2>Recherche, vérification des transactions et édition des reçus.</h2>
+
+    <div class="controls-bar">
+        <div class="input-group">
+            <label for="searchInput">Recherche Élève/Transaction</label>
+            <input type="text" id="searchInput" placeholder="Nom, Matricule, ou Référence de Reçu..." oninput="filterPaiements()" />
+        </div>
+        <div class="input-group">
+            <label for="filtreClasse">Filtrer par Classe</label>
+            <select id="filtreClasse" onchange="filterPaiements()">
+                <option value="">Toutes les Classes</option>
+                <option value="6A">6ème Commerciale A</option>
+                <option value="5S">5ème Scientifique</option>
+            </select>
+        </div>
+        <div class="input-group">
+            <label for="filtreMotif">Filtrer par Motif</label>
+            <select id="filtreMotif" onchange="filterPaiements()">
+                <option value="">Tous les Motifs</option>
+                <option value="Minerval">Minerval</option>
+                <option value="Inscription">Inscription</option>
+                <option value="Divers">Divers</option>
+            </select>
+        </div>
+        
+        <button class="btn-rechercher" onclick="filterPaiements()">Appliquer les Filtres</button>
+
+        <p id="compteur" style="grid-column: 1 / -1; font-weight: 700; font-size: 0.9rem; color: var(--vert-finance); padding-top: 0.5rem;">Chargement des données...</p>
+    </div>
+
+    <div id="paiementsContainer">
+        </div>
+
+    <a href="finance.html" class="btn-retour">← Retour au Menu Gestion Financière</a>
+  </div>
+
+
+  <script>
+    // --- SIMULATION DE DONNÉES (Ceci proviendrait de Firebase/Backend) ---
+    const initialData = [
+        { 
+            id: 'T001', 
+            date: '2024-09-01', 
+            eleve: 'UMBA Gabby', 
+            classe: '6A', 
+            montant: 100.00, 
+            motif: 'Minerval', 
+            soldeRestant: 200.00, 
+            statut: 'Partiel' 
+        },
+        { 
+            id: 'T002', 
+            date: '2024-09-05', 
+            eleve: 'KABULO Ndaya', 
+            classe: '5S', 
+            montant: 25.00, 
+            motif: 'Inscription', 
+            soldeRestant: 0.00, 
+            statut: 'Payé' 
+        },
+        { 
+            id: 'T003', 
+            date: '2024-10-15', 
+            eleve: 'MUTOMBO Kalubi', 
+            classe: '6A', 
+            montant: 50.00, 
+            motif: 'Minerval', 
+            soldeRestant: 250.00, 
+            statut: 'Partiel' 
+        },
+        { 
+            id: 'T004', 
+            date: '2024-10-20', 
+            eleve: 'KABULO Ndaya', 
+            classe: '5S', 
+            montant: 150.00, 
+            motif: 'Minerval', 
+            soldeRestant: 0.00, 
+            statut: 'Payé' 
+        }
+    ];
+    
+    function getStatutClass(statut) {
+        if (statut === 'Payé') return 'statut-paye';
+        if (statut === 'Partiel') return 'statut-partiel';
+        return 'statut-du';
+    }
+
+    function filterPaiements() {
+      const container = document.getElementById('paiementsContainer');
+      const recherche = document.getElementById('searchInput').value.toLowerCase();
+      const classeFiltre = document.getElementById('filtreClasse').value;
+      const motifFiltre = document.getElementById('filtreMotif').value;
+      
+      const filteredPaiements = initialData.filter(t => {
+          const eleveMatch = t.eleve.toLowerCase().includes(recherche) || t.id.toLowerCase().includes(recherche);
+          const classeMatch = !classeFiltre || t.classe === classeFiltre;
+          const motifMatch = !motifFiltre || t.motif === motifFiltre;
+
+          return eleveMatch && classeMatch && motifMatch;
+      });
+
+      renderPaiements(filteredPaiements);
+      
+      document.getElementById('compteur').textContent = `📊 ${filteredPaiements.length} transactions affichées sur ${initialData.length} au total.`;
+    }
+
+    function renderPaiements(data) {
+        if (data.length === 0) {
+            document.getElementById('paiementsContainer').innerHTML = "<p style='text-align: center; padding: 3rem;'>Aucune transaction trouvée selon les critères de filtre.</p>";
+            return;
+        }
+
+        let tableHTML = `<table class="paiements-table">
+                            <thead>
+                                <tr>
+                                    <th>Référence (ID)</th>
+                                    <th>Date</th>
+                                    <th>Élève (Classe)</th>
+                                    <th>Montant Payé (USD)</th>
+                                    <th>Motif</th>
+                                    <th>Solde Restant</th>
+                                    <th>Statut</th>
+                                    <th>Action</th>
+                                </tr>
+                            </thead>
+                            <tbody>`;
+
+        data.forEach(t => {
+            const statutClass = getStatutClass(t.statut);
+            const soldeRestantClass = t.soldeRestant > 0 ? 'statut-du' : 'statut-paye';
+
+            tableHTML += `
+                <tr>
+                    <td>${t.id}</td>
+                    <td>${t.date}</td>
+                    <td>${t.eleve} (${t.classe})</td>
+                    <td><strong>$${t.montant.toFixed(2)}</strong></td>
+                    <td>${t.motif}</td>
+                    <td class="${soldeRestantClass}">$${t.soldeRestant.toFixed(2)}</td>
+                    <td class="${statutClass}">${t.statut}</td>
+                    <td>
+                        <button class="btn-recu" onclick="printRecu('${t.id}')">🖨️ Reçu</button>
+                    </td>
+                </tr>
+            `;
+        });
+        
+        tableHTML += `</tbody></table>`;
+        document.getElementById('paiementsContainer').innerHTML = tableHTML;
+    }
+
+    function printRecu(id) {
+        alert(`Génération et impression du reçu de transaction ID: ${id}`);
+        // En vrai: window.open(`recu-pdf.html?id=${id}`, '_blank');
+    }
+    
+    // Chargement initial au démarrage
+    document.addEventListener('DOMContentLoaded', () => {
+        filterPaiements();
+    });
+
+  </script>
+</body>
+</html>
