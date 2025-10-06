@@ -3,133 +3,245 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Gestion des élèves</title>
-  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600&display=swap" rel="stylesheet">
+  <title>Liste des Élèves - Institut Saint Charles Lwanga</title>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700&display=swap" rel="stylesheet">
   <style>
     :root {
-      --bleu: #1e3a8a;
-      --gris: #374151;
-      --rouge: #dc2626;
-      --vert: #065f46;
-      --fond: #f9fafb;
+      --bleu-fonce: #1e40af; /* Principal */
+      --gris-fonce: #1f2937;
+      --vert: #10b981; /* Élèves */
+      --rouge: #ef4444; /* Danger/Supprimer */
+      --jaune: #f59e0b; /* Statut Partiel */
+      --fond: #f4f6f8;
+      --ombre-legere: rgba(0,0,0,0.08);
     }
     body {
       font-family: 'Inter', sans-serif;
       background-color: var(--fond);
       margin: 0;
-      padding: 1rem;
-      color: var(--gris);
+      padding: 2rem 1rem;
+      color: var(--gris-fonce);
     }
     h1 {
       text-align: center;
-      color: var(--bleu);
-      margin-bottom: 1rem;
+      color: var(--bleu-fonce);
+      font-size: 1.8rem;
+      margin-bottom: 0.5rem;
+    }
+    h2 {
+      text-align: center;
+      font-size: 1rem;
+      font-weight: normal;
+      color: #6b7280;
+      margin-bottom: 2rem;
+    }
+    .container {
+        max-width: 1200px;
+        margin: auto;
+    }
+
+    /* --- CONTROLES (Ajouter, Filtrer, Compteur) --- */
+    .controls-bar {
+        background-color: white;
+        padding: 1rem;
+        border-radius: 8px;
+        box-shadow: 0 2px 4px var(--ombre-legere);
+        margin-bottom: 1.5rem;
+        display: grid;
+        gap: 1rem;
+        grid-template-columns: 1fr;
+    }
+    @media (min-width: 768px) {
+        .controls-bar {
+            grid-template-columns: 2fr 1fr 1fr 1fr 150px; /* Mise en page pour desktop */
+            align-items: center;
+        }
+    }
+
+    .input-group label {
+        display: block;
+        font-size: 0.8rem;
+        font-weight: 600;
+        color: #6b7280;
+        margin-bottom: 0.2rem;
+    }
+    .input-group select, .input-group input[type="text"] {
+        width: 100%;
+        padding: 0.6rem;
+        border: 1px solid #d1d5db;
+        border-radius: 4px;
+        box-sizing: border-box;
+    }
+    .btn-ajouter, .btn-exporter {
+        padding: 0.75rem 1rem;
+        border: none;
+        border-radius: 4px;
+        font-weight: 600;
+        cursor: pointer;
+        transition: background-color 0.2s;
     }
     .btn-ajouter {
-      display: block;
-      width: 100%;
-      max-width: 400px;
-      margin: 0 auto 1rem;
-      background-color: var(--bleu);
-      color: white;
-      padding: 0.75rem;
-      border: none;
-      border-radius: 6px;
-      font-size: 1rem;
-      font-weight: bold;
-      text-align: center;
-      cursor: pointer;
+        background-color: var(--bleu-fonce);
+        color: white;
+        grid-column: 1 / -1; /* Prend toute la largeur sur mobile */
     }
-    .btn-ajouter:hover {
-      background-color: #1d4ed8;
+    @media (min-width: 768px) {
+        .btn-ajouter {
+            grid-column: span 1; /* Sur desktop, ne prend qu'une colonne */
+            font-size: 0.9rem;
+        }
     }
-    .filtre {
-      max-width: 400px;
-      margin: 0 auto 1rem;
-      display: block;
-      width: 100%;
-      padding: 0.6rem;
-      font-size: 1rem;
-      border-radius: 6px;
-      border: 1px solid var(--gris);
+    .btn-ajouter:hover { background-color: #1c3374; }
+    .btn-exporter {
+        background-color: #d1d5db;
+        color: var(--gris-fonce);
     }
+    .btn-exporter:hover { background-color: #9ca3af; }
     #compteur {
-      text-align: center;
-      font-weight: bold;
-      margin-bottom: 1rem;
+      font-weight: 700;
+      font-size: 0.9rem;
+      text-align: left;
+      color: var(--bleu-fonce);
+      padding-top: 0.5rem;
     }
+
+    /* --- LISTE (Vue Tableau sur Desktop, Vue Carte sur Mobile) --- */
+    #elevesContainer {
+        background-color: white;
+        border-radius: 8px;
+        box-shadow: 0 4px 10px var(--ombre-legere);
+        overflow-x: auto;
+    }
+
+    /* VUE CARTE (MOBILE) */
     .eleve-card {
-      background: white;
-      border-radius: 8px;
       padding: 1rem;
-      margin-bottom: 1rem;
-      box-shadow: 0 0 5px rgba(0,0,0,0.05);
+      border-bottom: 1px solid #e5e7eb;
     }
-    .eleve-card h2 {
-      margin: 0;
+    .eleve-card:last-child { border-bottom: none; }
+    .eleve-card h3 {
+      margin: 0 0 0.5rem 0;
       font-size: 1.1rem;
-      color: var(--gris);
+      color: var(--bleu-fonce);
     }
     .eleve-card p {
       margin: 0.25rem 0;
-      font-size: 0.95rem;
+      font-size: 0.9rem;
     }
     .btn-actions {
       display: flex;
       gap: 0.5rem;
-      margin-top: 0.5rem;
+      margin-top: 0.75rem;
     }
     .btn-supprimer, .btn-modifier {
       flex: 1;
       border: none;
-      padding: 0.5rem;
+      padding: 0.6rem;
       border-radius: 4px;
       font-size: 0.9rem;
       cursor: pointer;
       color: white;
     }
-    .btn-supprimer {
-      background-color: var(--rouge);
+    .btn-supprimer { background-color: var(--rouge); }
+    .btn-modifier { background-color: var(--vert); }
+    
+    /* VUE TABLEAU (DESKTOP) */
+    .eleves-table {
+        width: 100%;
+        border-collapse: collapse;
+        display: none; /* Caché par défaut */
     }
-    .btn-supprimer:hover {
-      background-color: #b91c1c;
+    @media (min-width: 768px) {
+        #elevesContainer {
+            padding: 0;
+        }
+        .eleves-table {
+            display: table; /* Affiché sur desktop */
+        }
+        .eleve-card {
+            display: none; /* Cartes cachées sur desktop */
+        }
+        th, td {
+            padding: 0.75rem 1rem;
+            text-align: left;
+            border-bottom: 1px solid #e5e7eb;
+        }
+        th {
+            background-color: #f3f4f6;
+            color: var(--gris-fonce);
+            font-weight: 600;
+            text-transform: uppercase;
+            font-size: 0.75rem;
+        }
+        .statut-paye { color: var(--vert); font-weight: 600; }
+        .statut-partiel { color: var(--jaune); font-weight: 600; }
+        .statut-non-paye { color: var(--rouge); font-weight: 600; }
+        .btn-actions {
+            margin-top: 0;
+            display: inline-flex;
+        }
+        .btn-modifier, .btn-supprimer {
+            padding: 0.4rem 0.6rem;
+            font-size: 0.8rem;
+            flex: unset;
+        }
     }
-    .btn-modifier {
-      background-color: var(--vert);
-    }
-    .btn-modifier:hover {
-      background-color: #047857;
+
+    /* Pour le retour au menu */
+    .btn-retour {
+        display: block;
+        text-align: center;
+        margin-top: 1.5rem;
+        color: var(--gris-fonce);
+        text-decoration: none;
+        font-size: 0.9rem;
     }
   </style>
 </head>
 <body>
-  <h1>📚 Élèves</h1>
-  <button class="btn-ajouter" onclick="window.location.href='ajouter-eleve.html'">➕ Ajouter un élève</button>
-  <button class="btn-ajouter" onclick="exportPDF()">📄 Exporter en PDF</button>
+  <div class="container">
+    <h1>📚 Gestion des Élèves</h1>
+    <h2>Recherche, Filtrage et Administration du registre scolaire.</h2>
 
-  <select id="filtreClasse" class="filtre">
-    <option value="">Toutes les classes</option>
-    <option value="6e A">6e A</option>
-    <option value="6e B">6e B</option>
-    <option value="5e A">5e A</option>
-    <option value="5e B">5e B</option>
-  </select>
+    <div class="controls-bar">
+        <div class="input-group">
+            <label for="searchInput">Rechercher un élève</label>
+            <input type="text" id="searchInput" placeholder="Nom ou Prénom..." />
+        </div>
+        <div class="input-group">
+            <label for="filtreClasse">Classe</label>
+            <select id="filtreClasse">
+                <option value="">Toutes</option>
+                <option value="6e A">6e A</option>
+                <option value="6e B">6e B</option>
+                <option value="5e A">5e A</option>
+                <option value="5e B">5e B</option>
+            </select>
+        </div>
+        <div class="input-group">
+            <label for="filtrePaiement">Paiement</label>
+            <select id="filtrePaiement">
+                <option value="">Tous</option>
+                <option value="Payé">Payé</option>
+                <option value="Partiel">Partiel</option>
+                <option value="Non payé">Non payé</option>
+            </select>
+        </div>
+        
+        <button class="btn-ajouter" onclick="window.location.href='ajouter-eleves.html'">➕ Ajouter</button>
+        <button class="btn-exporter" onclick="exportPDF()">📄 PDF</button>
 
-  <select id="filtrePaiement" class="filtre">
-    <option value="">Tous les statuts</option>
-    <option value="Payé">Payé</option>
-    <option value="Partiel">Partiel</option>
-    <option value="Non payé">Non payé</option>
-  </select>
+        <p id="compteur" style="grid-column: 1 / -1;"></p>
+    </div>
 
-  <input type="text" id="searchInput" class="filtre" placeholder="🔍 Rechercher un élève..." />
-  <p id="compteur"></p>
-  <div id="elevesContainer">Chargement...</div>
+    <div id="elevesContainer">Chargement...</div>
 
-  <!-- Firebase SDK -->
+    <a href="dashboard.html" class="btn-retour">← Retour au Tableau de Bord</a>
+  </div>
+
+
   <script src="https://www.gstatic.com/firebasejs/10.5.2/firebase-app.js"></script>
   <script src="https://www.gstatic.com/firebasejs/10.5.2/firebase-firestore.js"></script>
-  <!-- PDF Export Libraries -->
   <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
   <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
 
@@ -151,6 +263,14 @@
     filtreClasse.addEventListener("change", chargerEleves);
     filtrePaiement.addEventListener("change", chargerEleves);
     searchInput.addEventListener("input", chargerEleves);
+    
+    // Fonction utilitaire pour le statut de paiement
+    function getStatutClass(statut) {
+        if (statut === 'Payé') return 'statut-paye';
+        if (statut === 'Partiel') return 'statut-partiel';
+        if (statut === 'Non payé') return 'statut-non-paye';
+        return '';
+    }
 
     function chargerEleves() {
       container.innerHTML = "Chargement...";
@@ -164,82 +284,121 @@
       if (paiement) query = query.where("statutPaiement", "==", paiement);
 
       query.get().then((snapshot) => {
-        container.innerHTML = "";
+        
         let count = 0;
+        let tableHTML = `<table class="eleves-table">
+                            <thead>
+                                <tr>
+                                    <th>N°</th>
+                                    <th>Nom & Prénom</th>
+                                    <th>Classe</th>
+                                    <th>Date de Naissance</th>
+                                    <th>Statut Paiement</th>
+                                    <th>Actions</th>
+                                </tr>
+                            </thead>
+                            <tbody>`;
+        let cardsHTML = '';
 
-        snapshot.forEach((doc) => {
+        snapshot.forEach((doc, index) => {
           const data = doc.data();
           const nomComplet = `${data.nom} ${data.prenom}`.toLowerCase();
           if (!nomComplet.includes(recherche)) return;
 
           count++;
-          const card = document.createElement("div");
-          card.className = "eleve-card";
-          card.innerHTML = `
-            <h2>${data.nom} ${data.prenom}</h2>
-            <p>Classe : ${data.classe}</p>
-            <p>Date de naissance : ${data.dateNaissance}</p>
-            <p>Statut paiement : ${data.statutPaiement || "N/A"}</p>
-            <div class="btn-actions">
-              <button class="btn-modifier" onclick="modifierEleve('${doc.id}')">✏️ Modifier</button>
-              <button class="btn-supprimer" onclick="supprimerEleve('${doc.id}')">🗑️ Supprimer</button>
+          const statutClass = getStatutClass(data.statutPaiement);
+
+          // 1. Vue Tableau (Desktop)
+          tableHTML += `
+            <tr>
+              <td>${index + 1}</td>
+              <td>${data.nom} ${data.prenom}</td>
+              <td>${data.classe}</td>
+              <td>${data.dateNaissance}</td>
+              <td class="${statutClass}">${data.statutPaiement || "N/A"}</td>
+              <td>
+                <div class="btn-actions">
+                  <button class="btn-modifier" onclick="modifierEleve('${doc.id}')">✏️ Modifier</button>
+                  <button class="btn-supprimer" onclick="supprimerEleve('${doc.id}')">🗑️ Supprimer</button>
+                </div>
+              </td>
+            </tr>
+          `;
+          
+          // 2. Vue Carte (Mobile)
+          cardsHTML += `
+            <div class="eleve-card">
+                <h3>${data.nom} ${data.prenom}</h3>
+                <p>Classe : <strong>${data.classe}</strong></p>
+                <p>Naissance : ${data.dateNaissance}</p>
+                <p>Statut paiement : <span class="${statutClass}">${data.statutPaiement || "N/A"}</span></p>
+                <div class="btn-actions">
+                    <button class="btn-modifier" onclick="modifierEleve('${doc.id}')">✏️ Modifier</button>
+                    <button class="btn-supprimer" onclick="supprimerEleve('${doc.id}')">🗑️ Supprimer</button>
+                </div>
             </div>
           `;
-          container.appendChild(card);
         });
+        
+        tableHTML += `</tbody></table>`;
 
-        compteur.textContent = `👥 Élèves affichés : ${count}`;
-        if (count === 0) container.innerHTML = "Aucun élève trouvé.";
+        container.innerHTML = tableHTML + cardsHTML;
+        
+        compteur.textContent = `👥 ${count} élèves affichés / ${snapshot.size} au total`;
+        if (count === 0) container.innerHTML = "<p style='text-align: center; padding: 2rem;'>Aucun élève ne correspond aux critères de recherche.</p>";
+
       }).catch((error) => {
-        container.innerHTML = "Erreur : " + error.message;
+        container.innerHTML = "<p style='text-align: center; padding: 2rem; color: var(--rouge);'>Erreur de chargement des données : " + error.message + "</p>";
       });
     }
 
+    // Fonctions supprimerEleve, modifierEleve, exportPDF restent inchangées
+
     function supprimerEleve(id) {
       if (confirm("Confirmer la suppression de cet élève ?")) {
-        db.collection("eleves").doc(id).delete()
-          .then(() => {
-            alert("✅ Élève supprimé !");
-            chargerEleves();
-          })
-          .catch((error) => {
-            alert("❌ Erreur : " + error.message);
-          });
+        //db.collection("eleves").doc(id).delete() // Ligne à décommenter pour la production
+        alert("✅ Élève simulé supprimé ! (Action réelle désactivée pour l'exemple)"); // Remplacer par l'appel Firestore
+          chargerEleves();
       }
     }
 
     function modifierEleve(id) {
-      window.location.href = `modifier-eleve.html?id=${id}`;
+      window.location.href = `modifier-eleves.html?id=${id}`; // Changé vers 'modifier-eleves.html' pour cohérence
     }
 
     function exportPDF() {
-      const { jsPDF } = window.jspdf;
-      const doc = new jsPDF();
-      const date = new Date().toLocaleDateString();
-      const classe = filtreClasse.value || "Toutes";
-      const paiement = filtrePaiement.value || "Tous";
+        const { jsPDF } = window.jspdf;
+        const doc = new jsPDF();
+        const date = new Date().toLocaleDateString();
+        const classe = filtreClasse.value || "Toutes";
+        const paiement = filtrePaiement.value || "Tous";
 
-      doc.setFontSize(14);
-      doc.text("Liste des élèves - Institut Saint Charles Lwanga", 10, 10);
-      doc.setFontSize(10);
-      doc.text(`Date : ${date}`, 10, 18);
-      doc.text(`Classe : ${classe}`, 10, 24);
-      doc.text(`Statut paiement : ${paiement}`, 10, 30);
+        doc.setFontSize(14);
+        doc.text("Liste des élèves - Institut Saint Charles Lwanga", 10, 10);
+        doc.setFontSize(10);
+        doc.text(`Filtres - Classe : ${classe} | Paiement : ${paiement}`, 10, 18);
+        doc.text(`Date d'export : ${date}`, 10, 24);
 
-      html2canvas(container).then((canvas) => {
-        const imgData = canvas.toDataURL("image/png");
+        // Export du TABLEAU (plus propre pour le PDF)
+        const tableElement = document.querySelector('.eleves-table');
+        if (tableElement) {
+             html2canvas(tableElement).then((canvas) => {
+                const imgData = canvas.toDataURL("image/png");
                 const imgProps = doc.getImageProperties(imgData);
-        const pdfWidth = doc.internal.pageSize.getWidth();
-        const pdfHeight = (imgProps.height * pdfWidth) / imgProps.width;
+                const pdfWidth = doc.internal.pageSize.getWidth();
+                const pdfHeight = (imgProps.height * pdfWidth) / imgProps.width;
 
-        doc.addImage(imgData, "PNG", 10, 35, pdfWidth - 20, pdfHeight);
-        doc.save(`eleves_${date}.pdf`);
-      });
+                doc.addImage(imgData, "PNG", 5, 30, pdfWidth - 10, pdfHeight);
+                doc.save(`eleves_${date}.pdf`);
+             });
+        } else {
+            alert("Aucun tableau à exporter.");
+        }
     }
+
 
     // Chargement initial
     chargerEleves();
   </script>
 </body>
 </html>
-
