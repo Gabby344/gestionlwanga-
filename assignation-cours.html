@@ -1,0 +1,296 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Assignation Enseignants & Cours - Institut Saint Charles Lwanga</title>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700&display=swap" rel="stylesheet">
+  <style>
+    :root {
+      --bleu-fonce: #1e40af;
+      --gris-fonce: #1f2937;
+      --orange: #f59e0b; /* Couleur principale du module Cours */
+      --vert: #10b981; 
+      --rouge: #ef4444; 
+      --fond: #f4f6f8;
+      --ombre-legere: rgba(0,0,0,0.08);
+    }
+    body {
+      font-family: 'Inter', sans-serif;
+      background-color: var(--fond);
+      margin: 0;
+      padding: 2rem 1rem;
+      color: var(--gris-fonce);
+    }
+    h1 {
+      text-align: center;
+      font-size: 1.8rem;
+      color: var(--bleu-fonce);
+      margin-bottom: 0.5rem;
+    }
+    h2 {
+      text-align: center;
+      font-size: 1rem;
+      font-weight: normal;
+      color: #6b7280;
+      margin-bottom: 2rem;
+    }
+    .container {
+        max-width: 900px;
+        margin: auto;
+    }
+
+    /* --- FORMULAIRE D'ASSIGNATION --- */
+    #formulaireAssignation {
+        background-color: white;
+        padding: 1.5rem;
+        border-radius: 8px;
+        border-top: 4px solid var(--orange);
+        box-shadow: 0 4px 8px var(--ombre-legere);
+        margin-bottom: 2rem;
+    }
+    #formulaireAssignation h3 {
+        margin-top: 0;
+        color: var(--orange);
+        padding-bottom: 0.5rem;
+    }
+    .form-grid {
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+        gap: 1rem;
+        align-items: end;
+    }
+    .form-group label {
+        display: block;
+        font-weight: 600;
+        margin-bottom: 0.3rem;
+        font-size: 0.9rem;
+    }
+    select {
+      width: 100%;
+      padding: 0.75rem;
+      border: 1px solid #d1d5db;
+      border-radius: 6px;
+      box-sizing: border-box; 
+      font-size: 1rem;
+      background-color: #f9fafb;
+    }
+    .btn-assigner {
+        background-color: var(--vert);
+        color: white;
+        padding: 0.75rem 1rem;
+        border: none;
+        border-radius: 6px;
+        font-weight: 600;
+        cursor: pointer;
+        transition: background-color 0.2s;
+    }
+    .btn-assigner:hover { background-color: #059669; }
+
+    /* --- TABLEAU DES ASSIGNATIONS --- */
+    h3.list-title {
+        margin-top: 3rem;
+        margin-bottom: 1rem;
+        color: var(--bleu-fonce);
+    }
+    #listeAssignations {
+        background-color: white;
+        border-radius: 8px;
+        box-shadow: 0 4px 10px var(--ombre-legere);
+        overflow-x: auto;
+    }
+    .assignations-table {
+        width: 100%;
+        border-collapse: collapse;
+    }
+    th, td {
+        padding: 1rem;
+        text-align: left;
+        border-bottom: 1px solid #e5e7eb;
+    }
+    th {
+        background-color: #f3f4f6;
+        color: var(--gris-fonce);
+        font-weight: 600;
+        text-transform: uppercase;
+        font-size: 0.8rem;
+    }
+    .actions-col {
+        width: 80px;
+        text-align: center;
+    }
+    .btn-supprimer {
+      border: none;
+      padding: 0.5rem 0.8rem;
+      border-radius: 4px;
+      font-size: 0.8rem;
+      cursor: pointer;
+      color: white;
+      background-color: var(--rouge);
+    }
+    .btn-supprimer:hover { background-color: #b91c1c; }
+    
+    /* Bouton de retour */
+    .btn-retour {
+        display: block;
+        text-align: center;
+        margin-top: 1.5rem;
+        color: var(--gris-fonce);
+        text-decoration: none;
+        font-size: 0.9rem;
+    }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <h1>🧑‍🏫 Assignation Enseignants & Cours</h1>
+    <h2>Liaison des professeurs aux matières spécifiques pour chaque classe.</h2>
+
+    <div id="formulaireAssignation">
+        <h3>Lier un Enseignant à un Cours</h3>
+        <form id="assignationForm">
+            <div class="form-grid">
+                
+                <div class="form-group">
+                    <label for="selectClasse">Sélectionner la Classe *</label>
+                    <select id="selectClasse" required>
+                        <option value="">-- Choisir une classe --</option>
+                        <option value="6A">6ème Commerciale A</option>
+                        <option value="5S">5ème Scientifique</option>
+                        <option value="4H">4ème Humanités</option>
+                    </select>
+                </div>
+                
+                <div class="form-group">
+                    <label for="selectMatiere">Sélectionner la Matière *</label>
+                    <select id="selectMatiere" required>
+                        <option value="">-- Choisir une matière --</option>
+                        <option value="MATH">Mathématiques (MATH)</option>
+                        <option value="FRAN">Français (FRAN)</option>
+                        <option value="PHYS">Physique (PHYS)</option>
+                        <option value="HIST">Histoire (HIST)</option>
+                    </select>
+                </div>
+
+                <div class="form-group">
+                    <label for="selectEnseignant">Sélectionner l'Enseignant *</label>
+                    <select id="selectEnseignant" required>
+                        <option value="">-- Choisir un enseignant --</option>
+                        <option value="E001">M. Gabby Umba</option>
+                        <option value="E002">Mme Ndaya Kabulo</option>
+                        <option value="E003">M. Kalubi Mutombo</option>
+                    </select>
+                </div>
+                
+                <button type="submit" class="btn-assigner">🔗 Assigner</button>
+            </div>
+        </form>
+    </div>
+
+    <h3 class="list-title">Liste des Assignations Actuelles</h3>
+    <div id="listeAssignations">
+        <table class="assignations-table">
+            <thead>
+                <tr>
+                    <th>Classe</th>
+                    <th>Matière</th>
+                    <th>Enseignant Assigné</th>
+                    <th class="actions-col">Action</th>
+                </tr>
+            </thead>
+            <tbody id="assignationsBody">
+                </tbody>
+        </table>
+        <p id="aucuneAssignation" style="text-align: center; padding: 1rem; display: none;">Aucune assignation trouvée.</p>
+    </div>
+
+    <a href="cours.html" class="btn-retour">← Retour au menu Cours & Planning</a>
+  </div>
+
+
+  <script>
+    // SIMULATION DE DONNÉES ACTUELLES
+    let assignations = [
+        { id: 1, classe: '6ème Commerciale A', matiere: 'Mathématiques', enseignant: 'M. Gabby Umba' },
+        { id: 2, classe: '6ème Commerciale A', matiere: 'Français', enseignant: 'Mme Ndaya Kabulo' },
+        { id: 3, classe: '5ème Scientifique', matiere: 'Physique', enseignant: 'M. Gabby Umba' },
+        { id: 4, classe: '4ème Humanités', matiere: 'Histoire', enseignant: 'M. Kalubi Mutombo' },
+    ];
+
+    const assignationsBody = document.getElementById('assignationsBody');
+    const assignationForm = document.getElementById('assignationForm');
+
+    function renderAssignations() {
+        assignationsBody.innerHTML = '';
+        if (assignations.length === 0) {
+            document.getElementById('aucuneAssignation').style.display = 'block';
+            return;
+        }
+        document.getElementById('aucuneAssignation').style.display = 'none';
+
+        assignations.forEach(item => {
+            const row = document.createElement('tr');
+            row.innerHTML = `
+                <td>${item.classe}</td>
+                <td>${item.matiere}</td>
+                <td>${item.enseignant}</td>
+                <td class="actions-col">
+                    <button class="btn-supprimer" onclick="supprimerAssignation(${item.id})">🗑️</button>
+                </td>
+            `;
+            assignationsBody.appendChild(row);
+        });
+    }
+
+    function ajouterAssignation(event) {
+        event.preventDefault();
+
+        const classeSelect = document.getElementById('selectClasse');
+        const matiereSelect = document.getElementById('selectMatiere');
+        const enseignantSelect = document.getElementById('selectEnseignant');
+        
+        const classeNom = classeSelect.options[classeSelect.selectedIndex].text;
+        const matiereNom = matiereSelect.options[matiereSelect.selectedIndex].text.split('(')[0].trim();
+        const enseignantNom = enseignantSelect.options[enseignantSelect.selectedIndex].text;
+
+        // Validation simple pour éviter les doublons (simulée)
+        const isDuplicate = assignations.some(a => 
+            a.classe === classeNom && a.matiere === matiereNom
+        );
+
+        if (isDuplicate) {
+            alert(`Attention : La matière "${matiereNom}" est déjà assignée pour la classe "${classeNom}". Supprimez l'ancienne assignation d'abord.`);
+            return;
+        }
+
+        const newId = assignations.length > 0 ? Math.max(...assignations.map(a => a.id)) + 1 : 1;
+
+        assignations.push({ 
+            id: newId, 
+            classe: classeNom, 
+            matiere: matiereNom, 
+            enseignant: enseignantNom
+        });
+
+        alert(`Assignation réussie : ${enseignantNom} enseignera ${matiereNom} en ${classeNom}.`);
+        assignationForm.reset();
+        renderAssignations();
+    }
+
+    function supprimerAssignation(id) {
+        const item = assignations.find(a => a.id === id);
+        if (item && confirm(`Confirmer la suppression de l'assignation : ${item.matiere} pour ${item.classe} ?`)) {
+            assignations = assignations.filter(a => a.id !== id);
+            alert("Assignation supprimée.");
+            renderAssignations();
+        }
+    }
+
+    // Événement de soumission du formulaire
+    assignationForm.addEventListener('submit', ajouterAssignation);
+
+    // Chargement initial des données
+    document.addEventListener('DOMContentLoaded', renderAssignations);
+  </script>
+</body>
+</html>
