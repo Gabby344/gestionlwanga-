@@ -10,6 +10,7 @@
       --bleu: #1e3a8a;
       --gris: #374151;
       --rouge: #dc2626;
+      --vert: #065f46;
       --fond: #f9fafb;
     }
     body {
@@ -22,6 +23,39 @@
     h1 {
       text-align: center;
       color: var(--bleu);
+      margin-bottom: 1rem;
+    }
+    .btn-ajouter {
+      display: block;
+      width: 100%;
+      max-width: 400px;
+      margin: 0 auto 1rem;
+      background-color: var(--bleu);
+      color: white;
+      padding: 0.75rem;
+      border: none;
+      border-radius: 6px;
+      font-size: 1rem;
+      font-weight: bold;
+      text-align: center;
+      cursor: pointer;
+    }
+    .btn-ajouter:hover {
+      background-color: #1d4ed8;
+    }
+    .filtre {
+      max-width: 400px;
+      margin: 0 auto 1rem;
+      display: block;
+      width: 100%;
+      padding: 0.6rem;
+      font-size: 1rem;
+      border-radius: 6px;
+      border: 1px solid var(--gris);
+    }
+    #compteur {
+      text-align: center;
+      font-weight: bold;
       margin-bottom: 1rem;
     }
     .eleve-card {
@@ -40,28 +74,64 @@
       margin: 0.25rem 0;
       font-size: 0.95rem;
     }
-    .btn-supprimer {
-      background-color: var(--rouge);
-      color: white;
+    .btn-actions {
+      display: flex;
+      gap: 0.5rem;
+      margin-top: 0.5rem;
+    }
+    .btn-supprimer, .btn-modifier {
+      flex: 1;
       border: none;
       padding: 0.5rem;
       border-radius: 4px;
-      margin-top: 0.5rem;
-      cursor: pointer;
       font-size: 0.9rem;
+      cursor: pointer;
+      color: white;
+    }
+    .btn-supprimer {
+      background-color: var(--rouge);
     }
     .btn-supprimer:hover {
       background-color: #b91c1c;
+    }
+    .btn-modifier {
+      background-color: var(--vert);
+    }
+    .btn-modifier:hover {
+      background-color: #047857;
     }
   </style>
 </head>
 <body>
   <h1>📚 Élèves</h1>
+  <button class="btn-ajouter" onclick="window.location.href='ajouter-eleve.html'">➕ Ajouter un élève</button>
+  <button class="btn-ajouter" onclick="exportPDF()">📄 Exporter en PDF</button>
+
+  <select id="filtreClasse" class="filtre">
+    <option value="">Toutes les classes</option>
+    <option value="6e A">6e A</option>
+    <option value="6e B">6e B</option>
+    <option value="5e A">5e A</option>
+    <option value="5e B">5e B</option>
+  </select>
+
+  <select id="filtrePaiement" class="filtre">
+    <option value="">Tous les statuts</option>
+    <option value="Payé">Payé</option>
+    <option value="Partiel">Partiel</option>
+    <option value="Non payé">Non payé</option>
+  </select>
+
+  <input type="text" id="searchInput" class="filtre" placeholder="🔍 Rechercher un élève..." />
+  <p id="compteur"></p>
   <div id="elevesContainer">Chargement...</div>
 
   <!-- Firebase SDK -->
   <script src="https://www.gstatic.com/firebasejs/10.5.2/firebase-app.js"></script>
   <script src="https://www.gstatic.com/firebasejs/10.5.2/firebase-firestore.js"></script>
+  <!-- PDF Export Libraries -->
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
 
   <script>
     const firebaseConfig = {
@@ -73,38 +143,103 @@
     const db = firebase.firestore();
 
     const container = document.getElementById('elevesContainer');
+    const filtreClasse = document.getElementById('filtreClasse');
+    const filtrePaiement = document.getElementById('filtrePaiement');
+    const searchInput = document.getElementById('searchInput');
+    const compteur = document.getElementById('compteur');
 
-    db.collection("eleves").get().then((querySnapshot) => {
-      container.innerHTML = "";
-      querySnapshot.forEach((doc) => {
-        const data = doc.data();
-        const card = document.createElement("div");
-        card.className = "eleve-card";
-        card.innerHTML = `
-          <h2>${data.nom} ${data.prenom}</h2>
-          <p>Classe : ${data.classe}</p>
-          <p>Date de naissance : ${data.dateNaissance}</p>
-          <p>Statut paiement : ${data.statutPaiement || "N/A"}</p>
-          <button class="btn-supprimer" onclick="supprimerEleve('${doc.id}')">🗑️ Supprimer</button>
-        `;
-        container.appendChild(card);
+    filtreClasse.addEventListener("change", chargerEleves);
+    filtrePaiement.addEventListener("change", chargerEleves);
+    searchInput.addEventListener("input", chargerEleves);
+
+    function chargerEleves() {
+      container.innerHTML = "Chargement...";
+      let query = db.collection("eleves");
+
+      const classe = filtreClasse.value;
+      const paiement = filtrePaiement.value;
+      const recherche = searchInput.value.toLowerCase();
+
+      if (classe) query = query.where("classe", "==", classe);
+      if (paiement) query = query.where("statutPaiement", "==", paiement);
+
+      query.get().then((snapshot) => {
+        container.innerHTML = "";
+        let count = 0;
+
+        snapshot.forEach((doc) => {
+          const data = doc.data();
+          const nomComplet = `${data.nom} ${data.prenom}`.toLowerCase();
+          if (!nomComplet.includes(recherche)) return;
+
+          count++;
+          const card = document.createElement("div");
+          card.className = "eleve-card";
+          card.innerHTML = `
+            <h2>${data.nom} ${data.prenom}</h2>
+            <p>Classe : ${data.classe}</p>
+            <p>Date de naissance : ${data.dateNaissance}</p>
+            <p>Statut paiement : ${data.statutPaiement || "N/A"}</p>
+            <div class="btn-actions">
+              <button class="btn-modifier" onclick="modifierEleve('${doc.id}')">✏️ Modifier</button>
+              <button class="btn-supprimer" onclick="supprimerEleve('${doc.id}')">🗑️ Supprimer</button>
+            </div>
+          `;
+          container.appendChild(card);
+        });
+
+        compteur.textContent = `👥 Élèves affichés : ${count}`;
+        if (count === 0) container.innerHTML = "Aucun élève trouvé.";
+      }).catch((error) => {
+        container.innerHTML = "Erreur : " + error.message;
       });
-    }).catch((error) => {
-      container.innerHTML = "Erreur de chargement : " + error.message;
-    });
+    }
 
     function supprimerEleve(id) {
       if (confirm("Confirmer la suppression de cet élève ?")) {
         db.collection("eleves").doc(id).delete()
           .then(() => {
             alert("✅ Élève supprimé !");
-            location.reload();
+            chargerEleves();
           })
           .catch((error) => {
             alert("❌ Erreur : " + error.message);
           });
       }
     }
+
+    function modifierEleve(id) {
+      window.location.href = `modifier-eleve.html?id=${id}`;
+    }
+
+    function exportPDF() {
+      const { jsPDF } = window.jspdf;
+      const doc = new jsPDF();
+      const date = new Date().toLocaleDateString();
+      const classe = filtreClasse.value || "Toutes";
+      const paiement = filtrePaiement.value || "Tous";
+
+      doc.setFontSize(14);
+      doc.text("Liste des élèves - Institut Saint Charles Lwanga", 10, 10);
+      doc.setFontSize(10);
+      doc.text(`Date : ${date}`, 10, 18);
+      doc.text(`Classe : ${classe}`, 10, 24);
+      doc.text(`Statut paiement : ${paiement}`, 10, 30);
+
+      html2canvas(container).then((canvas) => {
+        const imgData = canvas.toDataURL("image/png");
+                const imgProps = doc.getImageProperties(imgData);
+        const pdfWidth = doc.internal.pageSize.getWidth();
+        const pdfHeight = (imgProps.height * pdfWidth) / imgProps.width;
+
+        doc.addImage(imgData, "PNG", 10, 35, pdfWidth - 20, pdfHeight);
+        doc.save(`eleves_${date}.pdf`);
+      });
+    }
+
+    // Chargement initial
+    chargerEleves();
   </script>
 </body>
 </html>
+
