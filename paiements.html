@@ -3,140 +3,341 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Gestion des Paiements - Institut Saint Charles Lwanga</title>
-  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700&display=swap" rel="stylesheet">
+  <title>Enregistrement Paiement - Institut Saint Charles Lwanga (SIGS)</title>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700;800&display=swap" rel="stylesheet">
   <style>
     :root {
-      --bleu-fonce: #1e40af;
+      --bleu-fonce: #1e40af; 
       --gris-fonce: #1f2937;
-      --orange: #f97316; /* Utilisé pour les alertes/focus */
-      --indigo: #4f46e5; /* Couleur principale pour le module Paiements */
-      --fond: #f4f6f8;
-      --ombre-moyenne: rgba(0,0,0,0.1);
+      --vert-finance: #047857; /* Accent Principal */
+      --rouge-danger: #ef4444; 
+      --fond-principal: #f4f6f8;
+      --gris-bordure: #d1d5db; 
+      --ombre-form: rgba(0,0,0,0.1);
     }
     body {
       font-family: 'Inter', sans-serif;
-      background-color: var(--fond);
+      background-color: var(--fond-principal);
       margin: 0;
       padding: 2rem 1rem;
       color: var(--gris-fonce);
-      text-align: center;
     }
     h1 {
+      text-align: center;
       font-size: 1.8rem;
       color: var(--bleu-fonce);
       margin-bottom: 0.5rem;
     }
     h2 {
+      text-align: center;
       font-size: 1rem;
       font-weight: normal;
       color: #6b7280;
       margin-bottom: 2rem;
     }
-    
-    .menu-grid {
-      display: grid;
-      grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
-      gap: 1.5rem;
-      max-width: 900px;
-      margin: auto;
+    .container {
+        max-width: 900px;
+        margin: auto;
     }
-    
-    .menu-card {
-      display: block;
-      background-color: white;
-      padding: 2rem;
+
+    /* --- RECHERCHE ET RÉSULTAT --- */
+    .search-card, .payment-card {
+      background: white;
+      padding: 1.5rem;
       border-radius: 12px;
-      text-decoration: none;
-      color: var(--gris-fonce);
-      box-shadow: 0 4px 6px -1px var(--ombre-moyenne);
-      transition: transform 0.2s, box-shadow 0.2s;
-      border-top: 5px solid var(--indigo); /* Accent de couleur pour ce module */
-      text-align: left;
+      box-shadow: 0 4px 12px var(--ombre-form);
+      margin-bottom: 1.5rem;
     }
-    .menu-card:hover {
-      transform: translateY(-5px);
-      box-shadow: 0 8px 15px rgba(0,0,0,0.15);
+    .search-input-group {
+        display: flex;
+        gap: 10px;
+        align-items: center;
     }
-
-    .icon {
-        font-size: 2.5rem;
-        color: var(--indigo);
-        margin-bottom: 0.5rem;
-        line-height: 1;
+    #searchInput {
+      flex-grow: 1;
+      padding: 0.9rem;
+      border: 1px solid var(--gris-bordure);
+      border-radius: 8px;
+      font-size: 1rem;
+      background-color: #f9fafb;
     }
-    
-    .card-title {
-        font-size: 1.25rem;
-        font-weight: 700;
-        margin-bottom: 0.5rem;
-        color: var(--gris-fonce);
-    }
-
-    .card-description {
-        font-size: 0.9rem;
-        color: #6b7280;
-    }
-
-    /* Bouton de retour */
-    .btn-retour {
-        display: inline-block;
-        padding: 0.75rem 1.5rem;
-        background-color: #e5e7eb;
-        color: var(--gris-fonce);
+    .btn-search {
+        padding: 0.9rem 1.5rem;
+        background-color: var(--bleu-fonce);
+        color: white;
+        border: none;
         border-radius: 8px;
-        text-decoration: none;
+        cursor: pointer;
         font-weight: 600;
-        margin-top: 3rem;
         transition: background-color 0.2s;
     }
-    .btn-retour:hover {
-        background-color: #d1d5db;
+    .btn-search:hover { background-color: #1f3a8a; }
+
+    /* --- ZONE D'INFORMATION ÉLÈVE (RÉSULTAT) --- */
+    #eleveInfo {
+        padding: 1rem 0;
+        margin-top: 1rem;
+        border-top: 1px solid #f3f4f6;
+        display: none; /* Affiché par JS après recherche */
+        text-align: left;
+    }
+    .info-line {
+        display: flex;
+        justify-content: space-between;
+        padding: 0.3rem 0;
+        font-size: 1.05rem;
+    }
+    .info-line strong {
+        font-weight: 700;
+    }
+    #solde {
+        font-size: 1.5rem;
+    }
+    .solde-positif { color: var(--vert-finance); }
+    .solde-negatif { color: var(--rouge-danger); }
+
+    /* --- FORMULAIRE DE PAIEMENT --- */
+    .payment-card {
+        border-left: 5px solid var(--vert-finance);
+        display: none; /* Affiché seulement si élève trouvé */
+    }
+    .form-grid {
+      display: grid;
+      grid-template-columns: 1fr;
+      gap: 1.5rem; 
+    }
+    @media (min-width: 600px) {
+        .form-grid {
+            grid-template-columns: 1fr 1fr; /* 2 colonnes sur desktop */
+        }
+    }
+    .form-group label {
+      display: block;
+      font-weight: 600;
+      margin-bottom: 0.5rem;
+      font-size: 0.95rem;
+    }
+    input[type="number"], select {
+      width: 100%;
+      padding: 0.9rem;
+      border: 1px solid var(--gris-bordure);
+      border-radius: 8px; 
+      box-sizing: border-box;
+      font-size: 1rem;
+    }
+    input:focus, select:focus {
+        border-color: var(--vert-finance);
+        box-shadow: 0 0 0 3px rgba(4, 120, 87, 0.1);
+        outline: none;
+    }
+    
+    /* --- BOUTON D'ACTION PRINCIPAL --- */
+    .btn-register-payment {
+      grid-column: 1 / -1; 
+      background-color: var(--vert-finance);
+      color: white;
+      font-weight: 700;
+      padding: 1rem;
+      border: none;
+      border-radius: 8px;
+      font-size: 1.1rem;
+      cursor: pointer;
+      margin-top: 1rem;
+      transition: background-color 0.2s;
+    }
+    .btn-register-payment:hover {
+      background-color: #059669;
+    }
+    
+    #paymentMessage {
+      margin-top: 1.5rem;
+      text-align: center;
+      font-weight: 600;
     }
 
-    footer {
-      margin-top: 4rem;
-      font-size: 0.85rem;
-      color: #6b7280;
+    .btn-retour {
+        display: block;
+        text-align: center;
+        margin-top: 2rem;
+        color: var(--gris-fonce);
+        text-decoration: none;
+        font-size: 0.9rem;
     }
   </style>
 </head>
 <body>
-  <h1>Gestion Financière & Paiements</h1>
-  <h2>Outils pour le suivi des frais de scolarité, l'enregistrement des transactions et les rapports.</h2>
+  <div class="container">
+    <h1>💵 Enregistrement d'un Nouveau Paiement</h1>
+    <h2>Recherchez l'élève par nom ou matricule pour enregistrer la transaction de scolarité.</h2>
 
-  <div class="menu-grid">
-    
-    <a href="enregistrer-paiement.html" class="menu-card">
-        <div class="icon">💸</div>
-        <div class="card-title">Enregistrer un Paiement</div>
-        <div class="card-description">Saisir les frais de scolarité payés par un élève ou une famille.</div>
-    </a>
-    
-    <a href="liste-paiements.html" class="menu-card">
-        <div class="icon">💰</div>
-        <div class="card-title">Suivi et Liste des Transactions</div>
-        <div class="card-description">Consulter l'historique des paiements par élève ou par date.</div>
-    </a>
-    
-    <a href="recouvrement.html" class="menu-card">
-        <div class="icon">🚨</div>
-        <div class="card-title">Rapports de Recouvrement</div>
-        <div class="card-description">Identifier rapidement les élèves en retard de paiement et les montants dus.</div>
-    </a>
-    
-    <a href="parametres-frais.html" class="menu-card">
-        <div class="icon">⚙️</div>
-        <div class="card-title">Configuration des Frais</div>
-        <div class="card-description">Définir les montants et les échéances des frais par niveau/classe.</div>
-    </a>
-    
+    <div class="search-card">
+        <div class="search-input-group">
+            <input type="text" id="searchInput" placeholder="Entrez Nom, Prénom ou Matricule de l'élève..." />
+            <button class="btn-search" onclick="searchEleve()">🔍 Rechercher</button>
+        </div>
+
+        <div id="eleveInfo">
+            </div>
+        <p id="searchMessage" style="margin-top: 1rem; font-weight: 600; color: var(--gris-fonce);"></p>
+    </div>
+
+    <div class="payment-card" id="paymentSection">
+        <h3>Enregistrer la Transaction</h3>
+        <form id="paymentForm">
+            <div class="form-grid">
+                
+                <div class="form-group">
+                    <label for="montant">Montant Payé (USD) *</label>
+                    <input type="number" id="montant" min="1" placeholder="Ex: 50.00" required />
+                </div>
+                
+                <div class="form-group">
+                    <label for="typePaiement">Mode de Paiement *</label>
+                    <select id="typePaiement" required>
+                        <option value="">-- Sélectionner --</option>
+                        <option value="Cash">Espèces (Cash)</option>
+                        <option value="Virement">Virement Bancaire</option>
+                        <option value="Mobile">Paiement Mobile</option>
+                    </select>
+                </div>
+
+                <div class="form-group">
+                    <label for="motif">Motif du Paiement *</label>
+                    <select id="motif" required>
+                        <option value="">-- Sélectionner --</option>
+                        <option value="Minerval">Minerval (Frais Scolaires)</option>
+                        <option value="Inscription">Frais d'Inscription</option>
+                        <option value="Examen">Frais d'Examen</option>
+                        <option value="Divers">Frais Divers</option>
+                    </select>
+                </div>
+                
+                <div class="form-group">
+                    <label for="datePaiement">Date de la Transaction *</label>
+                    <input type="date" id="datePaiement" required />
+                </div>
+                
+                <button type="submit" class="btn-register-payment">
+                    ✅ Valider et Imprimer le Reçu
+                </button>
+            </div>
+        </form>
+        <p id="paymentMessage"></p>
+    </div>
+
+    <a href="finance.html" class="btn-retour">← Retour au Menu Gestion Financière</a>
   </div>
 
-  <a href="dashboard.html" class="btn-retour">← Retour au Tableau de Bord</a>
+  <script>
+    // --- SIMULATION DE DONNÉES ET FONCTIONS ---
+    
+    // Simule la base de données des élèves et leurs soldes
+    const elevesDB = {
+        '25/6A-101': { nom: 'UMBA Gabby', classe: '6A', soldeDu: 200.00 },
+        '25/5S-102': { nom: 'KABULO Ndaya', classe: '5S', soldeDu: 0.00 },
+        '25/6A-103': { nom: 'MUTOMBO Kalubi', classe: '6A', soldeDu: 50.00 },
+        // ...
+    };
 
-  <footer>
-    &copy; 2025 Gabby Umba · Projet éducatif numérique · Lubumbashi
-  </footer>
+    let currentEleveMatricule = null;
+
+    function searchEleve() {
+        const input = document.getElementById('searchInput').value.trim().toUpperCase();
+        const infoDiv = document.getElementById('eleveInfo');
+        const searchMsg = document.getElementById('searchMessage');
+        const paymentSection = document.getElementById('paymentSection');
+        
+        infoDiv.style.display = 'none';
+        paymentSection.style.display = 'none';
+        searchMsg.textContent = 'Recherche en cours...';
+
+        // Logique de recherche (simulation)
+        const eleve = Object.entries(elevesDB).find(([matricule, data]) => 
+            matricule === input || data.nom.toUpperCase().includes(input)
+        );
+
+        setTimeout(() => { // Simuler un délai de chargement
+            if (eleve) {
+                const [matricule, data] = eleve;
+                currentEleveMatricule = matricule;
+                searchMsg.textContent = '✅ Élève trouvé.';
+                renderEleveInfo(matricule, data);
+                paymentSection.style.display = 'block';
+            } else {
+                searchMsg.style.color = 'var(--rouge-danger)';
+                searchMsg.textContent = '❌ Aucun élève trouvé avec ce critère.';
+                currentEleveMatricule = null;
+            }
+        }, 500);
+    }
+
+    function renderEleveInfo(matricule, data) {
+        const infoDiv = document.getElementById('eleveInfo');
+        const soldeClass = data.soldeDu > 0 ? 'solde-negatif' : 'solde-positif';
+        const statutSolde = data.soldeDu > 0 ? `${data.soldeDu.toFixed(2)} USD` : 'Solde Nul / Paiement Anticipé';
+
+        infoDiv.innerHTML = `
+            <div class="info-line">
+                <span>Nom et Prénom:</span>
+                <strong>${data.nom}</strong>
+            </div>
+            <div class="info-line">
+                <span>Matricule / Classe:</span>
+                <strong>${matricule} / ${data.classe}</strong>
+            </div>
+            <div class="info-line">
+                <span>Solde à payer (Minerval):</span>
+                <strong id="solde" class="${soldeClass}">${statutSolde}</strong>
+            </div>
+        `;
+        infoDiv.style.display = 'block';
+        document.getElementById('montant').max = data.soldeDu > 0 ? data.soldeDu : ''; // Limite de saisie si solde dû
+    }
+
+    document.getElementById('paymentForm').addEventListener('submit', function(e) {
+        e.preventDefault();
+        
+        if (!currentEleveMatricule) {
+            alert("Veuillez d'abord rechercher et sélectionner un élève.");
+            return;
+        }
+
+        const montant = parseFloat(document.getElementById('montant').value);
+        const typePaiement = document.getElementById('typePaiement').value;
+        const motif = document.getElementById('motif').value;
+        const datePaiement = document.getElementById('datePaiement').value;
+        const messageBox = document.getElementById('paymentMessage');
+
+        // --- SIMULATION DE L'ENREGISTREMENT ---
+        console.log('Transaction enregistrée:', {
+            matricule: currentEleveMatricule,
+            montant,
+            motif,
+            typePaiement,
+            date: datePaiement
+        });
+        
+        const nouvelSolde = elevesDB[currentEleveMatricule].soldeDu - montant;
+        
+        messageBox.style.color = 'var(--vert-finance)';
+        messageBox.innerHTML = `
+            ✅ **Paiement de ${montant.toFixed(2)} USD enregistré pour ${elevesDB[currentEleveMatricule].nom}.**<br>
+            Impression du reçu en cours... Nouveau solde: ${nouvelSolde.toFixed(2)} USD.
+        `;
+
+        // Mise à jour de l'interface et réinitialisation du formulaire
+        elevesDB[currentEleveMatricule].soldeDu = nouvelSolde; // Mettre à jour la simulation
+        document.getElementById('paymentForm').reset();
+        
+        // Mettre à jour les infos élève affichées
+        renderEleveInfo(currentEleveMatricule, elevesDB[currentEleveMatricule]);
+    });
+    
+    // Définir la date par défaut sur la date du jour
+    document.addEventListener('DOMContentLoaded', () => {
+        document.getElementById('datePaiement').valueAsDate = new Date();
+    });
+
+  </script>
 </body>
 </html>
