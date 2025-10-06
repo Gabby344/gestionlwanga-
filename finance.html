@@ -1,0 +1,136 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Menu Gestion Financière - Institut Saint Charles Lwanga</title>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700;800&display=swap" rel="stylesheet">
+  <style>
+    :root {
+      --bleu-fonce: #1e40af; 
+      --gris-fonce: #1f2937;
+      --vert-finance: #047857; /* Couleur d'accent pour le module Finance */
+      --fond-principal: #f4f6f8;
+      --ombre-forte: rgba(0,0,0,0.15);
+      --ombre-legere: rgba(0,0,0,0.05);
+    }
+    body {
+      font-family: 'Inter', sans-serif;
+      background-color: var(--fond-principal);
+      margin: 0;
+      padding: 2rem 1rem;
+      color: var(--gris-fonce);
+      text-align: center;
+    }
+    .header {
+        max-width: 900px;
+        margin: auto;
+        margin-bottom: 2rem;
+    }
+    h1 {
+      font-size: 2rem;
+      color: var(--bleu-fonce);
+      margin-bottom: 0.25rem;
+    }
+    h2 {
+      font-size: 1.1rem;
+      font-weight: 400;
+      color: #6b7280;
+      margin-bottom: 2rem;
+    }
+    
+    /* --- GRILLE DE NAVIGATION DES MODULES --- */
+    .modules-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+      gap: 1.5rem;
+      max-width: 900px;
+      margin: auto;
+    }
+    .module-card {
+      display: block;
+      background-color: white;
+      padding: 1.5rem;
+      border-radius: 12px;
+      text-decoration: none;
+      color: var(--gris-fonce);
+      box-shadow: 0 4px 10px var(--ombre-legere);
+      transition: transform 0.2s, box-shadow 0.2s;
+      border-left: 5px solid var(--vert-finance); /* Accent de couleur spécifique */
+      text-align: left;
+    }
+    .module-card:hover {
+      transform: translateY(-5px);
+      box-shadow: 0 8px 20px var(--ombre-forte);
+    }
+    .card-icon {
+        font-size: 2.5rem;
+        color: var(--vert-finance);
+        margin-bottom: 0.5rem;
+        line-height: 1;
+    }
+    .card-title {
+        font-size: 1.25rem;
+        font-weight: 700;
+        margin-bottom: 0.5rem;
+        color: var(--gris-fonce);
+    }
+    .card-description {
+        font-size: 0.9rem;
+        color: #6b7280;
+    }
+
+    /* Bouton de retour */
+    .btn-retour {
+        display: inline-block;
+        padding: 0.75rem 1.5rem;
+        background-color: #e5e7eb;
+        color: var(--gris-fonce);
+        border-radius: 8px;
+        text-decoration: none;
+        font-weight: 600;
+        margin-top: 3rem;
+        transition: background-color 0.2s;
+    }
+    .btn-retour:hover {
+        background-color: #d1d5db;
+    }
+  </style>
+</head>
+<body>
+  <div class="header">
+    <h1>💰 Gestion Financière & Scolarité</h1>
+    <h2>Centre de gestion pour les paiements de minerval, les frais et la comptabilité générale.</h2>
+  </div>
+
+  <div class="modules-grid">
+    
+    <a href="paiement.html" class="module-card">
+        <div class="card-icon">💵</div>
+        <div class="card-title">Enregistrement des Paiements</div>
+        <div class="card-description">Interface rapide pour enregistrer les règlements de minerval et autres frais scolaires.</div>
+    </a>
+    
+    <a href="historique-paiements.html" class="module-card">
+        <div class="card-icon">📜</div>
+        <div class="card-title">Historique & Relevé des Scolarités</div>
+        <div class="card-description">Rechercher les reçus, vérifier les soldes et générer les relevés de compte pour les élèves.</div>
+    </a>
+    
+    <a href="config-frais.html" class="module-card">
+        <div class="card-icon">⚙️</div>
+        <div class="card-title">Configuration des Frais Scolaires</div>
+        <div class="card-description">Définir et modifier les montants du minerval, des frais d'inscription et des cotisations.</div>
+    </a>
+    
+    <a href="rapport-financier.html" class="module-card">
+        <div class="card-icon">📈</div>
+        <div class="card-title">Rapports Financiers & Recouvrement</div>
+        <div class="card-description">Voir les statistiques de recouvrement, le solde global et la liste des débiteurs par classe.</div>
+    </a>
+    
+  </div>
+
+  <a href="dashboard.html" class="btn-retour">← Retour au Tableau de Bord Principal</a>
+</body>
+</html>
