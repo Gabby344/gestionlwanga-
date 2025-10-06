@@ -3,88 +3,134 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Gestion des enseignants - Institut Saint Charles Lwanga</title>
-  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600&display=swap" rel="stylesheet">
+  <title>Menu Gestion du Personnel - Institut Saint Charles Lwanga</title>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700;800&display=swap" rel="stylesheet">
   <style>
     :root {
-      --bleu: #1e3a8a;
-      --gris: #374151;
-      --fond: #f9fafb;
-      --ombre: rgba(0,0,0,0.05);
-      --rouge: #ef4444; /* Nouvelle couleur pour le retour */
+      --bleu-fonce: #1e40af; /* Principal */
+      --gris-fonce: #1f2937;
+      --indigo-enseignants: #4f46e5; /* Couleur d'accent pour le module Enseignants */
+      --fond-principal: #f4f6f8;
+      --ombre-forte: rgba(0,0,0,0.15);
+      --ombre-legere: rgba(0,0,0,0.05);
     }
     body {
       font-family: 'Inter', sans-serif;
-      background-color: var(--fond);
+      background-color: var(--fond-principal);
       margin: 0;
       padding: 2rem 1rem;
-      color: var(--gris);
+      color: var(--gris-fonce);
       text-align: center;
     }
+    .header {
+        max-width: 900px;
+        margin: auto;
+        margin-bottom: 2rem;
+    }
     h1 {
-      font-size: 1.8rem;
-      color: var(--bleu);
-      margin-bottom: 0.5rem;
+      font-size: 2rem;
+      color: var(--bleu-fonce);
+      margin-bottom: 0.25rem;
     }
     h2 {
-      font-size: 1rem;
-      font-weight: normal;
-      color: var(--gris);
+      font-size: 1.1rem;
+      font-weight: 400;
+      color: #6b7280;
       margin-bottom: 2rem;
     }
-    .menu {
-      display: flex;
-      flex-direction: column;
-      gap: 1rem;
-      max-width: 400px;
+    
+    /* --- GRILLE DE NAVIGATION DES MODULES --- */
+    .modules-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+      gap: 1.5rem;
+      max-width: 900px;
       margin: auto;
     }
-    a {
+    .module-card {
       display: block;
       background-color: white;
-      padding: 1rem;
-      border-radius: 8px;
+      padding: 1.5rem;
+      border-radius: 12px;
       text-decoration: none;
-      color: var(--bleu);
-      font-weight: 600;
-      box-shadow: 0 0 5px var(--ombre);
-      transition: background-color 0.2s;
+      color: var(--gris-fonce);
+      box-shadow: 0 4px 10px var(--ombre-legere);
+      transition: transform 0.2s, box-shadow 0.2s;
+      border-left: 5px solid var(--indigo-enseignants); /* Accent de couleur spécifique */
+      text-align: left;
     }
-    a:hover {
-      background-color: #e0e7ff;
+    .module-card:hover {
+      transform: translateY(-5px);
+      box-shadow: 0 8px 20px var(--ombre-forte);
     }
-    .retour {
-        background-color: var(--rouge) !important;
-        color: white !important;
-        margin-top: 2rem;
-        box-shadow: 0 0 5px rgba(239, 68, 68, 0.3) !important;
+    .card-icon {
+        font-size: 2.5rem;
+        color: var(--indigo-enseignants);
+        margin-bottom: 0.5rem;
+        line-height: 1;
     }
-    .retour:hover {
-        background-color: #dc2626 !important;
+    .card-title {
+        font-size: 1.25rem;
+        font-weight: 700;
+        margin-bottom: 0.5rem;
+        color: var(--gris-fonce);
     }
-    footer {
-      margin-top: 3rem;
-      font-size: 0.85rem;
-      color: #6b7280;
+    .card-description {
+        font-size: 0.9rem;
+        color: #6b7280;
+    }
+
+    /* Bouton de retour */
+    .btn-retour {
+        display: inline-block;
+        padding: 0.75rem 1.5rem;
+        background-color: #e5e7eb;
+        color: var(--gris-fonce);
+        border-radius: 8px;
+        text-decoration: none;
+        font-weight: 600;
+        margin-top: 3rem;
+        transition: background-color 0.2s;
+    }
+    .btn-retour:hover {
+        background-color: #d1d5db;
     }
   </style>
 </head>
 <body>
-  <h1>Gestion des enseignants</h1>
-  <h2>Opérations disponibles pour les professeurs</h2>
-
-  <div class="menu">
-    <a href="ajouter-enseignant.html">➕ Ajouter un nouvel enseignant</a> 
-    
-    <a href="liste-enseignants.html">📜 Voir la liste des enseignants</a>
-    
-    <a href="modifier-enseignant.html">✏️ Modifier/Supprimer un enseignant</a>
-    
-    <a href="index.html" class="retour">🏠 Retour au menu principal</a>
+  <div class="header">
+    <h1>👨‍🏫 Gestion du Personnel Enseignant & Administratif</h1>
+    <h2>Outils pour l'administration des profils, le suivi des contrats et les affectations.</h2>
   </div>
 
-  <footer>
-    &copy; 2025 Gabby Umba · Projet éducatif numérique · Lubumbashi
-  </footer>
+  <div class="modules-grid">
+    
+    <a href="liste-enseignants.html" class="module-card">
+        <div class="card-icon">👥</div>
+        <div class="card-title">Consulter les Fiches du Personnel</div>
+        <div class="card-description">Rechercher, filtrer et gérer les dossiers de tous les enseignants et du personnel.</div>
+    </a>
+    
+    <a href="ajouter-enseignant.html" class="module-card">
+        <div class="card-icon">➕</div>
+        <div class="card-title">Recruter un Nouveau Membre</div>
+        <div class="card-description">Enregistrement d'un nouvel enseignant ou employé administratif dans le système.</div>
+    </a>
+    
+    <a href="gestion-paie.html" class="module-card">
+        <div class="card-icon">💵</div>
+        <div class="card-title">Contrats & Salaires</div>
+        <div class="card-description">Suivi des contrats, gestion des salaires, et historique des paiements du personnel.</div>
+    </a>
+    
+    <a href="rapport-absences.html" class="module-card">
+        <div class="card-icon">📅</div>
+        <div class="card-title">Gestion des Absences</div>
+        <div class="card-description">Enregistrement des congés et des absences, et génération des rapports de présence.</div>
+    </a>
+    
+  </div>
+
+  <a href="dashboard.html" class="btn-retour">← Retour au Tableau de Bord Principal</a>
 </body>
 </html>
