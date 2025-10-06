@@ -1,0 +1,258 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Saisie des Notes - Institut Saint Charles Lwanga</title>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700&display=swap" rel="stylesheet">
+  <style>
+    :root {
+      --bleu-fonce: #1e40af;
+      --gris-fonce: #1f2937;
+      --orange: #f97316;
+      --vert: #10b981; 
+      --fond: #f4f6f8;
+      --ombre-legere: rgba(0,0,0,0.08);
+    }
+    body {
+      font-family: 'Inter', sans-serif;
+      background-color: var(--fond);
+      margin: 0;
+      padding: 2rem 1rem;
+      color: var(--gris-fonce);
+    }
+    h1 {
+      text-align: center;
+      font-size: 1.8rem;
+      color: var(--bleu-fonce);
+      margin-bottom: 0.5rem;
+    }
+    h2 {
+      text-align: center;
+      font-size: 1rem;
+      font-weight: normal;
+      color: #6b7280;
+      margin-bottom: 2rem;
+    }
+    
+    .container {
+      max-width: 900px;
+      margin: auto;
+      background-color: white;
+      padding: 1.5rem;
+      border-radius: 12px;
+      box-shadow: 0 4px 10px var(--ombre-legere);
+    }
+
+    /* --- SECTION SÉLECTION DES PARAMÈTRES --- */
+    .selection-form {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+      gap: 1rem;
+      margin-bottom: 2rem;
+      padding-bottom: 1rem;
+      border-bottom: 1px solid #e5e7eb;
+    }
+    .form-group label {
+      display: block;
+      font-weight: 600;
+      margin-bottom: 0.3rem;
+      font-size: 0.9rem;
+    }
+    select {
+      width: 100%;
+      padding: 0.75rem;
+      border: 1px solid #d1d5db;
+      border-radius: 6px;
+      box-sizing: border-box; 
+      font-size: 1rem;
+    }
+
+    /* --- TABLEAU DE SAISIE DES NOTES --- */
+    .notes-table-container {
+      overflow-x: auto;
+    }
+    table {
+      width: 100%;
+      border-collapse: collapse;
+      font-size: 0.9rem;
+    }
+    th, td {
+      padding: 0.75rem 0.5rem;
+      border: 1px solid #e5e7eb;
+      text-align: left;
+    }
+    th {
+      background-color: var(--bleu-fonce);
+      color: white;
+      font-weight: 600;
+      text-transform: uppercase;
+      font-size: 0.75rem;
+      position: sticky; /* Pour garder les en-têtes visibles si le tableau défile */
+      top: 0; 
+    }
+    
+    /* Champ de note dans le tableau */
+    .note-input {
+      width: 100%;
+      padding: 0.4rem;
+      border: none;
+      text-align: center;
+      box-sizing: border-box;
+      font-weight: 600;
+    }
+    .note-input:focus {
+        background-color: #f0f9ff;
+    }
+    
+    /* Bouton d'enregistrement */
+    .btn-save {
+      display: block;
+      width: 100%;
+      padding: 1rem;
+      margin-top: 2rem;
+      background-color: var(--vert);
+      color: white;
+      border: none;
+      border-radius: 8px;
+      font-weight: 700;
+      font-size: 1.1rem;
+      cursor: pointer;
+      transition: background-color 0.2s;
+    }
+    .btn-save:hover {
+      background-color: #059669;
+    }
+
+    /* Bouton de retour */
+    .btn-retour {
+        display: block;
+        text-align: center;
+        margin-top: 1.5rem;
+        color: var(--gris-fonce);
+        text-decoration: none;
+        font-size: 0.9rem;
+        padding: 0.5rem;
+    }
+    .btn-retour:hover {
+        color: var(--bleu-fonce);
+    }
+
+    footer {
+      margin-top: 4rem;
+      font-size: 0.85rem;
+      color: #6b7280;
+      text-align: center;
+    }
+  </style>
+</head>
+<body>
+  <h1>Saisie des Notes</h1>
+  <h2>Sélectionnez les paramètres pour afficher la grille de notation.</h2>
+
+  <div class="container">
+    
+    <div class="selection-form">
+      <div class="form-group">
+        <label for="classe">Classe :</label>
+        <select id="classe" name="classe">
+          <option value="">Sélectionner une classe...</option>
+          <option value="4eme">4ème Année</option>
+          <option value="5eme">5ème Année</option>
+          <option value="6eme" selected>6ème Année</option>
+        </select>
+      </div>
+      <div class="form-group">
+        <label for="matiere">Matière :</label>
+        <select id="matiere" name="matiere">
+          <option value="">Sélectionner une matière...</option>
+          <option value="info">Informatique</option>
+          <option value="math" selected>Mathématiques</option>
+          <option value="physique">Physique</option>
+        </select>
+      </div>
+      <div class="form-group">
+        <label for="periode">Période :</label>
+        <select id="periode" name="periode">
+          <option value="t1">Trimestre 1</option>
+          <option value="t2">Trimestre 2</option>
+          <option value="t3" selected>Trimestre 3</option>
+        </select>
+      </div>
+      <div class="form-group">
+        <label for="max">Note Max (Barème) :</label>
+        <select id="max" name="max">
+            <option value="10">/10</option>
+            <option value="20" selected>/20</option>
+            <option value="100">/100</option>
+          </select>
+      </div>
+    </div>
+    
+    <div class="notes-table-container">
+      <table>
+        <thead>
+          <tr>
+            <th style="width: 50px;">N°</th>
+            <th style="width: 250px;">Nom & Post-nom de l'élève</th>
+            <th>Note (/<span id="bar-max">20</span>)</th>
+            <th style="width: 150px;">Observation</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td>1</td>
+            <td>Gabby Umba</td>
+            <td><input type="number" class="note-input" min="0" max="20" value="18" placeholder="Saisir note"></td>
+            <td>Très Bien</td>
+          </tr>
+          <tr>
+            <td>2</td>
+            <td>Ndaya Kabulo</td>
+            <td><input type="number" class="note-input" min="0" max="20" value="12" placeholder="Saisir note"></td>
+            <td>Passable</td>
+          </tr>
+          <tr>
+            <td>3</td>
+            <td>Tshibola Kasongo</td>
+            <td><input type="number" class="note-input" min="0" max="20" placeholder="Saisir note"></td>
+            <td></td>
+          </tr>
+          </tbody>
+      </table>
+    </div>
+
+    <button class="btn-save">💾 Enregistrer les Notes (6ème Année - Maths - T3)</button>
+    
+    <a href="bulletins.html" class="btn-retour">← Retour au menu Bulletins & Notes</a>
+  </div>
+
+  <script>
+    // --- Code JavaScript pour l'interactivité (facultatif mais Pro) ---
+    document.addEventListener('DOMContentLoaded', () => {
+        const selectMax = document.getElementById('max');
+        const barMaxDisplay = document.getElementById('bar-max');
+        const noteInputs = document.querySelectorAll('.note-input');
+
+        // Mise à jour de la note maximale affichée dans le tableau et des limites
+        selectMax.addEventListener('change', (e) => {
+            const newMax = e.target.value;
+            barMaxDisplay.textContent = newMax;
+            
+            // Mise à jour des limites min/max de tous les champs de note
+            noteInputs.forEach(input => {
+                input.max = newMax;
+                // Réinitialise la note si elle dépasse le nouveau maximum
+                if (parseFloat(input.value) > newMax) {
+                    input.value = '';
+                }
+            });
+        });
+    });
+  </script>
+
+  <footer>
+    &copy; 2025 Gabby Umba · Projet éducatif numérique · Lubumbashi
+  </footer>
+</body>
+</html>
