@@ -9,6 +9,7 @@
     :root {
       --bleu: #1e3a8a;
       --gris: #374151;
+      --rouge: #dc2626;
       --fond: #f9fafb;
     }
     body {
@@ -39,6 +40,19 @@
       margin: 0.25rem 0;
       font-size: 0.95rem;
     }
+    .btn-supprimer {
+      background-color: var(--rouge);
+      color: white;
+      border: none;
+      padding: 0.5rem;
+      border-radius: 4px;
+      margin-top: 0.5rem;
+      cursor: pointer;
+      font-size: 0.9rem;
+    }
+    .btn-supprimer:hover {
+      background-color: #b91c1c;
+    }
   </style>
 </head>
 <body>
@@ -59,6 +73,7 @@
     const db = firebase.firestore();
 
     const container = document.getElementById('elevesContainer');
+
     db.collection("eleves").get().then((querySnapshot) => {
       container.innerHTML = "";
       querySnapshot.forEach((doc) => {
@@ -70,12 +85,26 @@
           <p>Classe : ${data.classe}</p>
           <p>Date de naissance : ${data.dateNaissance}</p>
           <p>Statut paiement : ${data.statutPaiement || "N/A"}</p>
+          <button class="btn-supprimer" onclick="supprimerEleve('${doc.id}')">🗑️ Supprimer</button>
         `;
         container.appendChild(card);
       });
     }).catch((error) => {
       container.innerHTML = "Erreur de chargement : " + error.message;
     });
+
+    function supprimerEleve(id) {
+      if (confirm("Confirmer la suppression de cet élève ?")) {
+        db.collection("eleves").doc(id).delete()
+          .then(() => {
+            alert("✅ Élève supprimé !");
+            location.reload();
+          })
+          .catch((error) => {
+            alert("❌ Erreur : " + error.message);
+          });
+      }
+    }
   </script>
 </body>
 </html>
