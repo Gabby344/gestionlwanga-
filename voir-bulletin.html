@@ -1,0 +1,109 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Bulletin · Institut Saint Charles Lwanga</title>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600&display=swap" rel="stylesheet">
+  <style>
+    :root {
+      --bleu: #1e3a8a;
+      --gris: #374151;
+      --fond: #f9fafb;
+      --ombre: rgba(0,0,0,0.05);
+      --vert: #065f46;
+    }
+    body {
+      font-family: 'Inter', sans-serif;
+      background-color: var(--fond);
+      margin: 0;
+      padding: 2rem 1rem;
+      color: var(--gris);
+    }
+    header {
+      text-align: center;
+      margin-bottom: 2rem;
+    }
+    header h1 {
+      font-size: 1.6rem;
+      color: var(--bleu);
+      margin-bottom: 0.3rem;
+    }
+    header p {
+      font-size: 0.95rem;
+      color: var(--gris);
+    }
+    .bulletin {
+      max-width: 400px;
+      margin: auto;
+      background-color: white;
+      padding: 1rem;
+      border-radius: 8px;
+      box-shadow: 0 0 5px var(--ombre);
+    }
+    .matiere {
+      display: flex;
+      justify-content: space-between;
+      padding: 0.5rem 0;
+      border-bottom: 1px solid #e5e7eb;
+    }
+    .matiere:last-child {
+      border-bottom: none;
+    }
+    .moyenne {
+      text-align: center;
+      font-weight: bold;
+      margin-top: 1rem;
+      font-size: 1.1rem;
+      color: var(--vert);
+    }
+    footer {
+      margin-top: 3rem;
+      text-align: center;
+      font-size: 0.85rem;
+      color: #6b7280;
+    }
+  </style>
+</head>
+<body>
+  <header>
+    <h1>📄 Bulletin scolaire</h1>
+    <p>Élève : Gabriel Umba · Classe : 6e A · Trimestre 1</p>
+  </header>
+
+  <div class="bulletin" id="bulletinContainer">
+    <!-- Les matières seront injectées ici -->
+  </div>
+
+  <footer>
+    &copy; 2025 · Institut Saint Charles Lwanga · Bulletin simulé
+  </footer>
+
+  <script>
+    const bulletin = [
+      { matiere: "Mathématiques", note: 15 },
+      { matiere: "Français", note: 17 },
+      { matiere: "Histoire", note: 14 },
+      { matiere: "Sciences", note: 16 },
+      { matiere: "Anglais", note: 13 }
+    ];
+
+    const container = document.getElementById("bulletinContainer");
+    let total = 0;
+
+    bulletin.forEach(item => {
+      total += item.note;
+      const ligne = document.createElement("div");
+      ligne.className = "matiere";
+      ligne.innerHTML = `<span>${item.matiere}</span><span>${item.note}/20</span>`;
+      container.appendChild(ligne);
+    });
+
+    const moyenne = (total / bulletin.length).toFixed(2);
+    const moyenneEl = document.createElement("div");
+    moyenneEl.className = "moyenne";
+    moyenneEl.textContent = `📌 Moyenne générale : ${moyenne}/20`;
+    container.appendChild(moyenneEl);
+  </script>
+</body>
+</html>
