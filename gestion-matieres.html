@@ -1,0 +1,287 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Gestion des Matières - Institut Saint Charles Lwanga</title>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700&display=swap" rel="stylesheet">
+  <style>
+    :root {
+      --bleu-fonce: #1e40af;
+      --gris-fonce: #1f2937;
+      --orange: #f59e0b; /* Couleur principale du module Cours */
+      --vert: #10b981; 
+      --rouge: #ef4444; 
+      --fond: #f4f6f8;
+      --ombre-legere: rgba(0,0,0,0.08);
+    }
+    body {
+      font-family: 'Inter', sans-serif;
+      background-color: var(--fond);
+      margin: 0;
+      padding: 2rem 1rem;
+      color: var(--gris-fonce);
+    }
+    h1 {
+      text-align: center;
+      font-size: 1.8rem;
+      color: var(--bleu-fonce);
+      margin-bottom: 0.5rem;
+    }
+    h2 {
+      text-align: center;
+      font-size: 1rem;
+      font-weight: normal;
+      color: #6b7280;
+      margin-bottom: 2rem;
+    }
+    .container {
+        max-width: 900px;
+        margin: auto;
+    }
+
+    /* --- Formulaire d'Ajout --- */
+    #formulaireAjout {
+        background-color: white;
+        padding: 1.5rem;
+        border-radius: 8px;
+        box-shadow: 0 4px 8px var(--ombre-legere);
+        margin-bottom: 2rem;
+    }
+    #formulaireAjout h3 {
+        margin-top: 0;
+        color: var(--orange);
+        border-bottom: 2px solid #fef3c7;
+        padding-bottom: 0.5rem;
+    }
+    .form-grid {
+        display: grid;
+        grid-template-columns: 1fr 1fr 150px; /* Nom, Code, Bouton */
+        gap: 1rem;
+        align-items: end;
+    }
+    @media (max-width: 600px) {
+        .form-grid {
+            grid-template-columns: 1fr;
+            gap: 0.75rem;
+        }
+    }
+    .form-group label {
+        display: block;
+        font-weight: 600;
+        margin-bottom: 0.3rem;
+        font-size: 0.9rem;
+    }
+    input[type="text"], input[type="number"], select {
+      width: 100%;
+      padding: 0.75rem;
+      border: 1px solid #d1d5db;
+      border-radius: 6px;
+      box-sizing: border-box; 
+      font-size: 1rem;
+      background-color: #f9fafb;
+    }
+    .btn-ajouter {
+        background-color: var(--vert);
+        color: white;
+        padding: 0.75rem 1rem;
+        border: none;
+        border-radius: 6px;
+        font-weight: 600;
+        cursor: pointer;
+        transition: background-color 0.2s;
+    }
+    .btn-ajouter:hover { background-color: #059669; }
+
+    /* --- Tableau des Matières --- */
+    #listeMatieres {
+        background-color: white;
+        border-radius: 8px;
+        box-shadow: 0 4px 10px var(--ombre-legere);
+        overflow-x: auto;
+    }
+    .matieres-table {
+        width: 100%;
+        border-collapse: collapse;
+    }
+    th, td {
+        padding: 1rem;
+        text-align: left;
+        border-bottom: 1px solid #e5e7eb;
+    }
+    th {
+        background-color: #f3f4f6;
+        color: var(--gris-fonce);
+        font-weight: 600;
+        text-transform: uppercase;
+        font-size: 0.8rem;
+    }
+    .actions-col {
+        width: 120px;
+        text-align: center;
+    }
+
+    /* Boutons dans le tableau */
+    .btn-modifier, .btn-supprimer {
+      border: none;
+      padding: 0.5rem 0.8rem;
+      border-radius: 4px;
+      font-size: 0.8rem;
+      cursor: pointer;
+      color: white;
+      margin-left: 0.5rem;
+    }
+    .btn-modifier { background-color: var(--orange); }
+    .btn-modifier:hover { background-color: #d97706; }
+    .btn-supprimer { background-color: var(--rouge); }
+    .btn-supprimer:hover { background-color: #b91c1c; }
+    
+    /* Bouton de retour */
+    .btn-retour {
+        display: block;
+        text-align: center;
+        margin-top: 1.5rem;
+        color: var(--gris-fonce);
+        text-decoration: none;
+        font-size: 0.9rem;
+    }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <h1>📘 Gestion des Matières</h1>
+    <h2>Ajout, modification et consultation des disciplines enseignées.</h2>
+
+    <div id="formulaireAjout">
+        <h3>➕ Ajouter ou Modifier une Matière</h3>
+        <form id="matiereForm">
+            <input type="hidden" id="matiereId" value="">
+            <div class="form-grid">
+                <div class="form-group">
+                    <label for="nomMatiere">Nom de la matière *</label>
+                    <input type="text" id="nomMatiere" placeholder="Ex: Mathématiques, Histoire" required>
+                </div>
+                <div class="form-group">
+                    <label for="codeMatiere">Code (Max 5 lettres) *</label>
+                    <input type="text" id="codeMatiere" placeholder="Ex: MATH, HIST" maxlength="5" required>
+                </div>
+                <button type="submit" class="btn-ajouter" id="btnSubmit">💾 Enregistrer</button>
+            </div>
+        </form>
+    </div>
+
+    <h3>Liste des Matières Enregistrées</h3>
+    <div id="listeMatieres">
+        <table class="matieres-table">
+            <thead>
+                <tr>
+                    <th>Nom de la Matière</th>
+                    <th>Code</th>
+                    <th class="actions-col">Actions</th>
+                </tr>
+            </thead>
+            <tbody id="matieresBody">
+                </tbody>
+        </table>
+        <p id="aucuneMatiere" style="text-align: center; padding: 1rem; display: none;">Aucune matière trouvée.</p>
+    </div>
+
+    <a href="cours.html" class="btn-retour">← Retour au menu Cours & Planning</a>
+  </div>
+
+
+  <script>
+    // SIMULATION DE DONNÉES (Ceci serait le stockage Firebase/Backend)
+    let matieres = [
+        { id: 'M001', nom: 'Mathématiques', code: 'MATH' },
+        { id: 'M002', nom: 'Physique', code: 'PHYS' },
+        { id: 'M003', nom: 'Français', code: 'FRAN' },
+        { id: 'M004', nom: 'Histoire', code: 'HIST' },
+    ];
+
+    const matieresBody = document.getElementById('matieresBody');
+    const matiereForm = document.getElementById('matiereForm');
+    const nomMatiereInput = document.getElementById('nomMatiere');
+    const codeMatiereInput = document.getElementById('codeMatiere');
+    const matiereIdInput = document.getElementById('matiereId');
+    const btnSubmit = document.getElementById('btnSubmit');
+
+    function renderMatieres() {
+        matieresBody.innerHTML = '';
+        if (matieres.length === 0) {
+            document.getElementById('aucuneMatiere').style.display = 'block';
+            return;
+        }
+        document.getElementById('aucuneMatiere').style.display = 'none';
+
+        matieres.forEach(matiere => {
+            const row = document.createElement('tr');
+            row.innerHTML = `
+                <td>${matiere.nom}</td>
+                <td>${matiere.code}</td>
+                <td class="actions-col">
+                    <button class="btn-modifier" onclick="editerMatiere('${matiere.id}')">✏️</button>
+                    <button class="btn-supprimer" onclick="supprimerMatiere('${matiere.id}')">🗑️</button>
+                </td>
+            `;
+            matieresBody.appendChild(row);
+        });
+    }
+
+    function ajouterOuModifierMatiere(event) {
+        event.preventDefault();
+
+        const nom = nomMatiereInput.value.trim();
+        const code = codeMatiereInput.value.trim().toUpperCase();
+        const id = matiereIdInput.value;
+
+        if (id) {
+            // MODIFICATION
+            const index = matieres.findIndex(m => m.id === id);
+            if (index !== -1) {
+                matieres[index].nom = nom;
+                matieres[index].code = code;
+                alert(`Matière "${nom}" modifiée avec succès!`);
+            }
+        } else {
+            // AJOUT
+            const newId = 'M' + String(matieres.length + 1).padStart(3, '0');
+            matieres.push({ id: newId, nom, code });
+            alert(`Matière "${nom}" ajoutée avec le code ${code}.`);
+        }
+
+        // Réinitialiser le formulaire
+        matiereForm.reset();
+        matiereIdInput.value = '';
+        btnSubmit.textContent = '💾 Enregistrer';
+        renderMatieres();
+    }
+
+    function editerMatiere(id) {
+        const matiere = matieres.find(m => m.id === id);
+        if (matiere) {
+            nomMatiereInput.value = matiere.nom;
+            codeMatiereInput.value = matiere.code;
+            matiereIdInput.value = matiere.id;
+            btnSubmit.textContent = '✏️ Modifier la matière';
+            window.scrollTo({ top: 0, behavior: 'smooth' }); // Remonter en haut
+        }
+    }
+
+    function supprimerMatiere(id) {
+        const matiere = matieres.find(m => m.id === id);
+        if (matiere && confirm(`Confirmer la suppression de la matière : ${matiere.nom} (${matiere.code}) ?`)) {
+            matieres = matieres.filter(m => m.id !== id);
+            alert(`Matière "${matiere.nom}" supprimée.`);
+            renderMatieres();
+        }
+    }
+
+    // Événement de soumission du formulaire
+    matiereForm.addEventListener('submit', ajouterOuModifierMatiere);
+
+    // Chargement initial des données
+    document.addEventListener('DOMContentLoaded', renderMatieres);
+  </script>
+</body>
+</html>
