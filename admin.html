@@ -1,1 +1,82 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Admin - Saint Charles Lwanga</title>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600&display=swap" rel="stylesheet">
+  <style>
+    :root {
+      --bleu: #1e3a8a;
+      --gris: #374151;
+      --vert: #065f46;
+      --fond: #f9fafb;
+    }
+    body {
+      font-family: 'Inter', sans-serif;
+      background-color: var(--fond);
+      margin: 0;
+      padding: 2rem;
+      color: var(--gris);
+    }
+    .container {
+      max-width: 400px;
+      margin: auto;
+      background: white;
+      padding: 2rem;
+      border-radius: 8px;
+      box-shadow: 0 0 10px rgba(0,0,0,0.05);
+    }
+    h1 {
+      color: var(--bleu);
+      text-align: center;
+      margin-bottom: 1rem;
+    }
+    input, button {
+      width: 100%;
+      padding: 0.75rem;
+      margin-bottom: 1rem;
+      border: 1px solid var(--gris);
+      border-radius: 4px;
+      font-size: 1rem;
+    }
+    button {
+      background-color: var(--vert);
+      color: white;
+      font-weight: bold;
+      cursor: pointer;
+    }
+    button:hover {
+      background-color: #047857;
+    }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <h1>Connexion Admin</h1>
+    <form id="loginForm">
+      <input type="email" id="email" placeholder="Email admin" required />
+      <input type="password" id="password" placeholder="Mot de passe" required />
+      <button type="submit">Se connecter</button>
+    </form>
+    <p id="message"></p>
+  </div>
 
+  <!-- Firebase SDK -->
+  <script src="https://www.gstatic.com/firebasejs/10.5.2/firebase-app.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/10.5.2/firebase-auth.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/10.5.2/firebase-firestore.js"></script>
+
+  <script>
+    const firebaseConfig = {
+      apiKey: "TON_API_KEY",
+      authDomain: "TON_DOMAINE.firebaseapp.com",
+      projectId: "TON_PROJECT_ID",
+      storageBucket: "TON_BUCKET.appspot.com",
+      messagingSenderId: "TON_SENDER_ID",
+      appId: "TON_APP_ID"
+    };
+    firebase.initializeApp(firebaseConfig);
+    const auth = firebase.auth();
+
+    document
