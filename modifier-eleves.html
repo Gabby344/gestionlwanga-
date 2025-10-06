@@ -1,1 +1,111 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Ajouter un élève</title>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600&display=swap" rel="stylesheet">
+  <style>
+    :root {
+      --bleu: #1e3a8a;
+      --gris: #374151;
+      --vert: #065f46;
+      --fond: #f9fafb;
+    }
+    body {
+      font-family: 'Inter', sans-serif;
+      background-color: var(--fond);
+      margin: 0;
+      padding: 2rem;
+      color: var(--gris);
+    }
+    h1 {
+      text-align: center;
+      color: var(--bleu);
+      margin-bottom: 1rem;
+    }
+    form {
+      max-width: 400px;
+      margin: auto;
+      background: white;
+      padding: 1.5rem;
+      border-radius: 8px;
+      box-shadow: 0 0 10px rgba(0,0,0,0.05);
+    }
+    input, select, button {
+      width: 100%;
+      padding: 0.75rem;
+      margin-bottom: 1rem;
+      border: 1px solid var(--gris);
+      border-radius: 4px;
+      font-size: 1rem;
+    }
+    button {
+      background-color: var(--vert);
+      color: white;
+      font-weight: bold;
+      cursor: pointer;
+    }
+    button:hover {
+      background-color: #047857;
+    }
+    #message {
+      text-align: center;
+      margin-top: 1rem;
+    }
+  </style>
+</head>
+<body>
+  <h1>➕ Ajouter un élève</h1>
+  <form id="eleveForm">
+    <input type="text" id="nom" placeholder="Nom" required />
+    <input type="text" id="prenom" placeholder="Prénom" required />
+    <input type="text" id="classe" placeholder="Classe (ex: 6e A)" required />
+    <input type="date" id="dateNaissance" required />
+    <select id="statutPaiement">
+      <option value="">Statut de paiement</option>
+      <option value="Payé">Payé</option>
+      <option value="Partiel">Partiel</option>
+      <option value="Non payé">Non payé</option>
+    </select>
+    <button type="submit">Enregistrer</button>
+  </form>
+  <p id="message"></p>
 
+  <!-- Firebase SDK -->
+  <script src="https://www.gstatic.com/firebasejs/10.5.2/firebase-app.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/10.5.2/firebase-firestore.js"></script>
+
+  <script>
+    const firebaseConfig = {
+      apiKey: "TON_API_KEY",
+      authDomain: "TON_DOMAINE.firebaseapp.com",
+      projectId: "TON_PROJECT_ID",
+    };
+    firebase.initializeApp(firebaseConfig);
+    const db = firebase.firestore();
+
+    document.getElementById('eleveForm').addEventListener('submit', function(e) {
+      e.preventDefault();
+      const nom = document.getElementById('nom').value;
+      const prenom = document.getElementById('prenom').value;
+      const classe = document.getElementById('classe').value;
+      const dateNaissance = document.getElementById('dateNaissance').value;
+      const statutPaiement = document.getElementById('statutPaiement').value;
+
+      db.collection("eleves").add({
+        nom,
+        prenom,
+        classe,
+        dateNaissance,
+        statutPaiement
+      }).then(() => {
+        document.getElementById('message').textContent = "✅ Élève ajouté avec succès !";
+        document.getElementById('eleveForm').reset();
+      }).catch((error) => {
+        document.getElementById('message').textContent = "❌ Erreur : " + error.message;
+      });
+    });
+  </script>
+</body>
+</html>
