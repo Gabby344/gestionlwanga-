@@ -3,80 +3,165 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Admin - Saint Charles Lwanga</title>
-  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600&display=swap" rel="stylesheet">
+  <title>Connexion Administrateur - Institut Saint Charles Lwanga</title>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700;800&display=swap" rel="stylesheet">
   <style>
     :root {
-      --bleu: #1e3a8a;
-      --gris: #374151;
-      --vert: #065f46;
-      --fond: #f9fafb;
+      --bleu-fonce: #1e40af; /* Couleur principale */
+      --gris-fonce: #1f2937;
+      --vert-action: #047857; /* Bouton Se Connecter */
+      --fond-principal: #f4f6f8; /* Fond légèrement gris */
+      --gris-bordure: #d1d5db; 
+      --ombre-form: rgba(0,0,0,0.1);
     }
     body {
       font-family: 'Inter', sans-serif;
-      background-color: var(--fond);
+      background-color: var(--fond-principal);
       margin: 0;
-      padding: 2rem;
-      color: var(--gris);
+      padding: 0;
+      color: var(--gris-fonce);
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      min-height: 100vh; /* Centrage vertical complet */
     }
-    .container {
-      max-width: 400px;
-      margin: auto;
+
+    /* --- CONTENEUR ET CARTE --- */
+    .login-container {
+        max-width: 400px;
+        width: 90%; /* Bonne réactivité mobile */
+    }
+    .login-card {
       background: white;
-      padding: 2rem;
-      border-radius: 8px;
-      box-shadow: 0 0 10px rgba(0,0,0,0.05);
-    }
-    h1 {
-      color: var(--bleu);
+      padding: 2.5rem;
+      border-radius: 16px; /* Bords doux */
+      box-shadow: 0 10px 25px var(--ombre-form);
       text-align: center;
-      margin-bottom: 1rem;
     }
-    input, button {
+    
+    .logo {
+        font-size: 1.5rem;
+        font-weight: 800;
+        color: var(--bleu-fonce);
+        margin-bottom: 2rem;
+        border-bottom: 2px solid #f3f4f6;
+        padding-bottom: 1rem;
+    }
+    
+    h1 {
+      font-size: 1.5rem;
+      color: var(--gris-fonce);
+      margin-top: 0;
+      margin-bottom: 1.5rem;
+    }
+
+    /* --- CHAMPS DE FORMULAIRE --- */
+    .form-group {
+        margin-bottom: 1rem;
+    }
+    input[type="email"], input[type="password"] {
       width: 100%;
-      padding: 0.75rem;
-      margin-bottom: 1rem;
-      border: 1px solid var(--gris);
-      border-radius: 4px;
+      padding: 1rem;
+      border: 1px solid var(--gris-bordure);
+      border-radius: 8px;
+      box-sizing: border-box;
       font-size: 1rem;
+      background-color: #f9fafb;
+      transition: border-color 0.2s, box-shadow 0.2s;
     }
-    button {
-      background-color: var(--vert);
+    input:focus {
+        border-color: var(--bleu-fonce);
+        box-shadow: 0 0 0 3px rgba(30, 64, 175, 0.1);
+        outline: none;
+        background-color: white;
+    }
+    
+    /* --- BOUTON D'ACTION PRINCIPAL --- */
+    .btn-connecter {
+      width: 100%;
+      background-color: var(--vert-action);
       color: white;
-      font-weight: bold;
+      font-weight: 700;
+      padding: 1rem;
+      border: none;
+      border-radius: 8px;
+      font-size: 1.1rem;
       cursor: pointer;
+      margin-top: 1.5rem;
+      transition: background-color 0.2s;
     }
-    button:hover {
-      background-color: #047857;
+    .btn-connecter:hover {
+      background-color: #065f46;
+    }
+
+    /* --- LIEN OUBLIÉ --- */
+    .forgot-password {
+        display: block;
+        margin-top: 1rem;
+        font-size: 0.85rem;
+        color: #6b7280;
+        text-decoration: none;
+    }
+    .forgot-password:hover {
+        color: var(--bleu-fonce);
     }
   </style>
 </head>
 <body>
-  <div class="container">
-    <h1>Connexion Admin</h1>
-    <form id="loginForm">
-      <input type="email" id="email" placeholder="Email admin" required />
-      <input type="password" id="password" placeholder="Mot de passe" required />
-      <button type="submit">Se connecter</button>
-    </form>
-    <p id="message"></p>
+  
+  <div class="login-container">
+    <div class="login-card">
+        <div class="logo">Institut Saint Charles Lwanga (SIGS)</div>
+        <h1>Connexion Administrateur</h1>
+        
+        <form id="loginForm">
+            <div class="form-group">
+                <input type="email" id="email" placeholder="Adresse E-mail Admin" required />
+            </div>
+            
+            <div class="form-group">
+                <input type="password" id="password" placeholder="Mot de passe" required />
+            </div>
+            
+            <button type="submit" class="btn-connecter">
+                Se connecter
+            </button>
+
+            <a href="#" class="forgot-password">Mot de passe oublié ?</a>
+        </form>
+        
+        <p id="message" style="margin-top: 1.5rem; font-size: 0.9rem; color: var(--rouge);"></p>
+
+    </div>
   </div>
 
-  <!-- Firebase SDK -->
-  <script src="https://www.gstatic.com/firebasejs/10.5.2/firebase-app.js"></script>
-  <script src="https://www.gstatic.com/firebasejs/10.5.2/firebase-auth.js"></script>
-  <script src="https://www.gstatic.com/firebasejs/10.5.2/firebase-firestore.js"></script>
-
   <script>
-    const firebaseConfig = {
-      apiKey: "TON_API_KEY",
-      authDomain: "TON_DOMAINE.firebaseapp.com",
-      projectId: "TON_PROJECT_ID",
-      storageBucket: "TON_BUCKET.appspot.com",
-      messagingSenderId: "TON_SENDER_ID",
-      appId: "TON_APP_ID"
-    };
-    firebase.initializeApp(firebaseConfig);
-    const auth = firebase.auth();
+    document.getElementById('loginForm').addEventListener('submit', function(e) {
+      e.preventDefault();
+      const email = document.getElementById('email').value;
+      const password = document.getElementById('password').value;
+      const messageElement = document.getElementById('message');
 
-    document
+      // --- SIMULATION DE CONNEXION ---
+      // En production, vous feriez un appel à Firebase Auth ou à votre API Backend ici.
+      
+      const adminEmail = "admin@stcharles.com"; // Email de démonstration
+      const adminPassword = "password123";      // Mot de passe de démonstration
+      
+      if (email === adminEmail && password === adminPassword) {
+        messageElement.style.color = 'var(--vert-action)';
+        messageElement.innerHTML = "✅ Connexion réussie! Redirection en cours...";
+        
+        // Redirection vers le tableau de bord après un court délai
+        setTimeout(() => {
+          window.location.href = 'dashboard.html';
+        }, 1000); 
+
+      } else {
+        messageElement.style.color = 'var(--rouge)';
+        messageElement.innerHTML = "❌ Identifiants incorrects. Veuillez réessayer.";
+      }
+    });
+  </script>
+</body>
+</html>
