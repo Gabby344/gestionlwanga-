@@ -15,12 +15,14 @@
       --fond: #f4f6f8;
       --ombre-legere: rgba(0,0,0,0.08);
     }
+
     body {
       font-family: 'Inter', sans-serif;
       background-color: var(--fond);
       margin: 0;
       color: var(--gris-fonce);
     }
+
     .header {
       background-color: white;
       padding: 1rem 2rem;
@@ -29,34 +31,126 @@
       display: flex;
       justify-content: space-between;
       align-items: center;
+      flex-wrap: wrap;
+      gap: 1rem;
     }
+
     .header h1 {
-      font-size: 1.5rem;
+      font-size: 1.4rem;
       color: var(--bleu-fonce);
       margin: 0;
       font-weight: 700;
     }
+
+    .user-info {
+      font-size: 0.95rem;
+      color: #374151;
+      font-weight: 500;
+    }
+
     .main-content {
       max-width: 1200px;
       margin: auto;
       padding: 0 1rem 2rem;
     }
-    /* Les styles pour les stats et menu restent inchangés */
-    .stats-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 1.5rem; margin-bottom: 2rem; }
-    .card-stat { background-color: white; padding: 1.5rem; border-radius: 12px; box-shadow: 0 4px 10px var(--ombre-legere); border-left: 5px solid var(--bleu-fonce); transition: transform 0.2s; }
-    .card-stat:hover { transform: translateY(-3px); box-shadow: 0 6px 15px rgba(0,0,0,0.15); }
-    .card-stat-title { font-size: 0.85rem; font-weight: 600; color: #6b7280; text-transform: uppercase; margin-bottom: 0.5rem; }
-    .card-stat-value { font-size: 2.5rem; font-weight: 800; color: var(--gris-fonce); line-height: 1; }
-    .card-stat-footer { font-size: 0.8rem; color: #9ca3af; margin-top: 1rem; }
-    .section-title { font-size: 1.2rem; font-weight: 700; color: var(--gris-fonce); margin-bottom: 1rem; padding-bottom: 0.5rem; border-bottom: 1px solid #e5e7eb; }
-    .menu-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(180px, 1fr)); gap: 1.5rem; }
-    .menu-item { background-color: white; padding: 1.5rem; border-radius: 8px; box-shadow: 0 2px 4px var(--ombre-legere); text-align: center; text-decoration: none; color: var(--gris-fonce); transition: all 0.2s; border: 1px solid #e5e7eb; }
-    .menu-item:hover { background-color: var(--bleu-fonce); color: white; border-color: var(--bleu-fonce); transform: scale(1.03); }
-    .menu-item .icon { font-size: 2.5rem; margin-bottom: 0.5rem; line-height: 1; }
-    .menu-item:hover .icon { color: var(--vert); }
-    .menu-item-title { font-weight: 700; font-size: 1rem; }
-    .btn-logout { background-color: #fca5a5; color: var(--rouge); padding: 0.5rem 1rem; border: none; border-radius: 6px; font-weight: 600; cursor: pointer; transition: background-color 0.2s; }
-    .btn-logout:hover { background-color: var(--rouge); color: white; }
+
+    .stats-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+      gap: 1.5rem;
+      margin-bottom: 2rem;
+    }
+
+    .card-stat {
+      background-color: white;
+      padding: 1.5rem;
+      border-radius: 12px;
+      box-shadow: 0 4px 10px var(--ombre-legere);
+      border-left: 5px solid var(--bleu-fonce);
+      transition: transform 0.2s;
+    }
+
+    .card-stat:hover {
+      transform: translateY(-3px);
+      box-shadow: 0 6px 15px rgba(0,0,0,0.15);
+    }
+
+    .card-stat-title {
+      font-size: 0.85rem;
+      font-weight: 600;
+      color: #6b7280;
+      text-transform: uppercase;
+      margin-bottom: 0.5rem;
+    }
+
+    .card-stat-value {
+      font-size: 2.3rem;
+      font-weight: 800;
+      color: var(--gris-fonce);
+      line-height: 1;
+    }
+
+    .card-stat-footer {
+      font-size: 0.8rem;
+      color: #9ca3af;
+      margin-top: 1rem;
+    }
+
+    .section-title {
+      font-size: 1.2rem;
+      font-weight: 700;
+      color: var(--gris-fonce);
+      margin-bottom: 1rem;
+      padding-bottom: 0.5rem;
+      border-bottom: 1px solid #e5e7eb;
+    }
+
+    .menu-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+      gap: 1.5rem;
+    }
+
+    .menu-item {
+      background-color: white;
+      padding: 1.5rem;
+      border-radius: 8px;
+      box-shadow: 0 2px 4px var(--ombre-legere);
+      text-align: center;
+      text-decoration: none;
+      color: var(--gris-fonce);
+      transition: all 0.2s;
+      border: 1px solid #e5e7eb;
+    }
+
+    .menu-item:hover {
+      background-color: var(--bleu-fonce);
+      color: white;
+      border-color: var(--bleu-fonce);
+      transform: scale(1.03);
+    }
+
+    .menu-item .icon {
+      font-size: 2.3rem;
+      margin-bottom: 0.5rem;
+      line-height: 1;
+    }
+
+    .btn-logout {
+      background-color: var(--rouge);
+      color: white;
+      padding: 0.6rem 1rem;
+      border: none;
+      border-radius: 6px;
+      font-weight: 600;
+      cursor: pointer;
+      transition: background-color 0.2s;
+    }
+
+    .btn-logout:hover {
+      background-color: #b91c1c;
+    }
+
     .stat-bleu { border-left-color: var(--bleu-fonce); }
     .stat-vert { border-left-color: var(--vert); }
     .stat-jaune { border-left-color: var(--jaune); }
@@ -65,8 +159,9 @@
 </head>
 <body>
   <div class="header">
-    <h1>Dashboard Administration</h1>
-    <button class="btn-logout" onclick="logout()">🚪 Déconnexion</button>
+    <h1 id="dashboardTitle">Dashboard · Administration</h1>
+    <div class="user-info" id="userInfo"></div>
+    <button class="btn-logout" id="logoutBtn">🚪 Déconnexion</button>
   </div>
 
   <div class="main-content">
@@ -96,70 +191,66 @@
 
     <h2 class="section-title">Modules de Gestion</h2>
     <div class="menu-grid">
-      <a href="eleves.html" class="menu-item"><div class="icon">📚</div><div class="menu-item-title">Gestion des Élèves</div></a>
-      <a href="enseignants.html" class="menu-item"><div class="icon">👨‍🏫</div><div class="menu-item-title">Gestion des Enseignants</div></a>
-      <a href="bulletins.html" class="menu-item"><div class="icon">🧮</div><div class="menu-item-title">Notes & Bulletins</div></a>
-      <a href="cours.html" class="menu-item"><div class="icon">📆</div><div class="menu-item-title">Planning des Cours</div></a>
-      <a href="paiements.html" class="menu-item"><div class="icon">💰</div><div class="menu-item-title">Suivi des Paiements</div></a>
-      <a href="admin.html" class="menu-item"><div class="icon">⚙️</div><div class="menu-item-title">Paramètres Admin</div></a>
+      <a href="eleves.html" class="menu-item"><div class="icon">📚</div><div>Gestion des Élèves</div></a>
+      <a href="enseignants.html" class="menu-item"><div class="icon">👨‍🏫</div><div>Gestion des Enseignants</div></a>
+      <a href="bulletins.html" class="menu-item"><div class="icon">🧮</div><div>Notes & Bulletins</div></a>
+      <a href="cours.html" class="menu-item"><div class="icon">📆</div><div>Planning des Cours</div></a>
+      <a href="paiements.html" class="menu-item"><div class="icon">💰</div><div>Suivi des Paiements</div></a>
+      <a href="admin.html" class="menu-item"><div class="icon">⚙️</div><div>Paramètres Admin</div></a>
     </div>
   </div>
 
+  <!-- ⚙️ Firebase -->
   <script type="module">
-    import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-app.js";
-    import { getAuth, signOut, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-auth.js";
-    import { getFirestore, doc, getDoc } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore.js";
+    import { auth, db } from "./js/config.js";
+    import { signOut, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-auth.js";
+    import { doc, getDoc } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore.js";
 
-    const firebaseConfig = {
-      apiKey: "AIzaSyAgv4TDYnR60TXnns-LISqbZTgcdLT31cc",
-      authDomain: "gestionlwanga.firebaseapp.com",
-      projectId: "gestionlwanga",
-      storageBucket: "gestionlwanga.firebasestorage.app",
-      messagingSenderId: "622604298611",
-      appId: "1:622604298611:web:4ab4314ed3eec6826c3d06"
-    };
+    const dashboardTitle = document.getElementById("dashboardTitle");
+    const userInfo = document.getElementById("userInfo");
+    const logoutBtn = document.getElementById("logoutBtn");
 
-    const app = initializeApp(firebaseConfig);
-    const auth = getAuth(app);
-    const db = getFirestore(app);
-
-    const headerTitle = document.querySelector(".header h1");
-
+    // 🧠 Vérifie la session et le rôle utilisateur
     onAuthStateChanged(auth, async (user) => {
       if (!user) {
-        window.location.href = "connexion.html";
+        window.location.href = "login.html";
         return;
       }
 
       try {
-        const docRef = doc(db, "users", user.uid);
-        const docSnap = await getDoc(docRef);
+        const userRef = doc(db, "users", user.uid);
+        const snap = await getDoc(userRef);
 
-        if (!docSnap.exists()) throw new Error("Profil introuvable");
+        if (!snap.exists()) throw new Error("Profil introuvable dans Firestore.");
 
-        const data = docSnap.data();
+        const data = snap.data();
         const role = data.role || "inconnu";
-        const nom = `${data.nom || ""} ${data.postNom || ""} ${data.prenom || ""}`.trim() || "Administrateur";
+        const nom = `${data.nom || ""} ${data.postNom || ""} ${data.prenom || ""}`.trim() || "Utilisateur";
 
-        const autorises = ["admin", "prefet"];
-        if (!autorises.includes(role)) {
-          alert("⛔ Accès refusé : vous n'avez pas la permission pour ce tableau de bord.");
-          window.location.href = "connexion.html";
+        // 🔒 Vérifie les droits
+        if (!["admin", "prefet"].includes(role)) {
+          alert("⛔ Accès refusé. Ce tableau de bord est réservé à l'administration.");
+          await signOut(auth);
+          window.location.href = "login.html";
           return;
         }
 
-        headerTitle.textContent = `Dashboard · ${role.toUpperCase()} · ${nom}`;
+        // 🎯 Personnalisation du header
+        dashboardTitle.textContent = `Dashboard · ${role.toUpperCase()}`;
+        userInfo.textContent = `${nom} (${role})`;
+
       } catch (err) {
-        alert(`⛔ ${err.message}`);
-        window.location.href = "connexion.html";
+        alert("Erreur : " + err.message);
+        window.location.href = "login.html";
       }
     });
 
-    window.logout = async function () {
+    // 🚪 Déconnexion
+    logoutBtn.addEventListener("click", async () => {
       await signOut(auth);
-      alert("✅ Déconnexion réussie.");
-      window.location.href = "connexion.html";
-    };
+      alert("✅ Déconnexion réussie !");
+      window.location.href = "login.html";
+    });
   </script>
 </body>
 </html>
