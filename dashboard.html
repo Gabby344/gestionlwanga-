@@ -41,98 +41,22 @@
       margin: auto;
       padding: 0 1rem 2rem;
     }
-    .stats-grid {
-      display: grid;
-      grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
-      gap: 1.5rem;
-      margin-bottom: 2rem;
-    }
-    .card-stat {
-      background-color: white;
-      padding: 1.5rem;
-      border-radius: 12px;
-      box-shadow: 0 4px 10px var(--ombre-legere);
-      border-left: 5px solid var(--bleu-fonce);
-      transition: transform 0.2s;
-    }
-    .card-stat:hover {
-      transform: translateY(-3px);
-      box-shadow: 0 6px 15px rgba(0,0,0,0.15);
-    }
-    .card-stat-title {
-      font-size: 0.85rem;
-      font-weight: 600;
-      color: #6b7280;
-      text-transform: uppercase;
-      margin-bottom: 0.5rem;
-    }
-    .card-stat-value {
-      font-size: 2.5rem;
-      font-weight: 800;
-      color: var(--gris-fonce);
-      line-height: 1;
-    }
-    .card-stat-footer {
-      font-size: 0.8rem;
-      color: #9ca3af;
-      margin-top: 1rem;
-    }
-    .section-title {
-      font-size: 1.2rem;
-      font-weight: 700;
-      color: var(--gris-fonce);
-      margin-bottom: 1rem;
-      padding-bottom: 0.5rem;
-      border-bottom: 1px solid #e5e7eb;
-    }
-    .menu-grid {
-      display: grid;
-      grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
-      gap: 1.5rem;
-    }
-    .menu-item {
-      background-color: white;
-      padding: 1.5rem;
-      border-radius: 8px;
-      box-shadow: 0 2px 4px var(--ombre-legere);
-      text-align: center;
-      text-decoration: none;
-      color: var(--gris-fonce);
-      transition: all 0.2s;
-      border: 1px solid #e5e7eb;
-    }
-    .menu-item:hover {
-      background-color: var(--bleu-fonce);
-      color: white;
-      border-color: var(--bleu-fonce);
-      transform: scale(1.03);
-    }
-    .menu-item .icon {
-      font-size: 2.5rem;
-      margin-bottom: 0.5rem;
-      line-height: 1;
-    }
-    .menu-item:hover .icon {
-      color: var(--vert);
-    }
-    .menu-item-title {
-      font-weight: 700;
-      font-size: 1rem;
-    }
-    .btn-logout {
-      background-color: #fca5a5;
-      color: var(--rouge);
-      padding: 0.5rem 1rem;
-      border: none;
-      border-radius: 6px;
-      font-weight: 600;
-      cursor: pointer;
-      transition: background-color 0.2s;
-    }
-    .btn-logout:hover {
-      background-color: var(--rouge);
-      color: white;
-    }
+    /* Les styles pour les stats et menu restent inchangés */
+    .stats-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 1.5rem; margin-bottom: 2rem; }
+    .card-stat { background-color: white; padding: 1.5rem; border-radius: 12px; box-shadow: 0 4px 10px var(--ombre-legere); border-left: 5px solid var(--bleu-fonce); transition: transform 0.2s; }
+    .card-stat:hover { transform: translateY(-3px); box-shadow: 0 6px 15px rgba(0,0,0,0.15); }
+    .card-stat-title { font-size: 0.85rem; font-weight: 600; color: #6b7280; text-transform: uppercase; margin-bottom: 0.5rem; }
+    .card-stat-value { font-size: 2.5rem; font-weight: 800; color: var(--gris-fonce); line-height: 1; }
+    .card-stat-footer { font-size: 0.8rem; color: #9ca3af; margin-top: 1rem; }
+    .section-title { font-size: 1.2rem; font-weight: 700; color: var(--gris-fonce); margin-bottom: 1rem; padding-bottom: 0.5rem; border-bottom: 1px solid #e5e7eb; }
+    .menu-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(180px, 1fr)); gap: 1.5rem; }
+    .menu-item { background-color: white; padding: 1.5rem; border-radius: 8px; box-shadow: 0 2px 4px var(--ombre-legere); text-align: center; text-decoration: none; color: var(--gris-fonce); transition: all 0.2s; border: 1px solid #e5e7eb; }
+    .menu-item:hover { background-color: var(--bleu-fonce); color: white; border-color: var(--bleu-fonce); transform: scale(1.03); }
+    .menu-item .icon { font-size: 2.5rem; margin-bottom: 0.5rem; line-height: 1; }
+    .menu-item:hover .icon { color: var(--vert); }
+    .menu-item-title { font-weight: 700; font-size: 1rem; }
+    .btn-logout { background-color: #fca5a5; color: var(--rouge); padding: 0.5rem 1rem; border: none; border-radius: 6px; font-weight: 600; cursor: pointer; transition: background-color 0.2s; }
+    .btn-logout:hover { background-color: var(--rouge); color: white; }
     .stat-bleu { border-left-color: var(--bleu-fonce); }
     .stat-vert { border-left-color: var(--vert); }
     .stat-jaune { border-left-color: var(--jaune); }
@@ -172,40 +96,20 @@
 
     <h2 class="section-title">Modules de Gestion</h2>
     <div class="menu-grid">
-      <a href="eleves.html" class="menu-item">
-        <div class="icon">📚</div>
-        <div class="menu-item-title">Gestion des Élèves</div>
-      </a>
-      <a href="enseignants.html" class="menu-item">
-        <div class="icon">👨‍🏫</div>
-        <div class="menu-item-title">Gestion des Enseignants</div>
-      </a>
-      <a href="bulletins.html" class="menu-item">
-        <div class="icon">🧮</div>
-        <div class="menu-item-title">Notes & Bulletins</div>
-      </a>
-      <a href="cours.html" class="menu-item">
-        <div class="icon">📆</div>
-        <div class="menu-item-title">Planning des Cours</div>
-      </a>
-      <a href="paiements.html" class="menu-item">
-        <div class="icon">💰</div>
-        <div class="menu-item-title">Suivi des Paiements</div>
-      </a>
-      <a href="admin.html" class="menu-item">
-        <div class="icon">⚙️</div>
-        <div class="menu-item-title">Paramètres Admin</div>
-      </a>
+      <a href="eleves.html" class="menu-item"><div class="icon">📚</div><div class="menu-item-title">Gestion des Élèves</div></a>
+      <a href="enseignants.html" class="menu-item"><div class="icon">👨‍🏫</div><div class="menu-item-title">Gestion des Enseignants</div></a>
+      <a href="bulletins.html" class="menu-item"><div class="icon">🧮</div><div class="menu-item-title">Notes & Bulletins</div></a>
+      <a href="cours.html" class="menu-item"><div class="icon">📆</div><div class="menu-item-title">Planning des Cours</div></a>
+      <a href="paiements.html" class="menu-item"><div class="icon">💰</div><div class="menu-item-title">Suivi des Paiements</div></a>
+      <a href="admin.html" class="menu-item"><div class="icon">⚙️</div><div class="menu-item-title">Paramètres Admin</div></a>
     </div>
   </div>
 
-  <!-- Firebase SDK et logique de connexion utilisateur -->
   <script type="module">
     import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-app.js";
     import { getAuth, signOut, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-auth.js";
     import { getFirestore, doc, getDoc } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore.js";
 
-    // Configuration Firebase
     const firebaseConfig = {
       apiKey: "AIzaSyAgv4TDYnR60TXnns-LISqbZTgcdLT31cc",
       authDomain: "gestionlwanga.firebaseapp.com",
@@ -221,36 +125,36 @@
 
     const headerTitle = document.querySelector(".header h1");
 
-    // Vérification de l'utilisateur connecté
     onAuthStateChanged(auth, async (user) => {
       if (!user) {
-        window.location.href = "connexion.html"; // Redirection si non connecté
-        return;
-      }
-
-      const docRef = doc(db, "users", user.uid); // Collection "users"
-      const docSnap = await getDoc(docRef);
-
-      if (!docSnap.exists()) {
-        alert("⛔ Profil introuvable.");
         window.location.href = "connexion.html";
         return;
       }
 
-      const role = docSnap.data().role;
-      const nom = `${docSnap.data().nom || ""} ${docSnap.data().postNom || ""} ${docSnap.data().prenom || ""}`.trim();
+      try {
+        const docRef = doc(db, "users", user.uid);
+        const docSnap = await getDoc(docRef);
 
-      const autorises = ["admin", "prefet"];
-      if (!autorises.includes(role)) {
-        alert("⛔ Accès refusé : vous n'avez pas la permission pour ce tableau de bord.");
+        if (!docSnap.exists()) throw new Error("Profil introuvable");
+
+        const data = docSnap.data();
+        const role = data.role || "inconnu";
+        const nom = `${data.nom || ""} ${data.postNom || ""} ${data.prenom || ""}`.trim() || "Administrateur";
+
+        const autorises = ["admin", "prefet"];
+        if (!autorises.includes(role)) {
+          alert("⛔ Accès refusé : vous n'avez pas la permission pour ce tableau de bord.");
+          window.location.href = "connexion.html";
+          return;
+        }
+
+        headerTitle.textContent = `Dashboard · ${role.toUpperCase()} · ${nom}`;
+      } catch (err) {
+        alert(`⛔ ${err.message}`);
         window.location.href = "connexion.html";
-        return;
       }
-
-      headerTitle.textContent = `Dashboard · ${role.toUpperCase()} · ${nom || "Administrateur"}`;
     });
 
-    // Déconnexion
     window.logout = async function () {
       await signOut(auth);
       alert("✅ Déconnexion réussie.");
