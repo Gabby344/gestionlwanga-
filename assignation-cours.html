@@ -1,437 +1,212 @@
 <!DOCTYPE html>
 <html lang="fr">
 <head>
-  <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Gestion Pro des Assignations - ISC Lwanga</title>
-  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
-  <style>
-    :root {
-      --bleu-principal: #1f3a8a; /* Bleu plus profond */
-      --gris-fonce: #1f2937;
-      --orange: #f59e0b;
-      --vert-succes: #10b981; 
-      --rouge-erreur: #ef4444; 
-      --fond: #f8fafc; /* Fond plus clair */
-      --bordure-legere: #e5e7eb;
-      --ombre-pro: rgba(0,0,0,0.05);
-    }
-    body {
-      font-family: 'Inter', sans-serif;
-      background-color: var(--fond);
-      margin: 0;
-      padding: 2rem 1rem;
-      color: var(--gris-fonce);
-    }
-    .container {
-        max-width: 1000px; /* Élargissement pour le contenu pro */
-        margin: auto;
-    }
-    h1 {
-      text-align: center;
-      font-size: 2rem;
-      color: var(--bleu-principal);
-      margin-bottom: 0.5rem;
-    }
-    h2 {
-      text-align: center;
-      font-size: 1.1rem;
-      font-weight: 500;
-      color: #6b7280;
-      margin-bottom: 2.5rem;
-    }
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>Gestion Pro des Assignations · ISC Lwanga</title>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+<style>
+:root {
+  --bleu-principal: #1f3a8a;
+  --gris-fonce: #1f2937;
+  --orange: #f59e0b;
+  --vert-succes: #10b981;
+  --rouge-erreur: #ef4444;
+  --fond: #f8fafc;
+  --bordure-legere: #e5e7eb;
+  --ombre-pro: rgba(0,0,0,0.05);
+}
+body {
+  font-family: 'Inter', sans-serif;
+  background-color: var(--fond);
+  margin:0; padding:2rem 1rem;
+  color: var(--gris-fonce);
+}
+.container { max-width:1000px; margin:auto; }
+h1 { text-align:center; font-size:2rem; color:var(--bleu-principal); margin-bottom:0.5rem; }
+h2 { text-align:center; font-size:1.1rem; font-weight:500; color:#6b7280; margin-bottom:2.5rem; }
 
-    /* --- FORMULAIRE D'ASSIGNATION --- */
-    #formulaireAssignation {
-        background-color: white;
-        padding: 2rem;
-        border-radius: 12px;
-        border: 1px solid var(--bordure-legere);
-        box-shadow: 0 10px 15px -3px var(--ombre-pro);
-        margin-bottom: 2rem;
-    }
-    #formulaireAssignation h3 {
-        margin-top: 0;
-        color: var(--orange);
-        border-bottom: 2px solid var(--bordure-legere);
-        padding-bottom: 0.75rem;
-        margin-bottom: 1.5rem;
-        font-weight: 600;
-        font-size: 1.25rem;
-    }
-    .form-grid {
-        display: grid;
-        grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
-        gap: 1.5rem;
-        align-items: end;
-    }
-    .form-group label {
-        display: block;
-        font-weight: 600;
-        margin-bottom: 0.5rem;
-        font-size: 0.9rem;
-        color: var(--gris-fonce);
-    }
-    select {
-      width: 100%;
-      padding: 0.9rem 0.75rem; /* Remplissage augmenté */
-      border: 1px solid #d1d5db;
-      border-radius: 8px; /* Bordure plus douce */
-      box-sizing: border-box; 
-      font-size: 1rem;
-      background-color: #ffffff;
-      transition: border-color 0.2s, box-shadow 0.2s;
-    }
-    select:focus {
-        border-color: var(--bleu-principal);
-        box-shadow: 0 0 0 3px rgba(31, 58, 138, 0.2);
-        outline: none;
-    }
-    .btn-assigner {
-        background-color: var(--bleu-principal);
-        color: white;
-        padding: 0.9rem 1.5rem;
-        border: none;
-        border-radius: 8px;
-        font-weight: 600;
-        cursor: pointer;
-        transition: background-color 0.2s;
-        box-shadow: 0 4px 6px -1px rgba(0,0,0,0.1);
-    }
-    .btn-assigner:hover { background-color: #1e40af; }
+/* FORMULAIRE ASSIGNATION */
+#formulaireAssignation { background:white; padding:2rem; border-radius:12px; border:1px solid var(--bordure-legere); box-shadow:0 10px 15px -3px var(--ombre-pro); margin-bottom:2rem; }
+#formulaireAssignation h3 { margin-top:0; color:var(--orange); border-bottom:2px solid var(--bordure-legere); padding-bottom:0.75rem; margin-bottom:1.5rem; font-weight:600; font-size:1.25rem; }
+.form-grid { display:grid; grid-template-columns:repeat(auto-fit, minmax(220px,1fr)); gap:1.5rem; align-items:end; }
+.form-group label { display:block; font-weight:600; margin-bottom:0.5rem; font-size:0.9rem; color:var(--gris-fonce);}
+select { width:100%; padding:0.9rem 0.75rem; border:1px solid #d1d5db; border-radius:8px; font-size:1rem; background:white; transition:border-color 0.2s, box-shadow 0.2s;}
+select:focus { border-color:var(--bleu-principal); box-shadow:0 0 0 3px rgba(31,58,138,0.2); outline:none; }
+.btn-assigner { background-color:var(--bleu-principal); color:white; padding:0.9rem 1.5rem; border:none; border-radius:8px; font-weight:600; cursor:pointer; transition:background-color 0.2s; box-shadow:0 4px 6px -1px rgba(0,0,0,0.1); }
+.btn-assigner:hover { background-color:#1e40af; }
 
+/* TABLEAU & FILTRE */
+.table-header-controls { display:flex; justify-content:space-between; align-items:center; margin-bottom:1rem; flex-wrap:wrap; gap:0.5rem;}
+.table-header-controls input[type="search"] { padding:0.6rem 1rem; border:1px solid var(--bordure-legere); border-radius:6px; width:300px;}
+h3.list-title { margin-top:3rem; color:var(--gris-fonce); font-size:1.25rem; }
+#listeAssignations { background:white; border-radius:12px; box-shadow:0 4px 10px var(--ombre-pro); overflow:hidden; border:1px solid var(--bordure-legere); }
+.assignations-table { width:100%; border-collapse:collapse; }
+th, td { padding:1rem 1.25rem; text-align:left; }
+th { background:#f3f4f6; color:var(--gris-fonce); font-weight:600; text-transform:uppercase; font-size:0.8rem; letter-spacing:0.05em;}
+.assignations-table tbody tr:nth-child(even){ background:#f9fafb; }
+.assignations-table tbody tr:hover{ background:#eff6ff; }
+.actions-col { width:100px; text-align:center;}
+.btn-supprimer { border:none; padding:0.6rem 0.6rem; border-radius:6px; font-size:1rem; cursor:pointer; color:white; background:var(--rouge-erreur); transition:0.2s; }
+.btn-supprimer:hover { background:#b91c1c; transform:translateY(-1px); }
 
-    /* --- TABLEAU & FILTRE --- */
-    .table-header-controls {
-        display: flex;
-        justify-content: space-between;
-        align-items: center;
-        margin-bottom: 1rem;
-    }
-    .table-header-controls input[type="search"] {
-        padding: 0.6rem 1rem;
-        border: 1px solid var(--bordure-legere);
-        border-radius: 6px;
-        width: 300px;
-    }
-    
-    h3.list-title {
-        margin-top: 3rem;
-        color: var(--gris-fonce);
-        font-size: 1.25rem;
-    }
-    #listeAssignations {
-        background-color: white;
-        border-radius: 12px;
-        box-shadow: 0 4px 10px var(--ombre-pro);
-        overflow: hidden; /* Pour contenir les bordures */
-        border: 1px solid var(--bordure-legere);
-    }
-    .assignations-table {
-        width: 100%;
-        border-collapse: collapse;
-    }
-    th, td {
-        padding: 1rem 1.25rem;
-        text-align: left;
-    }
-    th {
-        background-color: #f3f4f6;
-        color: var(--gris-fonce);
-        font-weight: 600;
-        text-transform: uppercase;
-        font-size: 0.8rem;
-        letter-spacing: 0.05em;
-    }
-    /* Alternance des couleurs pour la lisibilité pro */
-    .assignations-table tbody tr:nth-child(even) {
-        background-color: #f9fafb;
-    }
-    .assignations-table tbody tr:hover {
-        background-color: #eff6ff; /* Surlignage au survol */
-    }
-    .actions-col {
-        width: 100px;
-        text-align: center;
-    }
-    .btn-supprimer {
-      border: none;
-      padding: 0.6rem 0.6rem;
-      border-radius: 6px;
-      font-size: 1rem;
-      cursor: pointer;
-      color: white;
-      background-color: var(--rouge-erreur);
-      transition: background-color 0.2s;
-    }
-    .btn-supprimer:hover { 
-        background-color: #b91c1c; 
-        transform: translateY(-1px);
-    }
-    
-    /* --- NOTIFICATIONS (Nouveau) --- */
-    #notification-area {
-        position: fixed;
-        top: 20px;
-        right: 20px;
-        z-index: 1000;
-    }
-    .notification {
-        padding: 1rem 1.5rem;
-        border-radius: 8px;
-        margin-bottom: 10px;
-        box-shadow: 0 4px 6px rgba(0,0,0,0.1);
-        color: white;
-        font-weight: 500;
-        opacity: 0;
-        transform: translateX(100%);
-        transition: opacity 0.3s ease-out, transform 0.3s ease-out;
-    }
-    .notification.show {
-        opacity: 1;
-        transform: translateX(0);
-    }
-    .notification.success { background-color: var(--vert-succes); }
-    .notification.error { background-color: var(--rouge-erreur); }
-    .notification.warning { background-color: var(--orange); }
+/* NOTIFICATIONS */
+#notification-area { position:fixed; top:20px; right:20px; z-index:1000; }
+.notification { padding:1rem 1.5rem; border-radius:8px; margin-bottom:10px; box-shadow:0 4px 6px rgba(0,0,0,0.1); color:white; font-weight:500; opacity:0; transform:translateX(100%); transition:0.3s; }
+.notification.show { opacity:1; transform:translateX(0); }
+.notification.success{ background:var(--vert-succes);}
+.notification.error{ background:var(--rouge-erreur);}
+.notification.warning{ background:var(--orange);}
 
-    /* Bouton de retour */
-    .btn-retour {
-        display: inline-flex;
-        align-items: center;
-        margin-top: 2.5rem;
-        padding: 0.5rem 1rem;
-        color: var(--gris-fonce);
-        text-decoration: none;
-        font-size: 0.95rem;
-        font-weight: 500;
-        border: 1px solid var(--bordure-legere);
-        border-radius: 6px;
-        background-color: white;
-        transition: background-color 0.2s;
-    }
-    .btn-retour:hover {
-        background-color: #f0f4f8;
-    }
-  </style>
+/* BOUTON RETOUR */
+.btn-retour { display:inline-flex; align-items:center; margin-top:2.5rem; padding:0.5rem 1rem; color:var(--gris-fonce); text-decoration:none; font-size:0.95rem; font-weight:500; border:1px solid var(--bordure-legere); border-radius:6px; background:white; transition:0.2s;}
+.btn-retour:hover{ background:#f0f4f8; }
+</style>
 </head>
 <body>
-  <div id="notification-area"></div>
-  <div class="container">
-    <h1>🧑‍🏫 Gestion Professionnelle des Assignations</h1>
-    <h2>Institut Saint Charles Lwanga : Liaison Enseignants, Matières et Classes.</h2>
+<div id="notification-area"></div>
+<div class="container">
+<h1>🧑‍🏫 Gestion Pro des Assignations</h1>
+<h2>Institut Saint Charles Lwanga : Liaison Enseignants, Matières et Classes</h2>
 
-    <div id="formulaireAssignation">
-        <h3>Nouvelle Assignation</h3>
-        <form id="assignationForm">
-            <div class="form-grid">
-                
-                <div class="form-group">
-                    <label for="selectClasse">Classe *</label>
-                    <select id="selectClasse" required>
-                        <option value="">-- Choisir une classe --</option>
-                        <option value="6A" data-nom="6ème Commerciale A">6ème Commerciale A</option>
-                        <option value="5S" data-nom="5ème Scientifique">5ème Scientifique</option>
-                        <option value="4H" data-nom="4ème Humanités">4ème Humanités</option>
-                    </select>
-                </div>
-                
-                <div class="form-group">
-                    <label for="selectMatiere">Matière *</label>
-                    <select id="selectMatiere" required>
-                        <option value="">-- Choisir une matière --</option>
-                        <option value="MATH" data-nom="Mathématiques">Mathématiques (MATH)</option>
-                        <option value="FRAN" data-nom="Français">Français (FRAN)</option>
-                        <option value="PHYS" data-nom="Physique">Physique (PHYS)</option>
-                        <option value="HIST" data-nom="Histoire">Histoire (HIST)</option>
-                    </select>
-                </div>
+<div id="formulaireAssignation">
+<h3>Nouvelle Assignation</h3>
+<form id="assignationForm">
+<div class="form-grid">
+<div class="form-group">
+<label for="selectClasse">Classe *</label>
+<select id="selectClasse" required>
+<option value="">-- Choisir une classe --</option>
+<option value="7EB" data-nom="7ème EB">7ème EB</option>
+<option value="8EB" data-nom="8ème EB">8ème EB</option>
+<option value="1S" data-nom="1ère Scientifique">1ère Scientifique</option>
+<option value="1A" data-nom="1ère Agriculture">1ère Agriculture</option>
+<option value="1C" data-nom="1ère Commerciale">1ère Commerciale</option>
+<option value="1G" data-nom="1ère Gestion">1ère Gestion</option>
+<option value="1P" data-nom="1ère Pédagogie Générale">1ère Pédagogie Générale</option>
+<!-- Ajouter toutes les classes jusqu'à 4ème -->
+</select>
+</div>
 
-                <div class="form-group">
-                    <label for="selectEnseignant">Enseignant *</label>
-                    <select id="selectEnseignant" required>
-                        <option value="">-- Choisir un enseignant --</option>
-                        <option value="E001" data-nom="M. Gabby Umba">M. Gabby Umba</option>
-                        <option value="E002" data-nom="Mme Ndaya Kabulo">Mme Ndaya Kabulo</option>
-                        <option value="E003" data-nom="M. Kalubi Mutombo">M. Kalubi Mutombo</option>
-                    </select>
-                </div>
-                
-                <button type="submit" class="btn-assigner">🔗 Assigner le Cours</button>
-            </div>
-        </form>
-    </div>
+<div class="form-group">
+<label for="selectMatiere">Matière *</label>
+<select id="selectMatiere" required>
+<option value="">-- Choisir une matière --</option>
+<option value="MATH" data-nom="Mathématiques">Mathématiques (MATH)</option>
+<option value="FRAN" data-nom="Français">Français (FRAN)</option>
+<option value="PHYS" data-nom="Physique">Physique (PHYS)</option>
+<option value="HIST" data-nom="Histoire">Histoire (HIST)</option>
+<option value="BIO" data-nom="Biologie">Biologie (BIO)</option>
+</select>
+</div>
 
-    <div class="table-header-controls">
-        <h3 class="list-title">Liste des Assignations Actuelles</h3>
-        <input type="search" id="searchAssignations" placeholder="Rechercher par classe, matière ou enseignant..." onkeyup="filterAssignations()">
-    </div>
-    
-    <div id="listeAssignations">
-        <table class="assignations-table">
-            <thead>
-                <tr>
-                    <th>Classe</th>
-                    <th>Matière</th>
-                    <th>Code Matière</th>
-                    <th>Enseignant Assigné</th>
-                    <th class="actions-col">Action</th>
-                </tr>
-            </thead>
-            <tbody id="assignationsBody">
-                </tbody>
-        </table>
-        <p id="aucuneAssignation" style="text-align: center; padding: 1.5rem; color: #6b7280; display: none;">Aucune assignation trouvée.</p>
-    </div>
+<div class="form-group">
+<label for="selectEnseignant">Enseignant *</label>
+<select id="selectEnseignant" required>
+<option value="">-- Choisir un enseignant --</option>
+<option value="E001" data-nom="M. Gabby Umba">M. Gabby Umba</option>
+<option value="E002" data-nom="Mme Ndaya Kabulo">Mme Ndaya Kabulo</option>
+<option value="E003" data-nom="M. Kalubi Mutombo">M. Kalubi Mutombo</option>
+</select>
+</div>
 
-    <a href="cours.html" class="btn-retour">← Retour à l'administration des Cours</a>
-  </div>
+<button type="submit" class="btn-assigner">🔗 Assigner le Cours</button>
+</div>
+</form>
+</div>
 
+<div class="table-header-controls">
+<h3 class="list-title">Liste des Assignations Actuelles</h3>
+<input type="search" id="searchAssignations" placeholder="Rechercher par classe, matière ou enseignant..." onkeyup="filterAssignations()">
+</div>
 
-  <script>
-    // --- DONNÉES SIMULÉES ---
-    let assignations = [
-        { id: 1, classeNom: '6ème Commerciale A', classeId: '6A', matiereNom: 'Mathématiques', matiereId: 'MATH', enseignantNom: 'M. Gabby Umba', enseignantId: 'E001' },
-        { id: 2, classeNom: '6ème Commerciale A', classeId: '6A', matiereNom: 'Français', matiereId: 'FRAN', enseignantNom: 'Mme Ndaya Kabulo', enseignantId: 'E002' },
-        { id: 3, classeNom: '5ème Scientifique', classeId: '5S', matiereNom: 'Physique', matiereId: 'PHYS', enseignantNom: 'M. Gabby Umba', enseignantId: 'E001' },
-        { id: 4, classeNom: '4ème Humanités', classeId: '4H', matiereNom: 'Histoire', matiereId: 'HIST', enseignantNom: 'M. Kalubi Mutombo', enseignantId: 'E003' },
-    ];
+<div id="listeAssignations">
+<table class="assignations-table">
+<thead>
+<tr><th>Classe</th><th>Matière</th><th>Code Matière</th><th>Enseignant Assigné</th><th class="actions-col">Action</th></tr>
+</thead>
+<tbody id="assignationsBody"></tbody>
+</table>
+<p id="aucuneAssignation" style="text-align:center;padding:1.5rem;color:#6b7280;display:none;">Aucune assignation trouvée.</p>
+</div>
 
-    const assignationsBody = document.getElementById('assignationsBody');
-    const assignationForm = document.getElementById('assignationForm');
+<a href="cours.html" class="btn-retour">← Retour à l'administration des Cours</a>
+</div>
 
-    // --- FONCTIONNALITÉS UX ---
+<script>
+// DONNÉES SIMULÉES
+let assignations = [
+{ id: 1, classeNom:'7ème EB', classeId:'7EB', matiereNom:'Mathématiques', matiereId:'MATH', enseignantNom:'M. Gabby Umba', enseignantId:'E001' }
+];
 
-    function showNotification(message, type = 'success') {
-        const area = document.getElementById('notification-area');
-        const notification = document.createElement('div');
-        notification.className = `notification ${type}`;
-        notification.textContent = message;
-        
-        area.appendChild(notification);
+const assignationsBody = document.getElementById('assignationsBody');
+const assignationForm = document.getElementById('assignationForm');
 
-        // Afficher
-        setTimeout(() => {
-            notification.classList.add('show');
-        }, 10); 
+function showNotification(msg,type='success'){
+const area = document.getElementById('notification-area');
+const notif=document.createElement('div');
+notif.className=`notification ${type}`;
+notif.textContent=msg;
+area.appendChild(notif);
+setTimeout(()=>notif.classList.add('show'),10);
+setTimeout(()=>{ notif.classList.remove('show'); setTimeout(()=>area.removeChild(notif),300); },4000);
+}
 
-        // Masquer et supprimer
-        setTimeout(() => {
-            notification.classList.remove('show');
-            setTimeout(() => {
-                area.removeChild(notification);
-            }, 300); // Correspond à la transition CSS
-        }, 4000); 
-    }
+function renderAssignations(data=assignations){
+assignationsBody.innerHTML='';
+const aucuneAssignation = document.getElementById('aucuneAssignation');
+if(data.length===0){aucuneAssignation.style.display='block'; return;} 
+aucuneAssignation.style.display='none';
+data.forEach(item=>{
+const row=document.createElement('tr');
+row.innerHTML=`<td>${item.classeNom}</td><td>${item.matiereNom}</td><td><span style="font-weight:700;color:var(--bleu-principal)">${item.matiereId}</span></td><td>${item.enseignantNom}</td><td class="actions-col"><button class="btn-supprimer" title="Supprimer" onclick="supprimerAssignation(${item.id})">🗑️</button></td>`;
+assignationsBody.appendChild(row);
+});
+}
 
-    // --- RENDU DU TABLEAU ---
+function filterAssignations(){
+const searchTerm=document.getElementById('searchAssignations').value.toLowerCase();
+renderAssignations(assignations.filter(item=>
+item.classeNom.toLowerCase().includes(searchTerm)||
+item.matiereNom.toLowerCase().includes(searchTerm)||
+item.matiereId.toLowerCase().includes(searchTerm)||
+item.enseignantNom.toLowerCase().includes(searchTerm)
+));
+}
 
-    function renderAssignations(data = assignations) {
-        assignationsBody.innerHTML = '';
-        const aucuneAssignation = document.getElementById('aucuneAssignation');
+function ajouterAssignation(e){
+e.preventDefault();
+const cS=document.getElementById('selectClasse');
+const mS=document.getElementById('selectMatiere');
+const eS=document.getElementById('selectEnseignant');
+const classeNom=cS.options[cS.selectedIndex].getAttribute('data-nom'); const classeId=cS.value;
+const matiereNom=mS.options[mS.selectedIndex].getAttribute('data-nom'); const matiereId=mS.value;
+const enseignantNom=eS.options[eS.selectedIndex].getAttribute('data-nom'); const enseignantId=eS.value;
 
-        if (data.length === 0) {
-            aucuneAssignation.style.display = 'block';
-            return;
-        }
-        aucuneAssignation.style.display = 'none';
+if(!classeId||!matiereId||!enseignantId){ showNotification("Veuillez remplir tous les champs obligatoires.",'error'); return; }
 
-        data.forEach(item => {
-            const row = document.createElement('tr');
-            row.innerHTML = `
-                <td>${item.classeNom}</td>
-                <td>${item.matiereNom}</td>
-                <td><span style="font-weight: 700; color: var(--bleu-principal);">${item.matiereId}</span></td>
-                <td>${item.enseignantNom}</td>
-                <td class="actions-col">
-                    <button class="btn-supprimer" title="Supprimer l'assignation" onclick="supprimerAssignation(${item.id})">🗑️</button>
-                </td>
-            `;
-            assignationsBody.appendChild(row);
-        });
-    }
+const isDuplicate=assignations.some(a=>a.classeId===classeId && a.matiereId===matiereId);
+if(isDuplicate){ showNotification(`L'assignation pour ${matiereNom} en ${classeNom} existe déjà.`,'warning'); return; }
 
-    // --- FILTRAGE/RECHERCHE ---
+const newId=assignations.length>0?Math.max(...assignations.map(a=>a.id))+1:1;
+assignations.push({ id:newId, classeNom,classeId, matiereNom,matiereId, enseignantNom,enseignantId });
+showNotification(`Assignation réussie : ${enseignantNom} enseignera ${matiereNom} en ${classeNom}.`,'success');
+assignationForm.reset();
+renderAssignations();
+}
 
-    function filterAssignations() {
-        const searchTerm = document.getElementById('searchAssignations').value.toLowerCase();
-        
-        const filteredData = assignations.filter(item => 
-            item.classeNom.toLowerCase().includes(searchTerm) ||
-            item.matiereNom.toLowerCase().includes(searchTerm) ||
-            item.matiereId.toLowerCase().includes(searchTerm) ||
-            item.enseignantNom.toLowerCase().includes(searchTerm)
-        );
-        
-        renderAssignations(filteredData);
-    }
+function supprimerAssignation(id){
+const item=assignations.find(a=>a.id===id);
+if(!item){ showNotification("Erreur : Assignation non trouvée.",'error'); return; }
+if(confirm(`Confirmer la suppression de ${item.matiereNom} pour ${item.classeNom} par ${item.enseignantNom} ?`)){
+assignations=assignations.filter(a=>a.id!==id);
+showNotification("Assignation supprimée avec succès.",'success');
+renderAssignations();
+}
+}
 
-    // --- LOGIQUE MÉTIER ---
-
-    function ajouterAssignation(event) {
-        event.preventDefault();
-
-        const classeSelect = document.getElementById('selectClasse');
-        const matiereSelect = document.getElementById('selectMatiere');
-        const enseignantSelect = document.getElementById('selectEnseignant');
-        
-        // Utilisation des attributs data-nom pour un affichage propre
-        const classeNom = classeSelect.options[classeSelect.selectedIndex].getAttribute('data-nom');
-        const classeId = classeSelect.value;
-        const matiereNom = matiereSelect.options[matiereSelect.selectedIndex].getAttribute('data-nom');
-        const matiereId = matiereSelect.value;
-        const enseignantNom = enseignantSelect.options[enseignantSelect.selectedIndex].getAttribute('data-nom');
-        const enseignantId = enseignantSelect.value;
-
-        if (!classeId || !matiereId || !enseignantId) {
-            showNotification("Veuillez remplir tous les champs obligatoires.", 'error');
-            return;
-        }
-
-        // --- RÈGLE D'AFFAIRES PRO : Prévention des doublons CLASSE/MATIÈRE ---
-        const isDuplicate = assignations.some(a => 
-            a.classeId === classeId && a.matiereId === matiereId
-        );
-
-        if (isDuplicate) {
-            // Suggestion de modification au lieu d'une simple erreur
-            showNotification(`L'assignation pour ${matiereNom} en ${classeNom} existe déjà. Veuillez la supprimer ou la modifier (fonctionnalité à implémenter) avant d'en créer une nouvelle.`, 'warning');
-            return;
-        }
-
-        const newId = assignations.length > 0 ? Math.max(...assignations.map(a => a.id)) + 1 : 1;
-
-        assignations.push({ 
-            id: newId, 
-            classeNom, classeId,
-            matiereNom, matiereId, 
-            enseignantNom, enseignantId
-        });
-
-        showNotification(`Assignation réussie : ${enseignantNom} enseignera ${matiereNom} en ${classeNom}.`, 'success');
-        assignationForm.reset();
-        renderAssignations();
-    }
-
-    function supprimerAssignation(id) {
-        const item = assignations.find(a => a.id === id);
-        
-        if (!item) {
-            showNotification("Erreur : Assignation non trouvée.", 'error');
-            return;
-        }
-
-        // On pourrait utiliser une modal (boîte de dialogue) pour une interface encore plus pro
-        if (confirm(`Confirmer la suppression de l'assignation : ${item.matiereNom} pour ${item.classeNom} par ${item.enseignantNom} ?`)) {
-            assignations = assignations.filter(a => a.id !== id);
-            showNotification("Assignation supprimée avec succès.", 'success');
-            renderAssignations();
-        }
-    }
-
-    // --- INITIALISATION ---
-    assignationForm.addEventListener('submit', ajouterAssignation);
-    document.addEventListener('DOMContentLoaded', renderAssignations);
-  </script>
+assignationForm.addEventListener('submit',ajouterAssignation);
+document.addEventListener('DOMContentLoaded',()=>renderAssignations());
+</script>
 </body>
 </html>
