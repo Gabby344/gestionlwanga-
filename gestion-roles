@@ -1,0 +1,159 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Gestion des rôles · Institut Saint Charles Lwanga</title>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600&display=swap" rel="stylesheet">
+  <style>
+    body {
+      font-family: 'Inter', sans-serif;
+      background-color: #f9fafb;
+      margin: 0;
+      padding: 2rem;
+      color: #374151;
+    }
+    h1 {
+      text-align: center;
+      color: #1e3a8a;
+      margin-bottom: 1rem;
+    }
+    table {
+      width: 100%;
+      border-collapse: collapse;
+      background-color: white;
+      box-shadow: 0 0 5px rgba(0,0,0,0.05);
+    }
+    th, td {
+      padding: 0.75rem;
+      border-bottom: 1px solid #e5e7eb;
+      text-align: left;
+    }
+    th {
+      background-color: #f3f4f6;
+      color: #1f2937;
+    }
+    select {
+      padding: 0.4rem;
+      border-radius: 6px;
+      font-size: 0.95rem;
+    }
+    button.save-btn {
+      background-color: #1e3a8a;
+      color: white;
+      border: none;
+      padding: 0.4rem 0.8rem;
+      border-radius: 6px;
+      cursor: pointer;
+      font-size: 0.9rem;
+    }
+    footer {
+      margin-top: 3rem;
+      text-align: center;
+      font-size: 0.85rem;
+      color: #6b7280;
+    }
+  </style>
+</head>
+<body>
+  <h1>🔐 Gestion des rôles</h1>
+  <table id="roleTable">
+    <thead>
+      <tr>
+        <th>Nom complet</th>
+        <th>Email</th>
+        <th>Rôle actuel</th>
+        <th>Modifier rôle</th>
+        <th>Action</th>
+      </tr>
+    </thead>
+    <tbody></tbody>
+  </table>
+
+  <footer>
+    &copy; 2025 · Institut Saint Charles Lwanga · Lubumbashi
+  </footer>
+
+  <script type="module">
+    import { initializeApp } from "https://www.gstatic.com/firebasejs/10.5.2/firebase-app.js";
+    import { getAuth, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/10.5.2/firebase-auth.js";
+    import { getFirestore, collection, getDocs, doc, updateDoc, getDoc } from "https://www.gstatic.com/firebasejs/10.5.2/firebase-firestore.js";
+
+    const firebaseConfig = {
+      apiKey: "TON_API_KEY",
+      authDomain: "TON_DOMAINE.firebaseapp.com",
+      projectId: "TON_PROJECT_ID"
+    };
+
+    const app = initializeApp(firebaseConfig);
+    const auth = getAuth(app);
+    const db = getFirestore(app);
+
+    const tableBody = document.querySelector("#roleTable tbody");
+
+    const rolesDisponibles = [
+      "eleve", "enseignant", "admin",
+      "prefet", "directeur_etudes", "directeur_discipline",
+      "secretaire", "econome", "parent"
+    ];
+
+    onAuthStateChanged(auth, async (user) => {
+      if (user) {
+        const profil = await getDoc(doc(db, "utilisateurs", user.uid));
+        const role = profil.data()?.role;
+        if (role !== "prefet") {
+          alert("⛔ Accès réservé au préfet.");
+          window.location.href = "accueil-admin.html";
+          return;
+        }
+        chargerUtilisateurs();
+      } else {
+        window.location.href = "connexion.html";
+      }
+    });
+
+    async function chargerUtilisateurs() {
+      const snapshot = await getDocs(collection(db, "utilisateurs"));
+      tableBody.innerHTML = "";
+
+      snapshot.forEach(docSnap => {
+        const data = docSnap.data();
+        const row = document.createElement("tr");
+
+        const select = document.createElement("select");
+        rolesDisponibles.forEach(r => {
+          const option = document.createElement("option");
+          option.value = r;
+          option.textContent = r;
+          if (r === data.role) option.selected = true;
+          select.appendChild(option);
+        });
+
+        const saveBtn = document.createElement("button");
+        saveBtn.className = "save-btn";
+        saveBtn.textContent = "Enregistrer";
+        saveBtn.onclick = async () => {
+          await updateDoc(doc(db, "utilisateurs", docSnap.id), {
+            role: select.value
+          });
+          alert("✅ Rôle mis à jour !");
+        };
+
+        row.innerHTML = `
+          <td>${data.nom} ${data.postNom} ${data.prenom}</td>
+          <td>${data.email}</td>
+          <td>${data.role}</td>
+        `;
+        const roleCell = document.createElement("td");
+        roleCell.appendChild(select);
+        const actionCell = document.createElement("td");
+        actionCell.appendChild(saveBtn);
+
+        row.appendChild(roleCell);
+        row.appendChild(actionCell);
+        tableBody.appendChild(row);
+      });
+    }
+  </script>
+</body>
+</html>
