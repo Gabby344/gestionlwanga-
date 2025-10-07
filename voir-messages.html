@@ -1,0 +1,114 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Messages · Institut Saint Charles Lwanga</title>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600&display=swap" rel="stylesheet">
+  <style>
+    :root {
+      --bleu: #1e3a8a;
+      --gris: #374151;
+      --fond: #f9fafb;
+      --ombre: rgba(0,0,0,0.05);
+      --ligne: #e5e7eb;
+    }
+    body {
+      font-family: 'Inter', sans-serif;
+      background-color: var(--fond);
+      margin: 0;
+      padding: 2rem 1rem;
+      color: var(--gris);
+    }
+    header {
+      text-align: center;
+      margin-bottom: 2rem;
+    }
+    header h1 {
+      font-size: 1.6rem;
+      color: var(--bleu);
+    }
+    .messages {
+      max-width: 500px;
+      margin: auto;
+      background-color: white;
+      padding: 1rem;
+      border-radius: 8px;
+      box-shadow: 0 0 5px var(--ombre);
+    }
+    .message {
+      border-bottom: 1px solid var(--ligne);
+      padding: 1rem 0;
+    }
+    .message:last-child {
+      border-bottom: none;
+    }
+    .message h2 {
+      font-size: 1rem;
+      color: var(--bleu);
+      margin-bottom: 0.3rem;
+    }
+    .message p {
+      font-size: 0.95rem;
+      margin-bottom: 0.3rem;
+    }
+    .message .date {
+      font-size: 0.85rem;
+      color: #6b7280;
+    }
+    footer {
+      margin-top: 3rem;
+      text-align: center;
+      font-size: 0.85rem;
+      color: #6b7280;
+    }
+  </style>
+</head>
+<body>
+  <header>
+    <h1>📬 Messages & annonces</h1>
+    <p>Institut Saint Charles Lwanga · Lubumbashi</p>
+  </header>
+
+  <div class="messages" id="messagesContainer">
+    <!-- Messages simulés -->
+  </div>
+
+  <footer>
+    &copy; 2025 · Plateforme éducative · Communication interne
+  </footer>
+
+  <script>
+    const messages = [
+      {
+        titre: "Réunion pédagogique",
+        contenu: "Une réunion des enseignants aura lieu ce vendredi à 14h dans la salle des profs.",
+        date: "7 octobre 2025"
+      },
+      {
+        titre: "Début des examens",
+        contenu: "Les examens du premier trimestre commenceront le 20 octobre. Veuillez préparer vos bulletins.",
+        date: "6 octobre 2025"
+      },
+      {
+        titre: "Message du directeur",
+        contenu: "Merci à tous pour votre engagement. Continuons à bâtir une école d’excellence.",
+        date: "5 octobre 2025"
+      }
+    ];
+
+    const container = document.getElementById("messagesContainer");
+
+    messages.forEach(msg => {
+      const bloc = document.createElement("div");
+      bloc.className = "message";
+      bloc.innerHTML = `
+        <h2>${msg.titre}</h2>
+        <p>${msg.contenu}</p>
+        <div class="date">📅 ${msg.date}</div>
+      `;
+      container.appendChild(bloc);
+    });
+  </script>
+</body>
+</html>
