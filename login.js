@@ -1,102 +1,79 @@
-/**
- * Fichier : login.js
- * Gère la soumission du formulaire de connexion et l'authentification Firebase.
- */
+// Importation des modules Firebase
+import { initializeApp } from "https://www.gstatic.com/firebasejs/10.5.2/firebase-app.js";
+import { getAuth, signInWithEmailAndPassword } from "https://www.gstatic.com/firebasejs/10.5.2/firebase-auth.js";
+import { getFirestore, doc, getDoc } from "https://www.gstatic.com/firebasejs/10.5.2/firebase-firestore.js";
 
-// Récupération des éléments du DOM
-const loginForm = document.getElementById('login-form');
-const emailInput = document.getElementById('email');
-const passwordInput = document.getElementById('password');
-const loginButton = document.getElementById('login-btn');
-const errorMessageDiv = document.getElementById('error-message');
+// Configuration Firebase
+const firebaseConfig = {
+  apiKey: "AIzaSyAgy4TDYnR6f8TXnns-LtSgbTZgcdL31cc",
+  authDomain: "gestionlwanga.firebaseapp.com",
+  projectId: "gestionlwanga",
+  storageBucket: "gestionlwanga.appspot.com",
+  messagingSenderId: "622624961281",
+  appId: "1:622624961281:web:4ab4314ed3ec6c3e3d6c36"
+};
 
-/**
- * Affiche un message d'erreur dans le div dédié.
- * @param {string} message - Le message d'erreur à afficher.
- */
-function displayError(message) {
-    errorMessageDiv.textContent = message;
-    errorMessageDiv.style.display = 'block';
-}
+// Initialisation Firebase
+const app = initializeApp(firebaseConfig);
+const auth = getAuth(app);
+const db = getFirestore(app);
 
-/**
- * Masque le message d'erreur.
- */
-function hideError() {
-    errorMessageDiv.style.display = 'none';
-    errorMessageDiv.textContent = '';
-}
+// Gestion du formulaire de connexion
+document.getElementById("loginForm").addEventListener("submit", async (e) => {
+  e.preventDefault();
 
-/**
- * Gère l'état du bouton (désactivation pendant le chargement).
- * @param {boolean} isLoading - Indique si une opération de connexion est en cours.
- */
-function setLoading(isLoading) {
-    if (isLoading) {
-        loginButton.disabled = true;
-        loginButton.textContent = 'Connexion...';
-        loginButton.style.opacity = '0.8';
-    } else {
-        loginButton.disabled = false;
-        loginButton.textContent = 'Se Connecter';
-        loginButton.style.opacity = '1';
+  const email = document.getElementById("email").value.trim();
+  const password = document.getElementById("password").value.trim();
+  const errorMessage = document.getElementById("errorMessage");
+
+  try {
+    // Connexion avec Firebase Auth
+    const userCredential = await signInWithEmailAndPassword(auth, email, password);
+    const uid = userCredential.user.uid;
+
+    // Lecture du rôle depuis Firestore
+    const docRef = doc(db, "utilisateurs", uid);
+    const docSnap = await getDoc(docRef);
+
+    if (!docSnap.exists()) {
+      errorMessage.textContent = "⛔ Profil introuvable dans la base de données.";
+      return;
     }
-}
 
+    const role = docSnap.data().role;
 
-// Événement de soumission du formulaire
-loginForm.addEventListener('submit', async (e) => {
-    e.preventDefault(); // Empêche le rechargement de la page
-
-    hideError(); // Cache les erreurs précédentes
-    setLoading(true); // Active l'état de chargement
-
-    const email = emailInput.value;
-    const password = passwordInput.value;
-
-    try {
-        // Tente de connecter l'utilisateur avec Firebase Authentication
-        await auth.signInWithEmailAndPassword(email, password);
-
-        // Connexion réussie : rediriger l'utilisateur
-        // >>> MODIFIER 'dashboard.html' vers votre page principale <<<
-        window.location.href = 'dashboard.html'; 
-
-    } catch (error) {
-        // Gère les erreurs de connexion
-        let userMessage = "Une erreur est survenue lors de la connexion.";
-
-        switch (error.code) {
-            case 'auth/user-not-found':
-            case 'auth/wrong-password':
-                userMessage = "Email ou mot de passe incorrect. Veuillez vérifier vos identifiants.";
-                break;
-            case 'auth/invalid-email':
-                userMessage = "Format d'email invalide.";
-                break;
-            case 'auth/user-disabled':
-                userMessage = "Votre compte a été désactivé.";
-                break;
-            case 'auth/api-key-not-valid':
-                userMessage = "Erreur de configuration : Clé API ou APP ID invalide. Vérifiez votre configuration Firebase.";
-                break;
-            default:
-                console.error("Erreur Firebase:", error.code, error.message); 
-                userMessage = "Erreur de connexion inattendue : " + error.code;
-                break;
-        }
-
-        displayError(userMessage);
-
-    } finally {
-        setLoading(false); // Désactive l'état de chargement
+    // Redirection selon le rôle
+    switch (role) {
+      case "admin":
+      case "prefet":
+        window.location.href = "dashboard.html";
+        break;
+      case "directeur_etudes":
+        window.location.href = "bulletins.html";
+        break;
+      case "directeur_discipline":
+        window.location.href = "sanctions.html";
+        break;
+      case "secretaire":
+        window.location.href = "documents.html";
+        break;
+      case "econome":
+        window.location.href = "paiements.html";
+        break;
+      case "enseignant":
+        window.location.href = "enseignant.html";
+        break;
+      case "eleve":
+        window.location.href = "eleve.html";
+        break;
+      case "parent":
+        window.location.href = "parent.html";
+        break;
+      default:
+        errorMessage.textContent = "⛔ Rôle inconnu ou non autorisé.";
     }
-});
-
-// Écouter si un utilisateur est déjà connecté (optionnel)
-auth.onAuthStateChanged((user) => {
-    if (user) {
-        // Optionnel : Rediriger si l'utilisateur est déjà connecté et arrive sur cette page
-        // window.location.href = 'dashboard.html'; 
-    }
+  } catch (error) {
+    console.error(error);
+    errorMessage.textContent = "⛔ Identifiants incorrects ou erreur de connexion.";
+  }
 });
