@@ -1,332 +1,168 @@
 <!DOCTYPE html>
 <html lang="fr">
 <head>
-  <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Liste du Personnel - Institut Saint Charles Lwanga (SIGS)</title>
-  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700;800&display=swap" rel="stylesheet">
-  <style>
-    :root {
-      --bleu-fonce: #1e40af; 
-      --gris-fonce: #1f2937;
-      --indigo-enseignants: #4f46e5; /* Accent Enseignants/Personnel */
-      --vert-action: #10b981; 
-      --orange-alerte: #f59e0b; 
-      --rouge-danger: #ef4444; 
-      --fond-principal: #f4f6f8;
-      --ombre-legere: rgba(0,0,0,0.08);
-    }
-    body {
-      font-family: 'Inter', sans-serif;
-      background-color: var(--fond-principal);
-      margin: 0;
-      padding: 2rem 1rem;
-      color: var(--gris-fonce);
-    }
-    h1 {
-      text-align: center;
-      font-size: 1.8rem;
-      color: var(--bleu-fonce);
-      margin-bottom: 0.5rem;
-    }
-    h2 {
-      text-align: center;
-      font-size: 1rem;
-      font-weight: normal;
-      color: #6b7280;
-      margin-bottom: 2rem;
-    }
-    .container {
-        max-width: 1300px;
-        margin: auto;
-    }
-
-    /* --- BARRE DE CONTRÔLE ET FILTRES --- */
-    .controls-bar {
-        background-color: white;
-        padding: 1rem;
-        border-radius: 8px;
-        box-shadow: 0 2px 4px var(--ombre-legere);
-        margin-bottom: 1.5rem;
-        display: grid;
-        gap: 1rem;
-        grid-template-columns: 1fr;
-    }
-    @media (min-width: 768px) {
-        .controls-bar {
-            grid-template-columns: 2fr 1fr 1fr 150px; /* Mise en page desktop */
-            align-items: center;
-        }
-    }
-    .input-group label {
-        display: block;
-        font-size: 0.8rem;
-        font-weight: 600;
-        color: #6b7280;
-        margin-bottom: 0.2rem;
-    }
-    .input-group select, .input-group input[type="text"] {
-        width: 100%;
-        padding: 0.6rem;
-        border: 1px solid #d1d5db;
-        border-radius: 4px;
-        box-sizing: border-box;
-    }
-    .btn-ajouter {
-        padding: 0.75rem 1rem;
-        border: none;
-        border-radius: 4px;
-        font-weight: 600;
-        cursor: pointer;
-        background-color: var(--indigo-enseignants);
-        color: white;
-        text-decoration: none;
-        display: block;
-        text-align: center;
-    }
-    .btn-ajouter:hover { background-color: #3730a3; }
-
-    /* --- COMPTEUR ET RÉSUMÉ --- */
-    #compteur {
-      grid-column: 1 / -1;
-      font-weight: 700;
-      font-size: 0.9rem;
-      text-align: left;
-      color: var(--indigo-enseignants);
-      padding-top: 0.5rem;
-    }
-
-    /* --- TABLEAU DE DONNÉES --- */
-    #personnelContainer {
-        background-color: white;
-        border-radius: 8px;
-        box-shadow: 0 4px 10px var(--ombre-legere);
-        overflow-x: auto; 
-    }
-
-    /* VUE TABLEAU (DESKTOP) */
-    .personnel-table {
-        width: 100%;
-        border-collapse: collapse;
-        display: none; 
-        min-width: 900px; 
-    }
-    @media (min-width: 768px) {
-        .personnel-table {
-            display: table; 
-        }
-        th, td {
-            padding: 0.75rem 1rem;
-            text-align: left;
-            border-bottom: 1px solid #e5e7eb;
-        }
-        th {
-            background-color: #f3f4f6;
-            color: var(--gris-fonce);
-            font-weight: 600;
-            text-transform: uppercase;
-            font-size: 0.75rem;
-        }
-        td.statut-permanent { color: var(--vert-action); font-weight: 600; }
-        td.statut-vacataire { color: var(--orange-alerte); font-weight: 600; }
-        td.statut-admin { color: var(--bleu-fonce); font-weight: 600; }
-        .actions-cell { width: 140px; text-align: center; }
-        .btn-profil, .btn-affectations {
-            border: none;
-            padding: 0.5rem 0.6rem;
-            border-radius: 4px;
-            font-size: 0.8rem;
-            cursor: pointer;
-            color: white;
-            margin-right: 0.3rem;
-        }
-        .btn-profil { background-color: var(--indigo-enseignants); }
-        .btn-affectations { background-color: var(--bleu-fonce); }
-    }
-    
-    /* VUE CARTE (MOBILE) */
-    .personnel-card {
-        padding: 1rem;
-        border-bottom: 1px solid #e5e7eb;
-        display: block;
-    }
-    @media (min-width: 768px) {
-        .personnel-card { display: none; } 
-    }
-    .personnel-card h3 {
-      margin: 0 0 0.5rem 0;
-      font-size: 1.1rem;
-      color: var(--indigo-enseignants);
-    }
-    .personnel-card p {
-      margin: 0.25rem 0;
-      font-size: 0.9rem;
-    }
-    .actions-card {
-        margin-top: 0.75rem;
-        display: flex;
-        gap: 0.5rem;
-    }
-
-    /* Bouton de retour */
-    .btn-retour {
-        display: block;
-        text-align: center;
-        margin-top: 1.5rem;
-        color: var(--gris-fonce);
-        text-decoration: none;
-        font-size: 0.9rem;
-    }
-  </style>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Ajouter un Élève - Institut Saint Charles Lwanga</title>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700&display=swap" rel="stylesheet">
+<style>
+:root {
+  --bleu-fonce: #1e40af;
+  --gris-fonce: #1f2937;
+  --vert-action: #10b981;
+  --rouge-danger: #ef4444;
+  --fond-principal: #f4f6f8;
+  --ombre-legere: rgba(0,0,0,0.08);
+}
+body {
+  font-family: 'Inter', sans-serif;
+  background-color: var(--fond-principal);
+  margin: 0;
+  padding: 2rem 1rem;
+  color: var(--gris-fonce);
+}
+.container {
+  max-width: 600px;
+  margin: auto;
+  background-color: #fff;
+  padding: 2rem;
+  border-radius: 8px;
+  box-shadow: 0 4px 10px var(--ombre-legere);
+}
+h1 {
+  text-align: center;
+  color: var(--bleu-fonce);
+  margin-bottom: 1rem;
+}
+form .input-group {
+  margin-bottom: 1rem;
+}
+label {
+  display: block;
+  font-weight: 600;
+  margin-bottom: 0.3rem;
+}
+input, select {
+  width: 100%;
+  padding: 0.6rem;
+  border: 1px solid #d1d5db;
+  border-radius: 4px;
+  box-sizing: border-box;
+}
+button {
+  padding: 0.75rem 1rem;
+  background-color: var(--vert-action);
+  color: white;
+  border: none;
+  border-radius: 6px;
+  font-weight: 600;
+  cursor: pointer;
+  width: 100%;
+  transition: background 0.2s;
+}
+button:hover { background-color: #059669; }
+.btn-retour {
+  display: block;
+  text-align: center;
+  margin-top: 1rem;
+  color: var(--gris-fonce);
+  text-decoration: none;
+  font-size: 0.9rem;
+}
+#message {text-align:center; margin-top:1rem; font-weight:600;}
+</style>
 </head>
 <body>
-  <div class="container">
-    <h1>👨‍🏫 Fiches du Personnel Enseignant et Administratif</h1>
-    <h2>Recherche, filtres rapides et gestion des contrats de l'équipe.</h2>
-
-    <div class="controls-bar">
-        <div class="input-group">
-            <label for="searchInput">Recherche Rapide</label>
-            <input type="text" id="searchInput" placeholder="Nom, Prénom ou Fonction..." oninput="filterPersonnel()" />
-        </div>
-        <div class="input-group">
-            <label for="filtreStatut">Filtrer par Statut</label>
-            <select id="filtreStatut" onchange="filterPersonnel()">
-                <option value="">Tous les statuts</option>
-                <option value="Permanent">Permanent</option>
-                <option value="Vacataire">Vacataire</option>
-                <option value="Administratif">Administratif</option>
-            </select>
-        </div>
-        <div class="input-group">
-            <label for="filtreTitre">Filtrer par Titre</label>
-            <select id="filtreTitre" onchange="filterPersonnel()">
-                <option value="">Tous les titres</option>
-                <option value="Professeur">Professeur</option>
-                <option value="Directeur">Directeur</option>
-                <option value="Secrétaire">Secrétaire</option>
-            </select>
-        </div>
-        
-        <a href="ajouter-enseignant.html" class="btn-ajouter">➕ Nouveau Personnel</a>
-
-        <p id="compteur" style="grid-column: 1 / -1;">Chargement des données...</p>
-    </div>
-
-    <div id="personnelContainer">
-        </div>
-
-    <a href="enseignants.html" class="btn-retour">← Retour au Menu du Personnel</a>
+<div class="container">
+<h1>➕ Ajouter un Nouvel Élève</h1>
+<form id="addEleveForm">
+  <div class="input-group">
+    <label for="nom">Nom</label>
+    <input type="text" id="nom" required>
   </div>
+  <div class="input-group">
+    <label for="postNom">Post-nom</label>
+    <input type="text" id="postNom" required>
+  </div>
+  <div class="input-group">
+    <label for="prenom">Prénom</label>
+    <input type="text" id="prenom" required>
+  </div>
+  <div class="input-group">
+    <label for="classe">Classe</label>
+    <select id="classe" required>
+      <option value="">-- Sélectionner une classe --</option>
+      <option value="6A">6ème Commerciale A</option>
+      <option value="5S">5ème Scientifique</option>
+      <option value="4H">4ème Humanités</option>
+    </select>
+  </div>
+  <div class="input-group">
+    <label for="statut">Statut Paiement</label>
+    <select id="statut" required>
+      <option value="">-- Sélectionner le statut --</option>
+      <option value="Payé">Payé</option>
+      <option value="Partiel">Partiel</option>
+      <option value="Non payé">Non payé</option>
+    </select>
+  </div>
+  <button type="submit">Ajouter l'Élève</button>
+  <p id="message"></p>
+</form>
+<a href="liste-eleves.html" class="btn-retour">← Retour à la Liste des Élèves</a>
+</div>
 
+<script type="module">
+import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-app.js";
+import { getFirestore, collection, addDoc, getDocs } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore.js";
 
-  <script>
-    // --- SIMULATION DE DONNÉES (Ceci proviendrait de Firebase/Backend) ---
-    const initialData = [
-        { id: 'E001', nom: 'Umba', prenom: 'Gabby', titre: 'Professeur', statut: 'Permanent', matiere: 'Mathématiques' },
-        { id: 'E002', nom: 'Ndaya', prenom: 'Kabulo', titre: 'Professeur', statut: 'Vacataire', matiere: 'Français' },
-        { id: 'E003', nom: 'Kalubi', prenom: 'Mutombo', titre: 'Directeur', statut: 'Administratif', matiere: 'N/A' },
-        { id: 'E004', nom: 'Lukusa', prenom: 'Benoit', titre: 'Professeur', statut: 'Permanent', matiere: 'Physique' },
-        { id: 'E005', nom: 'Kapinga', prenom: 'Esther', titre: 'Secrétaire', statut: 'Administratif', matiere: 'N/A' },
-    ];
-    
-    function getStatutClass(statut) {
-        if (statut === 'Permanent') return 'statut-permanent';
-        if (statut === 'Vacataire') return 'statut-vacataire';
-        return 'statut-admin';
-    }
+const firebaseConfig = {
+  apiKey: "AIzaSyAgv4TDYnR60TXnns-LISqbZTgcdLT31cc",
+  authDomain: "gestionlwanga.firebaseapp.com",
+  projectId: "gestionlwanga",
+  storageBucket: "gestionlwanga.firebasestorage.app",
+  messagingSenderId: "622604298611",
+  appId: "1:622604298611:web:4ab4314ed3eec6826c3d06"
+};
+const app = initializeApp(firebaseConfig);
+const db = getFirestore(app);
 
-    function filterPersonnel() {
-      const container = document.getElementById('personnelContainer');
-      const recherche = document.getElementById('searchInput').value.toLowerCase();
-      const statutFiltre = document.getElementById('filtreStatut').value;
-      const titreFiltre = document.getElementById('filtreTitre').value;
-      
-      const filteredPersonnel = initialData.filter(e => {
-          const nomComplet = (e.nom + ' ' + e.prenom + ' ' + e.titre).toLowerCase();
-          
-          const searchMatch = nomComplet.includes(recherche);
-          const statutMatch = !statutFiltre || e.statut === statutFiltre;
-          const titreMatch = !titreFiltre || e.titre === titreFiltre;
+const form = document.getElementById('addEleveForm');
+const message = document.getElementById('message');
 
-          return searchMatch && statutMatch && titreMatch;
-      });
+// Fonction pour générer un matricule unique
+async function generateMatricule(classe){
+  const snapshot = await getDocs(collection(db, "eleves"));
+  const count = snapshot.size + 1;
+  const year = new Date().getFullYear().toString().slice(-2);
+  return `${year}/${classe}-${100+count}`;
+}
 
-      renderPersonnel(filteredPersonnel);
-      
-      document.getElementById('compteur').textContent = `📊 ${filteredPersonnel.length} membres du personnel affichés sur ${initialData.length} au total.`;
-    }
+form.addEventListener('submit', async (e)=>{
+  e.preventDefault();
+  const nom = document.getElementById('nom').value.trim();
+  const postNom = document.getElementById('postNom').value.trim();
+  const prenom = document.getElementById('prenom').value.trim();
+  const classe = document.getElementById('classe').value;
+  const statut = document.getElementById('statut').value;
 
-    function renderPersonnel(data) {
-        if (data.length === 0) {
-            document.getElementById('personnelContainer').innerHTML = "<p style='text-align: center; padding: 3rem;'>Aucun membre du personnel trouvé selon les critères de filtre.</p>";
-            return;
-        }
+  if(!nom || !postNom || !prenom || !classe || !statut){
+    message.textContent = "⚠️ Veuillez remplir tous les champs.";
+    return;
+  }
 
-        let tableHTML = `<table class="personnel-table">
-                            <thead>
-                                <tr>
-                                    <th>Nom et Prénom</th>
-                                    <th>Titre / Fonction</th>
-                                    <th>Matière Principale</th>
-                                    <th>Statut Contrat</th>
-                                    <th class="actions-cell">Actions</th>
-                                </tr>
-                            </thead>
-                            <tbody>`;
-        let cardsHTML = '';
+  const matricule = await generateMatricule(classe);
 
-        data.forEach(e => {
-            const statutClass = getStatutClass(e.statut);
-
-            // 1. Vue Tableau (Desktop)
-            tableHTML += `
-                <tr>
-                    <td>${e.nom.toUpperCase()} ${e.prenom}</td>
-                    <td>${e.titre}</td>
-                    <td>${e.matiere}</td>
-                    <td class="${statutClass}">${e.statut}</td>
-                    <td class="actions-cell">
-                        <button class="btn-profil" onclick="viewProfil('${e.id}')">👁️ Fiche</button>
-                        <button class="btn-affectations" onclick="manageAffectations('${e.id}')">🔗 Affectations</button>
-                    </td>
-                </tr>
-            `;
-            
-            // 2. Vue Carte (Mobile)
-            cardsHTML += `
-                <div class="personnel-card">
-                    <h3>${e.nom.toUpperCase()} ${e.prenom}</h3>
-                    <p>Titre: <strong>${e.titre}</strong></p>
-                    <p>Statut: <strong class="${statutClass}">${e.statut}</strong></p>
-                    <p>Matière: <strong>${e.matiere}</strong></p>
-                    <div class="actions-card">
-                        <button class="btn-profil" style="flex: 1; background-color: var(--indigo-enseignants);" onclick="viewProfil('${e.id}')">👁️ Voir Fiche</button>
-                        <button class="btn-affectations" style="flex: 1; background-color: var(--bleu-fonce);" onclick="manageAffectations('${e.id}')">🔗 Cours</button>
-                    </div>
-                </div>
-            `;
-        });
-        
-        tableHTML += `</tbody></table>`;
-        container.innerHTML = tableHTML + cardsHTML;
-    }
-
-    function viewProfil(id) {
-        alert(`Redirection vers la fiche détaillée du personnel ID: ${id}`);
-        // En vrai: window.location.href = `profil-personnel.html?id=${id}`;
-    }
-
-    function manageAffectations(id) {
-        alert(`Redirection vers la gestion des cours et affectations pour le personnel ID: ${id}`);
-        // En vrai: window.location.href = `affectations-personnel.html?id=${id}`;
-    }
-    
-    // Chargement initial au démarrage
-    document.addEventListener('DOMContentLoaded', () => {
-        filterPersonnel();
-    });
-
-  </script>
+  try{
+    await addDoc(collection(db, "eleves"), {nom, postNom, prenom, classe, statut, matricule});
+    message.style.color = "green";
+    message.textContent = `✅ Élève ajouté avec succès (Matricule: ${matricule}) !`;
+    form.reset();
+  }catch(err){
+    message.style.color = "red";
+    message.textContent = "❌ Erreur lors de l'ajout : " + err.message;
+  }
+});
+</script>
 </body>
 </html>
