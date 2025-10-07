@@ -3,17 +3,16 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Tableau de bord - Administration ISTC Lwanga</title>
+  <title>Dashboard · Administration ISTC Lwanga</title>
   <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700;800&display=swap" rel="stylesheet">
   <style>
-    /* VARIABLES DE COULEUR AMÉLIORÉES */
     :root {
-      --bleu-fonce: #1e40af; /* Bleu principal (Institutionnel) */
+      --bleu-fonce: #1e40af;
       --gris-fonce: #1f2937;
-      --vert: #10b981; /* Accent pour les succès/éléments positifs */
-      --jaune: #f59e0b; /* Accent pour les avertissements */
-      --rouge: #ef4444; /* Accent pour les problèmes/danger */
-      --fond: #f4f6f8; 
+      --vert: #10b981;
+      --jaune: #f59e0b;
+      --rouge: #ef4444;
+      --fond: #f4f6f8;
       --ombre-legere: rgba(0,0,0,0.08);
     }
     body {
@@ -22,29 +21,26 @@
       margin: 0;
       color: var(--gris-fonce);
     }
-    /* HEADER ET CONTENEUR PRINCIPAL */
     .header {
-        background-color: white;
-        padding: 1rem 2rem;
-        box-shadow: 0 1px 3px var(--ombre-legere);
-        margin-bottom: 2rem;
-        display: flex;
-        justify-content: space-between;
-        align-items: center;
+      background-color: white;
+      padding: 1rem 2rem;
+      box-shadow: 0 1px 3px var(--ombre-legere);
+      margin-bottom: 2rem;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
     }
     .header h1 {
-        font-size: 1.5rem;
-        color: var(--bleu-fonce);
-        margin: 0;
-        font-weight: 700;
+      font-size: 1.5rem;
+      color: var(--bleu-fonce);
+      margin: 0;
+      font-weight: 700;
     }
     .main-content {
       max-width: 1200px;
       margin: auto;
       padding: 0 1rem 2rem;
     }
-
-    /* --- SECTION STATISTIQUES CLÉS --- */
     .stats-grid {
       display: grid;
       grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
@@ -56,12 +52,12 @@
       padding: 1.5rem;
       border-radius: 12px;
       box-shadow: 0 4px 10px var(--ombre-legere);
-      border-left: 5px solid var(--bleu-fonce); /* Touche pro */
+      border-left: 5px solid var(--bleu-fonce);
       transition: transform 0.2s;
     }
     .card-stat:hover {
-        transform: translateY(-3px);
-        box-shadow: 0 6px 15px rgba(0,0,0,0.15);
+      transform: translateY(-3px);
+      box-shadow: 0 6px 15px rgba(0,0,0,0.15);
     }
     .card-stat-title {
       font-size: 0.85rem;
@@ -77,19 +73,17 @@
       line-height: 1;
     }
     .card-stat-footer {
-        font-size: 0.8rem;
-        color: #9ca3af;
-        margin-top: 1rem;
+      font-size: 0.8rem;
+      color: #9ca3af;
+      margin-top: 1rem;
     }
-    
-    /* --- NAVIGATION PRINCIPALE (MENU) --- */
     .section-title {
-        font-size: 1.2rem;
-        font-weight: 700;
-        color: var(--gris-fonce);
-        margin-bottom: 1rem;
-        padding-bottom: 0.5rem;
-        border-bottom: 1px solid #e5e7eb;
+      font-size: 1.2rem;
+      font-weight: 700;
+      color: var(--gris-fonce);
+      margin-bottom: 1rem;
+      padding-bottom: 0.5rem;
+      border-bottom: 1px solid #e5e7eb;
     }
     .menu-grid {
       display: grid;
@@ -97,139 +91,164 @@
       gap: 1.5rem;
     }
     .menu-item {
-        background-color: white;
-        padding: 1.5rem;
-        border-radius: 8px;
-        box-shadow: 0 2px 4px var(--ombre-legere);
-        text-align: center;
-        text-decoration: none;
-        color: var(--gris-fonce);
-        transition: all 0.2s;
-        border: 1px solid #e5e7eb;
+      background-color: white;
+      padding: 1.5rem;
+      border-radius: 8px;
+      box-shadow: 0 2px 4px var(--ombre-legere);
+      text-align: center;
+      text-decoration: none;
+      color: var(--gris-fonce);
+      transition: all 0.2s;
+      border: 1px solid #e5e7eb;
     }
     .menu-item:hover {
-        background-color: var(--bleu-fonce);
-        color: white;
-        border-color: var(--bleu-fonce);
-        transform: scale(1.03);
+      background-color: var(--bleu-fonce);
+      color: white;
+      border-color: var(--bleu-fonce);
+      transform: scale(1.03);
     }
     .menu-item .icon {
-        font-size: 2.5rem;
-        margin-bottom: 0.5rem;
-        line-height: 1;
+      font-size: 2.5rem;
+      margin-bottom: 0.5rem;
+      line-height: 1;
     }
     .menu-item:hover .icon {
-        color: var(--vert); /* Donne un accent coloré à l'icône au survol */
+      color: var(--vert);
     }
     .menu-item-title {
-        font-weight: 700;
-        font-size: 1rem;
+      font-weight: 700;
+      font-size: 1rem;
     }
-    
-    /* Bouton Déconnexion */
     .btn-logout {
-        background-color: #fca5a5; /* Rouge clair */
-        color: var(--rouge);
-        padding: 0.5rem 1rem;
-        border: none;
-        border-radius: 6px;
-        font-weight: 600;
-        cursor: pointer;
-        transition: background-color 0.2s;
+      background-color: #fca5a5;
+      color: var(--rouge);
+      padding: 0.5rem 1rem;
+      border: none;
+      border-radius: 6px;
+      font-weight: 600;
+      cursor: pointer;
+      transition: background-color 0.2s;
     }
     .btn-logout:hover {
-        background-color: var(--rouge);
-        color: white;
+      background-color: var(--rouge);
+      color: white;
     }
-
-    /* Utilitaires pour les couleurs de statut */
     .stat-bleu { border-left-color: var(--bleu-fonce); }
     .stat-vert { border-left-color: var(--vert); }
     .stat-jaune { border-left-color: var(--jaune); }
     .stat-rouge { border-left-color: var(--rouge); }
-
   </style>
 </head>
 <body>
-    <div class="header">
-        <h1>Dashboard Administration</h1>
-        <button class="btn-logout" onclick="logout()">🚪 Déconnexion</button>
+  <div class="header">
+    <h1>Dashboard Administration</h1>
+    <button class="btn-logout" onclick="logout()">🚪 Déconnexion</button>
+  </div>
+
+  <div class="main-content">
+    <h2 class="section-title">Aperçu Actuel</h2>
+    <div class="stats-grid">
+      <div class="card-stat stat-bleu">
+        <p class="card-stat-title">Élèves Inscrits</p>
+        <p class="card-stat-value">1245</p>
+        <p class="card-stat-footer">+5 nouveaux ce mois</p>
+      </div>
+      <div class="card-stat stat-vert">
+        <p class="card-stat-title">Enseignants Actifs</p>
+        <p class="card-stat-value">48</p>
+        <p class="card-stat-footer">Taux d'assiduité : 98%</p>
+      </div>
+      <div class="card-stat stat-jaune">
+        <p class="card-stat-title">Notes à Saisir (T3)</p>
+        <p class="card-stat-value">3 classes</p>
+        <p class="card-stat-footer">Deadline : 15 octobre</p>
+      </div>
+      <div class="card-stat stat-rouge">
+        <p class="card-stat-title">Frais Impayés</p>
+        <p class="card-stat-value">22</p>
+        <p class="card-stat-footer">Total dû : $5,400</p>
+      </div>
     </div>
 
-    <div class="main-content">
-        
-        <h2 class="section-title">Aperçu Actuel</h2>
-        <div class="stats-grid">
-            
-            <div class="card-stat stat-bleu">
-                <p class="card-stat-title">Élèves Inscrits</p>
-                <p class="card-stat-value">1245</p>
-                <p class="card-stat-footer">+5 nouveaux ce mois</p>
-            </div>
-            
-            <div class="card-stat stat-vert">
-                <p class="card-stat-title">Enseignants Actifs</p>
-                <p class="card-stat-value">48</p>
-                <p class="card-stat-footer">Taux d'assiduité : 98%</p>
-            </div>
-            
-            <div class="card-stat stat-jaune">
-                <p class="card-stat-title">Notes à Saisir (T3)</p>
-                <p class="card-stat-value">3 classes</p>
-                <p class="card-stat-footer">Deadline : 15 octobre</p>
-            </div>
-            
-            <div class="card-stat stat-rouge">
-                <p class="card-stat-title">Frais Impayés</p>
-                <p class="card-stat-value">22</p>
-                <p class="card-stat-footer">Total dû : $5,400</p>
-            </div>
-            
-        </div>
-        
-        <h2 class="section-title">Modules de Gestion</h2>
-        <div class="menu-grid">
-            
-            <a href="eleves.html" class="menu-item">
-                <div class="icon">📚</div>
-                <div class="menu-item-title">Gestion des Élèves</div>
-            </a>
-            
-            <a href="enseignants.html" class="menu-item">
-                <div class="icon">👨‍🏫</div>
-                <div class="menu-item-title">Gestion des Enseignants</div>
-            </a>
-            
-            <a href="bulletins.html" class="menu-item">
-                <div class="icon">🧮</div>
-                <div class="menu-item-title">Notes & Bulletins</div>
-            </a>
-            
-            <a href="cours.html" class="menu-item">
-                <div class="icon">📆</div>
-                <div class="menu-item-title">Planning des Cours</div>
-            </a>
-            
-            <a href="paiements.html" class="menu-item">
-                <div class="icon">💰</div>
-                <div class="menu-item-title">Suivi des Paiements</div>
-            </a>
-            
-            <a href="admin.html" class="menu-item">
-                <div class="icon">⚙️</div>
-                <div class="menu-item-title">Paramètres Admin</div>
-            </a>
-            
-        </div>
-
+    <h2 class="section-title">Modules de Gestion</h2>
+    <div class="menu-grid">
+      <a href="eleves.html" class="menu-item">
+        <div class="icon">📚</div>
+        <div class="menu-item-title">Gestion des Élèves</div>
+      </a>
+      <a href="enseignants.html" class="menu-item">
+        <div class="icon">👨‍🏫</div>
+        <div class="menu-item-title">Gestion des Enseignants</div>
+      </a>
+      <a href="bulletins.html" class="menu-item">
+        <div class="icon">🧮</div>
+        <div class="menu-item-title">Notes & Bulletins</div>
+      </a>
+      <a href="cours.html" class="menu-item">
+        <div class="icon">📆</div>
+        <div class="menu-item-title">Planning des Cours</div>
+      </a>
+      <a href="paiements.html" class="menu-item">
+        <div class="icon">💰</div>
+        <div class="menu-item-title">Suivi des Paiements</div>
+      </a>
+      <a href="admin.html" class="menu-item">
+        <div class="icon">⚙️</div>
+        <div class="menu-item-title">Paramètres Admin</div>
+      </a>
     </div>
+  </div>
 
-    <script>
-        function logout() {
-          // Fonction de déconnexion réelle (ex: suppression de token)
-          alert("Déconnexion sécurisée en cours...");
-          window.location.href = 'admin.html'; // Redirection vers la page de connexion
-        }
-    </script>
+  <script type="module">
+    import { initializeApp } from "https://www.gstatic.com/firebasejs/10.5.2/firebase-app.js";
+    import { getAuth, signOut, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/10.5.2/firebase-auth.js";
+    import { getFirestore, doc, getDoc } from "https://www.gstatic.com/firebasejs/10.5.2/firebase-firestore.js";
+
+    const firebaseConfig = {
+      apiKey: "TON_API_KEY",
+      authDomain: "TON_DOMAINE.firebaseapp.com",
+      projectId: "TON_PROJECT_ID"
+    };
+
+    const app = initializeApp(firebaseConfig);
+    const auth = getAuth(app);
+    const db = getFirestore(app);
+
+    const headerTitle = document.querySelector(".header h1");
+
+        onAuthStateChanged(auth, async (user) => {
+      if (!user) {
+        window.location.href = "connexion.html";
+        return;
+      }
+
+      const docRef = doc(db, "utilisateurs", user.uid);
+      const docSnap = await getDoc(docRef);
+
+      if (!docSnap.exists()) {
+        alert("⛔ Profil introuvable.");
+        window.location.href = "connexion.html";
+        return;
+      }
+
+      const role = docSnap.data().role;
+      const nom = `${docSnap.data().nom} ${docSnap.data().postNom} ${docSnap.data().prenom}`;
+
+      const autorisés = ["prefet", "admin"];
+      if (!autorisés.includes(role)) {
+        alert("⛔ Accès refusé : vous n'avez pas la permission pour ce tableau de bord.");
+        window.location.href = "connexion.html";
+        return;
+      }
+
+      headerTitle.textContent = `Dashboard · ${role.toUpperCase()} · ${nom}`;
+    });
+
+    window.logout = async function () {
+      await signOut(auth);
+      alert("✅ Déconnexion réussie.");
+      window.location.href = "connexion.html";
+    };
+  </script>
 </body>
 </html>
