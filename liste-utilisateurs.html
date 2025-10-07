@@ -1,0 +1,208 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Liste des utilisateurs · Institut Saint Charles Lwanga</title>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600&display=swap" rel="stylesheet">
+  <style>
+    body {
+      font-family: 'Inter', sans-serif;
+      background-color: #f9fafb;
+      margin: 0;
+      padding: 2rem;
+      color: #374151;
+    }
+    h1 {
+      text-align: center;
+      color: #1e3a8a;
+      margin-bottom: 1rem;
+    }
+    .filters {
+      max-width: 700px;
+      margin: auto;
+      display: flex;
+      gap: 1rem;
+      margin-bottom: 2rem;
+      flex-wrap: wrap;
+      justify-content: center;
+    }
+    input, select, button.export {
+      padding: 0.5rem;
+      font-size: 1rem;
+      border: 1px solid #d1d5db;
+      border-radius: 6px;
+      width: 220px;
+    }
+    button.export {
+      background-color: #1e3a8a;
+      color: white;
+      cursor: pointer;
+      width: auto;
+    }
+    table {
+      width: 100%;
+      border-collapse: collapse;
+      background-color: white;
+      box-shadow: 0 0 5px rgba(0,0,0,0.05);
+    }
+    th, td {
+      padding: 0.75rem;
+      border-bottom: 1px solid #e5e7eb;
+      text-align: left;
+    }
+    th {
+      background-color: #f3f4f6;
+      color: #1f2937;
+    }
+    tr:hover {
+      background-color: #f9fafb;
+    }
+    .action-btn {
+      background-color: #dc2626;
+      color: white;
+      border: none;
+      padding: 0.4rem 0.6rem;
+      border-radius: 4px;
+      cursor: pointer;
+      font-size: 0.85rem;
+    }
+    footer {
+      margin-top: 3rem;
+      text-align: center;
+      font-size: 0.85rem;
+      color: #6b7280;
+    }
+  </style>
+</head>
+<body>
+  <h1>👥 Liste des utilisateurs</h1>
+
+  <div class="filters">
+    <input type="text" id="searchInput" placeholder="🔍 Rechercher par e-mail ou prénom..." />
+    <select id="roleFilter">
+      <option value="">🎓 Tous les rôles</option>
+      <option value="eleve">Élève</option>
+      <option value="enseignant">Enseignant</option>
+      <option value="admin">Administrateur</option>
+      <option value="parent">Parent</option>
+    </select>
+    <button class="export" id="exportBtn">📄 Exporter CSV</button>
+  </div>
+
+  <table id="userTable">
+    <thead>
+      <tr>
+        <th>Nom</th>
+        <th>Post-nom</th>
+        <th>Prénom</th>
+        <th>Email</th>
+        <th>Rôle</th>
+        <th>Date de création</th>
+        <th>Action</th>
+      </tr>
+    </thead>
+    <tbody></tbody>
+  </table>
+
+  <footer>
+    &copy; 2025 · Plateforme scolaire sécurisée · Institut Saint Charles Lwanga
+  </footer>
+
+  <script type="module">
+    import { initializeApp } from "https://www.gstatic.com/firebasejs/10.5.2/firebase-app.js";
+    import { getFirestore, collection, getDocs, deleteDoc, doc } from "https://www.gstatic.com/firebasejs/10.5.2/firebase-firestore.js";
+
+    const firebaseConfig = {
+      apiKey: "TON_API_KEY",
+      authDomain: "TON_DOMAINE.firebaseapp.com",
+      projectId: "TON_PROJECT_ID"
+    };
+
+    const app = initializeApp(firebaseConfig);
+    const db = getFirestore(app);
+
+    const tableBody = document.querySelector("#userTable tbody");
+    const searchInput = document.getElementById("searchInput");
+    const roleFilter = document.getElementById("roleFilter");
+    const exportBtn = document.getElementById("exportBtn");
+
+    let allUsers = [];
+
+    async function chargerUtilisateurs() {
+      const snapshot = await getDocs(collection(db, "utilisateurs"));
+      allUsers = [];
+      snapshot.forEach(docSnap => {
+        const data = docSnap.data();
+        const date = data.createdAt?.toDate?.().toLocaleString("fr-FR") || "—";
+        allUsers.push({
+          id: docSnap.id,
+          nom: data.nom || "",
+          postNom: data.postNom || "",
+          prenom: data.prenom || "",
+          email: data.email || "",
+          role: data.role || "",
+          date: date
+        });
+      });
+      afficherUtilisateurs();
+    }
+
+    function afficherUtilisateurs() {
+      const search = searchInput.value.toLowerCase();
+      const role = roleFilter.value;
+
+      const filtres = allUsers.filter(user => {
+        const matchTexte = (
+          user.email.toLowerCase().includes(search) ||
+          user.nom.toLowerCase().includes(search) ||
+          user.postNom.toLowerCase().includes(search) ||
+          user.prenom.toLowerCase().includes(search)
+        );
+        const matchRole = role === "" || user.role === role;
+        return matchTexte && matchRole;
+      });
+
+      tableBody.innerHTML = "";
+      filtres.forEach(user => {
+        const row = document.createElement("tr");
+        row.innerHTML = `
+          <td>${user.nom}</td>
+          <td>${user.postNom}</td>
+          <td>${user.prenom}</td>
+          <td>${user.email}</td>
+          <td>${user.role}</td>
+          <td>${user.date}</td>
+          <td><button class="action-btn" onclick="supprimerUtilisateur('${user.id}')">Supprimer</button></td>
+        `;
+        tableBody.appendChild(row);
+      });
+    }
+
+    window.supprimerUtilisateur = async function(id) {
+      if (confirm("Voulez-vous vraiment supprimer cet utilisateur ?")) {
+        await deleteDoc(doc(db, "utilisateurs", id));
+        allUsers = allUsers.filter(u => u.id !== id);
+        afficherUtilisateurs();
+      }
+    };
+
+    exportBtn.addEventListener("click", () => {
+      const lignes = [["Nom", "Post-nom", "Prénom", "Email", "Rôle", "Date de création"]];
+      allUsers.forEach(u => {
+        lignes.push([u.nom, u.postNom, u.prenom, u.email, u.role, u.date]);
+      });
+      const csvContent = "data:text/csv;charset=utf-8," + lignes.map(e => e.join(",")).join("\n");
+      const link = document.createElement("a");
+      link.setAttribute("href", csvContent);
+      link.setAttribute("download", "utilisateurs.csv");
+      link.click();
+    });
+
+    searchInput.addEventListener("input", afficherUtilisateurs);
+    roleFilter.addEventListener("change", afficherUtilisateurs);
+
+    chargerUtilisateurs();
+  </script>
+</body>
+</html>
