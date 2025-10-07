@@ -1,0 +1,133 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Planning · Institut Saint Charles Lwanga</title>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600&display=swap" rel="stylesheet">
+  <style>
+    :root {
+      --bleu: #1e3a8a;
+      --gris: #374151;
+      --fond: #f9fafb;
+      --ombre: rgba(0,0,0,0.05);
+      --ligne: #e5e7eb;
+    }
+    body {
+      font-family: 'Inter', sans-serif;
+      background-color: var(--fond);
+      margin: 0;
+      padding: 2rem 1rem;
+      color: var(--gris);
+    }
+    header {
+      text-align: center;
+      margin-bottom: 2rem;
+    }
+    header h1 {
+      font-size: 1.6rem;
+      color: var(--bleu);
+      margin-bottom: 0.3rem;
+    }
+    header p {
+      font-size: 0.95rem;
+      color: var(--gris);
+    }
+    .planning {
+      max-width: 500px;
+      margin: auto;
+      background-color: white;
+      padding: 1rem;
+      border-radius: 8px;
+      box-shadow: 0 0 5px var(--ombre);
+    }
+    .jour {
+      margin-bottom: 1.5rem;
+    }
+    .jour h2 {
+      font-size: 1.1rem;
+      color: var(--bleu);
+      margin-bottom: 0.5rem;
+      border-bottom: 1px solid var(--ligne);
+      padding-bottom: 0.3rem;
+    }
+    .cours {
+      padding: 0.5rem 0;
+      border-bottom: 1px solid var(--ligne);
+      display: flex;
+      flex-direction: column;
+      gap: 0.2rem;
+    }
+    .cours:last-child {
+      border-bottom: none;
+    }
+    .cours span {
+      font-size: 0.95rem;
+    }
+    footer {
+      margin-top: 3rem;
+      text-align: center;
+      font-size: 0.85rem;
+      color: #6b7280;
+    }
+  </style>
+</head>
+<body>
+  <header>
+    <h1>📅 Mon emploi du temps</h1>
+    <p>Enseignant : Gabriel Umba · Semaine du 6 au 10 octobre</p>
+  </header>
+
+  <div class="planning" id="planningContainer">
+    <!-- Planning simulé -->
+  </div>
+
+  <footer>
+    &copy; 2025 · Institut Saint Charles Lwanga · Planning simulé
+  </footer>
+
+  <script>
+    const planning = {
+      lundi: [
+        { heure: "08h00 - 09h30", matiere: "Mathématiques", classe: "6e A", salle: "101" },
+        { heure: "10h00 - 11h30", matiere: "Physique", classe: "6e B", salle: "102" }
+      ],
+      mardi: [
+        { heure: "09h00 - 10h30", matiere: "Mathématiques", classe: "5e A", salle: "103" }
+      ],
+      mercredi: [],
+      jeudi: [
+        { heure: "08h00 - 09h30", matiere: "Mathématiques", classe: "6e A", salle: "101" },
+        { heure: "11h00 - 12h30", matiere: "Physique", classe: "6e B", salle: "102" }
+      ],
+      vendredi: [
+        { heure: "09h00 - 10h30", matiere: "Mathématiques", classe: "5e B", salle: "104" }
+      ]
+    };
+
+    const container = document.getElementById("planningContainer");
+
+    Object.entries(planning).forEach(([jour, coursList]) => {
+      const blocJour = document.createElement("div");
+      blocJour.className = "jour";
+      blocJour.innerHTML = `<h2>${jour.charAt(0).toUpperCase() + jour.slice(1)}</h2>`;
+
+      if (coursList.length === 0) {
+        blocJour.innerHTML += `<p>Aucun cours prévu</p>`;
+      } else {
+        coursList.forEach(cours => {
+          const blocCours = document.createElement("div");
+          blocCours.className = "cours";
+          blocCours.innerHTML = `
+            <span><strong>${cours.matiere}</strong> · ${cours.classe}</span>
+            <span>🕒 ${cours.heure} · Salle ${cours.salle}</span>
+          `;
+          blocJour.appendChild(blocCours);
+        });
+      }
+
+      container.appendChild(blocJour);
+    });
+  </script>
+</body>
+</html>
