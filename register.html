@@ -1,0 +1,40 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Inscription - Gestion Lwanga</title>
+  <link rel="stylesheet" href="./style.css" /> <!-- facultatif -->
+</head>
+<body>
+  <h2>Création d’un compte utilisateur</h2>
+
+  <!-- 🧾 FORMULAIRE D’INSCRIPTION -->
+  <form id="registerForm">
+    <input id="nom" placeholder="Nom" required>
+    <input id="postNom" placeholder="Post-nom" required>
+    <input id="prenom" placeholder="Prénom" required>
+    <input id="email" type="email" placeholder="Email" required>
+    <input id="password" type="password" placeholder="Mot de passe" required>
+
+    <select id="role" required>
+      <option value="">-- Choisir un rôle --</option>
+      <option value="admin">Admin</option>
+      <option value="prefet">Préfet</option>
+      <option value="enseignant">Enseignant</option>
+      <option value="eleve">Élève</option>
+    </select>
+
+    <button type="submit">Créer le compte</button>
+  </form>
+
+  <!-- 🟥 Message d’erreur -->
+  <p id="errorMessage" style="color:red;"></p>
+
+  <!-- 🟩 Message de succès -->
+  <p id="successMessage" style="color:green;"></p>
+
+  <!-- ⚙️ Script principal -->
+  <script type="module" src="./js/register.js"></script>
+</body>
+</html>
