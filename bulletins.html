@@ -3,134 +3,252 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Menu Notes & Bulletins - Institut Saint Charles Lwanga</title>
-  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700;800&display=swap" rel="stylesheet">
+  <title>Bulletins · Institut Saint Charles Lwanga</title>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600&display=swap" rel="stylesheet">
   <style>
-    :root {
-      --bleu-fonce: #1e40af; 
-      --gris-fonce: #1f2937;
-      --orange-notes: #f59e0b; /* Couleur d'accent pour le module Notes */
-      --fond-principal: #f4f6f8;
-      --ombre-forte: rgba(0,0,0,0.15);
-      --ombre-legere: rgba(0,0,0,0.05);
-    }
     body {
       font-family: 'Inter', sans-serif;
-      background-color: var(--fond-principal);
+      background-color: #f9fafb;
       margin: 0;
-      padding: 2rem 1rem;
-      color: var(--gris-fonce);
-      text-align: center;
-    }
-    .header {
-        max-width: 900px;
-        margin: auto;
-        margin-bottom: 2rem;
+      padding: 2rem;
+      color: #374151;
     }
     h1 {
-      font-size: 2rem;
-      color: var(--bleu-fonce);
-      margin-bottom: 0.25rem;
+      text-align: center;
+      color: #1e3a8a;
+      margin-bottom: 1rem;
     }
-    h2 {
-      font-size: 1.1rem;
-      font-weight: 400;
-      color: #6b7280;
+    form {
+      max-width: 600px;
+      margin: auto;
+      background-color: white;
+      padding: 1rem;
+      border-radius: 8px;
+      box-shadow: 0 0 5px rgba(0,0,0,0.05);
       margin-bottom: 2rem;
     }
-    
-    /* --- GRILLE DE NAVIGATION DES MODULES --- */
-    .modules-grid {
-      display: grid;
-      grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
-      gap: 1.5rem;
-      max-width: 900px;
-      margin: auto;
+    input, select, textarea {
+      width: 100%;
+      padding: 0.6rem;
+      margin-bottom: 1rem;
+      border: 1px solid #d1d5db;
+      border-radius: 6px;
+      font-size: 1rem;
     }
-    .module-card {
-      display: block;
+    button {
+      background-color: #1e3a8a;
+      color: white;
+      padding: 0.6rem 1.2rem;
+      border: none;
+      border-radius: 6px;
+      font-size: 1rem;
+      cursor: pointer;
+    }
+    .filters {
+      display: flex;
+      gap: 1rem;
+      flex-wrap: wrap;
+      justify-content: center;
+      margin-bottom: 1rem;
+    }
+    table {
+      width: 100%;
+      border-collapse: collapse;
       background-color: white;
-      padding: 1.5rem;
-      border-radius: 12px;
-      text-decoration: none;
-      color: var(--gris-fonce);
-      box-shadow: 0 4px 10px var(--ombre-legere);
-      transition: transform 0.2s, box-shadow 0.2s;
-      border-left: 5px solid var(--orange-notes); /* Accent de couleur spécifique */
+      box-shadow: 0 0 5px rgba(0,0,0,0.05);
+    }
+    th, td {
+      padding: 0.6rem;
+      border-bottom: 1px solid #e5e7eb;
       text-align: left;
     }
-    .module-card:hover {
-      transform: translateY(-5px);
-      box-shadow: 0 8px 20px var(--ombre-forte);
+    th {
+      background-color: #f3f4f6;
+      color: #1f2937;
     }
-    .card-icon {
-        font-size: 2.5rem;
-        color: var(--orange-notes);
-        margin-bottom: 0.5rem;
-        line-height: 1;
+    .export-btn {
+      margin: 1rem auto;
+      display: block;
+      background-color: #1e3a8a;
+      color: white;
+      padding: 0.5rem 1rem;
+      border-radius: 6px;
+      border: none;
+      cursor: pointer;
     }
-    .card-title {
-        font-size: 1.25rem;
-        font-weight: 700;
-        margin-bottom: 0.5rem;
-        color: var(--gris-fonce);
-    }
-    .card-description {
-        font-size: 0.9rem;
-        color: #6b7280;
-    }
-
-    /* Bouton de retour */
-    .btn-retour {
-        display: inline-block;
-        padding: 0.75rem 1.5rem;
-        background-color: #e5e7eb;
-        color: var(--gris-fonce);
-        border-radius: 8px;
-        text-decoration: none;
-        font-weight: 600;
-        margin-top: 3rem;
-        transition: background-color 0.2s;
-    }
-    .btn-retour:hover {
-        background-color: #d1d5db;
+    footer {
+      margin-top: 3rem;
+      text-align: center;
+      font-size: 0.85rem;
+      color: #6b7280;
     }
   </style>
 </head>
 <body>
-  <div class="header">
-    <h1>📄 Notes, Évaluations & Bulletins</h1>
-    <h2>Gérez la saisie des cotes, la validation et l'impression des documents scolaires officiels.</h2>
+  <h1>📝 Gestion des Bulletins</h1>
+
+  <form id="bulletinForm">
+    <input type="text" id="nom" placeholder="Nom de l'élève" required />
+    <input type="text" id="postNom" placeholder="Post-nom" required />
+    <input type="text" id="prenom" placeholder="Prénom" required />
+    <input type="text" id="classe" placeholder="Classe" required />
+    <select id="periode" required>
+      <option value="">Choisir la période</option>
+      <option value="Premier trimestre">Premier trimestre</option>
+      <option value="Deuxième trimestre">Deuxième trimestre</option>
+      <option value="Troisième trimestre">Troisième trimestre</option>
+    </select>
+    <textarea id="matieres" placeholder="Matières et notes (ex: Mathématiques:78, Français:85)" required></textarea>
+    <input type="number" id="moyenne" placeholder="Moyenne générale" required />
+    <textarea id="remarque" placeholder="Remarque générale" required></textarea>
+    <button type="submit">Ajouter le bulletin</button>
+  </form>
+
+  <div class="filters">
+    <input type="text" id="searchInput" placeholder="🔍 Rechercher par nom ou classe..." />
+    <select id="periodeFilter">
+      <option value="">📆 Toutes les périodes</option>
+      <option value="Premier trimestre">Premier trimestre</option>
+      <option value="Deuxième trimestre">Deuxième trimestre</option>
+      <option value="Troisième trimestre">Troisième trimestre</option>
+    </select>
+    <button class="export-btn" id="exportBtn">📄 Exporter CSV</button>
   </div>
 
-  <div class="modules-grid">
-    
-    <a href="saisie-notes.html" class="module-card">
-        <div class="card-icon">✍️</div>
-        <div class="card-title">Saisie des Cotes par Classe/Matière</div>
-        <div class="card-description">Interface pour l'enregistrement rapide des notes d'interrogations, examens et travaux.</div>
-    </a>
-    
-    <a href="validation-bulletins.html" class="module-card">
-        <div class="card-icon">✅</div>
-        <div class="card-title">Validation des Résultats et Moyennes</div>
-        <div class="card-description">Vérification, calcul automatique des moyennes trimestrielles et validation pour publication.</div>
-    </a>
-    
-    <a href="impression-bulletins.html" class="module-card">
-        <div class="card-icon">🖨️</div>
-        <div class="card-title">Génération et Impression des Bulletins</div>
-        <div class="card-description">Prévisualisation et impression des bulletins de notes officiels par classe ou par élève.</div>
-    </a>
-    
-    <a href="#" class="module-card" onclick="alert('Historique en développement')">
-        <div class="card-icon">📜</div>
-        <div class="card-title">Historique Scolaire et Relevés</div>
-        <div class="card-description">Consultation des résultats des années précédentes et génération des relevés de notes.</div>
-    </a>
-    
-  </div>
+  <table id="bulletinTable">
+    <thead>
+      <tr>
+        <th>Nom</th>
+        <th>Post-nom</th>
+        <th>Prénom</th>
+        <th>Classe</th>
+        <th>Période</th>
+        <th>Moyenne</th>
+        <th>Remarque</th>
+      </tr>
+    </thead>
+    <tbody></tbody>
+  </table>
 
-  <a href="dashboard.html" class="btn-retour">← Retour au Tableau de Bord Principal</a>
+  <footer>
+    &copy; 2025 · Institut Saint Charles Lwanga · Lubumbashi
+  </footer>
+
+  <script type="module">
+    import { initializeApp } from "https://www.gstatic.com/firebasejs/10.5.2/firebase-app.js";
+    import { getFirestore, collection, addDoc, getDocs, serverTimestamp } from "https://www.gstatic.com/firebasejs/10.5.2/firebase-firestore.js";
+
+    const firebaseConfig = {
+      apiKey: "TON_API_KEY",
+      authDomain: "TON_DOMAINE.firebaseapp.com",
+      projectId: "TON_PROJECT_ID"
+    };
+
+    const app = initializeApp(firebaseConfig);
+    const db = getFirestore(app);
+
+    const form = document.getElementById("bulletinForm");
+    const tableBody = document.querySelector("#bulletinTable tbody");
+    const searchInput = document.getElementById("searchInput");
+    const periodeFilter = document.getElementById("periodeFilter");
+    const exportBtn = document.getElementById("exportBtn");
+
+    let allBulletins = [];
+
+    form.addEventListener("submit", async (e) => {
+      e.preventDefault();
+
+      const nom = document.getElementById("nom").value.trim();
+      const postNom = document.getElementById("postNom").value.trim();
+      const prenom = document.getElementById("prenom").value.trim();
+      const classe = document.getElementById("classe").value.trim();
+      const periode = document.getElementById("periode").value;
+      const moyenne = parseFloat(document.getElementById("moyenne").value);
+      const remarque = document.getElementById("remarque").value.trim();
+      const matieresRaw = document.getElementById("matieres").value.trim();
+
+      const matieres = matieresRaw.split(",").map(pair => {
+        const [nom, note] = pair.split(":");
+        return { nom: nom.trim(), note: parseFloat(note) };
+      });
+
+      await addDoc(collection(db, "bulletins"), {
+        nom, postNom, prenom, classe, periode, moyenne, remarque, matieres,
+        createdAt: serverTimestamp()
+      });
+
+      form.reset();
+      chargerBulletins();
+    });
+
+    async function chargerBulletins() {
+      const snapshot = await getDocs(collection(db, "bulletins"));
+      allBulletins = [];
+      snapshot.forEach(doc => {
+        const data = doc.data();
+        allBulletins.push(data);
+      });
+      afficherBulletins();
+    }
+
+    function afficherBulletins() {
+      const search = searchInput.value.toLowerCase();
+      const periode = periodeFilter.value;
+
+      const filtres = allBulletins.filter(b => {
+        const matchTexte = (
+          b.nom.toLowerCase().includes(search) ||
+          b.postNom.toLowerCase().includes(search) ||
+          b.prenom.toLowerCase().includes(search) ||
+          b.classe.toLowerCase().includes(search)
+        );
+        const matchPeriode = periode === "" || b.periode === periode;
+        return matchTexte && matchPeriode;
+      });
+
+      tableBody.innerHTML = "";
+      filtres.forEach(b => {
+        const row = document.createElement("tr");
+        row.innerHTML = `
+          <td>${b.nom}</td>
+          <td>${b.postNom}</td>
+          <td>${b.prenom}</td>
+          <td>${b.classe}</td>
+          <td>${b.periode}</td>
+          <td>${b.moyenne}</td>
+          <td>${b.remarque}</td>
+        `;
+        tableBody.appendChild(row);
+      });
+    }
+
+        exportBtn.addEventListener("click", () => {
+      const lignes = [["Nom", "Post-nom", "Prénom", "Classe", "Période", "Moyenne", "Remarque"]];
+      allBulletins.forEach(b => {
+        lignes.push([
+          b.nom,
+          b.postNom,
+          b.prenom,
+          b.classe,
+          b.periode,
+          b.moyenne,
+          b.remarque
+        ]);
+      });
+
+      const csvContent = "data:text/csv;charset=utf-8," + lignes.map(e => e.join(",")).join("\n");
+      const link = document.createElement("a");
+      link.setAttribute("href", csvContent);
+      link.setAttribute("download", "bulletins.csv");
+      document.body.appendChild(link);
+      link.click();
+      document.body.removeChild(link);
+    });
+
+    searchInput.addEventListener("input", afficherBulletins);
+    periodeFilter.addEventListener("change", afficherBulletins);
+
+    chargerBulletins();
+  </script>
 </body>
 </html>
