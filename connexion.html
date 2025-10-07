@@ -63,6 +63,12 @@
       text-align: center;
       margin-bottom: 1rem;
     }
+    .apercu {
+      margin-top: 2rem;
+      text-align: center;
+      font-size: 0.95rem;
+      color: var(--gris);
+    }
     footer {
       margin-top: 3rem;
       text-align: center;
@@ -74,7 +80,7 @@
 <body>
   <header>
     <h1>🔐 Connexion</h1>
-    <p>Institut Saint Charles Lwanga</p>
+    <p>Institut Saint Charles Lwanga · Lubumbashi</p>
   </header>
 
   <form id="loginForm">
@@ -85,13 +91,19 @@
       <option value="eleve">Élève</option>
       <option value="enseignant">Enseignant</option>
       <option value="parent">Parent</option>
+      <option value="admin">Administrateur</option>
     </select>
     <div class="erreur" id="erreurMsg"></div>
     <button type="submit">Se connecter</button>
   </form>
 
+  <div class="apercu" id="apercuContainer" style="display:none;">
+    ✅ Connexion réussie<br>
+    Redirection vers <span id="apercuPage"></span>...
+  </div>
+
   <footer>
-    &copy; 2025 · Plateforme scolaire sécurisée · Lubumbashi
+    &copy; 2025 · Plateforme scolaire sécurisée · Institut Saint Charles Lwanga
   </footer>
 
   <script>
@@ -101,20 +113,39 @@
       const password = document.getElementById("password").value.trim();
       const role = document.getElementById("role").value;
       const erreurMsg = document.getElementById("erreurMsg");
+      const apercuContainer = document.getElementById("apercuContainer");
+      const apercuPage = document.getElementById("apercuPage");
 
       if (!email || !password || !role) {
         erreurMsg.textContent = "Veuillez remplir tous les champs.";
+        apercuContainer.style.display = "none";
         return;
       }
 
-      // Simulation simple
-      if (role === "eleve") {
-        window.location.href = "accueil-utilisateur.html";
-      } else if (role === "enseignant") {
-        window.location.href = "accueil-enseignant.html";
-      } else {
-        window.location.href = "accueil-parent.html";
+      erreurMsg.textContent = "";
+      let destination = "";
+
+      switch (role) {
+        case "eleve":
+          destination = "accueil-utilisateur.html";
+          break;
+        case "enseignant":
+          destination = "accueil-enseignant.html";
+          break;
+        case "parent":
+          destination = "accueil-parent.html";
+          break;
+        case "admin":
+          destination = "accueil-admin.html";
+          break;
       }
+
+      apercuPage.textContent = destination;
+      apercuContainer.style.display = "block";
+
+      setTimeout(() => {
+        window.location.href = destination;
+      }, 1500);
     });
   </script>
 </body>
