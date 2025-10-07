@@ -36,7 +36,7 @@
       border-radius: 8px;
       box-shadow: 0 0 5px var(--ombre);
     }
-    input, select {
+    input {
       width: 100%;
       padding: 0.75rem;
       margin-bottom: 1rem;
@@ -86,13 +86,6 @@
   <form id="loginForm">
     <input type="email" id="email" placeholder="Adresse e-mail" required />
     <input type="password" id="password" placeholder="Mot de passe" required />
-    <select id="role" required>
-      <option value="">Choisir votre rôle</option>
-      <option value="eleve">Élève</option>
-      <option value="enseignant">Enseignant</option>
-      <option value="parent">Parent</option>
-      <option value="admin">Administrateur</option>
-    </select>
     <div class="erreur" id="erreurMsg"></div>
     <button type="submit">Se connecter</button>
   </form>
@@ -106,46 +99,93 @@
     &copy; 2025 · Plateforme scolaire sécurisée · Institut Saint Charles Lwanga
   </footer>
 
-  <script>
-    document.getElementById("loginForm").addEventListener("submit", function(e) {
+  <script type="module">
+    import { initializeApp } from "https://www.gstatic.com/firebasejs/10.5.2/firebase-app.js";
+    import { getAuth, signInWithEmailAndPassword } from "https://www.gstatic.com/firebasejs/10.5.2/firebase-auth.js";
+    import { getFirestore, doc, getDoc } from "https://www.gstatic.com/firebasejs/10.5.2/firebase-firestore.js";
+
+    const firebaseConfig = {
+      apiKey: "TON_API_KEY",
+      authDomain: "TON_DOMAINE.firebaseapp.com",
+      projectId: "TON_PROJECT_ID"
+    };
+
+    const app = initializeApp(firebaseConfig);
+    const auth = getAuth(app);
+    const db = getFirestore(app);
+
+    const form = document.getElementById("loginForm");
+    const erreurMsg = document.getElementById("erreurMsg");
+    const apercuContainer = document.getElementById("apercuContainer");
+    const apercuPage = document.getElementById("apercuPage");
+
+    form.addEventListener("submit", async (e) => {
       e.preventDefault();
       const email = document.getElementById("email").value.trim();
       const password = document.getElementById("password").value.trim();
-      const role = document.getElementById("role").value;
-      const erreurMsg = document.getElementById("erreurMsg");
-      const apercuContainer = document.getElementById("apercuContainer");
-      const apercuPage = document.getElementById("apercuPage");
 
-      if (!email || !password || !role) {
+      if (!email || !password) {
         erreurMsg.textContent = "Veuillez remplir tous les champs.";
         apercuContainer.style.display = "none";
         return;
       }
 
-      erreurMsg.textContent = "";
-      let destination = "";
+      try {
+        const userCredential = await signInWithEmailAndPassword(auth, email, password);
+        const user = userCredential.user;
 
-      switch (role) {
-        case "eleve":
-          destination = "accueil-utilisateur.html";
-          break;
-        case "enseignant":
-          destination = "accueil-enseignant.html";
-          break;
-        case "parent":
-          destination = "accueil-parent.html";
-          break;
-        case "admin":
-          destination = "accueil-admin.html";
-          break;
+        const docRef = doc(db, "utilisateurs", user.uid);
+        const docSnap = await getDoc(docRef);
+
+        if (!docSnap.exists()) {
+          erreurMsg.textContent = "⛔ Utilisateur non trouvé dans Firestore.";
+          return;
+        }
+
+        const role = docSnap.data().role;
+        let destination = "";
+
+        switch (role) {
+          case "prefet":
+            destination = "accueil-admin.html";
+            break;
+          case "directeur_etudes":
+            destination = "bulletins.html";
+            break;
+          case "directeur_discipline":
+            destination = "sanctions.html";
+            break;
+          case "secretaire":
+            destination = "documents.html";
+            break;
+          case "econome":
+            destination = "paiements.html";
+            break;
+          case "enseignant":
+            destination = "accueil-enseignant.html";
+            break;
+          case "eleve":
+            destination = "accueil-utilisateur.html";
+            break;
+          case "parent":
+            destination = "accueil-parent.html";
+            break;
+          default:
+            erreurMsg.textContent = "⛔ Rôle inconnu ou non autorisé.";
+            return;
+        }
+
+        apercuPage.textContent = destination;
+        apercuContainer.style.display = "block";
+
+        setTimeout(() => {
+          window.location.href = destination;
+        }, 1500);
+
+      } catch (error) {
+        erreurMsg.textContent = "⛔ Identifiants incorrects ou erreur de connexion.";
+        apercuContainer.style.display = "none";
       }
-
-      apercuPage.textContent = destination;
-      apercuContainer.style.display = "block";
-
-      setTimeout(() => {
-        window.location.href = destination;
-      }, 1500);
     });
   </script>
 </body>
