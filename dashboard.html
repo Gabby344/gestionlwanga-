@@ -68,9 +68,24 @@
   </div>
 
   <script type="module">
-    import { auth, db } from "./js/config.js";
-    import { signOut, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-auth.js";
-    import { doc, getDoc } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore.js";
+    // 🔹 Import Firebase
+    import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-app.js";
+    import { getAuth, signOut, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-auth.js";
+    import { getFirestore, doc, getDoc } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore.js";
+
+    // 🔹 Configuration Firebase
+    const firebaseConfig = {
+      apiKey: "TON_API_KEY",
+      authDomain: "TON_AUTH_DOMAIN",
+      projectId: "TON_PROJECT_ID",
+      storageBucket: "TON_STORAGE_BUCKET",
+      messagingSenderId: "TON_MESSAGING_SENDER_ID",
+      appId: "TON_APP_ID"
+    };
+
+    const app = initializeApp(firebaseConfig);
+    const auth = getAuth(app);
+    const db = getFirestore(app);
 
     const dashboardTitle = document.getElementById("dashboardTitle");
     const userInfo = document.getElementById("userInfo");
@@ -88,8 +103,10 @@
       setTimeout(()=>{ notif.classList.remove('show'); setTimeout(()=>area.removeChild(notif),300); },4000);
     }
 
+    // 🔹 Vérification de l'état utilisateur
     onAuthStateChanged(auth, async (user)=>{
       if(!user){ window.location.href="login.html"; return; }
+
       try {
         const snap = await getDoc(doc(db,"users",user.uid));
         if(!snap.exists()) throw new Error("Profil introuvable dans Firestore.");
@@ -100,7 +117,7 @@
         dashboardTitle.textContent = `Dashboard · ${role.toUpperCase()} · ISC Lwanga`;
         userInfo.textContent = `${nom} (${role})`;
 
-        // Stats dynamiques
+        // 🔹 Statistiques dynamiques
         const statsData = [
           {title:"Élèves Inscrits", value:1245, footer:"+5 nouveaux ce mois", color:"stat-bleu"},
           {title:"Enseignants Actifs", value:48, footer:"Taux d'assiduité : 98%", color:"stat-vert"},
@@ -115,7 +132,7 @@
           statsGrid.appendChild(card);
         });
 
-        // Modules dynamiques selon rôle
+        // 🔹 Modules dynamiques selon rôle
         const modules=[
           {title:"Gestion des Élèves", icon:"📚", link:"eleves.html", roles:["prefet","admin","directeur_etudes","secretaire"]},
           {title:"Gestion des Enseignants", icon:"👨‍🏫", link:"enseignants.html", roles:["prefet","admin"]},
@@ -142,15 +159,23 @@
         }
 
       } catch(err){
+        console.error(err);
         showNotification(err.message,"error");
+        await signOut(auth);
         window.location.href="login.html";
       }
     });
 
+    // 🔹 Déconnexion
     logoutBtn.addEventListener("click", async ()=>{
-      await signOut(auth);
-      showNotification("✅ Déconnexion réussie !");
-      window.location.href="login.html";
+      try {
+        await signOut(auth);
+        showNotification("✅ Déconnexion réussie !");
+        setTimeout(()=>window.location.href="login.html",500); // petite pause pour voir la notification
+      } catch(err){
+        console.error(err);
+        showNotification("Erreur lors de la déconnexion","error");
+      }
     });
   </script>
 </body>
