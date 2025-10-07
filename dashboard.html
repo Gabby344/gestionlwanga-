@@ -199,55 +199,55 @@
     </div>
   </div>
 
+  <!-- Firebase SDK -->
   <script type="module">
     import { initializeApp } from "https://www.gstatic.com/firebasejs/10.5.2/firebase-app.js";
     import { getAuth, signOut, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/10.5.2/firebase-auth.js";
     import { getFirestore, doc, getDoc } from "https://www.gstatic.com/firebasejs/10.5.2/firebase-firestore.js";
 
     const firebaseConfig = {
-      apiKey: "TON_API_KEY",
-      authDomain: "TON_DOMAINE.firebaseapp.com",
-      projectId: "TON_PROJECT_ID"
+      apiKey: "TA_CLE_API",
+      authDomain: "TON_PROJET.firebaseapp.com",
+      projectId: "TON_PROJET"
     };
 
-    const app = initializeApp(firebaseConfig);
-    const auth = getAuth(app);
+  Voici la suite et fin du script Firebase à placer dans ton fichier dashboard.html, juste après l'initialisation de Firebase :
     const db = getFirestore(app);
 
     const headerTitle = document.querySelector(".header h1");
 
-        onAuthStateChanged(auth, async (user) => {
+    onAuthStateChanged(auth, async (user) => {
       if (!user) {
-        window.location.href = "connexion.html";
+        window.location.href = "admin.html"; // Redirection si non connecté
         return;
       }
 
-      const docRef = doc(db, "utilisateurs", user.uid);
+      const docRef = doc(db, "users", user.uid); // Assure-toi que la collection s'appelle "users"
       const docSnap = await getDoc(docRef);
 
       if (!docSnap.exists()) {
         alert("⛔ Profil introuvable.");
-        window.location.href = "connexion.html";
+        window.location.href = "admin.html";
         return;
       }
 
       const role = docSnap.data().role;
-      const nom = `${docSnap.data().nom} ${docSnap.data().postNom} ${docSnap.data().prenom}`;
+      const nom = `${docSnap.data().nom || ""} ${docSnap.data().postNom || ""} ${docSnap.data().prenom || ""}`.trim();
 
-      const autorisés = ["prefet", "admin"];
-      if (!autorisés.includes(role)) {
+      const autorises = ["admin", "prefet"];
+      if (!autorises.includes(role)) {
         alert("⛔ Accès refusé : vous n'avez pas la permission pour ce tableau de bord.");
-        window.location.href = "connexion.html";
+        window.location.href = "admin.html";
         return;
       }
 
-      headerTitle.textContent = `Dashboard · ${role.toUpperCase()} · ${nom}`;
+      headerTitle.textContent = `Dashboard · ${role.toUpperCase()} · ${nom || "Administrateur"}`;
     });
 
     window.logout = async function () {
       await signOut(auth);
       alert("✅ Déconnexion réussie.");
-      window.location.href = "connexion.html";
+      window.location.href = "admin.html";
     };
   </script>
 </body>
