@@ -183,17 +183,13 @@
     
     <script>
         const firebaseConfig = {
-            // Clé API et IDs tirés de votre capture
             apiKey: "AIzaSyAgv4TDYnR60TXXnnS-LISqbZTGcdLT31cc",
-            projectId: "gestionlwanga",
-            messagingSenderId: "622604298611",
-            
-            // Domaines déduits de l'ID du projet
             authDomain: "gestionlwanga.firebaseapp.com",
+            projectId: "gestionlwanga",
             storageBucket: "gestionlwanga.appspot.com", 
-            
-            // !!! CECI EST CRITIQUE ET DOIT ÊTRE REMPLACÉ PAR VOTRE APP ID COMPLET !!!
-            appId: "VOTRE_APP_ID_COMPLET_ICI", 
+            messagingSenderId: "622604298611",
+            // L'ID de l'application est la clé manquante qui corrigeait l'erreur!
+            appId: "1:622604298611:web:4ab4314ed3eec6826c3d06", 
         };
 
         // Initialiser Firebase
