@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Dashboard · ISC Lwanga</title>
+  <title>Dashboard · Administration · ISC Lwanga</title>
   <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700;800&display=swap" rel="stylesheet">
   <style>
     :root {
@@ -53,7 +53,7 @@
   <div class="header">
     <div class="header-left">
       <img src="logo.png" alt="Logo ISC Lwanga">
-      <h1 id="dashboardTitle">Dashboard · ISC Lwanga</h1>
+      <h1 id="dashboardTitle">Dashboard · Administration · ISC Lwanga</h1>
     </div>
     <div class="user-info" id="userInfo"></div>
     <button class="btn-logout" id="logoutBtn">🚪 Déconnexion</button>
@@ -61,14 +61,10 @@
 
   <div class="main-content">
     <h2 class="section-title">Aperçu Actuel</h2>
-    <div class="stats-grid">
-      <!-- Stats dynamiques -->
-    </div>
+    <div class="stats-grid"></div>
 
     <h2 class="section-title">Modules de Gestion</h2>
-    <div class="menu-grid">
-      <!-- Modules dynamiques -->
-    </div>
+    <div class="menu-grid"></div>
   </div>
 
   <script type="module">
@@ -104,7 +100,7 @@
         dashboardTitle.textContent = `Dashboard · ${role.toUpperCase()} · ISC Lwanga`;
         userInfo.textContent = `${nom} (${role})`;
 
-        // --- Stats dynamiques
+        // Stats dynamiques
         const statsData = [
           {title:"Élèves Inscrits", value:1245, footer:"+5 nouveaux ce mois", color:"stat-bleu"},
           {title:"Enseignants Actifs", value:48, footer:"Taux d'assiduité : 98%", color:"stat-vert"},
@@ -119,7 +115,7 @@
           statsGrid.appendChild(card);
         });
 
-        // --- Modules dynamiques selon rôle
+        // Modules dynamiques selon rôle
         const modules=[
           {title:"Gestion des Élèves", icon:"📚", link:"eleves.html", roles:["prefet","admin","directeur_etudes","secretaire"]},
           {title:"Gestion des Enseignants", icon:"👨‍🏫", link:"enseignants.html", roles:["prefet","admin"]},
