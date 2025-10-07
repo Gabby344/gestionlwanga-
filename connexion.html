@@ -1,0 +1,121 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Connexion · Institut Saint Charles Lwanga</title>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600&display=swap" rel="stylesheet">
+  <style>
+    :root {
+      --bleu: #1e3a8a;
+      --gris: #374151;
+      --fond: #f9fafb;
+      --ombre: rgba(0,0,0,0.05);
+      --rouge: #dc2626;
+    }
+    body {
+      font-family: 'Inter', sans-serif;
+      background-color: var(--fond);
+      margin: 0;
+      padding: 2rem 1rem;
+      color: var(--gris);
+    }
+    header {
+      text-align: center;
+      margin-bottom: 2rem;
+    }
+    header h1 {
+      font-size: 1.6rem;
+      color: var(--bleu);
+    }
+    form {
+      max-width: 400px;
+      margin: auto;
+      background-color: white;
+      padding: 1.5rem;
+      border-radius: 8px;
+      box-shadow: 0 0 5px var(--ombre);
+    }
+    input, select {
+      width: 100%;
+      padding: 0.75rem;
+      margin-bottom: 1rem;
+      border: 1px solid #d1d5db;
+      border-radius: 6px;
+      font-size: 1rem;
+    }
+    button {
+      width: 100%;
+      padding: 0.75rem;
+      background-color: var(--bleu);
+      color: white;
+      border: none;
+      border-radius: 6px;
+      font-weight: bold;
+      font-size: 1rem;
+      cursor: pointer;
+    }
+    button:hover {
+      background-color: #1d4ed8;
+    }
+    .erreur {
+      color: var(--rouge);
+      text-align: center;
+      margin-bottom: 1rem;
+    }
+    footer {
+      margin-top: 3rem;
+      text-align: center;
+      font-size: 0.85rem;
+      color: #6b7280;
+    }
+  </style>
+</head>
+<body>
+  <header>
+    <h1>🔐 Connexion</h1>
+    <p>Institut Saint Charles Lwanga</p>
+  </header>
+
+  <form id="loginForm">
+    <input type="email" id="email" placeholder="Adresse e-mail" required />
+    <input type="password" id="password" placeholder="Mot de passe" required />
+    <select id="role" required>
+      <option value="">Choisir votre rôle</option>
+      <option value="eleve">Élève</option>
+      <option value="enseignant">Enseignant</option>
+      <option value="parent">Parent</option>
+    </select>
+    <div class="erreur" id="erreurMsg"></div>
+    <button type="submit">Se connecter</button>
+  </form>
+
+  <footer>
+    &copy; 2025 · Plateforme scolaire sécurisée · Lubumbashi
+  </footer>
+
+  <script>
+    document.getElementById("loginForm").addEventListener("submit", function(e) {
+      e.preventDefault();
+      const email = document.getElementById("email").value.trim();
+      const password = document.getElementById("password").value.trim();
+      const role = document.getElementById("role").value;
+      const erreurMsg = document.getElementById("erreurMsg");
+
+      if (!email || !password || !role) {
+        erreurMsg.textContent = "Veuillez remplir tous les champs.";
+        return;
+      }
+
+      // Simulation simple
+      if (role === "eleve") {
+        window.location.href = "accueil-utilisateur.html";
+      } else if (role === "enseignant") {
+        window.location.href = "accueil-enseignant.html";
+      } else {
+        window.location.href = "accueil-parent.html";
+      }
+    });
+  </script>
+</body>
+</html>
