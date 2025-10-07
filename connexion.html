@@ -118,7 +118,7 @@
             background-color: #1c3d9a;
         }
         
-        /* NOUVEAU : Style pour les messages d'erreur */
+        /* Style pour les messages d'erreur */
         #error-message {
             color: var(--rouge-erreur);
             background-color: #fee2e2;
@@ -178,7 +178,29 @@
         </p>
     </div>
 
-    <script src="votre-configuration-firebase.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/9.6.1/firebase-app-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/9.6.1/firebase-auth-compat.js"></script>
+    
+    <script>
+        const firebaseConfig = {
+            // Clé API fournie
+            apiKey: "AIzaSyAgv4TDYnR60TXXnnS-LISqbZTGcdLT31cc", 
+            // ID du projet (utilisé pour authDomain)
+            authDomain: "gestionlwanga.firebaseapp.com", 
+            // ID du projet
+            projectId: "gestionlwanga",
+            // Numéro du projet (utilisé comme Sender ID)
+            messagingSenderId: "622604298611", 
+            // Note: storageBucket et appId ne sont pas visibles sur l'image, 
+            // mais ils ne sont pas strictement nécessaires pour l'AUTH seule.
+            // On utilise les valeurs minimales pour l'authentification.
+        };
+
+        // Initialiser Firebase
+        const app = firebase.initializeApp(firebaseConfig);
+        const auth = app.auth(); // Référence à l'authentification
+    </script>
+    
     <script src="login.js"></script>
 
 </body>
