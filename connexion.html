@@ -186,13 +186,14 @@
             apiKey: "AIzaSyAgv4TDYnR60TXXnnS-LISqbZTGcdLT31cc",
             authDomain: "gestionlwanga.firebaseapp.com",
             projectId: "gestionlwanga",
-            storageBucket: "gestionlwanga.appspot.com", 
+            // Corrigé en utilisant le storageBucket exact de votre SDK
+            storageBucket: "gestionlwanga.firebasestorage.app", 
             messagingSenderId: "622604298611",
-            // L'ID de l'application est la clé manquante qui corrigeait l'erreur!
+            // L'ID de l'application est maintenant complet
             appId: "1:622604298611:web:4ab4314ed3eec6826c3d06", 
         };
 
-        // Initialiser Firebase
+        // Initialiser Firebase (avec la version compat pour le fichier login.js)
         const app = firebase.initializeApp(firebaseConfig);
         const auth = app.auth(); // Référence à l'authentification
     </script>
