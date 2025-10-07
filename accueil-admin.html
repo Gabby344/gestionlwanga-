@@ -3,53 +3,45 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Interface Admin · Institut Saint Charles Lwanga</title>
+  <title>Accueil Admin · Institut Saint Charles Lwanga</title>
   <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600&display=swap" rel="stylesheet">
   <style>
-    :root {
-      --bleu: #1e3a8a;
-      --gris: #374151;
-      --fond: #f9fafb;
-      --ombre: rgba(0,0,0,0.05);
-    }
     body {
       font-family: 'Inter', sans-serif;
-      background-color: var(--fond);
+      background-color: #f9fafb;
       margin: 0;
-      padding: 2rem 1rem;
-      color: var(--gris);
+      padding: 2rem;
+      color: #374151;
     }
-    header {
+    h1 {
+      text-align: center;
+      color: #1e3a8a;
+      margin-bottom: 1rem;
+    }
+    .welcome {
       text-align: center;
       margin-bottom: 2rem;
+      font-size: 1.1rem;
     }
-    header h1 {
-      font-size: 1.6rem;
-      color: var(--bleu);
-    }
-    header p {
-      font-size: 0.95rem;
-      color: var(--gris);
-    }
-    .menu {
+    .modules {
+      max-width: 600px;
+      margin: auto;
       display: grid;
       grid-template-columns: 1fr;
       gap: 1rem;
-      max-width: 500px;
-      margin: auto;
     }
-    .menu a {
-      display: block;
+    .module {
       background-color: white;
       padding: 1rem;
       border-radius: 8px;
-      text-decoration: none;
-      color: var(--bleu);
+      box-shadow: 0 0 5px rgba(0,0,0,0.05);
+      text-align: center;
       font-weight: 600;
-      box-shadow: 0 0 5px var(--ombre);
-      transition: background-color 0.2s;
+      color: #1e3a8a;
+      text-decoration: none;
+      transition: background 0.2s;
     }
-    .menu a:hover {
+    .module:hover {
       background-color: #e0e7ff;
     }
     footer {
@@ -61,26 +53,86 @@
   </style>
 </head>
 <body>
-  <header>
-    <h1>🛠️ Interface Administrateur</h1>
-    <p>Institut Saint Charles Lwanga · Lubumbashi</p>
-  </header>
-
-  <div class="menu">
-    <a href="dashboard.html">📊 Tableau de bord</a>
-    <a href="ajouter-eleves.html">👨‍🎓 Ajouter des élèves</a>
-    <a href="ajouter-enseignants.html">👩‍🏫 Ajouter des enseignants</a>
-    <a href="assignation-cours.html">📚 Assigner les cours</a>
-    <a href="saisie-notes.html">📝 Saisir les notes</a>
-    <a href="generer-bulletins.html">📄 Générer les bulletins</a>
-    <a href="validation-bulletins.html">✅ Valider les bulletins</a>
-    <a href="config-frais.html">💰 Configurer les frais</a>
-    <a href="historique-paiements.html">📜 Historique des paiements</a>
-    <a href="voir-messages.html">📬 Publier des messages</a>
-  </div>
+  <h1>🏫 Espace Administratif</h1>
+  <div class="welcome" id="welcomeMsg">Chargement...</div>
+  <div class="modules" id="moduleList"></div>
 
   <footer>
-    &copy; 2025 · Interface administrative sécurisée · Institut Saint Charles Lwanga
+    &copy; 2025 · Institut Saint Charles Lwanga · Lubumbashi
   </footer>
+
+  <script type="module">
+    import { initializeApp } from "https://www.gstatic.com/firebasejs/10.5.2/firebase-app.js";
+    import { getAuth, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/10.5.2/firebase-auth.js";
+    import { getFirestore, doc, getDoc } from "https://www.gstatic.com/firebasejs/10.5.2/firebase-firestore.js";
+
+    const firebaseConfig = {
+      apiKey: "TON_API_KEY",
+      authDomain: "TON_DOMAINE.firebaseapp.com",
+      projectId: "TON_PROJECT_ID"
+    };
+
+    const app = initializeApp(firebaseConfig);
+    const auth = getAuth(app);
+    const db = getFirestore(app);
+
+    const welcomeMsg = document.getElementById("welcomeMsg");
+    const moduleList = document.getElementById("moduleList");
+
+    const modulesParRole = {
+      prefet: [
+        { label: "👥 Utilisateurs", url: "liste-utilisateurs.html" },
+        { label: "📚 Cours", url: "cours.html" },
+        { label: "📝 Bulletins", url: "bulletins.html" },
+        { label: "📋 Sanctions", url: "discipline.html" },
+        { label: "📄 Inscriptions", url: "inscriptions.html" },
+        { label: "💰 Paiements", url: "paiements.html" }
+      ],
+      directeur_etudes: [
+        { label: "📚 Cours", url: "cours.html" },
+        { label: "📝 Bulletins", url: "bulletins.html" }
+      ],
+      directeur_discipline: [
+        { label: "📋 Sanctions", url: "discipline.html" },
+        { label: "📆 Présences", url: "presences.html" }
+      ],
+      secretaire: [
+        { label: "📄 Inscriptions", url: "inscriptions.html" },
+        { label: "📁 Documents", url: "documents.html" }
+      ],
+      econome: [
+        { label: "💰 Paiements", url: "paiements.html" },
+        { label: "📊 Rapports financiers", url: "rapports.html" }
+      ]
+    };
+
+    onAuthStateChanged(auth, async (user) => {
+      if (user) {
+        const docRef = doc(db, "utilisateurs", user.uid);
+        const docSnap = await getDoc(docRef);
+
+        if (docSnap.exists()) {
+          const data = docSnap.data();
+          const nomComplet = `${data.nom} ${data.postNom} ${data.prenom}`;
+          const role = data.role;
+
+          welcomeMsg.textContent = `Bienvenue ${nomComplet} · Rôle : ${role}`;
+
+          const modules = modulesParRole[role] || [];
+          modules.forEach(mod => {
+            const link = document.createElement("a");
+            link.className = "module";
+            link.href = mod.url;
+            link.textContent = mod.label;
+            moduleList.appendChild(link);
+          });
+        } else {
+          welcomeMsg.textContent = "Utilisateur non reconnu.";
+        }
+      } else {
+        window.location.href = "connexion.html";
+      }
+    });
+  </script>
 </body>
 </html>
