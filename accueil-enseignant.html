@@ -59,11 +59,27 @@
       font-size: 0.85rem;
       color: #6b7280;
     }
+    .btn-logout {
+      margin-top: 2rem;
+      display: inline-block;
+      background-color: #fca5a5;
+      color: #b91c1c;
+      padding: 0.5rem 1rem;
+      border-radius: 6px;
+      font-weight: 600;
+      text-decoration: none;
+      cursor: pointer;
+      transition: 0.2s;
+    }
+    .btn-logout:hover {
+      background-color: #b91c1c;
+      color: white;
+    }
   </style>
 </head>
 <body>
   <header>
-    <h1>Espace Enseignant</h1>
+    <h1 id="teacherName">Espace Enseignant</h1>
     <p>Institut Saint Charles Lwanga · Lubumbashi</p>
   </header>
 
@@ -75,8 +91,69 @@
     <a href="voir-profil.html">👤 Mon profil</a>
   </div>
 
+  <div style="text-align:center;">
+    <button class="btn-logout" id="logoutBtn">🚪 Déconnexion</button>
+  </div>
+
   <footer>
     &copy; 2025 · Interface enseignant sécurisée · Institut Saint Charles Lwanga
   </footer>
+
+  <script type="module">
+    import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-app.js";
+    import { getAuth, signOut, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-auth.js";
+    import { getFirestore, doc, getDoc } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore.js";
+
+    // ⚙️ Firebase config (même que ton config.js)
+    const firebaseConfig = {
+      apiKey: "AIzaSyAgv4TDYnR60TXnns-LISqbZTgcdLT31cc",
+      authDomain: "gestionlwanga.firebaseapp.com",
+      projectId: "gestionlwanga",
+      storageBucket: "gestionlwanga.firebasestorage.app",
+      messagingSenderId: "622604298611",
+      appId: "1:622604298611:web:4ab4314ed3eec6826c3d06"
+    };
+
+    const app = initializeApp(firebaseConfig);
+    const auth = getAuth(app);
+    const db = getFirestore(app);
+
+    const teacherName = document.getElementById("teacherName");
+
+    // 🔐 Vérifie si un utilisateur est connecté
+    onAuthStateChanged(auth, async (user) => {
+      if (!user) {
+        window.location.href = "connexion.html";
+        return;
+      }
+
+      try {
+        const userDoc = await getDoc(doc(db, "users", user.uid));
+        if (!userDoc.exists()) throw new Error("Profil enseignant introuvable.");
+
+        const data = userDoc.data();
+        if (data.role !== "enseignant") {
+          alert("⛔ Accès refusé : réservé aux enseignants !");
+          await signOut(auth);
+          window.location.href = "connexion.html";
+          return;
+        }
+
+        // Affiche le nom complet
+        const nomComplet = `${data.nom || ""} ${data.postNom || ""} ${data.prenom || ""}`.trim();
+        teacherName.textContent = `Espace Enseignant · ${nomComplet}`;
+      } catch (err) {
+        alert(err.message);
+        window.location.href = "connexion.html";
+      }
+    });
+
+    // 🚪 Déconnexion
+    document.getElementById("logoutBtn").addEventListener("click", async () => {
+      await signOut(auth);
+      alert("✅ Déconnexion réussie.");
+      window.location.href = "connexion.html";
+    });
+  </script>
 </body>
 </html>
