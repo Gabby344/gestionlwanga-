@@ -2,117 +2,151 @@
 <html lang="fr">
 <head>
   <meta charset="UTF-8" />
-  <title>Connexion · SIGS</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Connexion · Institut Saint Charles Lwanga</title>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600&display=swap" rel="stylesheet">
+
   <style>
+    :root {
+      --bleu: #1e3a8a;
+      --bleu-clair: #3b82f6;
+      --fond: #f9fafb;
+      --ombre: rgba(0, 0, 0, 0.1);
+    }
+
     body {
-      font-family: 'Segoe UI', sans-serif;
-      background: linear-gradient(135deg, #007bff, #00a8ff);
+      font-family: 'Inter', sans-serif;
+      background: linear-gradient(135deg, var(--bleu), var(--bleu-clair));
       display: flex;
       justify-content: center;
       align-items: center;
       height: 100vh;
       margin: 0;
+      padding: 1rem;
+      color: #333;
     }
+
     .container {
       background: white;
-      padding: 40px 30px;
-      border-radius: 10px;
-      box-shadow: 0 5px 20px rgba(0,0,0,0.2);
+      padding: 40px 35px;
+      border-radius: 12px;
+      box-shadow: 0 8px 25px var(--ombre);
       width: 100%;
-      max-width: 400px;
+      max-width: 420px;
       text-align: center;
-      animation: fadeIn 0.6s ease;
+      animation: fadeIn 0.6s ease-in-out;
     }
+
+    .logo {
+      width: 80px;
+      height: 80px;
+      object-fit: contain;
+      margin-bottom: 10px;
+    }
+
     h2 {
+      color: var(--bleu);
       margin-bottom: 25px;
-      color: #007bff;
+      font-weight: 600;
+      font-size: 1.4rem;
     }
+
     input, button {
       width: 100%;
       padding: 12px;
       margin-bottom: 15px;
-      border-radius: 6px;
-      border: 1px solid #ccc;
+      border-radius: 8px;
       font-size: 15px;
     }
+
+    input {
+      border: 1px solid #d1d5db;
+      background-color: #f9fafb;
+      transition: border-color 0.2s;
+    }
+
+    input:focus {
+      border-color: var(--bleu);
+      outline: none;
+      box-shadow: 0 0 0 2px #dbeafe;
+    }
+
     button {
-      background: #007bff;
+      background: var(--bleu);
       color: white;
       border: none;
-      font-weight: bold;
+      font-weight: 600;
       cursor: pointer;
-      transition: 0.3s;
+      transition: background 0.3s, transform 0.1s;
     }
+
     button:hover {
-      background: #0056b3;
+      background: #0f2f79;
+      transform: scale(1.02);
     }
+
     #errorMessage {
-      color: red;
-      text-align: center;
+      color: #dc2626;
       font-size: 14px;
+      margin-top: 5px;
+      margin-bottom: 10px;
     }
+
+    #successMessage {
+      color: #16a34a;
+      font-size: 14px;
+      margin-top: 5px;
+      margin-bottom: 10px;
+    }
+
     .link {
-      margin-top: 10px;
       display: block;
-      color: #007bff;
+      margin-top: 15px;
+      color: var(--bleu);
       text-decoration: none;
+      font-size: 0.9rem;
     }
+
     .link:hover {
       text-decoration: underline;
     }
+
+    footer {
+      text-align: center;
+      margin-top: 20px;
+      font-size: 0.8rem;
+      color: #6b7280;
+    }
+
     @keyframes fadeIn {
       from { opacity: 0; transform: translateY(15px); }
       to { opacity: 1; transform: translateY(0); }
     }
   </style>
 </head>
+
 <body>
   <div class="container">
-    <h2>Connexion · SIGS</h2>
+    <img src="assets/img/logo-lwanga.png" alt="Logo Institut Saint Charles Lwanga" class="logo">
+    <h2>Connexion · Institut Saint Charles Lwanga</h2>
+
     <form id="loginForm">
       <input type="email" id="email" placeholder="Adresse e-mail" required />
       <input type="password" id="password" placeholder="Mot de passe" required />
       <button type="submit">Se connecter</button>
     </form>
+
     <p id="errorMessage"></p>
+    <p id="successMessage"></p>
+
     <a href="index.html" class="link">← Retour à l’accueil</a>
+
+    <footer>
+      &copy; 2025 Institut Saint Charles Lwanga · Tous droits réservés
+    </footer>
   </div>
 
-  <!-- Script Firebase & logique de connexion -->
-  <script type="module">
-    import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-app.js";
-    import { getAuth, signInWithEmailAndPassword } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-auth.js";
-
-    const firebaseConfig = {
-      apiKey: "AIzaSyAgv4TDYnR60TXnns-LISqbZTgcdLT31cc",
-      authDomain: "gestionlwanga.firebaseapp.com",
-      projectId: "gestionlwanga",
-      storageBucket: "gestionlwanga.firebasestorage.app",
-      messagingSenderId: "622604298611",
-      appId: "1:622604298611:web:4ab4314ed3eec6826c3d06"
-    };
-
-    const app = initializeApp(firebaseConfig);
-    const auth = getAuth(app);
-
-    const form = document.getElementById("loginForm");
-    const errorMessage = document.getElementById("errorMessage");
-
-    form.addEventListener("submit", async (e) => {
-      e.preventDefault();
-      const email = document.getElementById("email").value.trim();
-      const password = document.getElementById("password").value;
-
-      try {
-        const userCredential = await signInWithEmailAndPassword(auth, email, password);
-        const user = userCredential.user;
-        alert("✅ Connexion réussie ! Bienvenue, " + user.email);
-        window.location.href = "dashboard.html";
-      } catch (error) {
-        console.error(error);
-        errorMessage.textContent = "Erreur : " + error.message;
-      }
-    });
-  </script>
+  <!-- Script Firebase + logique de connexion -->
+  <script type="module" src="./js/login.js"></script>
 </body>
 </html>
