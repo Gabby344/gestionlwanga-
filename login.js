@@ -1,9 +1,6 @@
 /**
  * Fichier : login.js
  * Gère la soumission du formulaire de connexion et l'authentification Firebase.
- *
- * REQUIERT : La variable 'auth' (référence à firebase.auth()) doit être initialisée
- * dans le fichier HTML avant l'inclusion de ce script.
  */
 
 // Récupération des éléments du DOM
@@ -79,6 +76,9 @@ loginForm.addEventListener('submit', async (e) => {
                 break;
             case 'auth/user-disabled':
                 userMessage = "Votre compte a été désactivé.";
+                break;
+            case 'auth/api-key-not-valid':
+                userMessage = "Erreur de configuration : Clé API ou APP ID invalide. Vérifiez votre configuration Firebase.";
                 break;
             default:
                 console.error("Erreur Firebase:", error.code, error.message); 
