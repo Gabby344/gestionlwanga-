@@ -129,10 +129,12 @@
       feedback.className = "message";
 
       try {
+        // Création de l'utilisateur dans Firebase Auth
         const userCredential = await createUserWithEmailAndPassword(auth, email, password);
         const user = userCredential.user;
 
-        await setDoc(doc(db, "utilisateurs", user.uid), {
+        // Création automatique du document Firestore dans la collection "users"
+        await setDoc(doc(db, "users", user.uid), {
           nom,
           postNom,
           prenom,
