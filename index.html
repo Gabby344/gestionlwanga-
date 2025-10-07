@@ -229,6 +229,14 @@
     }
   </style>
 </head>
+  <script>
+  // Vérifie si l'utilisateur est déjà connecté (à intégrer plus tard avec Firebase)
+  const estConnecte = false; // à remplacer par une vraie vérification
+
+  if (!estConnecte) {
+    window.location.href = "connexion.html";
+  }
+</script>
 <body>
 <div class="app-container">
     <div class="sidebar">
