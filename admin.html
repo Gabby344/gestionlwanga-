@@ -7,11 +7,11 @@
   <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700;800&display=swap" rel="stylesheet">
   <style>
     :root {
-      --bleu-fonce: #1e40af; /* Couleur principale */
+      --bleu-fonce: #1e40af;
       --gris-fonce: #1f2937;
-      --vert-action: #047857; /* Bouton Se Connecter */
-      --fond-principal: #f4f6f8; /* Fond légèrement gris */
-      --gris-bordure: #d1d5db; 
+      --vert-action: #047857;
+      --fond-principal: #f4f6f8;
+      --gris-bordure: #d1d5db;
       --ombre-form: rgba(0,0,0,0.1);
     }
     body {
@@ -23,41 +23,35 @@
       display: flex;
       justify-content: center;
       align-items: center;
-      min-height: 100vh; /* Centrage vertical complet */
+      min-height: 100vh;
     }
-
-    /* --- CONTENEUR ET CARTE --- */
     .login-container {
-        max-width: 400px;
-        width: 90%; /* Bonne réactivité mobile */
+      max-width: 400px;
+      width: 90%;
     }
     .login-card {
       background: white;
       padding: 2.5rem;
-      border-radius: 16px; /* Bords doux */
+      border-radius: 16px;
       box-shadow: 0 10px 25px var(--ombre-form);
       text-align: center;
     }
-    
     .logo {
-        font-size: 1.5rem;
-        font-weight: 800;
-        color: var(--bleu-fonce);
-        margin-bottom: 2rem;
-        border-bottom: 2px solid #f3f4f6;
-        padding-bottom: 1rem;
+      font-size: 1.5rem;
+      font-weight: 800;
+      color: var(--bleu-fonce);
+      margin-bottom: 2rem;
+      border-bottom: 2px solid #f3f4f6;
+      padding-bottom: 1rem;
     }
-    
     h1 {
       font-size: 1.5rem;
       color: var(--gris-fonce);
       margin-top: 0;
       margin-bottom: 1.5rem;
     }
-
-    /* --- CHAMPS DE FORMULAIRE --- */
     .form-group {
-        margin-bottom: 1rem;
+      margin-bottom: 1rem;
     }
     input[type="email"], input[type="password"] {
       width: 100%;
@@ -70,13 +64,11 @@
       transition: border-color 0.2s, box-shadow 0.2s;
     }
     input:focus {
-        border-color: var(--bleu-fonce);
-        box-shadow: 0 0 0 3px rgba(30, 64, 175, 0.1);
-        outline: none;
-        background-color: white;
+      border-color: var(--bleu-fonce);
+      box-shadow: 0 0 0 3px rgba(30, 64, 175, 0.1);
+      outline: none;
+      background-color: white;
     }
-    
-    /* --- BOUTON D'ACTION PRINCIPAL --- */
     .btn-connecter {
       width: 100%;
       background-color: var(--vert-action);
@@ -93,75 +85,90 @@
     .btn-connecter:hover {
       background-color: #065f46;
     }
-
-    /* --- LIEN OUBLIÉ --- */
     .forgot-password {
-        display: block;
-        margin-top: 1rem;
-        font-size: 0.85rem;
-        color: #6b7280;
-        text-decoration: none;
+      display: block;
+      margin-top: 1rem;
+      font-size: 0.85rem;
+      color: #6b7280;
+      text-decoration: none;
     }
     .forgot-password:hover {
-        color: var(--bleu-fonce);
+      color: var(--bleu-fonce);
     }
   </style>
 </head>
 <body>
-  
+
   <div class="login-container">
     <div class="login-card">
-        <div class="logo">Institut Saint Charles Lwanga (SIGS)</div>
-        <h1>Connexion Administrateur</h1>
-        
-        <form id="loginForm">
-            <div class="form-group">
-                <input type="email" id="email" placeholder="Adresse E-mail Admin" required />
-            </div>
-            
-            <div class="form-group">
-                <input type="password" id="password" placeholder="Mot de passe" required />
-            </div>
-            
-            <button type="submit" class="btn-connecter">
-                Se connecter
-            </button>
+      <div class="logo">Institut Saint Charles Lwanga (SIGS)</div>
+      <h1>Connexion Administrateur</h1>
 
-            <a href="#" class="forgot-password">Mot de passe oublié ?</a>
-        </form>
-        
-        <p id="message" style="margin-top: 1.5rem; font-size: 0.9rem; color: var(--rouge);"></p>
+      <form id="loginForm">
+        <div class="form-group">
+          <input type="email" id="email" placeholder="Adresse E-mail Admin" required />
+        </div>
+        <div class="form-group">
+          <input type="password" id="password" placeholder="Mot de passe" required />
+        </div>
+        <button type="submit" class="btn-connecter">Se connecter</button>
+        <a href="#" class="forgot-password">Mot de passe oublié ?</a>
+      </form>
 
+      <p id="message" style="margin-top: 1.5rem; font-size: 0.9rem;"></p>
     </div>
   </div>
 
+  <!-- Firebase SDKs -->
+  <script src="https://www.gstatic.com/firebasejs/10.5.2/firebase-app.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/10.5.2/firebase-auth.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/10.5.2/firebase-firestore.js"></script>
+
   <script>
+    // Configuration Firebase
+    const firebaseConfig = {
+      apiKey: "TA_CLE_API",
+      authDomain: "TON_PROJET.firebaseapp.com",
+      projectId: "TON_PROJET",
+      storageBucket: "TON_PROJET.appspot.com",
+      messagingSenderId: "TON_ID",
+      appId: "TON_APP_ID"
+    };
+    firebase.initializeApp(firebaseConfig);
+    const auth = firebase.auth();
+    const db = firebase.firestore();
+
+    // Gestion du formulaire
     document.getElementById('loginForm').addEventListener('submit', function(e) {
       e.preventDefault();
-      const email = document.getElementById('email').value;
-      const password = document.getElementById('password').value;
+      const email = document.getElementById('email').value.trim();
+      const password = document.getElementById('password').value.trim();
       const messageElement = document.getElementById('message');
 
-      // --- SIMULATION DE CONNEXION ---
-      // En production, vous feriez un appel à Firebase Auth ou à votre API Backend ici.
-      
-      const adminEmail = "admin@stcharles.com"; // Email de démonstration
-      const adminPassword = "password123";      // Mot de passe de démonstration
-      
-      if (email === adminEmail && password === adminPassword) {
-        messageElement.style.color = 'var(--vert-action)';
-        messageElement.innerHTML = "✅ Connexion réussie! Redirection en cours...";
-        
-        // Redirection vers le tableau de bord après un court délai
-        setTimeout(() => {
-          window.location.href = 'dashboard.html';
-        }, 1000); 
-
-      } else {
-        messageElement.style.color = 'var(--rouge)';
-        messageElement.innerHTML = "❌ Identifiants incorrects. Veuillez réessayer.";
-      }
+      auth.signInWithEmailAndPassword(email, password)
+        .then((userCredential) => {
+          const uid = userCredential.user.uid;
+          db.collection("users").doc(uid).get().then((doc) => {
+            if (doc.exists && doc.data().role === "admin") {
+              messageElement.style.color = 'green';
+              messageElement.innerHTML = "✅ Connexion réussie! Redirection...";
+              setTimeout(() => {
+                window.location.href = 'dashboard.html';
+              }, 1000);
+            } else {
+              messageElement.style.color = 'red';
+              messageElement.innerHTML = "⛔ Accès refusé. Vous n'êtes pas administrateur.";
+              auth.signOut();
+            }
+          });
+        })
+        .catch((error) => {
+          messageElement.style.color = 'red';
+          messageElement.innerHTML = "❌ Erreur : " + error.message;
+        });
     });
   </script>
 </body>
 </html>
+
+
