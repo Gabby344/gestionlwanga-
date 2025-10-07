@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Planning · Institut Saint Charles Lwanga</title>
+  <title>Horaires de cours · Institut Saint Charles Lwanga</title>
   <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600&display=swap" rel="stylesheet">
   <style>
     :root {
@@ -11,8 +11,11 @@
       --gris: #374151;
       --fond: #f9fafb;
       --ombre: rgba(0,0,0,0.05);
+      --orange: #f59e0b;
+      --vert: #10b981;
       --ligne: #e5e7eb;
     }
+
     body {
       font-family: 'Inter', sans-serif;
       background-color: var(--fond);
@@ -20,50 +23,94 @@
       padding: 2rem 1rem;
       color: var(--gris);
     }
+
     header {
       text-align: center;
       margin-bottom: 2rem;
     }
+
     header h1 {
-      font-size: 1.6rem;
+      font-size: 1.8rem;
       color: var(--bleu);
       margin-bottom: 0.3rem;
     }
+
     header p {
-      font-size: 0.95rem;
-      color: var(--gris);
+      font-size: 1rem;
+      color: #6b7280;
     }
-    .planning {
+
+    .controls {
       max-width: 500px;
+      margin: 1rem auto 2rem auto;
+      display: flex;
+      justify-content: center;
+      gap: 1rem;
+    }
+
+    select {
+      padding: 0.5rem;
+      border-radius: 6px;
+      border: 1px solid #d1d5db;
+      font-size: 1rem;
+    }
+
+    #planningTableContainer {
+      overflow-x: auto;
+      max-width: 900px;
       margin: auto;
       background-color: white;
-      padding: 1rem;
-      border-radius: 8px;
-      box-shadow: 0 0 5px var(--ombre);
+      border-radius: 10px;
+      box-shadow: 0 4px 10px var(--ombre);
     }
-    .jour {
-      margin-bottom: 1.5rem;
+
+    table {
+      width: 100%;
+      border-collapse: collapse;
+      min-width: 700px;
     }
-    .jour h2 {
-      font-size: 1.1rem;
-      color: var(--bleu);
-      margin-bottom: 0.5rem;
-      border-bottom: 1px solid var(--ligne);
-      padding-bottom: 0.3rem;
+
+    th, td {
+      border: 1px solid var(--ligne);
+      padding: 0.6rem;
+      text-align: center;
     }
-    .cours {
-      padding: 0.5rem 0;
-      border-bottom: 1px solid var(--ligne);
-      display: flex;
-      flex-direction: column;
-      gap: 0.2rem;
+
+    th {
+      background-color: var(--bleu);
+      color: white;
+      font-weight: 600;
+      text-transform: uppercase;
+      font-size: 0.85rem;
+      position: sticky;
+      top: 0;
     }
-    .cours:last-child {
-      border-bottom: none;
+
+    td.cours-cell {
+      background-color: #fffbeb;
+      cursor: pointer;
+      transition: background-color 0.2s;
     }
-    .cours span {
-      font-size: 0.95rem;
+
+    td.cours-cell:hover {
+      background-color: #fef3c7;
     }
+
+    td.pause {
+      background-color: #e5e7eb;
+      font-style: italic;
+      color: #9ca3af;
+    }
+
+    .btn-retour {
+      display: block;
+      text-align: center;
+      margin: 2rem auto;
+      color: var(--gris);
+      text-decoration: none;
+      font-size: 0.9rem;
+    }
+
     footer {
       margin-top: 3rem;
       text-align: center;
@@ -73,61 +120,98 @@
   </style>
 </head>
 <body>
-  <header>
-    <h1>📅 Mon emploi du temps</h1>
-    <p>Enseignant : Gabriel Umba · Semaine du 6 au 10 octobre</p>
-  </header>
+<header>
+  <h1>📅 Horaires de cours</h1>
+  <p>Institut Saint Charles Lwanga · Semaine du 6 au 10 octobre</p>
+</header>
 
-  <div class="planning" id="planningContainer">
-    <!-- Planning simulé -->
-  </div>
+<div class="controls">
+  <select id="selectClasse" onchange="renderPlanning()">
+    <option value="7EB">7ème EB</option>
+    <option value="8EB">8ème EB</option>
+    <option value="1S">1ère Scientifique</option>
+    <option value="1A">1ère Agriculture</option>
+    <option value="1C">1ère Commerciale</option>
+    <option value="1G">1ère Gestion</option>
+    <option value="1P">1ère Pédagogie Générale</option>
+    <option value="2S">2ème Scientifique</option>
+    <option value="2A">2ème Agriculture</option>
+    <option value="2C">2ème Commerciale</option>
+    <option value="2G">2ème Gestion</option>
+    <option value="2P">2ème Pédagogie Générale</option>
+    <option value="3S">3ème Scientifique</option>
+    <option value="3A">3ème Agriculture</option>
+    <option value="3C">3ème Commerciale</option>
+    <option value="3G">3ème Gestion</option>
+    <option value="3P">3ème Pédagogie Générale</option>
+    <option value="4S">4ème Scientifique</option>
+    <option value="4A">4ème Agriculture</option>
+    <option value="4C">4ème Commerciale</option>
+    <option value="4G">4ème Gestion</option>
+    <option value="4P">4ème Pédagogie Générale</option>
+  </select>
+</div>
 
-  <footer>
-    &copy; 2025 · Institut Saint Charles Lwanga · Planning simulé
-  </footer>
+<div id="planningTableContainer"></div>
 
-  <script>
-    const planning = {
-      lundi: [
-        { heure: "08h00 - 09h30", matiere: "Mathématiques", classe: "6e A", salle: "101" },
-        { heure: "10h00 - 11h30", matiere: "Physique", classe: "6e B", salle: "102" }
-      ],
-      mardi: [
-        { heure: "09h00 - 10h30", matiere: "Mathématiques", classe: "5e A", salle: "103" }
-      ],
-      mercredi: [],
-      jeudi: [
-        { heure: "08h00 - 09h30", matiere: "Mathématiques", classe: "6e A", salle: "101" },
-        { heure: "11h00 - 12h30", matiere: "Physique", classe: "6e B", salle: "102" }
-      ],
-      vendredi: [
-        { heure: "09h00 - 10h30", matiere: "Mathématiques", classe: "5e B", salle: "104" }
-      ]
-    };
+<a href="cours.html" class="btn-retour">← Retour au menu Cours & Planning</a>
 
-    const container = document.getElementById("planningContainer");
+<footer>
+  &copy; 2025 · Institut Saint Charles Lwanga
+</footer>
 
-    Object.entries(planning).forEach(([jour, coursList]) => {
-      const blocJour = document.createElement("div");
-      blocJour.className = "jour";
-      blocJour.innerHTML = `<h2>${jour.charAt(0).toUpperCase() + jour.slice(1)}</h2>`;
+<script>
+  const horaires = {
+    "7EB": {
+      "07:30-08:20": { lun: "Mathématiques", mar: "Français", mer: "Pause", jeu: "Anglais", ven: "Sport" },
+      "08:20-09:10": { lun: "Français", mar: "Mathématiques", mer: "Pause", jeu: "Biologie", ven: "Histoire" }
+    },
+    "8EB": {
+      "07:30-08:20": { lun: "Mathématiques", mar: "Anglais", mer: "Pause", jeu: "Histoire", ven: "Physique" },
+      "08:20-09:10": { lun: "Français", mar: "Mathématiques", mer: "Pause", jeu: "Biologie", ven: "Histoire" }
+    },
+    "1S": {
+      "07:30-08:20": { lun: "Mathématiques", mar: "Physique", mer: "Chimie", jeu: "Informatique", ven: "Biologie" },
+      "08:20-09:10": { lun: "Français", mar: "Mathématiques", mer: "Physique", jeu: "Chimie", ven: "Anglais" }
+    }
+    // Ajoute les autres classes ici
+  };
 
-      if (coursList.length === 0) {
-        blocJour.innerHTML += `<p>Aucun cours prévu</p>`;
-      } else {
-        coursList.forEach(cours => {
-          const blocCours = document.createElement("div");
-          blocCours.className = "cours";
-          blocCours.innerHTML = `
-            <span><strong>${cours.matiere}</strong> · ${cours.classe}</span>
-            <span>🕒 ${cours.heure} · Salle ${cours.salle}</span>
-          `;
-          blocJour.appendChild(blocCours);
-        });
-      }
+  function renderPlanning() {
+    const classe = document.getElementById("selectClasse").value;
+    const planning = horaires[classe];
+    const jours = ["lun", "mar", "mer", "jeu", "ven"];
+    const joursAffichage = ["Lundi", "Mardi", "Mercredi", "Jeudi", "Vendredi"];
 
-      container.appendChild(blocJour);
-    });
-  </script>
+    if(!planning){
+      document.getElementById("planningTableContainer").innerHTML = "<p style='text-align:center; padding:1rem;'>Aucun horaire disponible pour cette classe.</p>";
+      return;
+    }
+
+    let tableHTML = `<table><thead><tr><th>Heures</th>`;
+    joursAffichage.forEach(j => tableHTML += `<th>${j}</th>`);
+    tableHTML += `</tr></thead><tbody>`;
+
+    for(const heure in planning){
+      tableHTML += `<tr><td>${heure}</td>`;
+      jours.forEach(j => {
+        const matiere = planning[heure][j];
+        let classeCell = '';
+        if(matiere === "Pause"){
+          classeCell = `<td class="pause">Pause / Récréation</td>`;
+        } else {
+          classeCell = `<td class="cours-cell">${matiere}<br><span>Classe: ${classe}</span></td>`;
+        }
+        tableHTML += classeCell;
+      });
+      tableHTML += "</tr>";
+    }
+
+    tableHTML += "</tbody></table>";
+    document.getElementById("planningTableContainer").innerHTML = tableHTML;
+  }
+
+  document.addEventListener("DOMContentLoaded", renderPlanning);
+</script>
 </body>
 </html>
