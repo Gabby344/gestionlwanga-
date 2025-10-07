@@ -1,0 +1,139 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Publier un message · Institut Saint Charles Lwanga</title>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600&display=swap" rel="stylesheet">
+  <style>
+    :root {
+      --bleu: #1e3a8a;
+      --gris: #374151;
+      --fond: #f9fafb;
+      --ombre: rgba(0,0,0,0.05);
+      --rouge: #dc2626;
+    }
+    body {
+      font-family: 'Inter', sans-serif;
+      background-color: var(--fond);
+      margin: 0;
+      padding: 2rem 1rem;
+      color: var(--gris);
+    }
+    header {
+      text-align: center;
+      margin-bottom: 2rem;
+    }
+    header h1 {
+      font-size: 1.6rem;
+      color: var(--bleu);
+    }
+    form {
+      max-width: 500px;
+      margin: auto;
+      background-color: white;
+      padding: 1.5rem;
+      border-radius: 8px;
+      box-shadow: 0 0 5px var(--ombre);
+    }
+    input, textarea, select {
+      width: 100%;
+      padding: 0.75rem;
+      margin-bottom: 1rem;
+      border: 1px solid #d1d5db;
+      border-radius: 6px;
+      font-size: 1rem;
+    }
+    button {
+      width: 100%;
+      padding: 0.75rem;
+      background-color: var(--bleu);
+      color: white;
+      border: none;
+      border-radius: 6px;
+      font-weight: bold;
+      font-size: 1rem;
+      cursor: pointer;
+    }
+    button:hover {
+      background-color: #1d4ed8;
+    }
+    .preview {
+      margin-top: 2rem;
+      background-color: white;
+      padding: 1rem;
+      border-radius: 8px;
+      box-shadow: 0 0 5px var(--ombre);
+    }
+    .preview h2 {
+      font-size: 1rem;
+      color: var(--bleu);
+      margin-bottom: 0.5rem;
+    }
+    .preview p {
+      font-size: 0.95rem;
+      margin-bottom: 0.3rem;
+    }
+    .preview .date {
+      font-size: 0.85rem;
+      color: #6b7280;
+    }
+    footer {
+      margin-top: 3rem;
+      text-align: center;
+      font-size: 0.85rem;
+      color: #6b7280;
+    }
+  </style>
+</head>
+<body>
+  <header>
+    <h1>📬 Publier un message</h1>
+    <p>Interface administrateur · Institut Saint Charles Lwanga</p>
+  </header>
+
+  <form id="messageForm">
+    <input type="text" id="titre" placeholder="Titre du message" required />
+    <textarea id="contenu" rows="4" placeholder="Contenu du message" required></textarea>
+    <select id="destinataire" required>
+      <option value="">Choisir le public cible</option>
+      <option value="enseignants">Enseignants</option>
+      <option value="élèves">Élèves</option>
+      <option value="parents">Parents</option>
+      <option value="tous">Tous</option>
+    </select>
+    <button type="submit">Envoyer le message</button>
+  </form>
+
+  <div class="preview" id="previewContainer" style="display:none;">
+    <h2 id="previewTitre"></h2>
+    <p id="previewContenu"></p>
+    <div class="date" id="previewDate"></div>
+    <div class="date" id="previewDestinataire"></div>
+  </div>
+
+  <footer>
+    &copy; 2025 · Communication administrative · Lubumbashi
+  </footer>
+
+  <script>
+    document.getElementById("messageForm").addEventListener("submit", function(e) {
+      e.preventDefault();
+      const titre = document.getElementById("titre").value.trim();
+      const contenu = document.getElementById("contenu").value.trim();
+      const destinataire = document.getElementById("destinataire").value;
+      const date = new Date().toLocaleDateString("fr-FR", {
+        day: "numeric", month: "long", year: "numeric"
+      });
+
+      document.getElementById("previewTitre").textContent = titre;
+      document.getElementById("previewContenu").textContent = contenu;
+      document.getElementById("previewDate").textContent = `📅 Date : ${date}`;
+      document.getElementById("previewDestinataire").textContent = `🎯 Destinataires : ${destinataire}`;
+      document.getElementById("previewContainer").style.display = "block";
+
+      // Plus tard : envoyer vers Firestore ou Firebase Function
+    });
+  </script>
+</body>
+</html>
