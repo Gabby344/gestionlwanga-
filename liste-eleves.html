@@ -1,21 +1,18 @@
 <!DOCTYPE html>
 <html lang="fr">
 <head>
-<meta charset="UTF-8" />
-<meta name="viewport" content="width=device-width, initial-scale=1.0" />
-<title>Liste des Élèves - Institut Saint Charles Lwanga</title>
-<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700;800&display=swap" rel="stylesheet">
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Ajouter un Élève - Institut Saint Charles Lwanga</title>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700&display=swap" rel="stylesheet">
 <style>
 :root {
   --bleu-fonce: #1e40af;
   --gris-fonce: #1f2937;
   --vert-action: #10b981;
-  --orange-alerte: #f59e0b;
   --rouge-danger: #ef4444;
   --fond-principal: #f4f6f8;
   --ombre-legere: rgba(0,0,0,0.08);
-  --indigo-secondaire: #4f46e5;
-  --blanc: #ffffff;
 }
 body {
   font-family: 'Inter', sans-serif;
@@ -24,105 +21,100 @@ body {
   padding: 2rem 1rem;
   color: var(--gris-fonce);
 }
+.container {
+  max-width: 600px;
+  margin: auto;
+  background-color: #fff;
+  padding: 2rem;
+  border-radius: 8px;
+  box-shadow: 0 4px 10px var(--ombre-legere);
+}
 h1 {
   text-align: center;
-  font-size: 2rem;
   color: var(--bleu-fonce);
-  margin-bottom: 0.2rem;
+  margin-bottom: 1rem;
 }
-h2 {
-  text-align: center;
-  font-size: 1rem;
-  font-weight: 400;
-  color: #6b7280;
-  margin-bottom: 2rem;
+form .input-group {
+  margin-bottom: 1rem;
 }
-.container {
-  max-width: 1300px;
-  margin: auto;
+label {
+  display: block;
+  font-weight: 600;
+  margin-bottom: 0.3rem;
 }
-/* Barre de contrôle */
-.controls-bar {
-  background-color: var(--blanc);
-  padding: 1rem;
-  border-radius: 8px;
-  box-shadow: 0 2px 4px var(--ombre-legere);
-  margin-bottom: 1.5rem;
-  display: grid;
-  gap: 1rem;
-  grid-template-columns: 1fr;
+input, select {
+  width: 100%;
+  padding: 0.6rem;
+  border: 1px solid #d1d5db;
+  border-radius: 4px;
+  box-sizing: border-box;
 }
-@media(min-width:600px){.controls-bar{grid-template-columns:2fr 1fr 1fr 150px;align-items:center;}}
-.input-group label{display:block;font-size:0.8rem;font-weight:600;color:#6b7280;margin-bottom:0.3rem;}
-.input-group select,.input-group input[type="text"]{width:100%;padding:0.6rem;border:1px solid #d1d5db;border-radius:4px;box-sizing:border-box;}
-.btn-ajouter-eleve{
-  padding:0.75rem 1rem;
-  border:none;
-  border-radius:4px;
-  font-weight:600;
-  cursor:pointer;
+button {
+  padding: 0.75rem 1rem;
   background-color: var(--vert-action);
-  color:white;
-  text-align:center;
-  display:block;
-  text-decoration:none;
+  color: white;
+  border: none;
+  border-radius: 6px;
+  font-weight: 600;
+  cursor: pointer;
+  width: 100%;
   transition: background 0.2s;
 }
-.btn-ajouter-eleve:hover{background-color:#059669;}
-#compteur{grid-column:1 / -1;font-weight:700;font-size:0.9rem;color:var(--bleu-fonce);padding-top:0.5rem;}
-
-/* Tableau et cartes */
-#elevesContainer{background-color:var(--blanc);border-radius:8px;box-shadow:0 4px 10px var(--ombre-legere);overflow-x:auto;}
-.eleves-table{width:100%;border-collapse:collapse;display:none;min-width:800px;}
-@media(min-width:768px){.eleves-table{display:table;}th,td{padding:0.75rem 1rem;text-align:left;border-bottom:1px solid #e5e7eb;}th{background-color:#f3f4f6;font-weight:600;text-transform:uppercase;font-size:0.75rem;}td.statut-paye{color:var(--vert-action);font-weight:600;}td.statut-partiel{color:var(--orange-alerte);font-weight:600;}td.statut-non-paye{color:var(--rouge-danger);font-weight:600;}.actions-cell{width:160px;text-align:center;}.btn-modifier,.btn-profil,.btn-supprimer{border:none;padding:0.5rem 0.6rem;border-radius:4px;font-size:0.8rem;cursor:pointer;color:white;margin-right:0.3rem;}.btn-modifier{background-color:var(--indigo-secondaire);}.btn-profil{background-color:var(--bleu-fonce);}.btn-supprimer{background-color:var(--rouge-danger);}}
-.eleve-card{padding:1rem;border-bottom:1px solid #e5e7eb;display:block;}
-@media(min-width:768px){.eleve-card{display:none;}}
-.eleve-card h3{margin:0 0 0.5rem 0;font-size:1.1rem;color:var(--bleu-fonce);}
-.eleve-card p{margin:0.25rem 0;font-size:0.9rem;}
-.actions-card{margin-top:0.75rem;display:flex;gap:0.5rem;}
-.btn-retour{display:block;text-align:center;margin-top:1.5rem;color:var(--gris-fonce);text-decoration:none;font-size:0.9rem;}
+button:hover { background-color: #059669; }
+.btn-retour {
+  display: block;
+  text-align: center;
+  margin-top: 1rem;
+  color: var(--gris-fonce);
+  text-decoration: none;
+  font-size: 0.9rem;
+}
+#message {text-align:center; margin-top:1rem; font-weight:600;}
 </style>
 </head>
 <body>
 <div class="container">
-<h1>📚 Gestion des Dossiers Élèves</h1>
-<h2>Liste complète, filtres rapides et accès aux profils détaillés</h2>
-
-<div class="controls-bar">
+<h1>➕ Ajouter un Nouvel Élève</h1>
+<form id="addEleveForm">
   <div class="input-group">
-    <label for="searchInput">Recherche Rapide</label>
-    <input type="text" id="searchInput" placeholder="Nom, Post-nom, Prénom ou Matricule..." oninput="filterEleves()"/>
+    <label for="nom">Nom</label>
+    <input type="text" id="nom" required>
   </div>
   <div class="input-group">
-    <label for="filtreClasse">Filtrer par Classe</label>
-    <select id="filtreClasse" onchange="filterEleves()">
-      <option value="">Toutes les classes</option>
+    <label for="postNom">Post-nom</label>
+    <input type="text" id="postNom" required>
+  </div>
+  <div class="input-group">
+    <label for="prenom">Prénom</label>
+    <input type="text" id="prenom" required>
+  </div>
+  <div class="input-group">
+    <label for="classe">Classe</label>
+    <select id="classe" required>
+      <option value="">-- Sélectionner une classe --</option>
       <option value="6A">6ème Commerciale A</option>
       <option value="5S">5ème Scientifique</option>
       <option value="4H">4ème Humanités</option>
     </select>
   </div>
   <div class="input-group">
-    <label for="filtrePaiement">Statut Paiement</label>
-    <select id="filtrePaiement" onchange="filterEleves()">
-      <option value="">Tous les statuts</option>
+    <label for="statut">Statut Paiement</label>
+    <select id="statut" required>
+      <option value="">-- Sélectionner le statut --</option>
       <option value="Payé">Payé</option>
       <option value="Partiel">Partiel</option>
       <option value="Non payé">Non payé</option>
     </select>
   </div>
-  <a href="ajouter-eleve.html" class="btn-ajouter-eleve">➕ Nouvel Élève</a>
-  <p id="compteur">Chargement des données...</p>
+  <button type="submit">Ajouter l'Élève</button>
+  <p id="message"></p>
+</form>
+<a href="liste-eleves.html" class="btn-retour">← Retour à la Liste des Élèves</a>
 </div>
 
-<div id="elevesContainer"></div>
-<a href="dashboard.html" class="btn-retour">← Retour au Tableau de Bord</a>
-</div>
-
-<!-- Firebase -->
 <script type="module">
 import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-app.js";
-import { getFirestore, collection, getDocs, doc, deleteDoc } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore.js";
+import { getFirestore, collection, addDoc, getDocs } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore.js";
 
 const firebaseConfig = {
   apiKey: "AIzaSyAgv4TDYnR60TXnns-LISqbZTgcdLT31cc",
@@ -135,97 +127,42 @@ const firebaseConfig = {
 const app = initializeApp(firebaseConfig);
 const db = getFirestore(app);
 
-let elevesData = [];
+const form = document.getElementById('addEleveForm');
+const message = document.getElementById('message');
 
-async function loadEleves() {
+// Fonction pour générer un matricule unique
+async function generateMatricule(classe){
   const snapshot = await getDocs(collection(db, "eleves"));
-  elevesData = snapshot.docs.map(doc=>({id: doc.id, ...doc.data()}));
-  filterEleves();
+  const count = snapshot.size + 1;
+  const year = new Date().getFullYear().toString().slice(-2);
+  return `${year}/${classe}-${100+count}`;
 }
 
-function getClasseNom(code){
-  return {'6A':'6ème Commerciale A','5S':'5ème Scientifique','4H':'4ème Humanités'}[code]||code;
-}
-function getStatutClass(statut){
-  if(statut==='Payé') return 'statut-paye';
-  if(statut==='Partiel') return 'statut-partiel';
-  return 'statut-non-paye';
-}
+form.addEventListener('submit', async (e)=>{
+  e.preventDefault();
+  const nom = document.getElementById('nom').value.trim();
+  const postNom = document.getElementById('postNom').value.trim();
+  const prenom = document.getElementById('prenom').value.trim();
+  const classe = document.getElementById('classe').value;
+  const statut = document.getElementById('statut').value;
 
-function filterEleves(){
-  const recherche = document.getElementById('searchInput').value.toLowerCase();
-  const classeFiltre = document.getElementById('filtreClasse').value;
-  const paiementFiltre = document.getElementById('filtrePaiement').value;
-
-  const filtered = elevesData.filter(e=>{
-    const nomComplet = `${e.nom} ${e.postNom} ${e.prenom} ${e.matricule}`.toLowerCase();
-    return nomComplet.includes(recherche)
-      && (!classeFiltre || e.classe===classeFiltre)
-      && (!paiementFiltre || e.statut===paiementFiltre);
-  });
-
-  renderEleves(filtered);
-  document.getElementById('compteur').textContent = `📊 ${filtered.length} élèves affichés sur ${elevesData.length} au total.`;
-}
-
-function renderEleves(data){
-  if(data.length===0){
-    document.getElementById('elevesContainer').innerHTML="<p style='text-align:center;padding:3rem;'>Aucun élève trouvé.</p>";
+  if(!nom || !postNom || !prenom || !classe || !statut){
+    message.textContent = "⚠️ Veuillez remplir tous les champs.";
     return;
   }
-  let tableHTML = `<table class="eleves-table">
-                    <thead>
-                      <tr>
-                        <th>Matricule</th>
-                        <th>Nom Complet</th>
-                        <th>Classe</th>
-                        <th>Statut Paiement</th>
-                        <th class="actions-cell">Actions</th>
-                      </tr>
-                    </thead><tbody>`;
-  let cardsHTML = '';
-  data.forEach(e=>{
-    const statutClass = getStatutClass(e.statut);
-    const classeNom = getClasseNom(e.classe);
-    const fullName = `${e.nom} ${e.postNom} ${e.prenom}`;
-    tableHTML += `<tr>
-                    <td>${e.matricule}</td>
-                    <td>${fullName}</td>
-                    <td>${classeNom}</td>
-                    <td class="${statutClass}">${e.statut}</td>
-                    <td class="actions-cell">
-                      <button class="btn-profil" onclick="viewProfil('${e.id}')">👁️ Profil</button>
-                      <button class="btn-modifier" onclick="editEleve('${e.id}')">✏️</button>
-                      <button class="btn-supprimer" onclick="deleteEleve('${e.id}')">🗑️</button>
-                    </td>
-                  </tr>`;
-    cardsHTML += `<div class="eleve-card">
-                    <h3>${fullName} <span style="font-weight:400;font-size:0.8rem;color:#6b7280;">(${e.matricule})</span></h3>
-                    <p>Classe: <strong>${classeNom}</strong></p>
-                    <p>Paiement: <strong class="${statutClass}">${e.statut}</strong></p>
-                    <div class="actions-card">
-                      <button class="btn-profil" style="flex:1;background-color:var(--bleu-fonce);" onclick="viewProfil('${e.id}')">👁️ Voir Profil</button>
-                      <button class="btn-modifier" style="flex:1;background-color:var(--indigo-secondaire);" onclick="editEleve('${e.id}')">✏️ Modifier</button>
-                      <button class="btn-supprimer" style="flex:1;background-color:var(--rouge-danger);" onclick="deleteEleve('${e.id}')">🗑️ Supprimer</button>
-                    </div>
-                  </div>`;
-  });
-  tableHTML += '</tbody></table>';
-  document.getElementById('elevesContainer').innerHTML = tableHTML + cardsHTML;
-}
 
-function viewProfil(id){ alert(`Voir profil de l'élève ID: ${id}`); }
-function editEleve(id){ alert(`Modifier élève ID: ${id}`); }
+  const matricule = await generateMatricule(classe);
 
-async function deleteEleve(id){
-  if(confirm("⚠️ Voulez-vous vraiment supprimer cet élève ?")){
-    await deleteDoc(doc(db, "eleves", id));
-    elevesData = elevesData.filter(e=>e.id!==id);
-    filterEleves();
+  try{
+    await addDoc(collection(db, "eleves"), {nom, postNom, prenom, classe, statut, matricule});
+    message.style.color = "green";
+    message.textContent = `✅ Élève ajouté avec succès (Matricule: ${matricule}) !`;
+    form.reset();
+  }catch(err){
+    message.style.color = "red";
+    message.textContent = "❌ Erreur lors de l'ajout : " + err.message;
   }
-}
-
-document.addEventListener('DOMContentLoaded', ()=>loadEleves());
+});
 </script>
 </body>
 </html>
