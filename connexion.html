@@ -1,204 +1,68 @@
 <!DOCTYPE html>
 <html lang="fr">
 <head>
-    <meta charset="UTF-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>Connexion - Institut Saint Charles Lwanga (SIGS)</title>
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700;800&display=swap" rel="stylesheet">
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css" crossorigin="anonymous" referrerpolicy="no-referrer" />
-    
-    <style>
-        :root {
-            --bleu-fonce: #1e40af; /* Principal (Logo, Header) */
-            --gris-fonce: #1f2937;
-            --fond-principal: #f4f6f8;
-            --ombre-legere: rgba(0,0,0,0.05);
-            --rouge-erreur: #ef4444; /* Nouvelle couleur pour les messages d'erreur */
-        }
-        body {
-            font-family: 'Inter', sans-serif;
-            background-color: var(--fond-principal);
-            margin: 0;
-            color: var(--gris-fonce);
-            display: flex;
-            justify-content: center;
-            align-items: center;
-            min-height: 100vh;
-        }
-
-        .login-container {
-            background-color: white;
-            padding: 3rem 2.5rem;
-            border-radius: 12px;
-            box-shadow: 0 10px 25px rgba(0, 0, 0, 0.1);
-            width: 100%;
-            max-width: 400px;
-            text-align: center;
-        }
-
-        .logo-text {
-            font-size: 1.5rem;
-            font-weight: 800;
-            color: var(--bleu-fonce);
-            margin-bottom: 0.5rem;
-            /* AJOUTÉ : Alignement pour l'icône comme sur le dashboard */
-            display: flex;
-            align-items: center;
-            justify-content: center;
-        }
-        /* AJOUTÉ : Style pour l'icône du logo */
-        .logo-icon {
-            font-size: 1.8rem;
-            margin-right: 0.5rem;
-        }
-
-
-        .tagline {
-            color: #6b7280;
-            margin-bottom: 2rem;
-            font-size: 0.9rem;
-        }
-
-        .form-group {
-            margin-bottom: 1.5rem;
-            text-align: left;
-        }
-
-        .form-group label {
-            display: block;
-            font-size: 0.85rem;
-            font-weight: 600;
-            margin-bottom: 0.5rem;
-            color: var(--gris-fonce);
-        }
-
-        .input-icon-group {
-            display: flex;
-            align-items: center;
-            border: 1px solid #d1d5db;
-            border-radius: 8px;
-            background-color: #f9fafb;
-            padding: 0 1rem;
-            transition: border-color 0.2s;
-        }
-        
-        .input-icon-group:focus-within {
-             border-color: var(--bleu-fonce);
-        }
-
-        .input-icon-group i {
-            color: #9ca3af;
-            margin-right: 0.75rem;
-        }
-
-        .form-group input {
-            flex-grow: 1;
-            padding: 0.75rem 0;
-            border: none;
-            outline: none;
-            background: transparent;
-            font-size: 1rem;
-            color: var(--gris-fonce);
-        }
-
-        .login-btn {
-            width: 100%;
-            padding: 0.75rem;
-            background-color: var(--bleu-fonce);
-            color: white;
-            font-weight: 700;
-            border: none;
-            border-radius: 8px;
-            cursor: pointer;
-            font-size: 1rem;
-            transition: background-color 0.2s;
-        }
-
-        .login-btn:hover {
-            background-color: #1c3d9a;
-        }
-        
-        /* Style pour les messages d'erreur */
-        #error-message {
-            color: var(--rouge-erreur);
-            background-color: #fee2e2;
-            border: 1px solid var(--rouge-erreur);
-            padding: 0.75rem;
-            border-radius: 8px;
-            margin-bottom: 1.5rem;
-            font-size: 0.9rem;
-            font-weight: 600;
-            display: none; /* Caché par défaut, sera affiché par JS */
-        }
-
-        .footer-link {
-            margin-top: 1.5rem;
-            font-size: 0.8rem;
-            color: #9ca3af;
-        }
-        .footer-link a {
-            color: var(--bleu-fonce);
-            text-decoration: none;
-            font-weight: 600;
-        }
-
-    </style>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Connexion · SIGS</title>
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      background-color: #f5f5f5;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      height: 100vh;
+    }
+    .login-container {
+      background-color: white;
+      padding: 30px;
+      border-radius: 8px;
+      box-shadow: 0 0 10px rgba(0,0,0,0.1);
+      width: 100%;
+      max-width: 400px;
+    }
+    h2 {
+      text-align: center;
+      margin-bottom: 20px;
+    }
+    input {
+      width: 100%;
+      padding: 10px;
+      margin-bottom: 15px;
+      border: 1px solid #ccc;
+      border-radius: 4px;
+    }
+    button {
+      width: 100%;
+      padding: 10px;
+      background-color: #007bff;
+      color: white;
+      border: none;
+      border-radius: 4px;
+      cursor: pointer;
+    }
+    button:hover {
+      background-color: #0056b3;
+    }
+    #errorMessage {
+      color: red;
+      text-align: center;
+      margin-top: 10px;
+    }
+  </style>
 </head>
 <body>
-    <div class="login-container">
-        <div class="logo-text">
-            <i class="fas fa-graduation-cap logo-icon"></i> SIGS
-        </div>
-        <p class="tagline">Système de Gestion Scolaire - Institut St Charles Lwanga</p>
+  <div class="login-container">
+    <h2>Connexion · SIGS</h2>
+    <form id="loginForm">
+      <input type="email" id="email" placeholder="Email de l'utilisateur" required />
+      <input type="password" id="password" placeholder="Mot de passe" required />
+      <button type="submit">Se connecter</button>
+    </form>
+    <p id="errorMessage"></p>
+  </div>
 
-        <div id="error-message"></div>
-
-        <form id="login-form"> 
-            <div class="form-group">
-                <label for="email">Email de l'utilisateur</label>
-                <div class="input-icon-group">
-                    <i class="fas fa-envelope"></i>
-                    <input type="email" id="email" name="email" placeholder="prefetmichel@lwanga.com" required>
-                </div>
-            </div>
-
-            <div class="form-group">
-                <label for="password">Mot de passe</label>
-                <div class="input-icon-group">
-                    <i class="fas fa-lock"></i>
-                    <input type="password" id="password" name="password" placeholder="••••••••" required>
-                </div>
-            </div>
-
-            <button type="submit" id="login-btn" class="login-btn">Se Connecter</button>
-        </form>
-
-        <p class="footer-link">
-            <a href="#">Mot de passe oublié ?</a>
-        </p>
-    </div>
-
-    <script src="https://www.gstatic.com/firebasejs/9.6.1/firebase-app-compat.js"></script>
-    <script src="https://www.gstatic.com/firebasejs/9.6.1/firebase-auth-compat.js"></script>
-    
-    <script>
-        const firebaseConfig = {
-            apiKey: "AIzaSyAgv4TDYnR60TXXnnS-LISqbZTGcdLT31cc",
-            authDomain: "gestionlwanga.firebaseapp.com",
-            projectId: "gestionlwanga",
-            // Corrigé en utilisant le storageBucket exact de votre SDK
-            storageBucket: "gestionlwanga.firebasestorage.app", 
-            messagingSenderId: "622604298611",
-            // L'ID de l'application est maintenant complet
-            appId: "1:622604298611:web:4ab4314ed3eec6826c3d06", 
-        };
-
-        // Initialiser Firebase (avec la version compat pour le fichier login.js)
-        const app = firebase.initializeApp(firebaseConfig);
-        const auth = app.auth(); // Référence à l'authentification
-    </script>
-    
-    <script src="login.js"></script>
-
+  <!-- Importation du script de connexion -->
+  <script type="module" src="login.js"></script>
 </body>
 </html>
