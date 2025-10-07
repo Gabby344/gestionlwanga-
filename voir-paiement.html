@@ -1,0 +1,289 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Situation Financière · Institut Saint Charles Lwanga</title>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+  <style>
+    :root {
+      --bleu-principal: #1f3a8a;
+      --gris-fonce: #1f2937;
+      --fond: #f8fafc;
+      --ombre-legere: rgba(0,0,0,0.1);
+      --vert-succes: #059669;
+      --rouge-erreur: #dc2626;
+      --orange-alerte: #f59e0b;
+    }
+    body {
+      font-family: 'Inter', sans-serif;
+      background-color: var(--fond);
+      margin: 0;
+      padding: 3rem 1.5rem;
+      color: var(--gris-fonce);
+    }
+    .container {
+        max-width: 700px; /* Élargi pour une présentation pro */
+        margin: auto;
+    }
+    .header-info {
+      text-align: center;
+      margin-bottom: 2.5rem;
+    }
+    .header-info h1 {
+      font-size: 2rem;
+      color: var(--bleu-principal);
+      margin-bottom: 0.5rem;
+    }
+    .header-info p {
+      font-size: 1.1rem;
+      color: #6b7280;
+      font-weight: 500;
+    }
+
+    /* --- CARTE PRINCIPALE --- */
+    .finance-card {
+      background-color: white;
+      padding: 2rem;
+      border-radius: 12px;
+      box-shadow: 0 4px 10px var(--ombre-legere);
+      margin-bottom: 2rem;
+    }
+    
+    /* --- RÉSUMÉ STATUT --- */
+    .statut-resume {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 1rem;
+      margin-bottom: 1.5rem;
+      text-align: center;
+      padding-bottom: 1.5rem;
+      border-bottom: 1px solid #e5e7eb;
+    }
+    .statut-item strong {
+        display: block;
+        font-size: 1.5rem;
+        font-weight: 700;
+    }
+    .statut-item span {
+        font-size: 0.9rem;
+        color: #6b7280;
+    }
+
+    /* --- BARRE DE PROGRESSION --- */
+    .progress-bar-container {
+        width: 100%;
+        background-color: #e5e7eb;
+        border-radius: 6px;
+        overflow: hidden;
+        height: 20px;
+        margin-bottom: 1rem;
+    }
+    .progress-bar {
+        height: 100%;
+        text-align: right;
+        line-height: 20px;
+        color: white;
+        font-weight: 600;
+        padding-right: 5px;
+        transition: width 0.5s ease-out;
+    }
+    /* Couleurs du statut */
+    .statut-complet .progress-bar { background-color: var(--vert-succes); }
+    .statut-partiel .progress-bar { background-color: var(--orange-alerte); }
+    .statut-non-paye .progress-bar { background-color: var(--rouge-erreur); }
+
+    /* --- HISTORIQUE --- */
+    h3 {
+      margin-top: 2rem;
+      margin-bottom: 1rem;
+      font-size: 1.25rem;
+      color: var(--bleu-principal);
+    }
+    .historique-table {
+        width: 100%;
+        border-collapse: collapse;
+    }
+    .historique-table th, .historique-table td {
+        padding: 1rem 0.5rem;
+        text-align: left;
+        border-bottom: 1px solid #f3f4f6;
+    }
+    .historique-table th {
+        background-color: #f9fafb;
+        color: var(--gris-fonce);
+        font-weight: 600;
+        text-transform: uppercase;
+        font-size: 0.8rem;
+    }
+    .historique-table tr:nth-child(even) { background-color: #fcfdfe; }
+
+    /* Bouton de retour */
+    .btn-retour {
+        display: inline-flex;
+        align-items: center;
+        margin-top: 1.5rem;
+        color: var(--gris-fonce);
+        text-decoration: none;
+        font-size: 0.95rem;
+        font-weight: 500;
+    }
+    .btn-retour:hover {
+        color: var(--bleu-principal);
+    }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <a href="accueil-eleve.html" class="btn-retour">← Retour à l'accueil élève</a>
+    
+    <div class="header-info">
+      <h1>💰 Situation Financière</h1>
+      <p>Élève : <span id="eleveNomComplet">Gabriel UMBA KABULO</span> · Classe : <span id="eleveClasse">6e Commerciale A</span></p>
+    </div>
+
+    <div class="finance-card" id="financeCard">
+        
+        <div id="statusIndicator" class="statut-complet">
+            <div class="statut-resume">
+                <div class="statut-item">
+                    <strong id="montantTotal">0 FC</strong>
+                    <span>Montant Total dû</span>
+                </div>
+                <div class="statut-item">
+                    <strong id="montantPaye">0 FC</strong>
+                    <span>Total Payé</span>
+                </div>
+                <div class="statut-item">
+                    <strong id="soldeDu" style="color: var(--vert-succes);">0 FC</strong>
+                    <span>Solde dû</span>
+                </div>
+            </div>
+            
+            <div class="progress-bar-container">
+                <div id="progressBar" class="progress-bar" style="width: 0;">0%</div>
+            </div>
+            
+            <p style="text-align: center; font-size: 1.1rem; font-weight: 700; color: var(--vert-succes);">
+                📌 Statut Actuel : <span id="statutText"></span>
+            </p>
+        </div>
+
+        <h3>📜 Historique des versements</h3>
+        
+        <table class="historique-table">
+            <thead>
+                <tr>
+                    <th>Date</th>
+                    <th>Montant</th>
+                    <th>Méthode</th>
+                    <th>Reçu</th>
+                </tr>
+            </thead>
+            <tbody id="historiqueBody">
+                </tbody>
+        </table>
+
+        <p id="aucunPaiement" style="text-align: center; padding: 1rem; display: none; color: #6b7280;">Aucun versement enregistré pour l'instant.</p>
+
+    </div>
+
+    <footer>
+      &copy; 2025 · Institut Saint Charles Lwanga · Tous droits réservés.
+    </footer>
+  </div>
+
+  <script>
+    // --- SIMULATION DES DONNÉES ET LOGIQUE DE RENDU ---
+    
+    // REMPLACER PAR LES DONNÉES FIREBASE
+    const donneesPaiement = {
+      montantTotal: 90000,
+      montantPaye: 45000,
+      historique: [
+        { date: "2025-08-10", montant: 30000, methode: "Cash", recu: "R-001" },
+        { date: "2025-09-15", montant: 15000, methode: "Virement", recu: "R-002" }
+      ],
+      eleve: {
+        nom: "UMBA", postNom: "KABULO", prenom: "Gabriel", classe: "6e Commerciale A"
+      }
+    };
+    
+    const container = document.getElementById("financeCard");
+
+    function formatCurrency(amount) {
+        // Utiliser Intl.NumberFormat pour un format professionnel
+        return new Intl.NumberFormat('fr-CD', { style: 'currency', currency: 'CDF' }).format(amount);
+    }
+    
+    function renderFinanceStatus() {
+        const data = donneesPaiement;
+        const soldeDu = data.montantTotal - data.montantPaye;
+        const pourcentagePaye = (data.montantPaye / data.montantTotal) * 100;
+
+        // Mise à jour de l'en-tête (Nom, Post-Nom, Prénom)
+        const nomComplet = `${data.eleve.prenom} ${data.eleve.nom} ${data.eleve.postNom}`;
+        document.getElementById('eleveNomComplet').textContent = nomComplet;
+        document.getElementById('eleveClasse').textContent = data.eleve.classe;
+
+        // Mise à jour du résumé
+        document.getElementById('montantTotal').textContent = formatCurrency(data.montantTotal);
+        document.getElementById('montantPaye').textContent = formatCurrency(data.montantPaye);
+        document.getElementById('soldeDu').textContent = formatCurrency(soldeDu);
+        
+        // Mise à jour de la barre de progression et du statut
+        const progressBar = document.getElementById('progressBar');
+        const statusIndicator = document.getElementById('statusIndicator');
+        let statutText = "";
+        let colorVar = "";
+
+        if (soldeDu <= 0) {
+            statutText = "Payé Intégralement";
+            colorVar = "var(--vert-succes)";
+            statusIndicator.className = "statut-complet";
+            progressBar.textContent = "100%";
+            progressBar.style.width = "100%";
+        } else if (data.montantPaye > 0) {
+            statutText = "Paiement Partiel";
+            colorVar = "var(--orange-alerte)";
+            statusIndicator.className = "statut-partiel";
+            progressBar.textContent = `${Math.round(pourcentagePaye)}%`;
+            progressBar.style.width = `${pourcentagePaye}%`;
+        } else {
+            statutText = "Non Payé";
+            colorVar = "var(--rouge-erreur)";
+            statusIndicator.className = "statut-non-paye";
+            progressBar.textContent = "0%";
+            progressBar.style.width = "0%";
+        }
+        
+        document.getElementById('statutText').textContent = statutText;
+        document.getElementById('soldeDu').style.color = soldeDu > 0 ? colorVar : 'var(--vert-succes)';
+        
+        // Rendu de l'historique
+        const historiqueBody = document.getElementById('historiqueBody');
+        historiqueBody.innerHTML = '';
+
+        if (data.historique.length === 0) {
+             document.getElementById('aucunPaiement').style.display = 'block';
+        } else {
+            document.getElementById('aucunPaiement').style.display = 'none';
+            data.historique.forEach(item => {
+                const row = document.createElement('tr');
+                row.innerHTML = `
+                    <td>${new Date(item.date).toLocaleDateString('fr-FR')}</td>
+                    <td><strong>${formatCurrency(item.montant)}</strong></td>
+                    <td>${item.methode}</td>
+                    <td><a href="#" style="color: var(--bleu-principal);">Voir Reçu ${item.recu}</a></td>
+                `;
+                historiqueBody.appendChild(row);
+            });
+        }
+    }
+
+    document.addEventListener('DOMContentLoaded', renderFinanceStatus);
+
+    // TODO: Intégrer la récupération des données de Firebase ici après authentification de l'élève.
+  </script>
+</body>
+</html>
