@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Dashboard · Administration · Institut Saint Charles Lwanga</title>
+  <title>Dashboard · Administration · ISC Lwanga</title>
   <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700;800&display=swap" rel="stylesheet">
   <style>
     :root {
@@ -70,9 +70,7 @@
       cursor: pointer;
       transition: background-color 0.2s;
     }
-    .btn-logout:hover {
-      background-color: #b91c1c;
-    }
+    .btn-logout:hover { background-color: #b91c1c; }
 
     /* MAIN CONTENT */
     .main-content {
@@ -107,31 +105,11 @@
       transition: transform 0.2s;
     }
 
-    .card-stat:hover {
-      transform: translateY(-3px);
-      box-shadow: 0 6px 15px rgba(0,0,0,0.15);
-    }
+    .card-stat:hover { transform: translateY(-3px); box-shadow: 0 6px 15px rgba(0,0,0,0.15); }
 
-    .card-stat-title {
-      font-size: 0.85rem;
-      font-weight: 600;
-      color: #6b7280;
-      text-transform: uppercase;
-      margin-bottom: 0.5rem;
-    }
-
-    .card-stat-value {
-      font-size: 2.5rem;
-      font-weight: 800;
-      color: var(--gris-fonce);
-      line-height: 1;
-    }
-
-    .card-stat-footer {
-      font-size: 0.8rem;
-      color: #9ca3af;
-      margin-top: 1rem;
-    }
+    .card-stat-title { font-size: 0.85rem; font-weight: 600; color: #6b7280; text-transform: uppercase; margin-bottom: 0.5rem; }
+    .card-stat-value { font-size: 2.5rem; font-weight: 800; color: var(--gris-fonce); line-height: 1; }
+    .card-stat-footer { font-size: 0.8rem; color: #9ca3af; margin-top: 1rem; }
 
     .stat-bleu { border-left-color: var(--bleu-fonce); }
     .stat-vert { border-left-color: var(--vert); }
@@ -170,6 +148,31 @@
       margin-bottom: 0.5rem;
     }
 
+    /* NOTIFICATIONS */
+    #notification-area {
+      position: fixed;
+      top: 20px;
+      right: 20px;
+      z-index: 1000;
+    }
+
+    .notification {
+      padding: 1rem 1.5rem;
+      border-radius: 8px;
+      margin-bottom: 10px;
+      box-shadow: 0 4px 6px rgba(0,0,0,0.1);
+      color: white;
+      font-weight: 500;
+      opacity: 0;
+      transform: translateX(100%);
+      transition: opacity 0.3s ease-out, transform 0.3s ease-out;
+    }
+
+    .notification.show { opacity: 1; transform: translateX(0); }
+    .notification.success { background-color: var(--vert); }
+    .notification.error { background-color: var(--rouge); }
+    .notification.warning { background-color: var(--jaune); }
+
     /* Responsive */
     @media(max-width:600px){
       .header-left h1 { font-size: 1.2rem; }
@@ -179,10 +182,12 @@
   </style>
 </head>
 <body>
+  <div id="notification-area"></div>
+
   <div class="header">
     <div class="header-left">
-      <img src="logo.png" alt="Logo Institut Saint Charles Lwanga">
-      <h1 id="dashboardTitle">Dashboard · Administration · Institut Saint Charles Lwanga</h1>
+      <img src="logo.png" alt="Logo ISC Lwanga">
+      <h1 id="dashboardTitle">Dashboard · Administration · ISC Lwanga</h1>
     </div>
     <div class="user-info" id="userInfo"></div>
     <button class="btn-logout" id="logoutBtn">🚪 Déconnexion</button>
@@ -190,38 +195,10 @@
 
   <div class="main-content">
     <h2 class="section-title">Aperçu Actuel</h2>
-    <div class="stats-grid">
-      <div class="card-stat stat-bleu">
-        <p class="card-stat-title">Élèves Inscrits</p>
-        <p class="card-stat-value">1245</p>
-        <p class="card-stat-footer">+5 nouveaux ce mois</p>
-      </div>
-      <div class="card-stat stat-vert">
-        <p class="card-stat-title">Enseignants Actifs</p>
-        <p class="card-stat-value">48</p>
-        <p class="card-stat-footer">Taux d'assiduité : 98%</p>
-      </div>
-      <div class="card-stat stat-jaune">
-        <p class="card-stat-title">Notes à Saisir (T3)</p>
-        <p class="card-stat-value">3 classes</p>
-        <p class="card-stat-footer">Deadline : 15 octobre</p>
-      </div>
-      <div class="card-stat stat-rouge">
-        <p class="card-stat-title">Frais Impayés</p>
-        <p class="card-stat-value">22</p>
-        <p class="card-stat-footer">Total dû : $5,400</p>
-      </div>
-    </div>
+    <div class="stats-grid"></div>
 
     <h2 class="section-title">Modules de Gestion</h2>
-    <div class="menu-grid">
-      <a href="eleves.html" class="menu-item"><div class="icon">📚</div><div>Gestion des Élèves</div></a>
-      <a href="enseignants.html" class="menu-item"><div class="icon">👨‍🏫</div><div>Gestion des Enseignants</div></a>
-      <a href="bulletins.html" class="menu-item"><div class="icon">🧮</div><div>Notes & Bulletins</div></a>
-      <a href="cours.html" class="menu-item"><div class="icon">📆</div><div>Planning des Cours</div></a>
-      <a href="paiements.html" class="menu-item"><div class="icon">💰</div><div>Suivi des Paiements</div></a>
-      <a href="admin.html" class="menu-item"><div class="icon">⚙️</div><div>Paramètres Admin</div></a>
-    </div>
+    <div class="menu-grid"></div>
   </div>
 
   <script type="module">
@@ -232,44 +209,90 @@
     const dashboardTitle = document.getElementById("dashboardTitle");
     const userInfo = document.getElementById("userInfo");
     const logoutBtn = document.getElementById("logoutBtn");
+    const statsGrid = document.querySelector(".stats-grid");
+    const menuGrid = document.querySelector(".menu-grid");
+
+    // --- Notification
+    function showNotification(message, type="success"){
+      const area = document.getElementById('notification-area');
+      const notif = document.createElement('div');
+      notif.className = `notification ${type}`;
+      notif.textContent = message;
+      area.appendChild(notif);
+      setTimeout(()=>notif.classList.add('show'),10);
+      setTimeout(()=>{ notif.classList.remove('show'); setTimeout(()=>area.removeChild(notif),300); },4000);
+    }
 
     onAuthStateChanged(auth, async (user) => {
-      if (!user) {
-        window.location.href = "login.html";
-        return;
-      }
+      if (!user) window.location.href = "login.html";
 
       try {
-        const userRef = doc(db, "users", user.uid);
-        const snap = await getDoc(userRef);
-
-        if (!snap.exists()) throw new Error("Profil introuvable dans Firestore.");
+        const snap = await getDoc(doc(db, "users", user.uid));
+        if(!snap.exists()) throw new Error("Profil introuvable.");
 
         const data = snap.data();
         const role = data.role || "inconnu";
         const nom = `${data.nom || ""} ${data.postNom || ""} ${data.prenom || ""}`.trim() || "Utilisateur";
 
-        if (!["admin", "prefet"].includes(role)) {
-          alert("⛔ Accès refusé. Ce tableau de bord est réservé à l'administration.");
-          await signOut(auth);
-          window.location.href = "login.html";
-          return;
-        }
-
-        dashboardTitle.textContent = `Dashboard · ${role.toUpperCase()} · Institut Saint Charles Lwanga`;
+        dashboardTitle.textContent = `Dashboard · ${role.toUpperCase()} · ISC Lwanga`;
         userInfo.textContent = `${nom} (${role})`;
 
-      } catch (err) {
-        alert("Erreur : " + err.message);
+        // --- Gestion stats dynamiques
+        const statsData = [
+          { title: "Élèves Inscrits", value: 1245, footer: "+5 nouveaux ce mois", color: "stat-bleu" },
+          { title: "Enseignants Actifs", value: 48, footer: "Taux d'assiduité : 98%", color: "stat-vert" },
+          { title: "Notes à Saisir (T3)", value: "3 classes", footer: "Deadline : 15 octobre", color: "stat-jaune" },
+          { title: "Frais Impayés", value: 22, footer: "Total dû : $5,400", color: "stat-rouge" }
+        ];
+
+        statsGrid.innerHTML = "";
+        statsData.forEach(stat => {
+          const card = document.createElement("div");
+          card.className = `card-stat ${stat.color}`;
+          card.innerHTML = `<p class="card-stat-title">${stat.title}</p><p class="card-stat-value">${stat.value}</p><p class="card-stat-footer">${stat.footer}</p>`;
+          statsGrid.appendChild(card);
+        });
+
+        // --- Gestion modules selon rôle
+        const modules = [
+          { title: "Gestion des Élèves", icon: "📚", link: "eleves.html", roles:["prefet","admin","directeur_etudes","secretaire"] },
+          { title: "Gestion des Enseignants", icon: "👨‍🏫", link: "enseignants.html", roles:["prefet","admin"] },
+          { title: "Notes & Bulletins", icon: "🧮", link: "bulletins.html", roles:["prefet","admin","directeur_etudes"] },
+          { title: "Planning des Cours", icon: "📆", link: "cours.html", roles:["prefet","admin","directeur_etudes"] },
+          { title: "Suivi des Paiements", icon: "💰", link: "paiements.html", roles:["prefet","admin","econome"] },
+          { title: "Paramètres Admin", icon: "⚙️", link: "admin.html", roles:["prefet","admin"] }
+        ];
+
+        menuGrid.innerHTML = "";
+        modules.forEach(mod => {
+          if(mod.roles.includes(role)){
+            const item = document.createElement("a");
+            item.href = mod.link;
+            item.className = "menu-item";
+            item.innerHTML = `<div class="icon">${mod.icon}</div><div>${mod.title}</div>`;
+            menuGrid.appendChild(item);
+          }
+        });
+
+        // --- Accès refusé si rôle inconnu
+        if(role === "inconnu") {
+          showNotification("⛔ Votre rôle ne permet pas l'accès au dashboard.", "error");
+          await signOut(auth);
+          window.location.href = "login.html";
+        }
+
+      } catch(err){
+        showNotification(err.message, "error");
         window.location.href = "login.html";
       }
     });
 
     logoutBtn.addEventListener("click", async () => {
       await signOut(auth);
-      alert("✅ Déconnexion réussie !");
+      showNotification("✅ Déconnexion réussie !");
       window.location.href = "login.html";
     });
+
   </script>
 </body>
 </html>
