@@ -3,13 +3,15 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Ajouter un Élève - Institut Saint Charles Lwanga</title>
+<title>Ajouter un Enseignant - Institut Saint Charles Lwanga</title>
 <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700&display=swap" rel="stylesheet">
 <style>
 :root {
   --bleu-fonce: #1e40af;
   --gris-fonce: #1f2937;
+  --indigo-enseignants: #4f46e5;
   --vert-action: #10b981;
+  --orange-alerte: #f59e0b;
   --rouge-danger: #ef4444;
   --fond-principal: #f4f6f8;
   --ombre-legere: rgba(0,0,0,0.08);
@@ -17,152 +19,111 @@
 body {
   font-family: 'Inter', sans-serif;
   background-color: var(--fond-principal);
-  margin: 0;
-  padding: 2rem 1rem;
-  color: var(--gris-fonce);
+  margin:0; padding:2rem 1rem; color:var(--gris-fonce);
 }
 .container {
-  max-width: 600px;
-  margin: auto;
-  background-color: #fff;
-  padding: 2rem;
-  border-radius: 8px;
-  box-shadow: 0 4px 10px var(--ombre-legere);
+  max-width:600px;
+  margin:auto;
+  background:white;
+  padding:2rem;
+  border-radius:8px;
+  box-shadow:0 4px 10px var(--ombre-legere);
 }
-h1 {
-  text-align: center;
-  color: var(--bleu-fonce);
-  margin-bottom: 1rem;
-}
-form .input-group {
-  margin-bottom: 1rem;
-}
-label {
-  display: block;
-  font-weight: 600;
-  margin-bottom: 0.3rem;
-}
-input, select {
-  width: 100%;
-  padding: 0.6rem;
-  border: 1px solid #d1d5db;
-  border-radius: 4px;
-  box-sizing: border-box;
-}
-button {
-  padding: 0.75rem 1rem;
-  background-color: var(--vert-action);
-  color: white;
-  border: none;
-  border-radius: 6px;
-  font-weight: 600;
-  cursor: pointer;
-  width: 100%;
-  transition: background 0.2s;
-}
-button:hover { background-color: #059669; }
-.btn-retour {
-  display: block;
-  text-align: center;
-  margin-top: 1rem;
-  color: var(--gris-fonce);
-  text-decoration: none;
-  font-size: 0.9rem;
-}
-#message {text-align:center; margin-top:1rem; font-weight:600;}
+h1{ text-align:center; color:var(--indigo-enseignants); margin-bottom:0.5rem;}
+h2{ text-align:center; font-size:1rem; color:#6b7280; margin-bottom:2rem;}
+form {display:grid; gap:1rem;}
+label {display:block; font-weight:600; margin-bottom:0.3rem;}
+input, select {width:100%; padding:0.6rem; border-radius:4px; border:1px solid #d1d5db;}
+.btn-submit {background-color:var(--indigo-enseignants); color:white; font-weight:600; padding:0.75rem; border:none; border-radius:4px; cursor:pointer;}
+.btn-submit:hover{background-color:#3730a3;}
+.btn-retour{display:block;text-align:center;margin-top:1.5rem;text-decoration:none;color:var(--gris-fonce);font-size:0.9rem;}
+.success-msg{color:var(--vert-action); font-weight:600; text-align:center; margin-top:1rem;}
+.error-msg{color:var(--rouge-danger); font-weight:600; text-align:center; margin-top:1rem;}
 </style>
 </head>
 <body>
+
 <div class="container">
-<h1>➕ Ajouter un Nouvel Élève</h1>
-<form id="addEleveForm">
-  <div class="input-group">
+<h1>➕ Ajouter un Enseignant</h1>
+<h2>Remplissez le formulaire pour enregistrer un nouveau membre du personnel</h2>
+
+<form id="ajouterEnseignantForm">
+  <div>
     <label for="nom">Nom</label>
     <input type="text" id="nom" required>
   </div>
-  <div class="input-group">
+  <div>
     <label for="postNom">Post-nom</label>
     <input type="text" id="postNom" required>
   </div>
-  <div class="input-group">
+  <div>
     <label for="prenom">Prénom</label>
     <input type="text" id="prenom" required>
   </div>
-  <div class="input-group">
-    <label for="classe">Classe</label>
-    <select id="classe" required>
-      <option value="">-- Sélectionner une classe --</option>
-      <option value="6A">6ème Commerciale A</option>
-      <option value="5S">5ème Scientifique</option>
-      <option value="4H">4ème Humanités</option>
+  <div>
+    <label for="titre">Titre / Fonction</label>
+    <select id="titre" required>
+      <option value="">Sélectionner</option>
+      <option value="Professeur">Professeur</option>
+      <option value="Directeur">Directeur</option>
+      <option value="Secrétaire">Secrétaire</option>
     </select>
   </div>
-  <div class="input-group">
-    <label for="statut">Statut Paiement</label>
+  <div>
+    <label for="statut">Statut Contrat</label>
     <select id="statut" required>
-      <option value="">-- Sélectionner le statut --</option>
-      <option value="Payé">Payé</option>
-      <option value="Partiel">Partiel</option>
-      <option value="Non payé">Non payé</option>
+      <option value="">Sélectionner</option>
+      <option value="Permanent">Permanent</option>
+      <option value="Vacataire">Vacataire</option>
+      <option value="Administratif">Administratif</option>
     </select>
   </div>
-  <button type="submit">Ajouter l'Élève</button>
-  <p id="message"></p>
+  <div>
+    <label for="matiere">Matière principale</label>
+    <input type="text" id="matiere" placeholder="Ex: Mathématiques" required>
+  </div>
+  <button type="submit" class="btn-submit">💾 Enregistrer</button>
+  <p class="success-msg" id="successMsg"></p>
+  <p class="error-msg" id="errorMsg"></p>
 </form>
-<a href="liste-eleves.html" class="btn-retour">← Retour à la Liste des Élèves</a>
+
+<a href="liste-enseignants.html" class="btn-retour">← Retour à la liste du personnel</a>
 </div>
 
+<!-- Firebase -->
 <script type="module">
-import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-app.js";
-import { getFirestore, collection, addDoc, getDocs } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore.js";
+import { db } from "./js/config.js";
+import { collection, addDoc, serverTimestamp } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore.js";
 
-const firebaseConfig = {
-  apiKey: "AIzaSyAgv4TDYnR60TXnns-LISqbZTgcdLT31cc",
-  authDomain: "gestionlwanga.firebaseapp.com",
-  projectId: "gestionlwanga",
-  storageBucket: "gestionlwanga.firebasestorage.app",
-  messagingSenderId: "622604298611",
-  appId: "1:622604298611:web:4ab4314ed3eec6826c3d06"
-};
-const app = initializeApp(firebaseConfig);
-const db = getFirestore(app);
+const form = document.getElementById("ajouterEnseignantForm");
+const successMsg = document.getElementById("successMsg");
+const errorMsg = document.getElementById("errorMsg");
 
-const form = document.getElementById('addEleveForm');
-const message = document.getElementById('message');
-
-// Fonction pour générer un matricule unique
-async function generateMatricule(classe){
-  const snapshot = await getDocs(collection(db, "eleves"));
-  const count = snapshot.size + 1;
-  const year = new Date().getFullYear().toString().slice(-2);
-  return `${year}/${classe}-${100+count}`;
-}
-
-form.addEventListener('submit', async (e)=>{
+form.addEventListener("submit", async (e) => {
   e.preventDefault();
-  const nom = document.getElementById('nom').value.trim();
-  const postNom = document.getElementById('postNom').value.trim();
-  const prenom = document.getElementById('prenom').value.trim();
-  const classe = document.getElementById('classe').value;
-  const statut = document.getElementById('statut').value;
+  successMsg.textContent="";
+  errorMsg.textContent="";
 
-  if(!nom || !postNom || !prenom || !classe || !statut){
-    message.textContent = "⚠️ Veuillez remplir tous les champs.";
-    return;
-  }
+  const enseignantData = {
+    nom: document.getElementById("nom").value.trim(),
+    postNom: document.getElementById("postNom").value.trim(),
+    prenom: document.getElementById("prenom").value.trim(),
+    titre: document.getElementById("titre").value,
+    statut: document.getElementById("statut").value,
+    matiere: document.getElementById("matiere").value.trim(),
+    createdAt: serverTimestamp()
+  };
 
-  const matricule = await generateMatricule(classe);
-
-  try{
-    await addDoc(collection(db, "eleves"), {nom, postNom, prenom, classe, statut, matricule});
-    message.style.color = "green";
-    message.textContent = `✅ Élève ajouté avec succès (Matricule: ${matricule}) !`;
+  try {
+    await addDoc(collection(db, "enseignants"), enseignantData);
+    successMsg.textContent = "✅ Enseignant enregistré avec succès !";
     form.reset();
-  }catch(err){
-    message.style.color = "red";
-    message.textContent = "❌ Erreur lors de l'ajout : " + err.message;
+  } catch(err) {
+    console.error(err);
+    errorMsg.textContent = "❌ Une erreur est survenue, veuillez réessayer.";
   }
 });
 </script>
+
 </body>
 </html>
