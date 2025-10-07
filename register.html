@@ -3,38 +3,146 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Inscription - Gestion Lwanga</title>
-  <link rel="stylesheet" href="./style.css" /> <!-- facultatif -->
+  <title>Création de compte - Gestion Lwanga</title>
+
+  <!-- 💅 Style intégré -->
+  <style>
+    /* 🌍 RESET */
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+      font-family: "Poppins", sans-serif;
+    }
+
+    body {
+      background: linear-gradient(135deg, #004e92, #000428);
+      min-height: 100vh;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      color: #222;
+    }
+
+    /* 🧾 CONTAINER PRINCIPAL */
+    .register-container {
+      background: #fff;
+      width: 100%;
+      max-width: 420px;
+      padding: 2rem 2.5rem;
+      border-radius: 16px;
+      box-shadow: 0 8px 24px rgba(0, 0, 0, 0.15);
+      text-align: center;
+      animation: fadeIn 0.8s ease-in-out;
+    }
+
+    h2 {
+      margin-bottom: 1.5rem;
+      color: #004e92;
+      font-weight: 600;
+    }
+
+    form {
+      display: flex;
+      flex-direction: column;
+      gap: 1rem;
+      text-align: left;
+    }
+
+    input, select {
+      padding: 0.75rem 1rem;
+      border: 1px solid #ccc;
+      border-radius: 8px;
+      font-size: 1rem;
+      transition: all 0.3s ease;
+    }
+
+    input:focus, select:focus {
+      outline: none;
+      border-color: #004e92;
+      box-shadow: 0 0 0 2px rgba(0, 78, 146, 0.15);
+    }
+
+    button {
+      background: #004e92;
+      color: #fff;
+      padding: 0.9rem 1rem;
+      font-size: 1rem;
+      border: none;
+      border-radius: 8px;
+      cursor: pointer;
+      transition: background 0.3s ease, transform 0.1s ease;
+    }
+
+    button:hover {
+      background: #003d75;
+    }
+
+    button:active {
+      transform: scale(0.98);
+    }
+
+    /* 💬 Messages */
+    #errorMessage {
+      margin-top: 1rem;
+      color: #d93025;
+      font-size: 0.9rem;
+      min-height: 20px;
+    }
+
+    #successMessage {
+      margin-top: 0.5rem;
+      color: #0f9d58;
+      font-size: 0.95rem;
+      font-weight: 500;
+      min-height: 20px;
+    }
+
+    /* ✨ Animation */
+    @keyframes fadeIn {
+      from { opacity: 0; transform: translateY(10px); }
+      to { opacity: 1; transform: translateY(0); }
+    }
+
+    /* 📱 Responsive */
+    @media (max-width: 480px) {
+      .register-container {
+        padding: 1.5rem;
+      }
+      h2 {
+        font-size: 1.4rem;
+      }
+    }
+  </style>
 </head>
+
 <body>
-  <h2>Création d’un compte utilisateur</h2>
+  <div class="register-container">
+    <h2>Création d’un compte utilisateur</h2>
 
-  <!-- 🧾 FORMULAIRE D’INSCRIPTION -->
-  <form id="registerForm">
-    <input id="nom" placeholder="Nom" required>
-    <input id="postNom" placeholder="Post-nom" required>
-    <input id="prenom" placeholder="Prénom" required>
-    <input id="email" type="email" placeholder="Email" required>
-    <input id="password" type="password" placeholder="Mot de passe" required>
+    <form id="registerForm">
+      <input id="nom" placeholder="Nom" required>
+      <input id="postNom" placeholder="Post-nom" required>
+      <input id="prenom" placeholder="Prénom" required>
+      <input id="email" type="email" placeholder="Email" required>
+      <input id="password" type="password" placeholder="Mot de passe" required>
 
-    <select id="role" required>
-      <option value="">-- Choisir un rôle --</option>
-      <option value="admin">Admin</option>
-      <option value="prefet">Préfet</option>
-      <option value="enseignant">Enseignant</option>
-      <option value="eleve">Élève</option>
-    </select>
+      <select id="role" required>
+        <option value="">-- Choisir un rôle --</option>
+        <option value="admin">Administrateur</option>
+        <option value="prefet">Préfet</option>
+        <option value="enseignant">Enseignant</option>
+        <option value="eleve">Élève</option>
+      </select>
 
-    <button type="submit">Créer le compte</button>
-  </form>
+      <button type="submit">Créer le compte</button>
+    </form>
 
-  <!-- 🟥 Message d’erreur -->
-  <p id="errorMessage" style="color:red;"></p>
+    <p id="errorMessage"></p>
+    <p id="successMessage"></p>
+  </div>
 
-  <!-- 🟩 Message de succès -->
-  <p id="successMessage" style="color:green;"></p>
-
-  <!-- ⚙️ Script principal -->
+  <!-- ⚙️ Script Firebase -->
   <script type="module" src="./js/register.js"></script>
 </body>
 </html>
