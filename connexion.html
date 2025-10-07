@@ -1,192 +1,185 @@
 <!DOCTYPE html>
 <html lang="fr">
 <head>
-  <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Connexion · Institut Saint Charles Lwanga</title>
-  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600&display=swap" rel="stylesheet">
-  <style>
-    :root {
-      --bleu: #1e3a8a;
-      --gris: #374151;
-      --fond: #f9fafb;
-      --ombre: rgba(0,0,0,0.05);
-      --rouge: #dc2626;
-    }
-    body {
-      font-family: 'Inter', sans-serif;
-      background-color: var(--fond);
-      margin: 0;
-      padding: 2rem 1rem;
-      color: var(--gris);
-    }
-    header {
-      text-align: center;
-      margin-bottom: 2rem;
-    }
-    header h1 {
-      font-size: 1.6rem;
-      color: var(--bleu);
-    }
-    form {
-      max-width: 400px;
-      margin: auto;
-      background-color: white;
-      padding: 1.5rem;
-      border-radius: 8px;
-      box-shadow: 0 0 5px var(--ombre);
-    }
-    input {
-      width: 100%;
-      padding: 0.75rem;
-      margin-bottom: 1rem;
-      border: 1px solid #d1d5db;
-      border-radius: 6px;
-      font-size: 1rem;
-    }
-    button {
-      width: 100%;
-      padding: 0.75rem;
-      background-color: var(--bleu);
-      color: white;
-      border: none;
-      border-radius: 6px;
-      font-weight: bold;
-      font-size: 1rem;
-      cursor: pointer;
-    }
-    button:hover {
-      background-color: #1d4ed8;
-    }
-    .erreur {
-      color: var(--rouge);
-      text-align: center;
-      margin-bottom: 1rem;
-    }
-    .apercu {
-      margin-top: 2rem;
-      text-align: center;
-      font-size: 0.95rem;
-      color: var(--gris);
-    }
-    footer {
-      margin-top: 3rem;
-      text-align: center;
-      font-size: 0.85rem;
-      color: #6b7280;
-    }
-  </style>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Connexion - Institut Saint Charles Lwanga (SIGS)</title>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700;800&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css" crossorigin="anonymous" referrerpolicy="no-referrer" />
+    
+    <style>
+        :root {
+            --bleu-fonce: #1e40af; /* Principal (Logo, Header) */
+            --gris-fonce: #1f2937;
+            --fond-principal: #f4f6f8;
+            --ombre-legere: rgba(0,0,0,0.05);
+            --rouge-erreur: #ef4444; /* Nouvelle couleur pour les messages d'erreur */
+        }
+        body {
+            font-family: 'Inter', sans-serif;
+            background-color: var(--fond-principal);
+            margin: 0;
+            color: var(--gris-fonce);
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            min-height: 100vh;
+        }
+
+        .login-container {
+            background-color: white;
+            padding: 3rem 2.5rem;
+            border-radius: 12px;
+            box-shadow: 0 10px 25px rgba(0, 0, 0, 0.1);
+            width: 100%;
+            max-width: 400px;
+            text-align: center;
+        }
+
+        .logo-text {
+            font-size: 1.5rem;
+            font-weight: 800;
+            color: var(--bleu-fonce);
+            margin-bottom: 0.5rem;
+            /* AJOUTÉ : Alignement pour l'icône comme sur le dashboard */
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+        /* AJOUTÉ : Style pour l'icône du logo */
+        .logo-icon {
+            font-size: 1.8rem;
+            margin-right: 0.5rem;
+        }
+
+
+        .tagline {
+            color: #6b7280;
+            margin-bottom: 2rem;
+            font-size: 0.9rem;
+        }
+
+        .form-group {
+            margin-bottom: 1.5rem;
+            text-align: left;
+        }
+
+        .form-group label {
+            display: block;
+            font-size: 0.85rem;
+            font-weight: 600;
+            margin-bottom: 0.5rem;
+            color: var(--gris-fonce);
+        }
+
+        .input-icon-group {
+            display: flex;
+            align-items: center;
+            border: 1px solid #d1d5db;
+            border-radius: 8px;
+            background-color: #f9fafb;
+            padding: 0 1rem;
+            transition: border-color 0.2s;
+        }
+        
+        .input-icon-group:focus-within {
+             border-color: var(--bleu-fonce);
+        }
+
+        .input-icon-group i {
+            color: #9ca3af;
+            margin-right: 0.75rem;
+        }
+
+        .form-group input {
+            flex-grow: 1;
+            padding: 0.75rem 0;
+            border: none;
+            outline: none;
+            background: transparent;
+            font-size: 1rem;
+            color: var(--gris-fonce);
+        }
+
+        .login-btn {
+            width: 100%;
+            padding: 0.75rem;
+            background-color: var(--bleu-fonce);
+            color: white;
+            font-weight: 700;
+            border: none;
+            border-radius: 8px;
+            cursor: pointer;
+            font-size: 1rem;
+            transition: background-color 0.2s;
+        }
+
+        .login-btn:hover {
+            background-color: #1c3d9a;
+        }
+        
+        /* NOUVEAU : Style pour les messages d'erreur */
+        #error-message {
+            color: var(--rouge-erreur);
+            background-color: #fee2e2;
+            border: 1px solid var(--rouge-erreur);
+            padding: 0.75rem;
+            border-radius: 8px;
+            margin-bottom: 1.5rem;
+            font-size: 0.9rem;
+            font-weight: 600;
+            display: none; /* Caché par défaut, sera affiché par JS */
+        }
+
+        .footer-link {
+            margin-top: 1.5rem;
+            font-size: 0.8rem;
+            color: #9ca3af;
+        }
+        .footer-link a {
+            color: var(--bleu-fonce);
+            text-decoration: none;
+            font-weight: 600;
+        }
+
+    </style>
 </head>
 <body>
-  <header>
-    <h1>🔐 Connexion</h1>
-    <p>Institut Saint Charles Lwanga · Lubumbashi</p>
-  </header>
+    <div class="login-container">
+        <div class="logo-text">
+            <i class="fas fa-graduation-cap logo-icon"></i> SIGS
+        </div>
+        <p class="tagline">Système de Gestion Scolaire - Institut St Charles Lwanga</p>
 
-  <form id="loginForm">
-    <input type="email" id="email" placeholder="Adresse e-mail" required />
-    <input type="password" id="password" placeholder="Mot de passe" required />
-    <div class="erreur" id="erreurMsg"></div>
-    <button type="submit">Se connecter</button>
-  </form>
+        <div id="error-message"></div>
 
-  <div class="apercu" id="apercuContainer" style="display:none;">
-    ✅ Connexion réussie<br>
-    Redirection vers <span id="apercuPage"></span>...
-  </div>
+        <form id="login-form"> 
+            <div class="form-group">
+                <label for="email">Email de l'utilisateur</label>
+                <div class="input-icon-group">
+                    <i class="fas fa-envelope"></i>
+                    <input type="email" id="email" name="email" placeholder="prefetmichel@lwanga.com" required>
+                </div>
+            </div>
 
-  <footer>
-    &copy; 2025 · Plateforme scolaire sécurisée · Institut Saint Charles Lwanga
-  </footer>
+            <div class="form-group">
+                <label for="password">Mot de passe</label>
+                <div class="input-icon-group">
+                    <i class="fas fa-lock"></i>
+                    <input type="password" id="password" name="password" placeholder="••••••••" required>
+                </div>
+            </div>
 
-  <script type="module">
-    import { initializeApp } from "https://www.gstatic.com/firebasejs/10.5.2/firebase-app.js";
-    import { getAuth, signInWithEmailAndPassword } from "https://www.gstatic.com/firebasejs/10.5.2/firebase-auth.js";
-    import { getFirestore, doc, getDoc } from "https://www.gstatic.com/firebasejs/10.5.2/firebase-firestore.js";
+            <button type="submit" id="login-btn" class="login-btn">Se Connecter</button>
+        </form>
 
-    const firebaseConfig = {
-      apiKey: "TON_API_KEY",
-      authDomain: "TON_DOMAINE.firebaseapp.com",
-      projectId: "TON_PROJECT_ID"
-    };
+        <p class="footer-link">
+            <a href="#">Mot de passe oublié ?</a>
+        </p>
+    </div>
 
-    const app = initializeApp(firebaseConfig);
-    const auth = getAuth(app);
-    const db = getFirestore(app);
+    <script src="votre-configuration-firebase.js"></script>
+    <script src="login.js"></script>
 
-    const form = document.getElementById("loginForm");
-    const erreurMsg = document.getElementById("erreurMsg");
-    const apercuContainer = document.getElementById("apercuContainer");
-    const apercuPage = document.getElementById("apercuPage");
-
-    form.addEventListener("submit", async (e) => {
-      e.preventDefault();
-      const email = document.getElementById("email").value.trim();
-      const password = document.getElementById("password").value.trim();
-
-      if (!email || !password) {
-        erreurMsg.textContent = "Veuillez remplir tous les champs.";
-        apercuContainer.style.display = "none";
-        return;
-      }
-
-      try {
-        const userCredential = await signInWithEmailAndPassword(auth, email, password);
-        const user = userCredential.user;
-
-        const docRef = doc(db, "utilisateurs", user.uid);
-        const docSnap = await getDoc(docRef);
-
-        if (!docSnap.exists()) {
-          erreurMsg.textContent = "⛔ Utilisateur non trouvé dans Firestore.";
-          return;
-        }
-
-        const role = docSnap.data().role;
-        let destination = "";
-
-        switch (role) {
-          case "prefet":
-            destination = "accueil-admin.html";
-            break;
-          case "directeur_etudes":
-            destination = "bulletins.html";
-            break;
-          case "directeur_discipline":
-            destination = "sanctions.html";
-            break;
-          case "secretaire":
-            destination = "documents.html";
-            break;
-          case "econome":
-            destination = "paiements.html";
-            break;
-          case "enseignant":
-            destination = "accueil-enseignant.html";
-            break;
-          case "eleve":
-            destination = "accueil-utilisateur.html";
-            break;
-          case "parent":
-            destination = "accueil-parent.html";
-            break;
-          default:
-            erreurMsg.textContent = "⛔ Rôle inconnu ou non autorisé.";
-            return;
-        }
-
-        apercuPage.textContent = destination;
-        apercuContainer.style.display = "block";
-
-        setTimeout(() => {
-          window.location.href = destination;
-        }, 1500);
-
-      } catch (error) {
-        erreurMsg.textContent = "⛔ Identifiants incorrects ou erreur de connexion.";
-        apercuContainer.style.display = "none";
-      }
-    });
-  </script>
 </body>
 </html>
