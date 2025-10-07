@@ -29,7 +29,7 @@
       background: #fff;
       width: 100%;
       max-width: 420px;
-      padding: 2rem 2.5rem;
+      padding: 2.5rem;
       border-radius: 16px;
       box-shadow: 0 8px 24px rgba(0, 0, 0, 0.15);
       text-align: center;
@@ -98,6 +98,24 @@
       min-height: 20px;
     }
 
+    /* 🔗 Lien vers connexion */
+    .login-link {
+      margin-top: 1.5rem;
+      font-size: 0.95rem;
+    }
+
+    .login-link a {
+      color: #004e92;
+      font-weight: 500;
+      text-decoration: none;
+      transition: color 0.2s;
+    }
+
+    .login-link a:hover {
+      color: #002b57;
+      text-decoration: underline;
+    }
+
     /* ✨ Animation */
     @keyframes fadeIn {
       from { opacity: 0; transform: translateY(10px); }
@@ -138,8 +156,14 @@
       <button type="submit">Créer le compte</button>
     </form>
 
+    <!-- Messages dynamiques -->
     <p id="errorMessage"></p>
     <p id="successMessage"></p>
+
+    <!-- 🔗 Lien vers la connexion -->
+    <div class="login-link">
+      Déjà un compte ? <a href="login.html">Se connecter ici</a>
+    </div>
   </div>
 
   <!-- ⚙️ Script Firebase -->
