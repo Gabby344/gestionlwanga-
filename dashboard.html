@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Dashboard · Administration · ISC Lwanga</title>
+  <title>Dashboard · ISC Lwanga</title>
   <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700;800&display=swap" rel="stylesheet">
   <style>
     :root {
@@ -15,179 +15,45 @@
       --fond: #f4f6f8;
       --ombre-legere: rgba(0,0,0,0.08);
     }
-
-    body {
-      font-family: 'Inter', sans-serif;
-      background-color: var(--fond);
-      margin: 0;
-      color: var(--gris-fonce);
-    }
-
-    /* HEADER */
-    .header {
-      background-color: white;
-      padding: 1rem 2rem;
-      box-shadow: 0 1px 5px var(--ombre-legere);
-      display: flex;
-      justify-content: space-between;
-      align-items: center;
-      flex-wrap: wrap;
-      gap: 1rem;
-    }
-
-    .header-left {
-      display: flex;
-      align-items: center;
-      gap: 1rem;
-    }
-
-    .header img {
-      height: 50px;
-      width: 50px;
-      object-fit: contain;
-    }
-
-    .header h1 {
-      font-size: 1.5rem;
-      color: var(--bleu-fonce);
-      margin: 0;
-      font-weight: 700;
-    }
-
-    .user-info {
-      font-size: 0.95rem;
-      color: #374151;
-      font-weight: 500;
-    }
-
-    .btn-logout {
-      background-color: var(--rouge);
-      color: white;
-      padding: 0.6rem 1rem;
-      border: none;
-      border-radius: 6px;
-      font-weight: 600;
-      cursor: pointer;
-      transition: background-color 0.2s;
-    }
-    .btn-logout:hover { background-color: #b91c1c; }
-
-    /* MAIN CONTENT */
-    .main-content {
-      max-width: 1200px;
-      margin: auto;
-      padding: 0 1rem 2rem;
-    }
-
-    .section-title {
-      font-size: 1.3rem;
-      font-weight: 700;
-      color: var(--gris-fonce);
-      margin-bottom: 1rem;
-      padding-bottom: 0.5rem;
-      border-bottom: 1px solid #e5e7eb;
-    }
-
-    /* STAT CARDS */
-    .stats-grid {
-      display: grid;
-      grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
-      gap: 1.5rem;
-      margin-bottom: 2rem;
-    }
-
-    .card-stat {
-      background-color: white;
-      padding: 1.5rem;
-      border-radius: 12px;
-      box-shadow: 0 4px 10px var(--ombre-legere);
-      border-left: 5px solid var(--bleu-fonce);
-      transition: transform 0.2s;
-    }
-
-    .card-stat:hover { transform: translateY(-3px); box-shadow: 0 6px 15px rgba(0,0,0,0.15); }
-
-    .card-stat-title { font-size: 0.85rem; font-weight: 600; color: #6b7280; text-transform: uppercase; margin-bottom: 0.5rem; }
-    .card-stat-value { font-size: 2.5rem; font-weight: 800; color: var(--gris-fonce); line-height: 1; }
-    .card-stat-footer { font-size: 0.8rem; color: #9ca3af; margin-top: 1rem; }
-
-    .stat-bleu { border-left-color: var(--bleu-fonce); }
-    .stat-vert { border-left-color: var(--vert); }
-    .stat-jaune { border-left-color: var(--jaune); }
-    .stat-rouge { border-left-color: var(--rouge); }
-
-    /* MENU GRID */
-    .menu-grid {
-      display: grid;
-      grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
-      gap: 1.5rem;
-    }
-
-    .menu-item {
-      background-color: white;
-      padding: 1.5rem;
-      border-radius: 10px;
-      box-shadow: 0 3px 6px var(--ombre-legere);
-      text-align: center;
-      text-decoration: none;
-      color: var(--gris-fonce);
-      transition: all 0.2s;
-      border: 1px solid #e5e7eb;
-      font-weight: 600;
-    }
-
-    .menu-item:hover {
-      background-color: var(--bleu-fonce);
-      color: white;
-      border-color: var(--bleu-fonce);
-      transform: scale(1.05);
-    }
-
-    .menu-item .icon {
-      font-size: 2.5rem;
-      margin-bottom: 0.5rem;
-    }
-
-    /* NOTIFICATIONS */
-    #notification-area {
-      position: fixed;
-      top: 20px;
-      right: 20px;
-      z-index: 1000;
-    }
-
-    .notification {
-      padding: 1rem 1.5rem;
-      border-radius: 8px;
-      margin-bottom: 10px;
-      box-shadow: 0 4px 6px rgba(0,0,0,0.1);
-      color: white;
-      font-weight: 500;
-      opacity: 0;
-      transform: translateX(100%);
-      transition: opacity 0.3s ease-out, transform 0.3s ease-out;
-    }
-
-    .notification.show { opacity: 1; transform: translateX(0); }
-    .notification.success { background-color: var(--vert); }
-    .notification.error { background-color: var(--rouge); }
-    .notification.warning { background-color: var(--jaune); }
-
-    /* Responsive */
-    @media(max-width:600px){
-      .header-left h1 { font-size: 1.2rem; }
-      .card-stat-value { font-size: 2rem; }
-      .menu-item .icon { font-size: 2rem; }
-    }
+    body { font-family:'Inter', sans-serif; background-color:var(--fond); margin:0; color:var(--gris-fonce);}
+    .header {background:white; padding:1rem 2rem; box-shadow:0 1px 5px var(--ombre-legere); display:flex; justify-content:space-between; align-items:center; flex-wrap:wrap; gap:1rem;}
+    .header-left {display:flex; align-items:center; gap:1rem;}
+    .header img {height:50px;width:50px; object-fit:contain;}
+    .header h1 {font-size:1.5rem;color:var(--bleu-fonce); margin:0; font-weight:700;}
+    .user-info {font-size:0.95rem;color:#374151;font-weight:500;}
+    .btn-logout {background-color:var(--rouge); color:white; padding:0.6rem 1rem; border:none; border-radius:6px; font-weight:600; cursor:pointer; transition:background-color 0.2s;}
+    .btn-logout:hover {background-color:#b91c1c;}
+    .main-content {max-width:1200px;margin:auto;padding:0 1rem 2rem;}
+    .section-title {font-size:1.3rem;font-weight:700;color:var(--gris-fonce);margin-bottom:1rem;padding-bottom:0.5rem;border-bottom:1px solid #e5e7eb;}
+    .stats-grid {display:grid; grid-template-columns:repeat(auto-fit,minmax(220px,1fr)); gap:1.5rem; margin-bottom:2rem;}
+    .card-stat {background:white; padding:1.5rem; border-radius:12px; box-shadow:0 4px 10px var(--ombre-legere); border-left:5px solid var(--bleu-fonce); transition:transform 0.2s;}
+    .card-stat:hover {transform:translateY(-3px); box-shadow:0 6px 15px rgba(0,0,0,0.15);}
+    .card-stat-title {font-size:0.85rem;font-weight:600;color:#6b7280;text-transform:uppercase;margin-bottom:0.5rem;}
+    .card-stat-value {font-size:2.5rem;font-weight:800;color:var(--gris-fonce);line-height:1;}
+    .card-stat-footer {font-size:0.8rem;color:#9ca3af;margin-top:1rem;}
+    .stat-bleu {border-left-color:var(--bleu-fonce);}
+    .stat-vert {border-left-color:var(--vert);}
+    .stat-jaune {border-left-color:var(--jaune);}
+    .stat-rouge {border-left-color:var(--rouge);}
+    .menu-grid {display:grid; grid-template-columns:repeat(auto-fit,minmax(180px,1fr)); gap:1.5rem;}
+    .menu-item {background:white; padding:1.5rem; border-radius:10px; box-shadow:0 3px 6px var(--ombre-legere); text-align:center; text-decoration:none; color:var(--gris-fonce); transition:all 0.2s; border:1px solid #e5e7eb; font-weight:600;}
+    .menu-item:hover {background-color:var(--bleu-fonce); color:white; border-color:var(--bleu-fonce); transform:scale(1.05);}
+    .menu-item .icon {font-size:2.5rem; margin-bottom:0.5rem;}
+    #notification-area {position:fixed; top:20px; right:20px; z-index:1000;}
+    .notification {padding:1rem 1.5rem; border-radius:8px; margin-bottom:10px; box-shadow:0 4px 6px rgba(0,0,0,0.1); color:white; font-weight:500; opacity:0; transform:translateX(100%); transition:opacity 0.3s, transform 0.3s;}
+    .notification.show {opacity:1; transform:translateX(0);}
+    .notification.success {background-color:var(--vert);}
+    .notification.error {background-color:var(--rouge);}
+    .notification.warning {background-color:var(--jaune);}
+    @media(max-width:600px){.header-left h1{font-size:1.2rem;}.card-stat-value{font-size:2rem;}.menu-item .icon{font-size:2rem;}}
   </style>
 </head>
 <body>
   <div id="notification-area"></div>
-
   <div class="header">
     <div class="header-left">
       <img src="logo.png" alt="Logo ISC Lwanga">
-      <h1 id="dashboardTitle">Dashboard · Administration · ISC Lwanga</h1>
+      <h1 id="dashboardTitle">Dashboard · ISC Lwanga</h1>
     </div>
     <div class="user-info" id="userInfo"></div>
     <button class="btn-logout" id="logoutBtn">🚪 Déconnexion</button>
@@ -195,10 +61,14 @@
 
   <div class="main-content">
     <h2 class="section-title">Aperçu Actuel</h2>
-    <div class="stats-grid"></div>
+    <div class="stats-grid">
+      <!-- Stats dynamiques -->
+    </div>
 
     <h2 class="section-title">Modules de Gestion</h2>
-    <div class="menu-grid"></div>
+    <div class="menu-grid">
+      <!-- Modules dynamiques -->
+    </div>
   </div>
 
   <script type="module">
@@ -212,87 +82,80 @@
     const statsGrid = document.querySelector(".stats-grid");
     const menuGrid = document.querySelector(".menu-grid");
 
-    // --- Notification
-    function showNotification(message, type="success"){
+    function showNotification(msg, type="success") {
       const area = document.getElementById('notification-area');
       const notif = document.createElement('div');
       notif.className = `notification ${type}`;
-      notif.textContent = message;
+      notif.textContent = msg;
       area.appendChild(notif);
       setTimeout(()=>notif.classList.add('show'),10);
       setTimeout(()=>{ notif.classList.remove('show'); setTimeout(()=>area.removeChild(notif),300); },4000);
     }
 
-    onAuthStateChanged(auth, async (user) => {
-      if (!user) window.location.href = "login.html";
-
+    onAuthStateChanged(auth, async (user)=>{
+      if(!user){ window.location.href="login.html"; return; }
       try {
-        const snap = await getDoc(doc(db, "users", user.uid));
-        if(!snap.exists()) throw new Error("Profil introuvable.");
-
+        const snap = await getDoc(doc(db,"users",user.uid));
+        if(!snap.exists()) throw new Error("Profil introuvable dans Firestore.");
         const data = snap.data();
-        const role = data.role || "inconnu";
-        const nom = `${data.nom || ""} ${data.postNom || ""} ${data.prenom || ""}`.trim() || "Utilisateur";
+        const role = (data.role || "inconnu").toLowerCase();
+        const nom = [data.nom, data.postNom, data.prenom].filter(Boolean).join(" ") || "Utilisateur";
 
         dashboardTitle.textContent = `Dashboard · ${role.toUpperCase()} · ISC Lwanga`;
         userInfo.textContent = `${nom} (${role})`;
 
-        // --- Gestion stats dynamiques
+        // --- Stats dynamiques
         const statsData = [
-          { title: "Élèves Inscrits", value: 1245, footer: "+5 nouveaux ce mois", color: "stat-bleu" },
-          { title: "Enseignants Actifs", value: 48, footer: "Taux d'assiduité : 98%", color: "stat-vert" },
-          { title: "Notes à Saisir (T3)", value: "3 classes", footer: "Deadline : 15 octobre", color: "stat-jaune" },
-          { title: "Frais Impayés", value: 22, footer: "Total dû : $5,400", color: "stat-rouge" }
+          {title:"Élèves Inscrits", value:1245, footer:"+5 nouveaux ce mois", color:"stat-bleu"},
+          {title:"Enseignants Actifs", value:48, footer:"Taux d'assiduité : 98%", color:"stat-vert"},
+          {title:"Notes à Saisir (T3)", value:"3 classes", footer:"Deadline : 15 octobre", color:"stat-jaune"},
+          {title:"Frais Impayés", value:22, footer:"Total dû : $5,400", color:"stat-rouge"}
         ];
-
-        statsGrid.innerHTML = "";
-        statsData.forEach(stat => {
-          const card = document.createElement("div");
-          card.className = `card-stat ${stat.color}`;
-          card.innerHTML = `<p class="card-stat-title">${stat.title}</p><p class="card-stat-value">${stat.value}</p><p class="card-stat-footer">${stat.footer}</p>`;
+        statsGrid.innerHTML="";
+        statsData.forEach(stat=>{
+          const card=document.createElement("div");
+          card.className=`card-stat ${stat.color}`;
+          card.innerHTML=`<p class="card-stat-title">${stat.title}</p><p class="card-stat-value">${stat.value}</p><p class="card-stat-footer">${stat.footer}</p>`;
           statsGrid.appendChild(card);
         });
 
-        // --- Gestion modules selon rôle
-        const modules = [
-          { title: "Gestion des Élèves", icon: "📚", link: "eleves.html", roles:["prefet","admin","directeur_etudes","secretaire"] },
-          { title: "Gestion des Enseignants", icon: "👨‍🏫", link: "enseignants.html", roles:["prefet","admin"] },
-          { title: "Notes & Bulletins", icon: "🧮", link: "bulletins.html", roles:["prefet","admin","directeur_etudes"] },
-          { title: "Planning des Cours", icon: "📆", link: "cours.html", roles:["prefet","admin","directeur_etudes"] },
-          { title: "Suivi des Paiements", icon: "💰", link: "paiements.html", roles:["prefet","admin","econome"] },
-          { title: "Paramètres Admin", icon: "⚙️", link: "admin.html", roles:["prefet","admin"] }
+        // --- Modules dynamiques selon rôle
+        const modules=[
+          {title:"Gestion des Élèves", icon:"📚", link:"eleves.html", roles:["prefet","admin","directeur_etudes","secretaire"]},
+          {title:"Gestion des Enseignants", icon:"👨‍🏫", link:"enseignants.html", roles:["prefet","admin"]},
+          {title:"Notes & Bulletins", icon:"🧮", link:"bulletins.html", roles:["prefet","admin","directeur_etudes"]},
+          {title:"Planning des Cours", icon:"📆", link:"cours.html", roles:["prefet","admin","directeur_etudes"]},
+          {title:"Suivi des Paiements", icon:"💰", link:"paiements.html", roles:["prefet","admin","econome"]},
+          {title:"Paramètres Admin", icon:"⚙️", link:"admin.html", roles:["prefet","admin"]}
         ];
-
-        menuGrid.innerHTML = "";
-        modules.forEach(mod => {
+        menuGrid.innerHTML="";
+        modules.forEach(mod=>{
           if(mod.roles.includes(role)){
-            const item = document.createElement("a");
-            item.href = mod.link;
-            item.className = "menu-item";
-            item.innerHTML = `<div class="icon">${mod.icon}</div><div>${mod.title}</div>`;
+            const item=document.createElement("a");
+            item.href=mod.link;
+            item.className="menu-item";
+            item.innerHTML=`<div class="icon">${mod.icon}</div><div>${mod.title}</div>`;
             menuGrid.appendChild(item);
           }
         });
 
-        // --- Accès refusé si rôle inconnu
-        if(role === "inconnu") {
-          showNotification("⛔ Votre rôle ne permet pas l'accès au dashboard.", "error");
+        if(role==="inconnu"){
+          showNotification("⛔ Votre rôle ne permet pas l'accès au dashboard.","error");
           await signOut(auth);
-          window.location.href = "login.html";
+          window.location.href="login.html";
         }
 
       } catch(err){
-        showNotification(err.message, "error");
-        window.location.href = "login.html";
+        showNotification(err.message,"error");
+        window.location.href="login.html";
       }
     });
 
-    logoutBtn.addEventListener("click", async () => {
+    logoutBtn.addEventListener("click", async ()=>{
       await signOut(auth);
       showNotification("✅ Déconnexion réussie !");
-      window.location.href = "login.html";
+      window.location.href="login.html";
     });
-
   </script>
 </body>
 </html>
