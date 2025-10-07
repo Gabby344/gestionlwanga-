@@ -53,7 +53,44 @@
     <p id="errorMessage"></p>
   </div>
 
-  <!-- Lien vers le script de connexion -->
-  <script type="module" src="login.js"></script>
+  <!-- Import du SDK Firebase -->
+  <script type="module">
+    // Importation des modules nécessaires depuis Firebase CDN
+    import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-app.js";
+    import { getAuth, signInWithEmailAndPassword } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-auth.js";
+
+    // Configuration Firebase
+    const firebaseConfig = {
+      apiKey: "AIzaSyAgv4TDYnR60TXnns-LISqbZTgcdLT31cc",
+      authDomain: "gestionlwanga.firebaseapp.com",
+      projectId: "gestionlwanga",
+      storageBucket: "gestionlwanga.firebasestorage.app",
+      messagingSenderId: "622604298611",
+      appId: "1:622604298611:web:4ab4314ed3eec6826c3d06"
+    };
+
+    // Initialisation de Firebase
+    const app = initializeApp(firebaseConfig);
+    const auth = getAuth(app);
+
+    // Gestion du formulaire de connexion
+    const loginForm = document.getElementById("loginForm");
+    const errorMessage = document.getElementById("errorMessage");
+
+    loginForm.addEventListener("submit", async (e) => {
+      e.preventDefault();
+      const email = document.getElementById("email").value;
+      const password = document.getElementById("password").value;
+
+      try {
+        const userCredential = await signInWithEmailAndPassword(auth, email, password);
+        const user = userCredential.user;
+        alert("Connexion réussie ✅ Bienvenue " + user.email);
+        window.location.href = "dashboard.html"; // redirection après connexion
+      } catch (error) {
+        errorMessage.textContent = "Erreur : " + error.message;
+      }
+    });
+  </script>
 </body>
 </html>
