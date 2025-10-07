@@ -2,367 +2,58 @@
 <html lang="fr">
 <head>
   <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Tableau de Bord - Institut Saint Charles Lwanga (SIGS)</title>
-  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700;800&display=swap" rel="stylesheet">
-  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css" integrity="sha512-SnH5WK+bZxgPHs44uWIX+LLMDJ8uR2Kz6oJjVp7C8g+F9x1hP9C4L7rY7h8U8xHh8F8b0G0f0aF0c2Q1/Q==" crossorigin="anonymous" referrerpolicy="no-referrer" />
+  <title>Accueil · SIGS</title>
   <style>
-    :root {
-      --bleu-fonce: #1e40af; /* Principal (Logo, Header) */
-      --gris-fonce: #1f2937;
-      --fond-principal: #f4f6f8;
-      --vert: #10b981; /* Accent Positif (Élèves, Paiements) */
-      --indigo: #4f46e5; /* Accent Secondaire (Enseignants, Cours) */
-      --orange: #f59e0b; /* Accent Alerte (Notes, Recouvrement) */
-      --ombre-forte: rgba(0,0,0,0.15);
-      --ombre-legere: rgba(0,0,0,0.05);
-      --orange-finance: #f97316; /* Un orange plus vif pour la finance */
-    }
     body {
-      font-family: 'Inter', sans-serif;
-      background-color: var(--fond-principal);
-      margin: 0;
-      color: var(--gris-fonce);
+      font-family: sans-serif;
+      background: #f0f0f0;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      height: 100vh;
     }
-    
-    /* AJOUT PRO : Conteneur principal pour la structure sidebar + contenu (même si la sidebar est vide) */
-    .app-container {
-        display: flex;
-        min-height: 100vh;
+    .container {
+      background: white;
+      padding: 30px;
+      border-radius: 8px;
+      box-shadow: 0 0 10px rgba(0,0,0,0.1);
+      width: 100%;
+      max-width: 400px;
     }
-    .sidebar {
-        /* Style de base pour une sidebar, pour l'évolutivité */
-        width: 0; 
-        transition: width 0.3s;
-        background-color: var(--gris-fonce);
+    input, button {
+      width: 100%;
+      padding: 10px;
+      margin-bottom: 15px;
+      border-radius: 4px;
+      border: 1px solid #ccc;
     }
-    .content-area {
-        flex-grow: 1;
+    button {
+      background: #007bff;
+      color: white;
+      border: none;
+      cursor: pointer;
     }
-
-
-    /* --- EN-TÊTE DE L'APPLICATION (Header) --- */
-    .header {
-        background-color: white;
-        padding: 1rem 2rem;
-        box-shadow: 0 2px 4px var(--ombre-legere);
-        display: flex;
-        justify-content: space-between;
-        align-items: center;
-        border-bottom: 3px solid var(--bleu-fonce);
+    button:hover {
+      background: #0056b3;
     }
-    .logo-text {
-        font-size: 1.25rem;
-        font-weight: 800;
-        color: var(--bleu-fonce);
-        display: flex; /* Pour aligner le texte du logo et l'icône si on en ajoutait une */
-        align-items: center;
-    }
-    .user-info {
-        font-size: 0.9rem;
-        color: #6b7280;
-    }
-    /* AJOUT SPÉCIFIQUE : Style du bouton de déconnexion pour le différencier */
-    .logout-btn {
-        color: #ef4444; /* Rouge pour le bouton de déconnexion */
-        text-decoration: none;
-        margin-left: 1rem;
-        font-weight: 600;
-        transition: color 0.2s;
-    }
-    .logout-btn:hover {
-        color: #dc2626;
-    }
-    
-    /* --- CONTENU PRINCIPAL --- */
-    .main-content {
-        padding: 2rem 1rem;
-        max-width: 1200px;
-        margin: auto;
-    }
-    
-    /* --- TITRES DU TABLEAU DE BORD --- */
-    .welcome-title {
-        font-size: 1.8rem;
-        color: var(--gris-fonce);
-        margin-bottom: 0.5rem;
-    }
-    .subtitle {
-        font-size: 1rem;
-        color: #6b7280;
-        margin-bottom: 2rem;
-    }
-
-    /* --- CARTES KPI (Key Performance Indicators) --- */
-    .kpi-grid {
-        display: grid;
-        grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
-        gap: 1.5rem;
-        margin-bottom: 3rem;
-    }
-    .kpi-card {
-        background: white;
-        padding: 1.5rem;
-        border-radius: 12px;
-        box-shadow: 0 4px 10px var(--ombre-legere);
-        border-left: 5px solid;
-    }
-    .kpi-card-title {
-        font-size: 0.9rem;
-        font-weight: 600;
-        color: #6b7280;
-        margin-bottom: 0.5rem;
-    }
-    .kpi-card-value {
-        font-size: 2.2rem;
-        font-weight: 800;
-    }
-    .kpi-stat-detail {
-        font-size: 0.8rem; 
-        margin: 0; 
-        color: #6b7280;
-        display: flex; /* Pour potentiellement ajouter une icône de flèche */
-        align-items: center;
-    }
-
-    /* Couleurs des KPIs */
-    .kpi-eleves { border-color: var(--vert); color: var(--vert); }
-    .kpi-enseignants { border-color: var(--indigo); color: var(--indigo); }
-    .kpi-recouvrement { border-color: var(--orange); color: var(--orange); }
-    .kpi-notes { border-color: var(--bleu-fonce); color: var(--bleu-fonce); }
-
-
-    /* --- GRILLE DE NAVIGATION DES MODULES --- */
-    .modules-grid {
-      display: grid;
-      grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
-      gap: 1.5rem;
-    }
-    .module-card {
-      display: block;
-      background-color: white;
-      padding: 1.5rem;
-      border-radius: 12px;
-      text-decoration: none;
-      color: var(--gris-fonce);
-      box-shadow: 0 4px 10px var(--ombre-legere);
-      transition: transform 0.2s, box-shadow 0.2s;
-      border: 1px solid #e5e7eb;
-    }
-    .module-card:hover {
-      transform: translateY(-5px);
-      box-shadow: 0 8px 20px var(--ombre-forte);
-    }
-    .card-header {
-        display: flex;
-        align-items: center;
-        margin-bottom: 0.75rem;
-    }
-    .card-icon {
-        font-size: 2rem;
-        margin-right: 1rem;
-        line-height: 1;
-        /* La couleur sera définie par une classe spécifique */
-    }
-    /* AJOUT PRO : Classe utilitaire pour les icônes Font Awesome */
-    .fa-icon-util {
-        width: 2rem; /* S'assurer que toutes les icônes ont la même largeur pour l'alignement */
-        text-align: center;
-    }
-    .card-title {
-        font-size: 1.2rem;
-        font-weight: 700;
-    }
-    .card-description {
-        font-size: 0.9rem;
-        color: #6b7280;
-        margin-left: 3rem; /* Aligner avec le titre */
-    }
-
-    /* Couleurs des icônes des modules (pour Font Awesome) */
-    .icon-eleves { color: var(--vert); }
-    .icon-enseignants { color: var(--indigo); }
-    .icon-notes { color: var(--orange); }
-    .icon-cours { color: var(--bleu-fonce); }
-    .icon-paiements { color: var(--orange-finance); } 
-    .icon-config { color: #6b7280; }
-
-    /* --- PIED DE PAGE --- */
-    footer {
+    #errorMessage {
+      color: red;
       text-align: center;
-      margin-top: 4rem;
-      padding: 1rem;
-      font-size: 0.8rem;
-      color: #9ca3af;
-      /* AJOUT PRO : petite ombre pour le détacher légèrement */
-      box-shadow: 0 -2px 4px var(--ombre-legere); 
-      background-color: white;
-    }
-
-    /* --- AJOUT PRO : MEDIA QUERIES pour la Réactivité sur Mobile --- */
-    @media (max-width: 768px) {
-        .header {
-            padding: 1rem;
-            flex-direction: column;
-            align-items: flex-start;
-        }
-        .user-info {
-            margin-top: 0.5rem;
-            font-size: 0.8rem;
-        }
-        .main-content {
-            padding: 1rem;
-        }
-        .kpi-card-value {
-            font-size: 1.8rem;
-        }
-        .kpi-grid {
-            grid-template-columns: 1fr 1fr; /* 2 colonnes sur mobile */
-            gap: 1rem;
-        }
-        .modules-grid {
-            grid-template-columns: 1fr; /* 1 colonne sur mobile */
-        }
-        .card-description {
-            margin-left: 2.5rem; /* Ajuster l'alignement pour les petits écrans */
-        }
     }
   </style>
 </head>
-  <script>
-  // Vérifie si l'utilisateur est déjà connecté (à intégrer plus tard avec Firebase)
-  const estConnecte = false; // à remplacer par une vraie vérification
-
-  if (!estConnecte) {
-    window.location.href = "connexion.html";
-  }
-</script>
 <body>
-<div class="app-container">
-    <div class="sidebar">
-        </div>
+  <div class="container">
+    <h2>Connexion · SIGS</h2>
+    <form id="loginForm">
+      <input type="email" id="email" placeholder="Email de l'utilisateur" required />
+      <input type="password" id="password" placeholder="Mot de passe" required />
+      <button type="submit">Se connecter</button>
+    </form>
+    <p id="errorMessage"></p>
+  </div>
 
-    <div class="content-area">
-        <header class="header">
-            <div class="logo-text">
-                <i class="fas fa-graduation-cap fa-icon-util" style="color: var(--bleu-fonce); margin-right: 0.5rem;"></i>
-                Institut St Charles Lwanga (SIGS)
-            </div>
-            <div class="user-info">
-                Connecté en tant que: **Admin** | <a href="#" style="color: inherit; text-decoration: none;"> <i class="fas fa-cog"></i> Paramètres</a>
-                | <a href="connexion.html" class="logout-btn"> <i class="fas fa-sign-out-alt"></i> Déconnexion</a>
-            </div>
-        </header>
-      
-        <div class="main-content">
-            <h1 class="welcome-title">Bienvenue sur votre Tableau de Bord ! <span style="font-size: 1.5rem;">👋</span></h1>
-            <p class="subtitle">Aperçu rapide des indicateurs clés et accès aux modules de gestion.</p>
-      
-            <div class="kpi-grid">
-                <div class="kpi-card kpi-eleves">
-                    <div class="kpi-card-title">Total Élèves Inscrits</div>
-                    <div class="kpi-card-value">1248</div>
-                    <p class="kpi-stat-detail">
-                        <i class="fas fa-chart-line" style="color: var(--vert); margin-right: 0.25rem;"></i>
-                        +3.2% depuis l'année dernière
-                    </p>
-                </div>
-                <div class="kpi-card kpi-enseignants">
-                    <div class="kpi-card-title">Personnel Enseignant</div>
-                    <div class="kpi-card-value">45</div>
-                    <p class="kpi-stat-detail">
-                        <i class="fas fa-user-plus" style="color: var(--indigo); margin-right: 0.25rem;"></i>
-                        5 nouveaux professeurs ce mois
-                    </p>
-                </div>
-                <div class="kpi-card kpi-recouvrement">
-                    <div class="kpi-card-title">Solde à Recouvrer</div>
-                    <div class="kpi-card-value">$ 15,200</div>
-                    <p class="kpi-stat-detail">
-                        <i class="fas fa-exclamation-triangle" style="color: var(--orange); margin-right: 0.25rem;"></i>
-                        🚨 24% des élèves sont en partiel
-                    </p>
-                </div>
-                <div class="kpi-card kpi-notes">
-                    <div class="kpi-card-title">Bulletins en Attente</div>
-                    <div class="kpi-card-value">3</div>
-                    <p class="kpi-stat-detail">
-                        <i class="fas fa-hourglass-half" style="color: var(--bleu-fonce); margin-right: 0.25rem;"></i>
-                        Bulletins de 5ème à valider
-                    </p>
-                </div>
-            </div>
-      
-            <h2 class="welcome-title" style="font-size: 1.5rem; margin-top: 0;">Modules de l'Application</h2>
-            <div class="modules-grid">
-                
-                <a href="eleves.html" class="module-card">
-                    <div class="card-header">
-                        <div class="card-icon icon-eleves">
-                            <i class="fas fa-user-graduate fa-icon-util"></i>
-                        </div>
-                        <div class="card-title">Gestion des Élèves</div>
-                    </div>
-                    <div class="card-description">Ajout, modification, filtres et suivi complet des dossiers d'élèves.</div>
-                </a>
-      
-                <a href="enseignants.html" class="module-card">
-                    <div class="card-header">
-                        <div class="card-icon icon-enseignants">
-                            <i class="fas fa-chalkboard-teacher fa-icon-util"></i>
-                        </div>
-                        <div class="card-title">Gestion du Personnel</div>
-                    </div>
-                    <div class="card-description">Administration des profils des enseignants et du personnel non-enseignant.</div>
-                </a>
-                
-                <a href="bulletins.html" class="module-card">
-                    <div class="card-header">
-                        <div class="card-icon icon-notes">
-                            <i class="fas fa-file-alt fa-icon-util"></i>
-                        </div>
-                        <div class="card-title">Notes & Bulletins</div>
-                    </div>
-                    <div class="card-description">Saisie des cotes, calcul des moyennes et génération des bulletins officiels.</div>
-                </a>
-      
-                <a href="paiements.html" class="module-card">
-                    <div class="card-header">
-                        <div class="card-icon icon-paiements">
-                            <i class="fas fa-money-bill-wave fa-icon-util"></i>
-                        </div>
-                        <div class="card-title">Gestion Financière</div>
-                    </div>
-                    <div class="card-description">Enregistrement des paiements, suivi du recouvrement et rapports financiers.</div>
-                </a>
-                
-                <a href="cours.html" class="module-card">
-                    <div class="card-header">
-                        <div class="card-icon icon-cours">
-                            <i class="fas fa-calendar-alt fa-icon-util"></i>
-                        </div>
-                        <div class="card-title">Cours & Planning</div>
-                    </div>
-                    <div class="card-description">Création d'emplois du temps, gestion des matières et assignation des enseignants.</div>
-                </a>
-                
-                <a href="#" class="module-card" onclick="alert('Module en développement')">
-                    <div class="card-header">
-                        <div class="card-icon icon-config">
-                            <i class="fas fa-cogs fa-icon-util"></i>
-                        </div>
-                        <div class="card-title">Configuration & Paramètres</div>
-                    </div>
-                    <div class="card-description">Gestion des utilisateurs, des accès, des années scolaires et des frais de base.</div>
-                </a>
-                
-            </div>
-        </div>
-      
-        <footer>
-          Système d'Information de Gestion Scolaire (SIGS) | Version 1.0.25 | Développé par **Gabby Umba**.
-        </footer>
-    </div>
-</div>
+  <!-- Lien vers le script de connexion -->
+  <script type="module" src="login.js"></script>
 </body>
 </html>
