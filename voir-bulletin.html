@@ -3,8 +3,8 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Bulletin · Institut Saint Charles Lwanga</title>
-  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600&display=swap" rel="stylesheet">
+  <title>Voir Bulletin · Institut Saint Charles Lwanga</title>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700&display=swap" rel="stylesheet">
   <style>
     :root {
       --bleu: #1e3a8a;
@@ -12,7 +12,9 @@
       --fond: #f9fafb;
       --ombre: rgba(0,0,0,0.05);
       --vert: #065f46;
+      --orange: #f59e0b;
     }
+
     body {
       font-family: 'Inter', sans-serif;
       background-color: var(--fond);
@@ -20,43 +22,82 @@
       padding: 2rem 1rem;
       color: var(--gris);
     }
+
     header {
       text-align: center;
       margin-bottom: 2rem;
     }
+
     header h1 {
-      font-size: 1.6rem;
+      font-size: 1.8rem;
       color: var(--bleu);
       margin-bottom: 0.3rem;
     }
+
     header p {
-      font-size: 0.95rem;
-      color: var(--gris);
+      font-size: 1rem;
+      color: #6b7280;
     }
-    .bulletin {
-      max-width: 400px;
+
+    .login-container {
+      max-width: 350px;
       margin: auto;
       background-color: white;
-      padding: 1rem;
-      border-radius: 8px;
-      box-shadow: 0 0 5px var(--ombre);
+      padding: 1.5rem;
+      border-radius: 10px;
+      box-shadow: 0 4px 10px var(--ombre);
+      margin-bottom: 2rem;
     }
+
+    .login-container input, .login-container select, .login-container button {
+      width: 100%;
+      padding: 0.6rem;
+      margin-bottom: 1rem;
+      border-radius: 6px;
+      border: 1px solid #d1d5db;
+      font-size: 1rem;
+    }
+
+    .login-container button {
+      background-color: var(--orange);
+      color: white;
+      border: none;
+      cursor: pointer;
+      font-weight: 600;
+      transition: background-color 0.2s;
+    }
+
+    .login-container button:hover {
+      background-color: #d97706;
+    }
+
+    .bulletin {
+      max-width: 450px;
+      margin: auto;
+      background-color: white;
+      padding: 1.5rem;
+      border-radius: 10px;
+      box-shadow: 0 4px 10px var(--ombre);
+      display: none;
+    }
+
     .matiere {
       display: flex;
       justify-content: space-between;
       padding: 0.5rem 0;
       border-bottom: 1px solid #e5e7eb;
     }
-    .matiere:last-child {
-      border-bottom: none;
-    }
+
+    .matiere:last-child { border-bottom: none; }
+
     .moyenne {
       text-align: center;
       font-weight: bold;
-      margin-top: 1rem;
-      font-size: 1.1rem;
+      margin-top: 1.5rem;
+      font-size: 1.2rem;
       color: var(--vert);
     }
+
     footer {
       margin-top: 3rem;
       text-align: center;
@@ -66,44 +107,101 @@
   </style>
 </head>
 <body>
+
+<header>
+  <h1>📄 Bulletin scolaire</h1>
+  <p>Institut Saint Charles Lwanga · Lubumbashi</p>
+</header>
+
+<div class="login-container" id="loginContainer">
+  <h3>🔒 Accès au bulletin</h3>
+  <select id="categorieSelect">
+    <option value="">Choisir votre catégorie</option>
+    <option value="eleve">Élève</option>
+    <option value="parent">Parent</option>
+    <option value="enseignant">Enseignant</option>
+  </select>
+  <input type="text" id="nomInput" placeholder="Nom de l'élève">
+  <button onclick="verifierAcces()">Voir le bulletin</button>
+  <p id="errorMsg" style="color:red; display:none; font-size:0.9rem;"></p>
+</div>
+
+<div class="bulletin" id="bulletinContainer">
   <header>
-    <h1>📄 Bulletin scolaire</h1>
-    <p>Élève : Gabriel Umba · Classe : 6e A · Trimestre 1</p>
+    <h3 id="eleveNom"></h3>
+    <p id="eleveClasse"></p>
   </header>
+  <div id="matieresList"></div>
+  <div class="moyenne" id="moyenneContainer"></div>
+</div>
 
-  <div class="bulletin" id="bulletinContainer">
-    <!-- Les matières seront injectées ici -->
-  </div>
+<footer>
+  &copy; 2025 · Institut Saint Charles Lwanga
+</footer>
 
-  <footer>
-    &copy; 2025 · Institut Saint Charles Lwanga · Bulletin simulé
-  </footer>
+<script>
+  const bulletins = {
+    "Gabriel Umba": {
+      classe: "6e A",
+      trimestre: "1",
+      matieres: [
+        { matiere: "Mathématiques", note: 15 },
+        { matiere: "Français", note: 17 },
+        { matiere: "Histoire", note: 14 },
+        { matiere: "Sciences", note: 16 },
+        { matiere: "Anglais", note: 13 }
+      ]
+    }
+  };
 
-  <script>
-    const bulletin = [
-      { matiere: "Mathématiques", note: 15 },
-      { matiere: "Français", note: 17 },
-      { matiere: "Histoire", note: 14 },
-      { matiere: "Sciences", note: 16 },
-      { matiere: "Anglais", note: 13 }
-    ];
+  function verifierAcces() {
+    const categorie = document.getElementById('categorieSelect').value;
+    const nom = document.getElementById('nomInput').value.trim();
+    const errorMsg = document.getElementById('errorMsg');
+    const bulletinContainer = document.getElementById('bulletinContainer');
 
-    const container = document.getElementById("bulletinContainer");
+    if (!categorie) {
+      errorMsg.textContent = "Veuillez sélectionner votre catégorie.";
+      errorMsg.style.display = "block";
+      return;
+    }
+
+    if (!nom) {
+      errorMsg.textContent = "Veuillez entrer le nom de l'élève.";
+      errorMsg.style.display = "block";
+      return;
+    }
+
+    if (!bulletins[nom] || categorie !== "eleve") {
+      errorMsg.textContent = "Accès refusé pour cette catégorie ou élève inconnu.";
+      errorMsg.style.display = "block";
+      bulletinContainer.style.display = "none";
+      return;
+    }
+
+    // Accès autorisé
+    errorMsg.style.display = "none";
+    const data = bulletins[nom];
+    document.getElementById('eleveNom').textContent = `Élève : ${nom}`;
+    document.getElementById('eleveClasse').textContent = `Classe : ${data.classe} · Trimestre : ${data.trimestre}`;
+
+    const matieresList = document.getElementById('matieresList');
+    matieresList.innerHTML = '';
     let total = 0;
-
-    bulletin.forEach(item => {
+    data.matieres.forEach(item => {
       total += item.note;
-      const ligne = document.createElement("div");
-      ligne.className = "matiere";
+      const ligne = document.createElement('div');
+      ligne.className = 'matiere';
       ligne.innerHTML = `<span>${item.matiere}</span><span>${item.note}/20</span>`;
-      container.appendChild(ligne);
+      matieresList.appendChild(ligne);
     });
 
-    const moyenne = (total / bulletin.length).toFixed(2);
-    const moyenneEl = document.createElement("div");
-    moyenneEl.className = "moyenne";
-    moyenneEl.textContent = `📌 Moyenne générale : ${moyenne}/20`;
-    container.appendChild(moyenneEl);
-  </script>
+    const moyenne = (total / data.matieres.length).toFixed(2);
+    document.getElementById('moyenneContainer').textContent = `📌 Moyenne générale : ${moyenne}/20`;
+
+    bulletinContainer.style.display = "block";
+  }
+</script>
+
 </body>
 </html>
