@@ -4,15 +4,8 @@
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>Connexion - Gestion Lwanga</title>
-
   <style>
-    * {
-      margin: 0;
-      padding: 0;
-      box-sizing: border-box;
-      font-family: "Poppins", sans-serif;
-    }
-
+    * { margin: 0; padding: 0; box-sizing: border-box; font-family: "Poppins", sans-serif; }
     body {
       background: linear-gradient(135deg, #004e92, #000428);
       min-height: 100vh;
@@ -20,7 +13,6 @@
       justify-content: center;
       align-items: center;
     }
-
     .login-container {
       background: #fff;
       width: 100%;
@@ -31,20 +23,8 @@
       text-align: center;
       animation: fadeIn 0.8s ease-in-out;
     }
-
-    h2 {
-      margin-bottom: 1.5rem;
-      color: #004e92;
-      font-weight: 600;
-    }
-
-    form {
-      display: flex;
-      flex-direction: column;
-      gap: 1rem;
-      text-align: left;
-    }
-
+    h2 { margin-bottom: 1.5rem; color: #004e92; font-weight: 600; }
+    form { display: flex; flex-direction: column; gap: 1rem; text-align: left; }
     input {
       padding: 0.75rem 1rem;
       border: 1px solid #ccc;
@@ -52,84 +32,30 @@
       font-size: 1rem;
       transition: all 0.3s ease;
     }
-
-    input:focus {
-      outline: none;
-      border-color: #004e92;
-      box-shadow: 0 0 0 2px rgba(0, 78, 146, 0.15);
-    }
-
+    input:focus { outline: none; border-color: #004e92; box-shadow: 0 0 0 2px rgba(0, 78, 146, 0.15); }
     button {
-      background: #004e92;
-      color: #fff;
-      padding: 0.9rem 1rem;
-      font-size: 1rem;
-      border: none;
-      border-radius: 8px;
-      cursor: pointer;
-      transition: background 0.3s ease, transform 0.1s ease;
+      background: #004e92; color: #fff; padding: 0.9rem 1rem; font-size: 1rem; border: none;
+      border-radius: 8px; cursor: pointer; transition: background 0.3s ease, transform 0.1s ease;
     }
-
-    button:hover {
-      background: #003d75;
-    }
-
-    button:active {
-      transform: scale(0.98);
-    }
-
-    #errorMessage {
-      margin-top: 1rem;
-      color: #d93025;
-      font-size: 0.9rem;
-      min-height: 20px;
-    }
-
-    .register-link {
-      margin-top: 1.5rem;
-      font-size: 0.95rem;
-    }
-
-    .register-link a {
-      color: #004e92;
-      font-weight: 500;
-      text-decoration: none;
-      transition: color 0.2s;
-    }
-
-    .register-link a:hover {
-      color: #002b57;
-      text-decoration: underline;
-    }
-
-    @keyframes fadeIn {
-      from { opacity: 0; transform: translateY(10px); }
-      to { opacity: 1; transform: translateY(0); }
-    }
-
-    @media (max-width: 480px) {
-      .login-container {
-        padding: 1.5rem;
-      }
-      h2 {
-        font-size: 1.4rem;
-      }
-    }
+    button:hover { background: #003d75; }
+    button:active { transform: scale(0.98); }
+    #errorMessage { margin-top: 1rem; color: #d93025; font-size: 0.9rem; min-height: 20px; }
+    .register-link { margin-top: 1.5rem; font-size: 0.95rem; }
+    .register-link a { color: #004e92; font-weight: 500; text-decoration: none; transition: color 0.2s; }
+    .register-link a:hover { color: #002b57; text-decoration: underline; }
+    @keyframes fadeIn { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
+    @media (max-width: 480px) { .login-container { padding: 1.5rem; } h2 { font-size: 1.4rem; } }
   </style>
 </head>
-
 <body>
   <div class="login-container">
     <h2>Connexion à votre compte</h2>
-
     <form id="loginForm">
       <input id="email" type="email" placeholder="Email" required>
       <input id="password" type="password" placeholder="Mot de passe" required>
       <button type="submit">Se connecter</button>
     </form>
-
     <p id="errorMessage"></p>
-
     <div class="register-link">
       Pas encore de compte ? <a href="register.html">Créer un compte</a>
     </div>
@@ -145,6 +71,7 @@
 
     form.addEventListener("submit", async (e) => {
       e.preventDefault();
+      errorMessage.textContent = "";
 
       const email = document.getElementById("email").value.trim();
       const password = document.getElementById("password").value;
@@ -154,28 +81,30 @@
         const userCredential = await signInWithEmailAndPassword(auth, email, password);
         const user = userCredential.user;
 
-        // 📄 Récupérer son rôle depuis Firestore
+        // 📄 Récupérer le rôle depuis Firestore
         const userDoc = await getDoc(doc(db, "users", user.uid));
-        if (!userDoc.exists()) {
-          throw new Error("Profil utilisateur introuvable dans Firestore.");
-        }
+        if (!userDoc.exists()) throw new Error("Profil utilisateur introuvable.");
 
-        const role = userDoc.data().role;
+        const role = userDoc.data().role || "inconnu";
 
-        // 🚀 Redirection selon le rôle
+        // 🚀 Redirection selon rôle
         switch (role) {
-          case "admin":
-            window.location.href = "dashboard_admin.html";
-            break;
           case "prefet":
-            window.location.href = "dashboard_prefet.html";
-            break;
+            window.location.href = "dashboard_prefet.html"; break;
+          case "admin":
+            window.location.href = "dashboard_admin.html"; break;
+          case "directeur_etudes":
+            window.location.href = "dashboard_directeur_etudes.html"; break;
+          case "directeur_discipline":
+            window.location.href = "dashboard_directeur_discipline.html"; break;
+          case "secretaire":
+            window.location.href = "dashboard_secretaire.html"; break;
+          case "econome":
+            window.location.href = "dashboard_econome.html"; break;
           case "enseignant":
-            window.location.href = "dashboard_enseignant.html";
-            break;
+            window.location.href = "dashboard_enseignant.html"; break;
           case "eleve":
-            window.location.href = "dashboard_eleve.html";
-            break;
+            window.location.href = "dashboard_eleve.html"; break;
           default:
             throw new Error("Rôle utilisateur inconnu : " + role);
         }
