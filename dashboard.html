@@ -68,12 +68,10 @@
   </div>
 
   <script type="module">
-    // 🔹 Import Firebase
     import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-app.js";
     import { getAuth, signOut, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-auth.js";
     import { getFirestore, doc, getDoc } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore.js";
 
-    // 🔹 Configuration Firebase
     const firebaseConfig = {
       apiKey: "TON_API_KEY",
       authDomain: "TON_AUTH_DOMAIN",
@@ -103,7 +101,29 @@
       setTimeout(()=>{ notif.classList.remove('show'); setTimeout(()=>area.removeChild(notif),300); },4000);
     }
 
-    // 🔹 Vérification de l'état utilisateur
+    const modulesByRole = {
+      admin: ["Gestion des Élèves","Gestion des Enseignants","Notes & Bulletins","Planning des Cours","Suivi des Paiements","Paramètres Admin"],
+      prefet: ["Gestion des Élèves","Gestion des Enseignants","Notes & Bulletins","Planning des Cours","Suivi des Paiements","Paramètres Admin"],
+      directeur_etudes: ["Gestion des Élèves","Notes & Bulletins","Planning des Cours","Gestion des Enseignants"],
+      directeur_discipline: ["Gestion des Élèves","Gestion des Enseignants","Discipline & Messages"],
+      econome: ["Suivi des Paiements"],
+      secretaire: ["Gestion des Élèves","Gestion des Enseignants"],
+      enseignant: ["Notes & Bulletins","Planning des Cours"],
+      eleve: ["Voir Planning","Voir Bulletins"]
+    };
+
+    const allModules = [
+      {title:"Gestion des Élèves", icon:"📚", link:"eleves.html"},
+      {title:"Gestion des Enseignants", icon:"👨‍🏫", link:"enseignants.html"},
+      {title:"Notes & Bulletins", icon:"🧮", link:"bulletins.html"},
+      {title:"Planning des Cours", icon:"📆", link:"cours.html"},
+      {title:"Suivi des Paiements", icon:"💰", link:"paiements.html"},
+      {title:"Paramètres Admin", icon:"⚙️", link:"admin.html"},
+      {title:"Discipline & Messages", icon:"📣", link:"voir-messages.html"},
+      {title:"Voir Planning", icon:"📅", link:"voir-planning.html"},
+      {title:"Voir Bulletins", icon:"📝", link:"voir-bulletin.html"}
+    ];
+
     onAuthStateChanged(auth, async (user)=>{
       if(!user){ window.location.href="login.html"; return; }
 
@@ -117,7 +137,7 @@
         dashboardTitle.textContent = `Dashboard · ${role.toUpperCase()} · ISC Lwanga`;
         userInfo.textContent = `${nom} (${role})`;
 
-        // 🔹 Statistiques dynamiques
+        // Statistiques dynamiques
         const statsData = [
           {title:"Élèves Inscrits", value:1245, footer:"+5 nouveaux ce mois", color:"stat-bleu"},
           {title:"Enseignants Actifs", value:48, footer:"Taux d'assiduité : 98%", color:"stat-vert"},
@@ -132,18 +152,11 @@
           statsGrid.appendChild(card);
         });
 
-        // 🔹 Modules dynamiques selon rôle
-        const modules=[
-          {title:"Gestion des Élèves", icon:"📚", link:"eleves.html", roles:["prefet","admin","directeur_etudes","secretaire"]},
-          {title:"Gestion des Enseignants", icon:"👨‍🏫", link:"enseignants.html", roles:["prefet","admin"]},
-          {title:"Notes & Bulletins", icon:"🧮", link:"bulletins.html", roles:["prefet","admin","directeur_etudes"]},
-          {title:"Planning des Cours", icon:"📆", link:"cours.html", roles:["prefet","admin","directeur_etudes"]},
-          {title:"Suivi des Paiements", icon:"💰", link:"paiements.html", roles:["prefet","admin","econome"]},
-          {title:"Paramètres Admin", icon:"⚙️", link:"admin.html", roles:["prefet","admin"]}
-        ];
+        // Modules dynamiques selon rôle
         menuGrid.innerHTML="";
-        modules.forEach(mod=>{
-          if(mod.roles.includes(role)){
+        const allowedModules = modulesByRole[role] || [];
+        allModules.forEach(mod=>{
+          if(allowedModules.includes(mod.title)){
             const item=document.createElement("a");
             item.href=mod.link;
             item.className="menu-item";
@@ -166,12 +179,12 @@
       }
     });
 
-    // 🔹 Déconnexion
+    // Déconnexion
     logoutBtn.addEventListener("click", async ()=>{
       try {
         await signOut(auth);
         showNotification("✅ Déconnexion réussie !");
-        setTimeout(()=>window.location.href="login.html",500); // petite pause pour voir la notification
+        setTimeout(()=>window.location.href="login.html",500);
       } catch(err){
         console.error(err);
         showNotification("Erreur lors de la déconnexion","error");
