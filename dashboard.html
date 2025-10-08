@@ -72,13 +72,14 @@
     import { getAuth, signOut, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-auth.js";
     import { getFirestore, doc, getDoc } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore.js";
 
+    // 🔥 Configuration Firebase annexée
     const firebaseConfig = {
-      apiKey: "TON_API_KEY",
-      authDomain: "TON_AUTH_DOMAIN",
-      projectId: "TON_PROJECT_ID",
-      storageBucket: "TON_STORAGE_BUCKET",
-      messagingSenderId: "TON_MESSAGING_SENDER_ID",
-      appId: "TON_APP_ID"
+      apiKey: "AIzaSyAgv4TDYnR60TXnns-LISqbZTgcdLT31cc",
+      authDomain: "gestionlwanga.firebaseapp.com",
+      projectId: "gestionlwanga",
+      storageBucket: "gestionlwanga.firebasestorage.app",
+      messagingSenderId: "622604298611",
+      appId: "1:622604298611:web:4ab4314ed3eec6826c3d06"
     };
 
     const app = initializeApp(firebaseConfig);
@@ -137,7 +138,6 @@
         dashboardTitle.textContent = `Dashboard · ${role.toUpperCase()} · ISC Lwanga`;
         userInfo.textContent = `${nom} (${role})`;
 
-        // Statistiques dynamiques
         const statsData = [
           {title:"Élèves Inscrits", value:1245, footer:"+5 nouveaux ce mois", color:"stat-bleu"},
           {title:"Enseignants Actifs", value:48, footer:"Taux d'assiduité : 98%", color:"stat-vert"},
@@ -152,7 +152,6 @@
           statsGrid.appendChild(card);
         });
 
-        // Modules dynamiques selon rôle
         menuGrid.innerHTML="";
         const allowedModules = modulesByRole[role] || [];
         allModules.forEach(mod=>{
@@ -179,7 +178,6 @@
       }
     });
 
-    // Déconnexion
     logoutBtn.addEventListener("click", async ()=>{
       try {
         await signOut(auth);
