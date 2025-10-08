@@ -1,0 +1,191 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Paramètres Admin · ISC Lwanga</title>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700;800&display=swap" rel="stylesheet">
+  <style>
+    :root {
+      --bleu-fonce: #1e40af;
+      --gris-fonce: #1f2937;
+      --vert: #10b981;
+      --jaune: #f59e0b;
+      --rouge: #ef4444;
+      --fond: #f4f6f8;
+      --ombre-legere: rgba(0,0,0,0.08);
+    }
+    body {
+      font-family: 'Inter', sans-serif;
+      margin:0;
+      background-color: var(--fond);
+      color: var(--gris-fonce);
+    }
+    header {
+      background-color:white;
+      padding:1rem 2rem;
+      box-shadow:0 1px 5px var(--ombre-legere);
+      display:flex;
+      justify-content:space-between;
+      align-items:center;
+    }
+    header h1 {margin:0;font-size:1.5rem;color:var(--bleu-fonce);}
+    .btn-logout {
+      background-color: var(--rouge);
+      color:white;
+      border:none;
+      padding:.5rem 1rem;
+      border-radius:6px;
+      font-weight:600;
+      cursor:pointer;
+    }
+    main {max-width:1200px;margin:2rem auto;padding:0 1rem;}
+    h2 {margin-bottom:1rem;}
+    table {width:100%;border-collapse:collapse;margin-top:1rem;background:white;border-radius:8px;overflow:hidden;}
+    th, td {padding:.75rem;text-align:left;border-bottom:1px solid #e5e7eb;}
+    th {background-color:#f3f4f6;font-weight:700;}
+    button.action-btn {padding:.3rem .6rem;border:none;border-radius:5px;color:white;cursor:pointer;margin-right:.3rem;}
+    .edit {background-color:#3b82f6;}
+    .delete {background-color:#ef4444;}
+    .add-user {background-color:var(--vert);margin-bottom:1rem;}
+    form {display:flex;flex-wrap:wrap;gap:.5rem;background:white;padding:1rem;border-radius:8px;margin-bottom:1rem;box-shadow:0 3px 6px var(--ombre-legere);}
+    form input, form select {padding:.5rem;font-size:1rem;border:1px solid #d1d5db;border-radius:6px;flex:1;}
+    form button {flex:none;}
+    #message {margin-top:.5rem;font-weight:600;}
+  </style>
+</head>
+<body>
+
+<header>
+  <h1>Paramètres Admin / Préfet</h1>
+  <button class="btn-logout" id="logoutBtn">🚪 Déconnexion</button>
+</header>
+
+<main>
+  <h2>Gestion des Utilisateurs</h2>
+
+  <form id="addUserForm">
+    <input type="text" id="nom" placeholder="Nom" required>
+    <input type="text" id="postNom" placeholder="PostNom">
+    <input type="text" id="prenom" placeholder="Prénom">
+    <input type="email" id="email" placeholder="Email" required>
+    <input type="password" id="password" placeholder="Mot de passe" required>
+    <select id="role" required>
+      <option value="">-- Rôle --</option>
+      <option value="admin">Admin</option>
+      <option value="prefet">Préfet</option>
+      <option value="directeur_etudes">Directeur des Études</option>
+      <option value="directeur_discipline">Directeur Discipline</option>
+      <option value="secretaire">Secrétaire</option>
+      <option value="econome">Économe</option>
+      <option value="enseignant">Enseignant</option>
+      <option value="eleve">Élève</option>
+    </select>
+    <button type="submit" class="add-user">Ajouter</button>
+    <span id="message"></span>
+  </form>
+
+  <table id="usersTable">
+    <thead>
+      <tr>
+        <th>Nom</th>
+        <th>PostNom</th>
+        <th>Prénom</th>
+        <th>Email</th>
+        <th>Rôle</th>
+        <th>Actions</th>
+      </tr>
+    </thead>
+    <tbody></tbody>
+  </table>
+</main>
+
+<script type="module">
+  import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-app.js";
+  import { getAuth, signOut, createUserWithEmailAndPassword } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-auth.js";
+  import { getFirestore, doc, setDoc, collection, getDocs, deleteDoc } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore.js";
+
+  const firebaseConfig = {
+    apiKey: "AIzaSyAgv4TDYnR60TXnns-LISqbZTgcdLT31cc",
+    authDomain: "gestionlwanga.firebaseapp.com",
+    projectId: "gestionlwanga",
+    storageBucket: "gestionlwanga.firebasestorage.app",
+    messagingSenderId: "622604298611",
+    appId: "1:622604298611:web:4ab4314ed3eec6826c3d06"
+  };
+
+  const app = initializeApp(firebaseConfig);
+  const auth = getAuth(app);
+  const db = getFirestore(app);
+
+  const logoutBtn = document.getElementById('logoutBtn');
+  logoutBtn.addEventListener('click', async () => {
+    await signOut(auth);
+    window.location.href = 'admin.html';
+  });
+
+  const addUserForm = document.getElementById('addUserForm');
+  const messageElement = document.getElementById('message');
+  const usersTableBody = document.querySelector('#usersTable tbody');
+
+  async function loadUsers() {
+    usersTableBody.innerHTML = '';
+    const querySnapshot = await getDocs(collection(db, "users"));
+    querySnapshot.forEach((docSnap) => {
+      const data = docSnap.data();
+      const tr = document.createElement('tr');
+      tr.innerHTML = `
+        <td>${data.nom || ''}</td>
+        <td>${data.postNom || ''}</td>
+        <td>${data.prenom || ''}</td>
+        <td>${data.email}</td>
+        <td>${data.role}</td>
+        <td>
+          <button class="action-btn edit" data-id="${docSnap.id}">✏️</button>
+          <button class="action-btn delete" data-id="${docSnap.id}">🗑️</button>
+        </td>
+      `;
+      usersTableBody.appendChild(tr);
+    });
+  }
+
+  addUserForm.addEventListener('submit', async (e) => {
+    e.preventDefault();
+    messageElement.textContent = '';
+    const nom = document.getElementById('nom').value.trim();
+    const postNom = document.getElementById('postNom').value.trim();
+    const prenom = document.getElementById('prenom').value.trim();
+    const email = document.getElementById('email').value.trim();
+    const password = document.getElementById('password').value.trim();
+    const role = document.getElementById('role').value;
+
+    try {
+      const userCredential = await createUserWithEmailAndPassword(auth, email, password);
+      const uid = userCredential.user.uid;
+      await setDoc(doc(db, "users", uid), { nom, postNom, prenom, email, role });
+      messageElement.style.color = "green";
+      messageElement.textContent = "Utilisateur ajouté avec succès !";
+      addUserForm.reset();
+      loadUsers();
+    } catch(error) {
+      messageElement.style.color = "red";
+      messageElement.textContent = "Erreur : " + error.message;
+    }
+  });
+
+  usersTableBody.addEventListener('click', async (e) => {
+    if(e.target.classList.contains('delete')){
+      const uid = e.target.dataset.id;
+      if(confirm("Supprimer cet utilisateur ?")){
+        await deleteDoc(doc(db, "users", uid));
+        loadUsers();
+      }
+    }
+    // Ici tu peux ajouter l'édition si besoin
+  });
+
+  loadUsers();
+</script>
+
+</body>
+</html>
