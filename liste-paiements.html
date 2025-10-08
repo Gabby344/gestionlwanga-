@@ -3,18 +3,18 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Liste des Paiements - Institut Saint Charles Lwanga</title>
+  <title>Liste des Paiements · ISC Lwanga</title>
   <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700&display=swap" rel="stylesheet">
   <style>
     :root {
       --bleu-fonce: #1e40af;
       --gris-fonce: #1f2937;
-      --indigo: #4f46e5; /* Couleur principale du module Paiements */
-      --vert: #10b981; 
-      --rouge: #ef4444; 
-      --jaune: #f59e0b; 
-      --fond: #f4f6f8;
-      --ombre-legere: rgba(0,0,0,0.08);
+      --fond: #f9fafb;
+      --indigo: #4f46e5;
+      --ombre-legere: rgba(0, 0, 0, 0.08);
+      --rouge: #ef4444;
+      --vert: #10b981;
+      --orange: #f59e0b;
     }
     body {
       font-family: 'Inter', sans-serif;
@@ -25,319 +25,238 @@
     }
     h1 {
       text-align: center;
-      font-size: 1.8rem;
       color: var(--bleu-fonce);
-      margin-bottom: 0.5rem;
+      font-size: 1.8rem;
+      margin-bottom: 0.3rem;
     }
     h2 {
       text-align: center;
-      font-size: 1rem;
-      font-weight: normal;
       color: #6b7280;
+      font-weight: 400;
+      font-size: 1rem;
       margin-bottom: 2rem;
     }
-    .container {
-        max-width: 1200px;
-        margin: auto;
+    .toolbar {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 1.5rem;
+      flex-wrap: wrap;
+      gap: 1rem;
     }
-
-    /* --- BARRE DE CONTRÔLE ET FILTRES --- */
-    .controls-bar {
-        background-color: white;
-        padding: 1rem;
-        border-radius: 8px;
-        box-shadow: 0 2px 4px var(--ombre-legere);
-        margin-bottom: 1.5rem;
-        display: grid;
-        gap: 1rem;
-        grid-template-columns: 1fr;
+    select, input[type="text"] {
+      padding: 0.6rem 1rem;
+      border: 1px solid #d1d5db;
+      border-radius: 6px;
+      font-size: 1rem;
+      background-color: white;
     }
-    @media (min-width: 768px) {
-        .controls-bar {
-            grid-template-columns: 2fr 1.5fr 1fr 1fr 100px; /* Mise en page desktop */
-            align-items: center;
-        }
+    .table-container {
+      background: white;
+      border-radius: 12px;
+      box-shadow: 0 3px 8px var(--ombre-legere);
+      overflow-x: auto;
     }
-    .input-group label {
-        display: block;
-        font-size: 0.8rem;
-        font-weight: 600;
-        color: #6b7280;
-        margin-bottom: 0.2rem;
+    table {
+      width: 100%;
+      border-collapse: collapse;
+      min-width: 1000px;
     }
-    .input-group select, .input-group input[type="text"] {
-        width: 100%;
-        padding: 0.6rem;
-        border: 1px solid #d1d5db;
-        border-radius: 4px;
-        box-sizing: border-box;
-    }
-    .btn-exporter {
-        padding: 0.75rem 1rem;
-        border: none;
-        border-radius: 4px;
-        font-weight: 600;
-        cursor: pointer;
-        background-color: #d1d5db;
-        color: var(--gris-fonce);
-    }
-    .btn-exporter:hover { background-color: #9ca3af; }
-    #compteur {
-      font-weight: 700;
-      font-size: 0.9rem;
+    th, td {
       text-align: left;
-      color: var(--indigo);
-      padding-top: 0.5rem;
+      padding: 0.9rem 1rem;
+      border-bottom: 1px solid #e5e7eb;
     }
-
-    /* --- TABLEAU DE TRANSACTIONS --- */
-    #transactionsContainer {
-        background-color: white;
-        border-radius: 8px;
-        box-shadow: 0 4px 10px var(--ombre-legere);
-        overflow-x: auto;
-    }
-
-    /* VUE TABLEAU (DESKTOP) */
-    .transactions-table {
-        width: 100%;
-        border-collapse: collapse;
-        display: none; /* Caché par défaut */
-    }
-    @media (min-width: 768px) {
-        .transactions-table {
-            display: table; /* Affiché sur desktop */
-        }
-        th, td {
-            padding: 0.75rem 1rem;
-            text-align: left;
-            border-bottom: 1px solid #e5e7eb;
-        }
-        th {
-            background-color: #f3f4f6;
-            color: var(--gris-fonce);
-            font-weight: 600;
-            text-transform: uppercase;
-            font-size: 0.75rem;
-        }
-        /* Styles spécifiques aux colonnes */
-        .statut-total { color: var(--vert); font-weight: 600; }
-        .statut-partiel { color: var(--jaune); font-weight: 600; }
-        .statut-non-paye { color: var(--rouge); font-weight: 600; }
-        .montant-credit { color: var(--vert); font-weight: 700; }
-        .actions-cell { width: 150px; }
-    }
-    
-    /* VUE CARTE (MOBILE) */
-    .transaction-card {
-        padding: 1rem;
-        border-bottom: 1px solid #e5e7eb;
-    }
-    .transaction-card h3 {
-      margin: 0 0 0.5rem 0;
-      font-size: 1.1rem;
-      color: var(--indigo);
-    }
-    .transaction-card p {
-      margin: 0.25rem 0;
-      font-size: 0.9rem;
-    }
-    .actions-card {
-        margin-top: 0.75rem;
-        display: flex;
-        gap: 0.5rem;
-    }
-    .btn-modifier, .btn-supprimer {
-      border: none;
-      padding: 0.6rem;
-      border-radius: 4px;
-      font-size: 0.8rem;
-      cursor: pointer;
+    th {
+      background-color: var(--indigo);
       color: white;
-      flex: 1;
+      text-transform: uppercase;
+      font-size: 0.85rem;
     }
-    .btn-modifier { background-color: var(--indigo); }
-    .btn-supprimer { background-color: var(--rouge); }
-    @media (min-width: 768px) {
-        .transaction-card { display: none; } /* Cacher les cartes sur desktop */
-        .btn-modifier, .btn-supprimer { padding: 0.4rem 0.6rem; flex: unset; }
-    }
+    tr:hover { background-color: #f3f4f6; }
 
-
-    /* Bouton de retour */
-    .btn-retour {
-        display: block;
-        text-align: center;
-        margin-top: 1.5rem;
-        color: var(--gris-fonce);
-        text-decoration: none;
-        font-size: 0.9rem;
+    .status {
+      font-weight: 600;
+      padding: 0.3rem 0.6rem;
+      border-radius: 6px;
+      color: white;
+      display: inline-block;
     }
+    .paid { background-color: var(--vert); }
+    .partial { background-color: var(--orange); }
+    .unpaid { background-color: var(--rouge); }
+
+    #notification-area {
+      position: fixed;
+      top: 1rem;
+      right: 1rem;
+      z-index: 9999;
+    }
+    .notification {
+      opacity: 0;
+      transform: translateY(-10px);
+      transition: all 0.3s;
+      background: white;
+      border-left: 5px solid var(--vert);
+      padding: 1rem 1.2rem;
+      border-radius: 6px;
+      margin-bottom: 10px;
+      box-shadow: 0 3px 8px rgba(0, 0, 0, 0.1);
+    }
+    .notification.error { border-left-color: #ef4444; }
+    .notification.show { opacity: 1; transform: translateY(0); }
   </style>
 </head>
 <body>
-  <div class="container">
-    <h1>💰 Liste et Suivi des Transactions</h1>
-    <h2>Historique détaillé des paiements de frais de scolarité enregistrés.</h2>
+  <h1>Suivi des Paiements</h1>
+  <h2>Contrôle complet des frais et soldes des élèves</h2>
 
-    <div class="controls-bar">
-        <div class="input-group">
-            <label for="searchInput">Rechercher</label>
-            <input type="text" id="searchInput" placeholder="Élève, Référence ou Montant..." oninput="chargerTransactions()" />
-        </div>
-        <div class="input-group">
-            <label for="filtreClasse">Classe / Élève</label>
-            <select id="filtreClasse" onchange="chargerTransactions()">
-                <option value="">Toutes les classes</option>
-                <option value="6e">6ème Année</option>
-                <option value="5e">5ème Année</option>
-            </select>
-        </div>
-        <div class="input-group">
-            <label for="filtreMois">Mois</label>
-            <select id="filtreMois" onchange="chargerTransactions()">
-                <option value="">Tous les mois</option>
-                <option value="10/2025">Octobre 2025</option>
-                <option value="09/2025">Septembre 2025</option>
-            </select>
-        </div>
-        <div class="input-group">
-            <label for="filtreMethode">Méthode</label>
-            <select id="filtreMethode" onchange="chargerTransactions()">
-                <option value="">Toutes</option>
-                <option value="Espèces">Espèces</option>
-                <option value="Bancaire">Virement Bancaire</option>
-            </select>
-        </div>
-        
-        <button class="btn-exporter" onclick="exportPDF()">📄 Exporter</button>
-
-        <p id="compteur" style="grid-column: 1 / -1;"></p>
-    </div>
-
-    <div id="transactionsContainer">Chargement...</div>
-
-    <a href="paiements.html" class="btn-retour">← Retour au menu Gestion Financière</a>
+  <div class="toolbar">
+    <input type="text" id="searchInput" placeholder="🔍 Rechercher (nom, matricule)">
+    <select id="filterClasse"><option value="">Toutes les classes</option></select>
+    <select id="filterStatut">
+      <option value="">Tous les statuts</option>
+      <option value="paid">Payé</option>
+      <option value="partial">Partiel</option>
+      <option value="unpaid">Non payé</option>
+    </select>
+    <select id="filterFrais">
+      <option value="">Tous les frais</option>
+      <option value="frais_scolaires">Frais scolaires</option>
+      <option value="uniforme">Uniforme</option>
+      <option value="examen">Examen</option>
+    </select>
   </div>
 
+  <div class="table-container">
+    <table>
+      <thead>
+        <tr>
+          <th>Matricule</th>
+          <th>Nom complet</th>
+          <th>Classe</th>
+          <th>Type de frais</th>
+          <th>Montant dû ($)</th>
+          <th>Montant payé ($)</th>
+          <th>Reste ($)</th>
+          <th>Statut</th>
+        </tr>
+      </thead>
+      <tbody id="tablePaiements">
+        <tr><td colspan="8" style="text-align:center; padding:1rem;">Chargement...</td></tr>
+      </tbody>
+    </table>
+  </div>
 
-  <script>
-    // --- SIMULATION DE DONNÉES ---
-    const transactionsData = [
-        { id: 'T001', eleve: 'Gabby Umba', classe: '6e', date: '05/10/2025', montant: 150.00, methode: 'Espèces', reference: 'N/A' },
-        { id: 'T002', eleve: 'Ndaya Kabulo', classe: '5e', date: '04/10/2025', montant: 300.00, methode: 'Bancaire', reference: 'REF456' },
-        { id: 'T003', eleve: 'Tshibola Kasongo', classe: '6e', date: '01/10/2025', montant: 50.00, methode: 'Mobile', reference: 'Mpesa123' },
-        { id: 'T004', eleve: 'Kalubi Mutombo', classe: '5e', date: '30/09/2025', montant: 100.00, methode: 'Espèces', reference: 'N/A' },
-    ];
+  <div id="notification-area"></div>
 
-    const container = document.getElementById('transactionsContainer');
-    const filtreClasse = document.getElementById('filtreClasse');
-    const filtreMois = document.getElementById('filtreMois');
-    const filtreMethode = document.getElementById('filtreMethode');
-    const searchInput = document.getElementById('searchInput');
-    const compteur = document.getElementById('compteur');
-    
-    function chargerTransactions() {
-      container.innerHTML = "Chargement...";
-      const classe = filtreClasse.value;
-      const mois = filtreMois.value;
-      const methode = filtreMethode.value;
-      const recherche = searchInput.value.toLowerCase();
-      
-      const transactionsFiltrees = transactionsData.filter(t => {
-          const eleveMatch = t.eleve.toLowerCase().includes(recherche);
-          const refMatch = t.reference.toLowerCase().includes(recherche);
-          
-          // Filtres Select
-          const classeMatch = !classe || t.classe === classe;
-          const moisMatch = !mois || t.date.includes(mois); // Simple vérification mois/année
-          const methodeMatch = !methode || t.methode === methode;
+  <script type="module">
+    import { protectPage, showNotification } from './authGuard.js';
+    import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-app.js";
+    import { getFirestore, collection, getDocs } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore.js";
 
-          return (eleveMatch || refMatch) && classeMatch && moisMatch && methodeMatch;
-      });
+    protectPage(['admin','prefet','econome','directeur_etudes','secretaire']);
 
-      let tableHTML = `<table class="transactions-table">
-                          <thead>
-                              <tr>
-                                  <th style="width: 50px;">ID</th>
-                                  <th style="width: 200px;">Élève</th>
-                                  <th>Classe</th>
-                                  <th>Montant Payé</th>
-                                  <th>Date</th>
-                                  <th>Méthode</th>
-                                  <th>Référence</th>
-                                  <th class="actions-cell">Actions</th>
-                              </tr>
-                          </thead>
-                          <tbody>`;
-      let cardsHTML = '';
-      let totalMontant = 0;
+    const firebaseConfig = {
+      apiKey: "AIzaSyAgv4TDYnR60TXnns-LISqbZTgcdLT31cc",
+      authDomain: "gestionlwanga.firebaseapp.com",
+      projectId: "gestionlwanga",
+      storageBucket: "gestionlwanga.firebasestorage.app",
+      messagingSenderId: "622604298611",
+      appId: "1:622604298611:web:4ab4314ed3eec6826c3d06"
+    };
+    const app = initializeApp(firebaseConfig);
+    const db = getFirestore(app);
 
-      transactionsFiltrees.forEach((data, index) => {
-          totalMontant += data.montant;
-          const montantDisplay = `$ ${data.montant.toFixed(2)}`;
+    const tablePaiements = document.getElementById("tablePaiements");
+    const searchInput = document.getElementById("searchInput");
+    const filterClasse = document.getElementById("filterClasse");
+    const filterStatut = document.getElementById("filterStatut");
+    const filterFrais = document.getElementById("filterFrais");
 
-          // 1. Vue Tableau (Desktop)
-          tableHTML += `
-            <tr>
-              <td>${data.id.replace('T', '')}</td>
-              <td>${data.eleve}</td>
-              <td>${data.classe}</td>
-              <td class="montant-credit">${montantDisplay}</td>
-              <td>${data.date}</td>
-              <td>${data.methode}</td>
-              <td>${data.reference}</td>
-              <td>
-                <div class="actions-cell">
-                  <button class="btn-modifier" onclick="modifierTransaction('${data.id}')">✏️</button>
-                  <button class="btn-supprimer" onclick="supprimerTransaction('${data.id}')">🗑️</button>
-                </div>
-              </td>
-            </tr>
-          `;
-          
-          // 2. Vue Carte (Mobile)
-          cardsHTML += `
-            <div class="transaction-card">
-                <h3>${data.eleve} (${data.classe})</h3>
-                <p>Date : ${data.date} | ID : ${data.id}</p>
-                <p>Montant Payé : <strong class="montant-credit">${montantDisplay}</strong></p>
-                <p>Méthode : ${data.methode}</p>
-                <div class="actions-card">
-                    <button class="btn-modifier" onclick="modifierTransaction('${data.id}')">✏️ Modifier</button>
-                    <button class="btn-supprimer" onclick="supprimerTransaction('${data.id}')">🗑️ Supprimer</button>
-                </div>
-            </div>
-          `;
-      });
-      
-      tableHTML += `</tbody></table>`;
-      container.innerHTML = tableHTML + cardsHTML;
-      
-      compteur.textContent = `🧾 ${transactionsFiltrees.length} transactions affichées | Total perçu filtré : $ ${totalMontant.toFixed(2)}`;
-      if (transactionsFiltrees.length === 0) container.innerHTML = "<p style='text-align: center; padding: 2rem;'>Aucune transaction trouvée selon les critères.</p>";
-    }
+    let paiements = [];
 
-    function supprimerTransaction(id) {
-      if (confirm(`Confirmer la suppression de la transaction ${id} ?`)) {
-        alert("Transaction supprimée ! (Simulation)");
-        // Logique de suppression réelle (Backend)
-        chargerTransactions();
+    async function chargerPaiements() {
+      try {
+        const snapshot = await getDocs(collection(db, "paiements"));
+        paiements = snapshot.docs.map(doc => ({ id: doc.id, ...doc.data() }));
+        remplirClasses();
+        afficherTable(paiements);
+      } catch (err) {
+        console.error(err);
+        showNotification("Erreur lors du chargement des paiements", "error");
       }
     }
 
-    function modifierTransaction(id) {
-      alert(`Redirection vers la page de modification pour la transaction ${id}.`);
-      // window.location.href = `modifier-paiement.html?id=${id}`;
+    function remplirClasses() {
+      const classesUniques = [...new Set(paiements.map(p => p.classe))].filter(Boolean).sort();
+      filterClasse.innerHTML = '<option value="">Toutes les classes</option>';
+      classesUniques.forEach(cl => {
+        const opt = document.createElement('option');
+        opt.value = cl;
+        opt.textContent = cl;
+        filterClasse.appendChild(opt);
+      });
     }
 
-    function exportPDF() {
-      alert("Exportation en PDF des données filtrées...");
-      // Ici, on utiliserait jsPDF/html2canvas pour exporter le tableau visible
+    function afficherTable(liste) {
+      if (liste.length === 0) {
+        tablePaiements.innerHTML = `<tr><td colspan="8" style="text-align:center; padding:1rem;">Aucun paiement trouvé.</td></tr>`;
+        return;
+      }
+
+      tablePaiements.innerHTML = liste.map(p => {
+        const reste = (p.montant_du ?? 0) - (p.montant_paye ?? 0);
+        let statut = "unpaid";
+        if (reste <= 0) statut = "paid";
+        else if (p.montant_paye > 0) statut = "partial";
+
+        return `
+          <tr>
+            <td>${p.matricule || '-'}</td>
+            <td>${p.nomComplet || '-'}</td>
+            <td>${p.classe || '-'}</td>
+            <td>${p.type_frais || '-'}</td>
+            <td>${(p.montant_du ?? 0).toFixed(2)}</td>
+            <td>${(p.montant_paye ?? 0).toFixed(2)}</td>
+            <td>${reste.toFixed(2)}</td>
+            <td><span class="status ${statut}">${statut === 'paid' ? 'Payé' : statut === 'partial' ? 'Partiel' : 'Non payé'}</span></td>
+          </tr>
+        `;
+      }).join('');
     }
 
-    // Chargement initial
-    chargerTransactions();
+    function filtrer() {
+      const search = searchInput.value.toLowerCase();
+      const classe = filterClasse.value;
+      const statut = filterStatut.value;
+      const typeFrais = filterFrais.value;
+
+      const filtres = paiements.filter(p => {
+        const reste = (p.montant_du ?? 0) - (p.montant_paye ?? 0);
+        let s = "unpaid";
+        if (reste <= 0) s = "paid";
+        else if (p.montant_paye > 0) s = "partial";
+
+        const matchSearch =
+          (p.nomComplet || '').toLowerCase().includes(search) ||
+          (p.matricule || '').toLowerCase().includes(search);
+        const matchClasse = classe ? p.classe === classe : true;
+        const matchStatut = statut ? s === statut : true;
+        const matchFrais = typeFrais ? p.type_frais === typeFrais : true;
+
+        return matchSearch && matchClasse && matchStatut && matchFrais;
+      });
+
+      afficherTable(filtres);
+    }
+
+    searchInput.addEventListener('input', filtrer);
+    filterClasse.addEventListener('change', filtrer);
+    filterStatut.addEventListener('change', filtrer);
+    filterFrais.addEventListener('change', filtrer);
+
+    document.addEventListener('DOMContentLoaded', chargerPaiements);
   </script>
 </body>
 </html>
