@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Dashboard · ISC Lwanga</title>
+  <title>Dashboard · Institut Saint Charles Lwanga</title>
   <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700&display=swap" rel="stylesheet">
   <style>
     :root {
@@ -53,8 +53,8 @@
 
 <div class="header">
   <div class="header-left">
-    <img src="IMG_7373.jpeg" alt="Logo ISC Lwanga">
-    <h1 id="dashboardTitle">Dashboard · ISC Lwanga</h1>
+    <img src="IMG_7373.jpeg" alt="Logo Institut Saint Charles Lwanga">
+    <h1 id="dashboardTitle">Dashboard · Institut Saint Charles Lwanga</h1>
   </div>
   <div class="user-info" id="userInfo"></div>
   <button class="btn-logout" id="logoutBtn">🚪 Déconnexion</button>
@@ -129,7 +129,6 @@
       const enseignantsSnap = await getDocs(collection(db,"enseignants"));
       const bulletinsSnap = await getDocs(collection(db,"bulletins"));
       const paiementsSnap = await getDocs(collection(db,"paiements"));
-
       return {
         eleves: elevesSnap.size,
         enseignants: enseignantsSnap.size,
@@ -142,6 +141,26 @@
     }
   }
 
+  // --- Synthèse des paiements par classe ---
+  async function fetchSynthesePaiements() {
+    const elevesSnap = await getDocs(collection(db,"eleves"));
+    const paiementsSnap = await getDocs(collection(db,"paiements"));
+    const eleves = elevesSnap.docs.map(d=>({id:d.id,...d.data()}));
+    const paiements = paiementsSnap.docs.map(d=>({id:d.id,...d.data()}));
+
+    const classes = {};
+    eleves.forEach(el=>{
+      const classe = el.classe || "Non spécifiée";
+      if(!classes[classe]) classes[classe]={total:0,paye:0,partiel:0,nonPaye:0};
+      classes[classe].total += 1;
+      const payeEl = paiements.filter(p=>p.eleveId===el.id).reduce((sum,p)=>sum+(p.montant||0),0);
+      if(payeEl >= (el.total || 0)) classes[classe].paye += 1;
+      else if(payeEl > 0 && payeEl < (el.total || 0)) classes[classe].partiel += 1;
+      else classes[classe].nonPaye += 1;
+    });
+    return classes;
+  }
+
   onAuthStateChanged(auth, async (user)=>{
     if(!user){ window.location.href="admin.html"; return; }
 
@@ -152,9 +171,10 @@
       const role = (data.role || "inconnu").toLowerCase();
       const nom = [data.nom, data.postNom, data.prenom].filter(Boolean).join(" ") || "Utilisateur";
 
-      dashboardTitle.textContent = `Dashboard · ${role.toUpperCase()} · ISC Lwanga`;
+      dashboardTitle.textContent = `Dashboard · ${role.toUpperCase()} · Institut Saint Charles Lwanga`;
       userInfo.textContent = `${nom} (${role})`;
 
+      // --- Statistiques globales ---
       const stats = await fetchStats();
       const statsData = [
         {title:"Élèves Inscrits", value:stats.eleves, color:"stat-bleu"},
@@ -171,6 +191,24 @@
         statsGrid.appendChild(card);
       });
 
+      // --- Synthèse des paiements par classe pour rôles financiers/admin ---
+      if(["admin","prefet","econome","directeur_etudes"].includes(role)) {
+        const synthese = await fetchSynthesePaiements();
+        Object.entries(synthese).forEach(([classe,data])=>{
+          const card = document.createElement("div");
+          card.className="card-stat stat-vert";
+          card.innerHTML = `
+            <p class="card-stat-title">Classe ${classe}</p>
+            <p class="card-stat-value">Total: ${data.total}</p>
+            <p class="card-stat-footer">
+              Payés: ${data.paye} | Partiels: ${data.partiel} | Non payés: ${data.nonPaye}
+            </p>
+          `;
+          statsGrid.appendChild(card);
+        });
+      }
+
+      // --- Modules ---
       menuGrid.innerHTML="";
       const modules = roleModules[role] || [];
       modules.forEach(mod=>{
