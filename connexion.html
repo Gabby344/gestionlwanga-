@@ -3,165 +3,133 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Connexion · Institut Saint Charles Lwanga</title>
+  <title>Connexion · ISC Lwanga</title>
+  <link rel="icon" type="image/jpeg" href="logo.jpeg">
   <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700&display=swap" rel="stylesheet">
-
   <style>
     :root {
-      --bleu: #1e3a8a;
+      --bleu-principal: #1e40af;
       --bleu-clair: #3b82f6;
-      --fond: #f9fafb;
-      --vert: #10b981;
+      --fond-gradient: linear-gradient(135deg, var(--bleu-principal), var(--bleu-clair));
+      --ombre: rgba(0,0,0,0.15);
+      --blanc: #ffffff;
       --rouge: #ef4444;
-      --ombre: rgba(0, 0, 0, 0.1);
+      --vert: #10b981;
     }
+
+    * { margin:0; padding:0; box-sizing:border-box; }
 
     body {
       font-family: 'Inter', sans-serif;
-      background: linear-gradient(135deg, var(--bleu), var(--bleu-clair));
+      background: var(--fond-gradient);
       display: flex;
       justify-content: center;
       align-items: center;
-      height: 100vh;
-      margin: 0;
-      padding: 1rem;
-      color: #333;
-      position: relative;
+      min-height: 100vh;
     }
 
     .container {
-      background: white;
-      padding: 45px 35px;
-      border-radius: 12px;
-      box-shadow: 0 12px 25px var(--ombre);
+      background: var(--blanc);
+      padding: 50px 35px;
+      border-radius: 16px;
+      box-shadow: 0 10px 30px var(--ombre);
+      max-width: 400px;
       width: 100%;
-      max-width: 420px;
       text-align: center;
-      animation: fadeIn 0.6s ease-in-out;
-      position: relative;
-      z-index: 1;
+      animation: fadeIn 0.8s ease-in-out;
     }
 
-    .logo {
-      width: 80px;
-      height: 80px;
-      object-fit: contain;
+    .container img {
+      width: 90px;
+      margin-bottom: 20px;
+    }
+
+    h1 {
+      font-size: 1.5rem;
+      color: var(--bleu-principal);
+      margin-bottom: 25px;
+      font-weight: 700;
+    }
+
+    form {
+      display: flex;
+      flex-direction: column;
+      gap: 15px;
       margin-bottom: 15px;
     }
 
-    h2 {
-      color: var(--bleu);
-      margin-bottom: 30px;
-      font-weight: 700;
-      font-size: 1.5rem;
-    }
-
-    input, button {
-      width: 100%;
-      padding: 14px;
-      margin-bottom: 18px;
-      border-radius: 8px;
-      font-size: 15px;
-    }
-
     input {
+      padding: 12px;
+      border-radius: 8px;
       border: 1px solid #d1d5db;
-      background-color: #f9fafb;
-      transition: border-color 0.3s, box-shadow 0.3s;
+      font-size: 1rem;
+      transition: all 0.3s ease;
     }
 
     input:focus {
-      border-color: var(--bleu);
       outline: none;
-      box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.2);
+      border-color: var(--bleu-principal);
+      box-shadow: 0 0 0 2px #dbeafe;
     }
 
     button {
-      background: var(--bleu);
-      color: white;
+      padding: 12px;
+      background: var(--bleu-principal);
+      color: var(--blanc);
       border: none;
+      border-radius: 8px;
       font-weight: 600;
       cursor: pointer;
-      transition: background 0.3s, transform 0.1s, box-shadow 0.2s;
+      font-size: 1rem;
+      transition: all 0.3s ease;
     }
 
     button:hover {
       background: #0f2f79;
       transform: scale(1.02);
-      box-shadow: 0 4px 15px rgba(0,0,0,0.2);
     }
 
     #errorMessage, #successMessage {
-      font-size: 0.95rem;
-      margin-bottom: 12px;
-      min-height: 20px;
-      font-weight: 500;
+      font-size: 0.9rem;
+      min-height: 18px;
     }
 
-    #errorMessage { color: var(--rouge); }
-    #successMessage { color: var(--vert); }
+    #errorMessage { color: var(--rouge); margin-bottom: 10px; }
+    #successMessage { color: var(--vert); margin-bottom: 10px; }
 
     .link {
-      display: block;
-      margin-top: 12px;
-      color: var(--bleu);
+      color: var(--bleu-principal);
       text-decoration: none;
-      font-size: 0.95rem;
+      font-size: 0.9rem;
     }
 
     .link:hover { text-decoration: underline; }
 
     footer {
-      text-align: center;
       margin-top: 20px;
       font-size: 0.8rem;
       color: #6b7280;
     }
 
     @keyframes fadeIn {
-      from { opacity: 0; transform: translateY(15px); }
-      to { opacity: 1; transform: translateY(0); }
+      from { opacity:0; transform: translateY(15px); }
+      to { opacity:1; transform: translateY(0); }
     }
-
-    /* Notifications */
-    #notification-area {
-      position: fixed;
-      top: 20px;
-      right: 20px;
-      z-index: 1000;
-    }
-    .notification {
-      padding: 1rem 1.5rem;
-      border-radius: 8px;
-      margin-bottom: 10px;
-      box-shadow: 0 4px 8px rgba(0,0,0,0.15);
-      font-weight: 500;
-      color: white;
-      opacity: 0;
-      transform: translateX(100%);
-      transition: opacity 0.3s, transform 0.3s;
-      min-width: 220px;
-    }
-    .notification.show { opacity: 1; transform: translateX(0); }
-    .notification.success { background-color: var(--vert); }
-    .notification.error { background-color: var(--rouge); }
 
     @media(max-width:480px){
-      .container { padding: 35px 25px; }
-      h2 { font-size: 1.3rem; }
-      input, button { padding: 12px; font-size: 14px; }
+      .container { padding: 35px 20px; }
+      h1 { font-size: 1.3rem; }
     }
   </style>
 </head>
-
 <body>
   <div class="container">
-    <img src="IMG_7373.jpeg" alt="Logo ISC Lwanga" class="logo">
-    <h2>Connexion · Institut Saint Charles Lwanga</h2>
+    <img src="IMG_7373.jpeg" alt="Logo ISC Lwanga">
+    <h1>Connexion · Institut Saint Charles Lwanga</h1>
 
     <form id="loginForm">
-      <input type="email" id="email" placeholder="Adresse e-mail" required />
-      <input type="password" id="password" placeholder="Mot de passe" required />
+      <input type="email" id="email" placeholder="Adresse e-mail" required>
+      <input type="password" id="password" placeholder="Mot de passe" required>
       <button type="submit">Se connecter</button>
     </form>
 
@@ -169,12 +137,72 @@
     <p id="successMessage"></p>
 
     <a href="index.html" class="link">← Retour à l’accueil</a>
-
     <footer>&copy; 2025 Institut Saint Charles Lwanga · Tous droits réservés</footer>
   </div>
 
-  <div id="notification-area"></div>
+  <script type="module">
+    import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-app.js";
+    import { getAuth, signInWithEmailAndPassword } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-auth.js";
+    import { getFirestore, doc, getDoc } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore.js";
 
-  <script type="module" src="./js/login.js"></script>
+    const firebaseConfig = {
+      apiKey: "AIzaSyAgv4TDYnR60TXnns-LISqbZTgcdLT31cc",
+      authDomain: "gestionlwanga.firebaseapp.com",
+      projectId: "gestionlwanga",
+      storageBucket: "gestionlwanga.firebasestorage.app",
+      messagingSenderId: "622604298611",
+      appId: "1:622604298611:web:4ab4314ed3eec6826c3d06"
+    };
+
+    const app = initializeApp(firebaseConfig);
+    const auth = getAuth(app);
+    const db = getFirestore(app);
+
+    const loginForm = document.getElementById("loginForm");
+    const errorMessage = document.getElementById("errorMessage");
+    const successMessage = document.getElementById("successMessage");
+
+    loginForm.addEventListener("submit", async (e) => {
+      e.preventDefault();
+      errorMessage.textContent = "";
+      successMessage.textContent = "";
+
+      const email = document.getElementById("email").value.trim();
+      const password = document.getElementById("password").value;
+
+      try {
+        const userCredential = await signInWithEmailAndPassword(auth, email, password);
+        const user = userCredential.user;
+
+        // Récupérer le rôle depuis Firestore
+        const snap = await getDoc(doc(db, "users", user.uid));
+        if(!snap.exists()) throw new Error("Profil utilisateur introuvable.");
+
+        const data = snap.data();
+        const role = (data.role || "inconnu").toLowerCase();
+
+        successMessage.textContent = `✅ Connexion réussie ! Bienvenue ${data.nom || user.email}`;
+
+        // Redirection selon rôle
+        const roleRedirects = {
+          admin: "dashboard.html",
+          prefet: "dashboard.html",
+          directeur_etudes: "dashboard.html",
+          directeur_discipline: "dashboard.html",
+          secretaire: "dashboard.html",
+          econome: "dashboard.html",
+          enseignant: "dashboard.html",
+          eleve: "dashboard.html"
+        };
+
+        const redirectUrl = roleRedirects[role] || "connexion.html";
+        setTimeout(()=> window.location.href = redirectUrl, 700);
+
+      } catch (err) {
+        console.error(err);
+        errorMessage.textContent = `❌ ${err.message}`;
+      }
+    });
+  </script>
 </body>
 </html>
