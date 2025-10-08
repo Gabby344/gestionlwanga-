@@ -1,222 +1,299 @@
 <!DOCTYPE html>
 <html lang="fr">
 <head>
-  <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Dashboard · ISC Lwanga</title>
-  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700;800&display=swap" rel="stylesheet">
-  <style>
-    :root {
-      --bleu-fonce: #1e40af;
-      --gris-fonce: #1f2937;
-      --vert: #10b981;
-      --jaune: #f59e0b;
-      --rouge: #ef4444;
-      --fond: #f4f6f8;
-      --ombre-legere: rgba(0,0,0,0.08);
-    }
-    * { box-sizing: border-box; margin:0; padding:0; }
-
-    body { font-family:'Inter', sans-serif; background-color:var(--fond); color:var(--gris-fonce); }
-    .header {
-      background:white; padding:1rem 2rem;
-      box-shadow:0 1px 5px var(--ombre-legere);
-      display:flex; justify-content:space-between; align-items:center; flex-wrap:wrap;
-    }
-    .header-left { display:flex; align-items:center; gap:1rem; }
-    .header-left img { height:50px; width:50px; object-fit:contain; }
-    .header-left h1 { font-size:1.5rem; color:var(--bleu-fonce); font-weight:700; }
-    .user-info { font-size:0.95rem; color:#374151; font-weight:500; }
-    .btn-logout {
-      background-color: var(--rouge); color:white; padding:0.6rem 1rem; border:none;
-      border-radius:6px; font-weight:600; cursor:pointer; transition:0.2s; 
-    }
-    .btn-logout:hover { background-color:#b91c1c; }
-
-    .main-content { max-width:1200px; margin:auto; padding:2rem 1rem; }
-    .section-title { font-size:1.3rem; font-weight:700; color:var(--gris-fonce);
-      margin-bottom:1rem; padding-bottom:0.5rem; border-bottom:1px solid #e5e7eb; }
-
-    .stats-grid {
-      display:grid; grid-template-columns:repeat(auto-fit,minmax(220px,1fr));
-      gap:1.5rem; margin-bottom:2rem;
-    }
-    .card-stat {
-      background:white; padding:1.5rem; border-radius:12px; box-shadow:0 4px 10px var(--ombre-legere);
-      border-left:5px solid var(--bleu-fonce); transition: transform 0.2s;
-    }
-    .card-stat:hover { transform:translateY(-3px); box-shadow:0 6px 15px rgba(0,0,0,0.15); }
-    .card-stat-title { font-size:0.85rem; font-weight:600; color:#6b7280; text-transform:uppercase; margin-bottom:0.5rem; }
-    .card-stat-value { font-size:2.5rem; font-weight:800; color:var(--gris-fonce); line-height:1; }
-    .card-stat-footer { font-size:0.8rem; color:#9ca3af; margin-top:1rem; }
-    .stat-bleu { border-left-color:var(--bleu-fonce); }
-    .stat-vert { border-left-color:var(--vert); }
-    .stat-jaune { border-left-color:var(--jaune); }
-    .stat-rouge { border-left-color:var(--rouge); }
-
-    .menu-grid { display:grid; grid-template-columns:repeat(auto-fit,minmax(180px,1fr)); gap:1.5rem; }
-    .menu-item {
-      background:white; padding:1.5rem; border-radius:10px; box-shadow:0 3px 6px var(--ombre-legere);
-      text-align:center; text-decoration:none; color:var(--gris-fonce); transition:all 0.2s;
-      border:1px solid #e5e7eb; font-weight:600;
-    }
-    .menu-item:hover { background-color:var(--bleu-fonce); color:white; border-color:var(--bleu-fonce); transform:scale(1.05); }
-    .menu-item .icon { font-size:2.5rem; margin-bottom:0.5rem; }
-
-    #notification-area { position:fixed; top:20px; right:20px; z-index:1000; }
-    .notification { padding:1rem 1.5rem; border-radius:8px; margin-bottom:10px;
-      box-shadow:0 4px 6px rgba(0,0,0,0.1); color:white; font-weight:500;
-      opacity:0; transform:translateX(100%); transition:0.3s; }
-    .notification.show { opacity:1; transform:translateX(0); }
-    .notification.success { background-color:var(--vert); }
-    .notification.error { background-color:var(--rouge); }
-
-    @media(max-width:600px){
-      .header-left h1{ font-size:1.2rem; }
-      .card-stat-value{ font-size:2rem; }
-      .menu-item .icon{ font-size:2rem; }
-    }
-  </style>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Paramètres Admin · ISC Lwanga</title>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700;800&display=swap" rel="stylesheet">
+<style>
+:root {
+  --bleu-fonce: #1e40af;
+  --gris-fonce: #1f2937;
+  --vert: #10b981;
+  --rouge: #ef4444;
+  --fond: #f4f6f8;
+  --ombre-legere: rgba(0,0,0,0.08);
+}
+body {
+  font-family: 'Inter', sans-serif;
+  margin: 0;
+  background-color: var(--fond);
+  color: var(--gris-fonce);
+}
+.header {
+  background-color: white;
+  padding: 1rem 2rem;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  box-shadow: 0 1px 5px var(--ombre-legere);
+}
+.header-left {
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+}
+.header-left img {
+  height: 50px;
+  width: 50px;
+  object-fit: contain;
+}
+.header-left h1 {
+  margin: 0;
+  font-size: 1.5rem;
+  color: var(--bleu-fonce);
+  font-weight: 700;
+}
+.user-info {
+  font-weight: 500;
+  color: #374151;
+}
+.btn-logout {
+  background-color: var(--rouge);
+  color: white;
+  border: none;
+  border-radius: 6px;
+  padding: 0.6rem 1rem;
+  font-weight: 600;
+  cursor: pointer;
+  transition: background-color 0.2s;
+}
+.btn-logout:hover {
+  background-color: #b91c1c;
+}
+.main-content {
+  max-width: 1200px;
+  margin: 2rem auto;
+  padding: 0 1rem 2rem;
+}
+.section-title {
+  font-size: 1.3rem;
+  font-weight: 700;
+  margin-bottom: 1rem;
+  border-bottom: 1px solid #e5e7eb;
+  padding-bottom: 0.5rem;
+}
+.card {
+  background: white;
+  padding: 1rem;
+  border-radius: 10px;
+  box-shadow: 0 3px 6px var(--ombre-legere);
+  margin-bottom: 1rem;
+}
+.card input, .card select {
+  width: 100%;
+  padding: 0.7rem;
+  margin-top: 0.5rem;
+  margin-bottom: 1rem;
+  border-radius: 6px;
+  border: 1px solid #d1d5db;
+  font-size: 1rem;
+}
+.card button {
+  padding: 0.7rem 1.2rem;
+  background-color: var(--bleu-fonce);
+  color: white;
+  border: none;
+  border-radius: 6px;
+  cursor: pointer;
+  font-weight: 600;
+  transition: 0.2s;
+}
+.card button:hover {
+  background-color: #1e3a8a;
+}
+.table-users {
+  width: 100%;
+  border-collapse: collapse;
+}
+.table-users th, .table-users td {
+  border: 1px solid #e5e7eb;
+  padding: 0.7rem;
+  text-align: left;
+}
+.table-users th {
+  background-color: var(--bleu-fonce);
+  color: white;
+}
+.table-users tr:hover {
+  background-color: #f1f5f9;
+}
+.notification {
+  position: fixed;
+  top: 20px;
+  right: 20px;
+  padding: 1rem 1.5rem;
+  border-radius: 8px;
+  color: white;
+  font-weight: 500;
+  opacity: 0;
+  transform: translateX(100%);
+  transition: opacity 0.3s, transform 0.3s;
+  z-index: 1000;
+}
+.notification.show {
+  opacity: 1;
+  transform: translateX(0);
+}
+.notification.success { background-color: var(--vert); }
+.notification.error { background-color: var(--rouge); }
+@media(max-width: 700px){
+  .header-left h1 { font-size: 1.2rem; }
+}
+</style>
 </head>
 <body>
-  <div id="notification-area"></div>
+<div id="notification-area"></div>
+<div class="header">
+  <div class="header-left">
+    <img src="IMG_7373.jpeg" alt="Logo ISC Lwanga">
+    <h1>Paramètres Admin</h1>
+  </div>
+  <div class="user-info" id="userInfo"></div>
+  <button class="btn-logout" id="logoutBtn">🚪 Déconnexion</button>
+</div>
 
-  <div class="header">
-    <div class="header-left">
-      <img src="IMG_7373.jpeg" alt="Logo ISC Lwanga">
-      <h1 id="dashboardTitle">Dashboard · ISC Lwanga</h1>
-    </div>
-    <div class="user-info" id="userInfo"></div>
-    <button class="btn-logout" id="logoutBtn">🚪 Déconnexion</button>
+<div class="main-content">
+  <h2 class="section-title">Créer un Utilisateur</h2>
+  <div class="card">
+    <input type="text" id="nom" placeholder="Nom">
+    <input type="text" id="postNom" placeholder="PostNom">
+    <input type="text" id="prenom" placeholder="Prénom">
+    <input type="email" id="email" placeholder="Email">
+    <input type="password" id="password" placeholder="Mot de passe">
+    <select id="role">
+      <option value="admin">Admin</option>
+      <option value="prefet">Préfet</option>
+      <option value="enseignant">Enseignant</option>
+      <option value="eleve">Élève</option>
+      <option value="directeur_etudes">Directeur Études</option>
+      <option value="directeur_discipline">Directeur Discipline</option>
+      <option value="secretaire">Secrétaire</option>
+      <option value="econome">Économe</option>
+    </select>
+    <button id="createUserBtn">Créer Utilisateur</button>
   </div>
 
-  <div class="main-content">
-    <h2 class="section-title">Aperçu Actuel</h2>
-    <div class="stats-grid" id="statsGrid"></div>
-
-    <h2 class="section-title">Modules de Gestion</h2>
-    <div class="menu-grid" id="menuGrid"></div>
+  <h2 class="section-title">Liste des Utilisateurs</h2>
+  <div class="card">
+    <table class="table-users" id="usersTable">
+      <thead>
+        <tr>
+          <th>Nom</th>
+          <th>Email</th>
+          <th>Rôle</th>
+          <th>Actions</th>
+        </tr>
+      </thead>
+      <tbody></tbody>
+    </table>
   </div>
+</div>
 
-  <script type="module">
-    import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-app.js";
-    import { getAuth, signOut, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-auth.js";
-    import { getFirestore, doc, getDoc } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore.js";
+<script type="module">
+import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-app.js";
+import { getAuth, onAuthStateChanged, signOut, createUserWithEmailAndPassword, sendPasswordResetEmail } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-auth.js";
+import { getFirestore, collection, doc, setDoc, getDocs, deleteDoc } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore.js";
 
-    const firebaseConfig = {
-      apiKey: "AIzaSyAgv4TDYnR60TXnns-LISqbZTgcdLT31cc",
-      authDomain: "gestionlwanga.firebaseapp.com",
-      projectId: "gestionlwanga",
-      storageBucket: "gestionlwanga.firebasestorage.app",
-      messagingSenderId: "622604298611",
-      appId: "1:622604298611:web:4ab4314ed3eec6826c3d06"
-    };
-    const app = initializeApp(firebaseConfig);
-    const auth = getAuth(app);
-    const db = getFirestore(app);
+const firebaseConfig = {
+  apiKey: "AIzaSyAgv4TDYnR60TXnns-LISqbZTgcdLT31cc",
+  authDomain: "gestionlwanga.firebaseapp.com",
+  projectId: "gestionlwanga",
+  storageBucket: "gestionlwanga.firebasestorage.app",
+  messagingSenderId: "622604298611",
+  appId: "1:622604298611:web:4ab4314ed3eec6826c3d06"
+};
+const app = initializeApp(firebaseConfig);
+const auth = getAuth(app);
+const db = getFirestore(app);
 
-    const dashboardTitle = document.getElementById("dashboardTitle");
-    const userInfo = document.getElementById("userInfo");
-    const logoutBtn = document.getElementById("logoutBtn");
-    const statsGrid = document.getElementById("statsGrid");
-    const menuGrid = document.getElementById("menuGrid");
-    const notificationArea = document.getElementById("notification-area");
+const userInfo = document.getElementById('userInfo');
+const logoutBtn = document.getElementById('logoutBtn');
+const notificationArea = document.getElementById('notification-area');
 
-    function showNotification(msg, type="success") {
-      const notif = document.createElement("div");
-      notif.className = `notification ${type}`;
-      notif.textContent = msg;
-      notificationArea.appendChild(notif);
-      setTimeout(()=>notif.classList.add('show'),10);
-      setTimeout(()=>{
-        notif.classList.remove('show');
-        setTimeout(()=>notificationArea.removeChild(notif),300);
-      },4000);
-    }
+function showNotification(msg, type="success"){
+  const notif = document.createElement("div");
+  notif.className = `notification ${type}`;
+  notif.textContent = msg;
+  notificationArea.appendChild(notif);
+  setTimeout(()=>notif.classList.add('show'),10);
+  setTimeout(()=>{
+    notif.classList.remove('show');
+    setTimeout(()=>notificationArea.removeChild(notif),300);
+  },4000);
+}
 
-    const roleModules = {
-      admin: ["eleves","enseignants","bulletins","cours","paiements","admin"],
-      prefet: ["eleves","enseignants","bulletins","cours","paiements","admin"],
-      econome: ["paiements"],
-      directeur_etudes: ["eleves","bulletins","cours"],
-      directeur_discipline: ["bulletins","cours"],
-      secretaire: ["eleves"]
-    };
-
-    const moduleLinks = {
-      eleves: {title:"Gestion des Élèves", icon:"📚", link:"eleves.html"},
-      enseignants: {title:"Gestion des Enseignants", icon:"👨‍🏫", link:"enseignants.html"},
-      bulletins: {title:"Notes & Bulletins", icon:"🧮", link:"bulletins.html"},
-      cours: {title:"Planning des Cours", icon:"📆", link:"cours.html"},
-      paiements: {title:"Suivi des Paiements", icon:"💰", link:"paiements.html"},
-      admin: {title:"Paramètres Admin", icon:"⚙️", link:"admin.html"}
-    };
-
-    const statsData = [
-      {title:"Élèves Inscrits", value:1245, footer:"+5 nouveaux ce mois", color:"stat-bleu"},
-      {title:"Enseignants Actifs", value:48, footer:"Taux : 98%", color:"stat-vert"},
-      {title:"Notes à Saisir", value:"3 classes", footer:"Deadline : 15 oct", color:"stat-jaune"},
-      {title:"Frais Impayés", value:22, footer:"Total dû : $5,400", color:"stat-rouge"}
-    ];
-
-    onAuthStateChanged(auth, async (user)=>{
-      if(!user){ window.location.href="connexion.html"; return; }
-
-      try {
-        const snap = await getDoc(doc(db,"users",user.uid));
-        if(!snap.exists()) throw new Error("Profil introuvable.");
-        const data = snap.data();
-        const role = (data.role || "inconnu").toLowerCase();
-        const nom = [data.nom,data.postNom,data.prenom].filter(Boolean).join(" ") || "Utilisateur";
-
-        dashboardTitle.textContent = `Dashboard · ${role.toUpperCase()} · ISC Lwanga`;
-        userInfo.textContent = `${nom} (${role})`;
-
-        statsGrid.innerHTML="";
-        statsData.forEach(stat=>{
-          const card = document.createElement("div");
-          card.className = `card-stat ${stat.color}`;
-          card.innerHTML = `<p class="card-stat-title">${stat.title}</p>
-                            <p class="card-stat-value">${stat.value}</p>
-                            <p class="card-stat-footer">${stat.footer}</p>`;
-          statsGrid.appendChild(card);
-        });
-
-        menuGrid.innerHTML="";
-        const modules = roleModules[role] || [];
-        modules.forEach(m=>{
-          if(moduleLinks[m]){
-            const item = document.createElement("a");
-            item.href = moduleLinks[m].link;
-            item.className = "menu-item";
-            item.innerHTML = `<div class="icon">${moduleLinks[m].icon}</div><div>${moduleLinks[m].title}</div>`;
-            menuGrid.appendChild(item);
-          }
-        });
-
-        if(modules.length===0){
-          showNotification("⛔ Votre rôle ne permet pas l'accès.","error");
-          await signOut(auth);
-          window.location.href="connexion.html";
-        }
-
-      } catch(err){
-        console.error(err);
-        showNotification(err.message,"error");
-        await signOut(auth);
-        window.location.href="connexion.html";
-      }
+onAuthStateChanged(auth, user => {
+  if(!user) window.location.href = "admin.html"; // ou login
+  else {
+    const uid = user.uid;
+    const docRef = doc(db,"users",uid);
+    // afficher info utilisateur
+    getDocs(collection(db,"users")).then(snapshot=>{
+      userInfo.textContent = user.email;
     });
+  }
+});
 
-    logoutBtn.addEventListener("click", async ()=>{
-      try{
-        await signOut(auth);
-        showNotification("✅ Déconnexion réussie !");
-        setTimeout(()=>window.location.href="connexion.html",500);
-      }catch(err){
-        showNotification("Erreur lors de la déconnexion","error");
-      }
-    });
-  </script>
+logoutBtn.addEventListener("click", async ()=>{
+  await signOut(auth);
+  showNotification("Déconnexion réussie");
+  setTimeout(()=>window.location.href="admin.html",500);
+});
+
+const createUserBtn = document.getElementById("createUserBtn");
+createUserBtn.addEventListener("click", async ()=>{
+  const nom = document.getElementById("nom").value.trim();
+  const postNom = document.getElementById("postNom").value.trim();
+  const prenom = document.getElementById("prenom").value.trim();
+  const email = document.getElementById("email").value.trim();
+  const password = document.getElementById("password").value.trim();
+  const role = document.getElementById("role").value;
+
+  if(!nom || !prenom || !email || !password) { showNotification("Remplissez tous les champs","error"); return; }
+
+  try{
+    const userCredential = await createUserWithEmailAndPassword(auth,email,password);
+    const uid = userCredential.user.uid;
+    await setDoc(doc(db,"users",uid),{nom,postNom,prenom,email,role});
+    showNotification("Utilisateur créé avec succès");
+    loadUsers();
+  }catch(err){ showNotification(err.message,"error"); }
+});
+
+async function loadUsers(){
+  const tbody = document.querySelector("#usersTable tbody");
+  tbody.innerHTML = "";
+  const snapshot = await getDocs(collection(db,"users"));
+  snapshot.forEach(docSnap=>{
+    const data = docSnap.data();
+    const tr = document.createElement("tr");
+    tr.innerHTML = `
+      <td>${data.nom} ${data.postNom} ${data.prenom}</td>
+      <td>${data.email}</td>
+      <td>${data.role}</td>
+      <td>
+        <button onclick="resetPassword('${data.email}')">Réinitialiser MD</button>
+        <button onclick="deleteUser('${docSnap.id}')">Supprimer</button>
+      </td>`;
+    tbody.appendChild(tr);
+  });
+}
+async function resetPassword(email){
+  try{
+    await sendPasswordResetEmail(auth,email);
+    showNotification("Email de réinitialisation envoyé à " + email);
+  }catch(err){ showNotification(err.message,"error"); }
+}
+async function deleteUser(uid){
+  if(!confirm("Voulez-vous vraiment supprimer cet utilisateur ?")) return;
+  await deleteDoc(doc(db,"users",uid));
+  showNotification("Utilisateur supprimé");
+  loadUsers();
+}
+
+// Charger la liste au démarrage
+loadUsers();
+</script>
 </body>
 </html>
