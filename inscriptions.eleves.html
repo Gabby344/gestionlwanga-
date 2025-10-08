@@ -1,168 +1,233 @@
 <!DOCTYPE html>
 <html lang="fr">
 <head>
-<meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Inscriptions des Élèves · Institut Saint Charles Lwanga</title>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>Inscriptions des Élèves · Secrétaire · ISC Lwanga</title>
 <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700&display=swap" rel="stylesheet">
 <style>
 :root {
   --bleu-fonce: #1e40af;
   --gris-fonce: #1f2937;
   --vert: #10b981;
+  --rouge: #ef4444;
   --fond: #f4f6f8;
-  --ombre: rgba(0,0,0,0.08);
+  --ombre-legere: rgba(0,0,0,0.08);
+  --ombre-hover: rgba(0,0,0,0.15);
 }
-body {font-family:'Inter', sans-serif; margin:0; padding:2rem; background:var(--fond); color:var(--gris-fonce);}
-h1 {text-align:center; color:var(--bleu-fonce); margin-bottom:0.5rem;}
-h2 {text-align:center; font-weight:400; color:#6b7280; margin-bottom:2rem;}
-.container {max-width:1000px; margin:auto; background:white; padding:2rem; border-radius:12px; box-shadow:0 4px 15px var(--ombre);}
-form .form-group {margin-bottom:1rem;}
-label {display:block; font-weight:600; margin-bottom:0.3rem;}
-input, select {width:100%; padding:0.75rem; border:1px solid #d1d5db; border-radius:6px; font-size:1rem;}
-input:focus, select:focus {outline:none; border-color:var(--bleu-fonce); box-shadow:0 0 0 2px rgba(30,64,175,0.2);}
-button {padding:1rem 1.5rem; background:var(--vert); color:white; border:none; border-radius:8px; font-weight:700; cursor:pointer; width:100%;}
-button:hover {background:#059669;}
-.table-container {margin-top:2rem; overflow-x:auto;}
-table {width:100%; border-collapse:collapse; margin-top:1rem;}
-th, td {padding:0.75rem; text-align:left; border-bottom:1px solid #e5e7eb;}
-th {background:#f3f4f6; font-weight:600;}
-.filter {margin-bottom:1rem; display:flex; gap:1rem; flex-wrap:wrap; align-items:center;}
-.filter label {margin:0; font-weight:500;}
-.filter select {width:auto;}
+
+body {font-family:'Inter',sans-serif;background:var(--fond);margin:0;padding:2rem;color:var(--gris-fonce);}
+h1,h2{text-align:center;} h1{color:var(--bleu-fonce);} h2{font-weight:400;color:#6b7280;}
+.container{max-width:900px;margin:auto;background:white;padding:2rem;border-radius:12px;box-shadow:0 4px 15px var(--ombre-legere);}
+.form-group{margin-bottom:1rem;}
+label{display:block;font-weight:600;margin-bottom:0.3rem;}
+input, select{width:100%;padding:0.6rem;border-radius:6px;border:1px solid #d1d5db;}
+input:focus, select:focus{outline:none;border-color:var(--bleu-fonce);box-shadow:0 0 0 2px rgba(30,64,175,0.2);}
+.btn{width:100%;padding:1rem;border:none;border-radius:8px;color:white;font-weight:700;cursor:pointer;margin-top:1rem;}
+.btn-vert{background:var(--vert);}
+.table-container{margin-top:2rem;overflow-x:auto;}
+table{width:100%;border-collapse:collapse;margin-top:1rem;}
+th, td{padding:0.75rem;text-align:left;border-bottom:1px solid #e5e7eb;}
+th{background:#f3f4f6;font-weight:600;}
+.filter{margin-bottom:1rem;display:flex;gap:1rem;flex-wrap:wrap;align-items:center;}
+.filter label{margin:0;font-weight:500;}
+.filter select{width:auto;}
+.notification{padding:1rem 1.5rem;border-radius:8px;margin-bottom:10px;box-shadow:0 4px 6px rgba(0,0,0,0.1);color:white;font-weight:500;opacity:0;transform:translateX(100%);transition:opacity 0.3s, transform 0.3s;}
+.notification.show{opacity:1;transform:translateX(0);}
+.notification.success{background-color:var(--vert);}
+.notification.error{background-color:var(--rouge);}
 @media(max-width:600px){.filter{flex-direction:column;align-items:flex-start;}}
 </style>
 </head>
 <body>
 
-<h1>Inscriptions des Élèves</h1>
-<h2>Institut Saint Charles Lwanga - Gestion centralisée</h2>
+<div id="notification-area"></div>
 
 <div class="container">
-  <form id="formInscription">
-    <div class="form-group">
-      <label for="nom">Nom :</label>
-      <input type="text" id="nom" required placeholder="Ex: GABBY">
-    </div>
-    <div class="form-group">
-      <label for="postNom">Postnom :</label>
-      <input type="text" id="postNom" required placeholder="Ex: UMBA">
-    </div>
-    <div class="form-group">
-      <label for="prenom">Prénom :</label>
-      <input type="text" id="prenom" required placeholder="Ex: Gabriel">
-    </div>
-    <div class="form-group">
-      <label for="classe">Classe :</label>
-      <select id="classe" required>
-        <option value="">-- Sélectionnez une classe --</option>
-        <option value="6ème Commerciale">6ème Commerciale</option>
-        <option value="5ème Scientifique">5ème Scientifique</option>
-        <option value="4ème Littéraire">4ème Littéraire</option>
-      </select>
-    </div>
-    <div class="form-group">
-      <label for="matricule">Matricule :</label>
-      <input type="text" id="matricule" required placeholder="Ex: 2025/001">
-    </div>
-    <button type="submit">✅ Inscrire l'Élève</button>
-  </form>
+<h1>Inscription des Élèves</h1>
+<h2>Secrétaire · ISC Lwanga</h2>
 
-  <div class="filter">
-    <label for="filterClasse">Filtrer par classe :</label>
-    <select id="filterClasse">
-      <option value="">Toutes les classes</option>
-      <option value="6ème Commerciale">6ème Commerciale</option>
-      <option value="5ème Scientifique">5ème Scientifique</option>
-      <option value="4ème Littéraire">4ème Littéraire</option>
-    </select>
-  </div>
+<form id="form-eleve">
+<div class="form-group">
+  <label>Nom :</label>
+  <input type="text" id="nom" required>
+</div>
+<div class="form-group">
+  <label>Postnom :</label>
+  <input type="text" id="postnom" required>
+</div>
+<div class="form-group">
+  <label>Prénom :</label>
+  <input type="text" id="prenom" required>
+</div>
+<div class="form-group">
+  <label>Classe :</label>
+  <select id="classe" required>
+    <option value="">-- Choisir une classe --</option>
+    <option>7ème EB</option>
+    <option>8ème EB</option>
+    <option>1ère Commerciale & Gestion</option>
+    <option>2ème Commerciale & Gestion</option>
+    <option>3ème Commerciale & Gestion</option>
+    <option>4ème Commerciale & Gestion</option>
+    <option>1ère Agriculture</option>
+    <option>2ème Agriculture</option>
+    <option>3ème Agriculture</option>
+    <option>4ème Agriculture</option>
+    <option>1ère Scientifique</option>
+    <option>2ème Scientifique</option>
+    <option>3ème Scientifique</option>
+    <option>4ème Scientifique</option>
+    <option>1ère Pédagogie Générale</option>
+    <option>2ème Pédagogie Générale</option>
+    <option>3ème Pédagogie Générale</option>
+    <option>4ème Pédagogie Générale</option>
+  </select>
+</div>
+<div class="form-group">
+  <label>Frais Restants ($) :</label>
+  <input type="number" id="frais" value="0" min="0">
+</div>
 
-  <div class="table-container">
-    <table id="elevesTable">
-      <thead>
-        <tr>
-          <th>Nom</th>
-          <th>Postnom</th>
-          <th>Prénom</th>
-          <th>Classe</th>
-          <th>Matricule</th>
-          <th>Date Inscription</th>
-        </tr>
-      </thead>
-      <tbody>
-        <!-- Les élèves seront insérés ici -->
-      </tbody>
-    </table>
-  </div>
+<button type="submit" class="btn btn-vert">✅ Enregistrer l'Élève</button>
+</form>
+
+<div class="filter">
+  <label for="filterClasse">Filtrer par classe :</label>
+  <select id="filterClasse">
+    <option value="">Toutes les classes</option>
+    <option>7ème EB</option>
+    <option>8ème EB</option>
+    <option>1ère Commerciale & Gestion</option>
+    <option>2ème Commerciale & Gestion</option>
+    <option>3ème Commerciale & Gestion</option>
+    <option>4ème Commerciale & Gestion</option>
+    <option>1ère Agriculture</option>
+    <option>2ème Agriculture</option>
+    <option>3ème Agriculture</option>
+    <option>4ème Agriculture</option>
+    <option>1ère Scientifique</option>
+    <option>2ème Scientifique</option>
+    <option>3ème Scientifique</option>
+    <option>4ème Scientifique</option>
+    <option>1ère Pédagogie Générale</option>
+    <option>2ème Pédagogie Générale</option>
+    <option>3ème Pédagogie Générale</option>
+    <option>4ème Pédagogie Générale</option>
+  </select>
+</div>
+
+<div class="table-container">
+  <table id="elevesTable">
+    <thead>
+      <tr>
+        <th>Nom</th>
+        <th>Postnom</th>
+        <th>Prénom</th>
+        <th>Classe</th>
+        <th>Frais Restants</th>
+        <th>Date Inscription</th>
+      </tr>
+    </thead>
+    <tbody>
+      <!-- Élèves en temps réel -->
+    </tbody>
+  </table>
+</div>
 </div>
 
 <script type="module">
 import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-app.js";
 import { getFirestore, collection, addDoc, onSnapshot, query, orderBy } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore.js";
+import { getAuth, onAuthStateChanged, signOut } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-auth.js";
 
 const firebaseConfig = {
-  apiKey: "AIzaSyAgv4TDYnR60TXnns-LISqbZTgcdLT31cc",
-  authDomain: "gestionlwanga.firebaseapp.com",
-  projectId: "gestionlwanga",
-  storageBucket: "gestionlwanga.firebasestorage.app",
-  messagingSenderId: "622604298611",
-  appId: "1:622604298611:web:4ab4314ed3eec6826c3d06"
+  apiKey:"AIzaSyAgv4TDYnR60TXnns-LISqbZTgcdLT31cc",
+  authDomain:"gestionlwanga.firebaseapp.com",
+  projectId:"gestionlwanga",
+  storageBucket:"gestionlwanga.firebasestorage.app",
+  messagingSenderId:"622604298611",
+  appId:"1:622604298611:web:4ab4314ed3eec6826c3d06"
 };
 
 const app = initializeApp(firebaseConfig);
 const db = getFirestore(app);
+const auth = getAuth(app);
 
-const form = document.getElementById('formInscription');
-const elevesTable = document.getElementById('elevesTable').querySelector('tbody');
-const filterClasse = document.getElementById('filterClasse');
+const form = document.getElementById("form-eleve");
+const elevesTable = document.getElementById("elevesTable").querySelector("tbody");
+const filterClasse = document.getElementById("filterClasse");
+const notificationArea = document.getElementById("notification-area");
 
-form.addEventListener('submit', async e => {
-  e.preventDefault();
-  const nom = document.getElementById('nom').value.trim();
-  const postNom = document.getElementById('postNom').value.trim();
-  const prenom = document.getElementById('prenom').value.trim();
-  const classe = document.getElementById('classe').value;
-  const matricule = document.getElementById('matricule').value.trim();
-  if(!nom||!postNom||!prenom||!classe||!matricule) return alert("Tous les champs sont obligatoires !");
-  try{
-    await addDoc(collection(db,"eleves"),{
-      nom, postNom, prenom, classe, matricule, dateInscription:new Date()
-    });
-    alert(`✅ Élève ${nom} ${postNom} ${prenom} inscrit avec succès !`);
-    form.reset();
-  }catch(err){
-    console.error(err);
-    alert("❌ Erreur lors de l'inscription, réessayez.");
-  }
-});
+function showNotification(msg, type="success"){
+  const notif = document.createElement("div");
+  notif.className = `notification ${type}`;
+  notif.textContent = msg;
+  notificationArea.appendChild(notif);
+  setTimeout(()=>notif.classList.add("show"),10);
+  setTimeout(()=>{
+    notif.classList.remove("show");
+    setTimeout(()=>notificationArea.removeChild(notif),300);
+  },4000);
+}
 
-// Liste en temps réel
-const q = query(collection(db,"eleves"), orderBy("dateInscription","desc"));
-onSnapshot(q, snapshot => {
-  const eleves = snapshot.docs.map(doc => ({id: doc.id, ...doc.data()}));
-  renderTable(eleves);
-});
-
-filterClasse.addEventListener('change', ()=> {
-  onSnapshot(query(collection(db,"eleves"), orderBy("dateInscription","desc")), snapshot => {
-    const eleves = snapshot.docs.map(doc => ({id: doc.id, ...doc.data()}));
-    renderTable(eleves, filterClasse.value);
+onAuthStateChanged(auth, user=>{
+  if(!user){ window.location.href="login.html"; return; }
+  getUserRole(user.uid).then(role=>{
+    if(role!=="secretaire"){ signOut(auth); window.location.href="login.html"; }
   });
 });
 
-function renderTable(eleves, filter="") {
+async function getUserRole(uid){
+  const snap = await import("https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore.js")
+                  .then(m => m.getDoc(m.doc(db,"users",uid)));
+  return snap.data().role?.toLowerCase() ?? "";
+}
+
+form.addEventListener("submit", async e=>{
+  e.preventDefault();
+  const data = {
+    nom: document.getElementById("nom").value.trim(),
+    postNom: document.getElementById("postnom").value.trim(),
+    prenom: document.getElementById("prenom").value.trim(),
+    classe: document.getElementById("classe").value,
+    fraisRestants: parseFloat(document.getElementById("frais").value) || 0,
+    dateInscription: new Date()
+  };
+  try{
+    await addDoc(collection(db,"eleves"), data);
+    showNotification(`✅ Élève ${data.nom} ${data.postNom} enregistré !`);
+    e.target.reset();
+  }catch(err){ console.error(err); showNotification("❌ Erreur lors de l'enregistrement", "error"); }
+});
+
+// Liste temps réel
+const q = query(collection(db,"eleves"), orderBy("dateInscription","desc"));
+onSnapshot(q, snapshot=>{
+  const eleves = snapshot.docs.map(doc=>({id:doc.id,...doc.data()}));
+  renderTable(eleves);
+});
+
+filterClasse.addEventListener("change", ()=>{
+  const val = filterClasse.value;
+  onSnapshot(q, snapshot=>{
+    const eleves = snapshot.docs.map(doc=>({id:doc.id,...doc.data()}));
+    renderTable(eleves, val);
+  });
+});
+
+function renderTable(eleves, filter=""){
   elevesTable.innerHTML = "";
   const filtered = filter ? eleves.filter(e=>e.classe===filter) : eleves;
-  filtered.forEach(e => {
-    const tr = document.createElement('tr');
+  filtered.forEach(e=>{
+    const tr = document.createElement("tr");
     tr.innerHTML = `
       <td>${e.nom}</td>
       <td>${e.postNom}</td>
       <td>${e.prenom}</td>
       <td>${e.classe}</td>
-      <td>${e.matricule}</td>
-      <td>${new Date(e.dateInscription.seconds*1000).toLocaleDateString()}</td>
+      <td>${e.fraisRestants.toFixed(2)}</td>
+      <td>${new Date(e.dateInscription.seconds ? e.dateInscription.seconds*1000 : e.dateInscription).toLocaleDateString()}</td>
     `;
     elevesTable.appendChild(tr);
   });
