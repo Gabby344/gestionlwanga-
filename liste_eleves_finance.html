@@ -1,0 +1,181 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Liste des Élèves · Gestion Financière</title>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700&display=swap" rel="stylesheet">
+  <style>
+    :root {
+      --bleu: #1e3a8a;
+      --vert: #047857;
+      --rouge: #dc2626;
+      --gris: #6b7280;
+      --fond: #f9fafb;
+      --carte: #fff;
+      --ombre: rgba(0,0,0,0.1);
+    }
+    body {
+      font-family: 'Inter', sans-serif;
+      background-color: var(--fond);
+      margin: 0;
+      padding: 1.5rem;
+      color: var(--gris);
+    }
+    header {
+      text-align: center;
+      margin-bottom: 2rem;
+    }
+    h1 {
+      color: var(--bleu);
+      font-size: 1.8rem;
+      margin-bottom: 0.3rem;
+    }
+    .classe-section {
+      background-color: var(--carte);
+      border-radius: 12px;
+      padding: 1rem 1.5rem;
+      box-shadow: 0 4px 10px var(--ombre);
+      margin-bottom: 2rem;
+    }
+    .classe-titre {
+      font-size: 1.2rem;
+      font-weight: 700;
+      color: var(--bleu);
+      margin-bottom: 0.75rem;
+    }
+    table {
+      width: 100%;
+      border-collapse: collapse;
+      margin-bottom: 0.5rem;
+    }
+    th, td {
+      padding: 0.6rem;
+      text-align: left;
+      border-bottom: 1px solid #e5e7eb;
+    }
+    th {
+      color: var(--bleu);
+      font-weight: 700;
+      background-color: #eef2ff;
+    }
+    td.status-paid { color: var(--vert); font-weight: 600; }
+    td.status-unpaid { color: var(--rouge); font-weight: 600; }
+    td.status-partial { color: #ca8a04; font-weight: 600; }
+    .btn-retour {
+      display: inline-block;
+      margin: 2rem auto;
+      text-decoration: none;
+      background-color: var(--bleu);
+      color: white;
+      padding: 0.8rem 1.6rem;
+      border-radius: 8px;
+      transition: background-color 0.2s;
+    }
+    .btn-retour:hover {
+      background-color: #1d4ed8;
+    }
+  </style>
+</head>
+<body>
+  <header>
+    <h1>📋 Liste Financière des Élèves</h1>
+    <p>État des paiements par classe · Institut Saint Charles Lwanga</p>
+  </header>
+
+  <div id="listeElevesContainer">Chargement des données...</div>
+
+  <a href="finance.html" class="btn-retour">← Retour au menu Finance</a>
+
+  <script type="module">
+    import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-app.js";
+    import { getFirestore, collection, getDocs } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore.js";
+    import { protectPage } from "./authGuard.js";
+
+    // Protection : seuls les rôles autorisés peuvent accéder
+    protectPage(["econome", "admin", "directeur_etudes"]);
+
+    const firebaseConfig = {
+      apiKey: "AIzaSyAgv4TDYnR60TXnns-LISqbZTgcdLT31cc",
+      authDomain: "gestionlwanga.firebaseapp.com",
+      projectId: "gestionlwanga",
+      storageBucket: "gestionlwanga.firebasestorage.app",
+      messagingSenderId: "622604298611",
+      appId: "1:622604298611:web:4ab4314ed3eec6826c3d06"
+    };
+    const app = initializeApp(firebaseConfig);
+    const db = getFirestore(app);
+
+    const container = document.getElementById("listeElevesContainer");
+
+    async function chargerEleves() {
+      try {
+        const snap = await getDocs(collection(db, "eleves"));
+        if (snap.empty) {
+          container.innerHTML = "<p>Aucun élève enregistré.</p>";
+          return;
+        }
+
+        // Regroupement par classe
+        const classes = {};
+        snap.forEach(doc => {
+          const data = doc.data();
+          const classe = data.classe || "Non spécifiée";
+          if (!classes[classe]) classes[classe] = [];
+          classes[classe].push(data);
+        });
+
+        container.innerHTML = "";
+
+        // Affichage par classe
+        for (const [classe, eleves] of Object.entries(classes)) {
+          const section = document.createElement("section");
+          section.classList.add("classe-section");
+          section.innerHTML = `<div class="classe-titre">📚 Classe : ${classe}</div>
+            <table>
+              <thead>
+                <tr>
+                  <th>Nom complet</th>
+                  <th>Frais</th>
+                  <th>Montant dû</th>
+                  <th>Montant payé</th>
+                  <th>Reste</th>
+                  <th>État</th>
+                </tr>
+              </thead>
+              <tbody>
+                ${eleves.map(el => {
+                  const frais = el.frais || "Minerval";
+                  const total = el.total || 0;
+                  const paye = el.paye || 0;
+                  const reste = total - paye;
+                  let statut = "Non payé", css = "status-unpaid";
+                  if (paye >= total) { statut = "Payé"; css = "status-paid"; }
+                  else if (paye > 0 && paye < total) { statut = "Partiel"; css = "status-partial"; }
+
+                  const nom = [el.nom, el.postNom, el.prenom].filter(Boolean).join(" ");
+                  return `
+                    <tr>
+                      <td>${nom}</td>
+                      <td>${frais}</td>
+                      <td>${total.toLocaleString()} FC</td>
+                      <td>${paye.toLocaleString()} FC</td>
+                      <td>${reste.toLocaleString()} FC</td>
+                      <td class="${css}">${statut}</td>
+                    </tr>`;
+                }).join("")}
+              </tbody>
+            </table>`;
+          container.appendChild(section);
+        }
+
+      } catch (err) {
+        console.error(err);
+        container.innerHTML = "<p style='color:red'>Erreur lors du chargement des élèves.</p>";
+      }
+    }
+
+    chargerEleves();
+  </script>
+</body>
+</html>
