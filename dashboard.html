@@ -1,55 +1,76 @@
 <!DOCTYPE html>
 <html lang="fr">
 <head>
-  <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Dashboard · ISC Lwanga</title>
-  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700;800&display=swap" rel="stylesheet">
-  <style>
-    :root {
-      --bleu-fonce: #1e40af;
-      --gris-fonce: #1f2937;
-      --vert: #10b981;
-      --jaune: #f59e0b;
-      --rouge: #ef4444;
-      --fond: #f4f6f8;
-      --ombre-legere: rgba(0,0,0,0.08);
-    }
-    *{box-sizing:border-box;margin:0;padding:0;}
-    body{font-family:'Inter',sans-serif;background-color:var(--fond);color:var(--gris-fonce);}
-    .header{background:white;padding:1rem 2rem;box-shadow:0 1px 5px var(--ombre-legere);display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;}
-    .header-left{display:flex;align-items:center;gap:1rem;}
-    .header-left img{height:50px;width:50px;object-fit:contain;}
-    .header-left h1{font-size:1.5rem;color:var(--bleu-fonce);font-weight:700;}
-    .user-info{font-size:0.95rem;color:#374151;font-weight:500;}
-    .btn-logout{background-color:var(--rouge);color:white;padding:0.6rem 1rem;border:none;border-radius:6px;font-weight:600;cursor:pointer;transition:0.2s;}
-    .btn-logout:hover{background-color:#b91c1c;}
-    .main-content{max-width:1200px;margin:auto;padding:2rem 1rem;}
-    .section-title{font-size:1.3rem;font-weight:700;color:var(--gris-fonce);margin-bottom:1rem;padding-bottom:0.5rem;border-bottom:1px solid #e5e7eb;}
-    .stats-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(220px,1fr));gap:1.5rem;margin-bottom:2rem;}
-    .card-stat{background:white;padding:1.5rem;border-radius:12px;box-shadow:0 4px 10px var(--ombre-legere);border-left:5px solid var(--bleu-fonce);transition: transform 0.2s;}
-    .card-stat:hover{transform:translateY(-3px);box-shadow:0 6px 15px rgba(0,0,0,0.15);}
-    .card-stat-title{font-size:0.85rem;font-weight:600;color:#6b7280;text-transform:uppercase;margin-bottom:0.5rem;}
-    .card-stat-value{font-size:2.5rem;font-weight:800;color:var(--gris-fonce);line-height:1;}
-    .card-stat-footer{font-size:0.8rem;color:#9ca3af;margin-top:1rem;}
-    .stat-bleu{border-left-color:var(--bleu-fonce);}
-    .stat-vert{border-left-color:var(--vert);}
-    .stat-jaune{border-left-color:var(--jaune);}
-    .stat-rouge{border-left-color:var(--rouge);}
-    .menu-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(180px,1fr));gap:1.5rem;}
-    .menu-item{background:white;padding:1.5rem;border-radius:10px;box-shadow:0 3px 6px var(--ombre-legere);text-align:center;text-decoration:none;color:var(--gris-fonce);transition:all 0.2s;border:1px solid #e5e7eb;font-weight:600;}
-    .menu-item:hover{background-color:var(--bleu-fonce);color:white;border-color:var(--bleu-fonce);transform:scale(1.05);}
-    .menu-item .icon{font-size:2.5rem;margin-bottom:0.5rem;}
-    #notification-area{position:fixed;top:20px;right:20px;z-index:1000;}
-    .notification{padding:1rem 1.5rem;border-radius:8px;margin-bottom:10px;box-shadow:0 4px 6px rgba(0,0,0,0.1);color:white;font-weight:500;opacity:0;transform:translateX(100%);transition:0.3s;}
-    .notification.show{opacity:1;transform:translateX(0);}
-    .notification.success{background-color:var(--vert);}
-    .notification.error{background-color:var(--rouge);}
-    @media(max-width:600px){.header-left h1{font-size:1.2rem;}.card-stat-value{font-size:2rem;}.menu-item .icon{font-size:2rem;}}
-  </style>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>Dashboard · ISC Lwanga</title>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700;800&display=swap" rel="stylesheet">
+<style>
+:root {
+  --bleu-fonce: #1e40af;
+  --gris-fonce: #1f2937;
+  --vert: #10b981;
+  --jaune: #f59e0b;
+  --rouge: #ef4444;
+  --fond: #f4f6f8;
+  --ombre-legere: rgba(0,0,0,0.08);
+}
+body {
+  font-family: 'Inter', sans-serif;
+  background-color: var(--fond);
+  margin: 0;
+  color: var(--gris-fonce);
+}
+.header {
+  background:white;
+  padding:1rem 2rem;
+  box-shadow:0 1px 5px var(--ombre-legere);
+  display:flex;
+  justify-content:space-between;
+  align-items:center;
+  flex-wrap:wrap;
+  gap:1rem;
+}
+.header-left {display:flex; align-items:center; gap:1rem;}
+.header img {height:50px;width:50px; object-fit:contain;}
+.header h1 {font-size:1.5rem;color:var(--bleu-fonce); margin:0; font-weight:700;}
+.user-info {font-size:0.95rem;color:#374151;font-weight:500;}
+.btn-logout {
+  background-color: var(--rouge);
+  color:white;
+  padding:0.6rem 1rem;
+  border:none;
+  border-radius:6px;
+  font-weight:600;
+  cursor:pointer;
+  transition:background-color 0.2s;
+}
+.btn-logout:hover {background-color:#b91c1c;}
+.main-content {max-width:1200px;margin:auto;padding:1rem;}
+.section-title {font-size:1.3rem;font-weight:700;color:var(--gris-fonce);margin-bottom:1rem;padding-bottom:0.5rem;border-bottom:1px solid #e5e7eb;}
+.stats-grid {display:grid; grid-template-columns:repeat(auto-fit,minmax(220px,1fr)); gap:1.5rem; margin-bottom:2rem;}
+.card-stat {background:white; padding:1.5rem; border-radius:12px; box-shadow:0 4px 10px var(--ombre-legere); border-left:5px solid var(--bleu-fonce); transition: transform 0.2s;}
+.card-stat:hover {transform:translateY(-3px); box-shadow:0 6px 15px rgba(0,0,0,0.15);}
+.card-stat-title {font-size:0.85rem;font-weight:600;color:#6b7280;text-transform:uppercase;margin-bottom:0.5rem;}
+.card-stat-value {font-size:2.5rem;font-weight:800;color:var(--gris-fonce); line-height:1;}
+.card-stat-footer {font-size:0.8rem;color:#9ca3af;margin-top:1rem;}
+.stat-bleu {border-left-color:var(--bleu-fonce);}
+.stat-vert {border-left-color:var(--vert);}
+.stat-jaune {border-left-color:var(--jaune);}
+.stat-rouge {border-left-color:var(--rouge);}
+.menu-grid {display:grid; grid-template-columns:repeat(auto-fit,minmax(180px,1fr)); gap:1.5rem;}
+.menu-item {
+  background:white; padding:1.5rem; border-radius:10px;
+  box-shadow:0 3px 6px var(--ombre-legere);
+  text-align:center; text-decoration:none; color:var(--gris-fonce);
+  transition:all 0.2s; border:1px solid #e5e7eb; font-weight:600;
+}
+.menu-item:hover {background-color:var(--bleu-fonce); color:white; border-color:var(--bleu-fonce); transform:scale(1.05);}
+.menu-item .icon {font-size:2.5rem; margin-bottom:0.5rem;}
+@media(max-width:600px){.header-left h1{font-size:1.2rem;}.card-stat-value{font-size:2rem;}.menu-item .icon{font-size:2rem;}}
+</style>
 </head>
 <body>
-<div id="notification-area"></div>
 
 <div class="header">
   <div class="header-left">
@@ -71,8 +92,9 @@
 <script type="module">
 import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-app.js";
 import { getAuth, signOut, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-auth.js";
-import { getFirestore, collection, getDocs, doc, getDoc, query, where } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore.js";
+import { getFirestore, doc, getDoc } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore.js";
 
+// Config Firebase
 const firebaseConfig = {
   apiKey: "AIzaSyAgv4TDYnR60TXnns-LISqbZTgcdLT31cc",
   authDomain: "gestionlwanga.firebaseapp.com",
@@ -81,6 +103,7 @@ const firebaseConfig = {
   messagingSenderId: "622604298611",
   appId: "1:622604298611:web:4ab4314ed3eec6826c3d06"
 };
+
 const app = initializeApp(firebaseConfig);
 const auth = getAuth(app);
 const db = getFirestore(app);
@@ -90,17 +113,8 @@ const userInfo = document.getElementById("userInfo");
 const logoutBtn = document.getElementById("logoutBtn");
 const statsGrid = document.getElementById("statsGrid");
 const menuGrid = document.getElementById("menuGrid");
-const notificationArea = document.getElementById("notification-area");
 
-function showNotification(msg, type="success"){
-  const notif=document.createElement("div");
-  notif.className=`notification ${type}`;
-  notif.textContent=msg;
-  notificationArea.appendChild(notif);
-  setTimeout(()=>notif.classList.add('show'),10);
-  setTimeout(()=>{ notif.classList.remove('show'); setTimeout(()=>notificationArea.removeChild(notif),300); },4000);
-}
-
+// Dashboard menus
 const roleModules = {
   admin: ["eleves","enseignants","bulletins","cours","paiements","admin"],
   prefet: ["eleves","enseignants","bulletins","cours","paiements","admin"],
@@ -111,67 +125,57 @@ const roleModules = {
 };
 
 const moduleLinks = {
-  eleves: {title:"Gestion des Élèves", icon:"📚", link:"eleves.html"},
-  enseignants: {title:"Gestion des Enseignants", icon:"👨‍🏫", link:"enseignants.html"},
+  eleves: {title:"Gestion des Élèves", icon:"📚", link:"liste-eleves.html"},
+  enseignants: {title:"Gestion des Enseignants", icon:"👨‍🏫", link:"liste-enseignants.html"},
   bulletins: {title:"Notes & Bulletins", icon:"🧮", link:"bulletins.html"},
   cours: {title:"Planning des Cours", icon:"📆", link:"cours.html"},
   paiements: {title:"Suivi des Paiements", icon:"💰", link:"paiements.html"},
   admin: {title:"Paramètres Admin", icon:"⚙️", link:"admin.html"}
 };
 
-async function getStats(){
+// Notifications
+function showNotification(msg,type="success"){
+  const notif = document.createElement("div");
+  notif.className = `notification ${type}`;
+  notif.style.cssText = "position:fixed;top:20px;right:20px;padding:1rem 1.5rem;border-radius:8px;margin-bottom:10px;box-shadow:0 4px 6px rgba(0,0,0,0.1);color:white;font-weight:500;z-index:1000;";
+  notif.textContent = msg;
+  if(type==="success") notif.style.backgroundColor="var(--vert)";
+  if(type==="error") notif.style.backgroundColor="var(--rouge)";
+  document.body.appendChild(notif);
+  setTimeout(()=>notif.remove(),4000);
+}
+
+// Vérification Auth
+onAuthStateChanged(auth, async (user)=>{
+  if(!user){ window.location.href="admin.html"; return; }
   try{
-    // Élèves
-    const elevesSnap = await getDocs(collection(db,"eleves"));
-    const elevesCount = elevesSnap.size;
+    const snap = await getDoc(doc(db,"users",user.uid));
+    if(!snap.exists()) throw new Error("Profil introuvable.");
+    const data = snap.data();
+    const role = (data.role||"inconnu").toLowerCase();
+    const nom = [data.nom,data.postNom,data.prenom].filter(Boolean).join(" ")||"Utilisateur";
 
-    // Enseignants
-    const enseignantsSnap = await getDocs(collection(db,"enseignants"));
-    const enseignantsCount = enseignantsSnap.size;
+    dashboardTitle.textContent = `Dashboard · ${role.toUpperCase()} · ISC Lwanga`;
+    userInfo.textContent = `${nom} (${role})`;
 
-    // Notes à saisir
-    const bulletinsSnap = await getDocs(query(collection(db,"bulletins"), where("saisieComplete","==",false)));
-    const bulletinsCount = bulletinsSnap.size;
-
-    // Paiements impayés
-    const paiementsSnap = await getDocs(query(collection(db,"paiements"), where("payé","==",false)));
-    const paiementsCount = paiementsSnap.size;
-
-    statsGrid.innerHTML="";
+    // Statistiques
     const statsData = [
-      {title:"Élèves Inscrits", value:elevesCount, footer:"+ nouveaux ce mois", color:"stat-bleu"},
-      {title:"Enseignants Actifs", value:enseignantsCount, footer:"Taux : 98%", color:"stat-vert"},
-      {title:"Notes à Saisir", value:bulletinsCount+" classes", footer:"Deadline : 15 oct", color:"stat-jaune"},
-      {title:"Frais Impayés", value:paiementsCount, footer:"Total dû", color:"stat-rouge"}
+      {title:"Élèves Inscrits", value:1245, footer:"+5 ce mois", color:"stat-bleu"},
+      {title:"Enseignants Actifs", value:48, footer:"Taux : 98%", color:"stat-vert"},
+      {title:"Notes à Saisir", value:"3 classes", footer:"Deadline : 15 oct", color:"stat-jaune"},
+      {title:"Frais Impayés", value:22, footer:"Total dû : $5,400", color:"stat-rouge"}
     ];
+    statsGrid.innerHTML="";
     statsData.forEach(stat=>{
       const card=document.createElement("div");
       card.className=`card-stat ${stat.color}`;
-      card.innerHTML=`<p class="card-stat-title">${stat.title}</p>
-                      <p class="card-stat-value">${stat.value}</p>
-                      <p class="card-stat-footer">${stat.footer}</p>`;
+      card.innerHTML=`<p class="card-stat-title">${stat.title}</p><p class="card-stat-value">${stat.value}</p><p class="card-stat-footer">${stat.footer}</p>`;
       statsGrid.appendChild(card);
     });
-  }catch(err){
-    console.error(err);
-    showNotification("Erreur récupération stats","error");
-  }
-}
 
-onAuthStateChanged(auth, async (user)=>{
-  if(!user){ window.location.href="connexion.html"; return; }
-  try{
-    const snap=await getDoc(doc(db,"users",user.uid));
-    if(!snap.exists()) throw new Error("Profil introuvable.");
-    const data=snap.data();
-    const role=(data.role||"inconnu").toLowerCase();
-    const nom=[data.nom,data.postNom,data.prenom].filter(Boolean).join(" ") || "Utilisateur";
-
-    dashboardTitle.textContent=`Dashboard · ${role.toUpperCase()} · ISC Lwanga`;
-    userInfo.textContent=`${nom} (${role})`;
-
-    const modules = roleModules[role] || [];
+    // Menu modules
     menuGrid.innerHTML="";
+    const modules = roleModules[role]||[];
     modules.forEach(mod=>{
       const m = moduleLinks[mod];
       if(m){
@@ -183,22 +187,26 @@ onAuthStateChanged(auth, async (user)=>{
       }
     });
 
-    if(modules.length===0){ showNotification("⛔ Pas d'accès", "error"); await signOut(auth); window.location.href="connexion.html"; }
+    if(modules.length===0){
+      showNotification("⛔ Rôle non autorisé","error");
+      await signOut(auth);
+      window.location.href="admin.html";
+    }
 
-    await getStats();
   }catch(err){
     console.error(err);
     showNotification(err.message,"error");
     await signOut(auth);
-    window.location.href="connexion.html";
+    window.location.href="admin.html";
   }
 });
 
-logoutBtn.addEventListener("click",async()=>{
+// Déconnexion
+logoutBtn.addEventListener("click", async ()=>{
   try{
     await signOut(auth);
     showNotification("✅ Déconnexion réussie !");
-    setTimeout(()=>window.location.href="connexion.html",500);
+    setTimeout(()=>window.location.href="admin.html",500);
   }catch(err){
     console.error(err);
     showNotification("Erreur lors de la déconnexion","error");
