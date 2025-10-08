@@ -1,181 +1,211 @@
 <!DOCTYPE html>
 <html lang="fr">
 <head>
-  <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Liste des Élèves · Gestion Financière</title>
-  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700&display=swap" rel="stylesheet">
-  <style>
-    :root {
-      --bleu: #1e3a8a;
-      --vert: #047857;
-      --rouge: #dc2626;
-      --gris: #6b7280;
-      --fond: #f9fafb;
-      --carte: #fff;
-      --ombre: rgba(0,0,0,0.1);
-    }
-    body {
-      font-family: 'Inter', sans-serif;
-      background-color: var(--fond);
-      margin: 0;
-      padding: 1.5rem;
-      color: var(--gris);
-    }
-    header {
-      text-align: center;
-      margin-bottom: 2rem;
-    }
-    h1 {
-      color: var(--bleu);
-      font-size: 1.8rem;
-      margin-bottom: 0.3rem;
-    }
-    .classe-section {
-      background-color: var(--carte);
-      border-radius: 12px;
-      padding: 1rem 1.5rem;
-      box-shadow: 0 4px 10px var(--ombre);
-      margin-bottom: 2rem;
-    }
-    .classe-titre {
-      font-size: 1.2rem;
-      font-weight: 700;
-      color: var(--bleu);
-      margin-bottom: 0.75rem;
-    }
-    table {
-      width: 100%;
-      border-collapse: collapse;
-      margin-bottom: 0.5rem;
-    }
-    th, td {
-      padding: 0.6rem;
-      text-align: left;
-      border-bottom: 1px solid #e5e7eb;
-    }
-    th {
-      color: var(--bleu);
-      font-weight: 700;
-      background-color: #eef2ff;
-    }
-    td.status-paid { color: var(--vert); font-weight: 600; }
-    td.status-unpaid { color: var(--rouge); font-weight: 600; }
-    td.status-partial { color: #ca8a04; font-weight: 600; }
-    .btn-retour {
-      display: inline-block;
-      margin: 2rem auto;
-      text-decoration: none;
-      background-color: var(--bleu);
-      color: white;
-      padding: 0.8rem 1.6rem;
-      border-radius: 8px;
-      transition: background-color 0.2s;
-    }
-    .btn-retour:hover {
-      background-color: #1d4ed8;
-    }
-  </style>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Liste des Élèves · Gestion Financière</title>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --bleu: #1e3a8a;
+    --vert: #047857;
+    --rouge: #dc2626;
+    --jaune: #ca8a04;
+    --gris: #6b7280;
+    --fond: #f9fafb;
+    --carte: #fff;
+    --ombre: rgba(0,0,0,0.1);
+  }
+  body {
+    font-family: 'Inter', sans-serif;
+    background-color: var(--fond);
+    margin: 0;
+    padding: 1.5rem;
+    color: var(--gris);
+  }
+  header {
+    text-align: center;
+    margin-bottom: 1.5rem;
+  }
+  h1 { color: var(--bleu); font-size: 1.8rem; margin-bottom: .2rem; }
+  h2 { font-weight: 400; margin-bottom: 1rem; }
+  #searchBar {
+    display: block;
+    width: 100%;
+    max-width: 400px;
+    margin: auto;
+    padding: 0.5rem 1rem;
+    border-radius: 8px;
+    border: 1px solid #d1d5db;
+    margin-bottom: 1.5rem;
+    font-size: 1rem;
+  }
+  .classe-section {
+    background-color: var(--carte);
+    border-radius: 12px;
+    padding: 1rem 1.5rem;
+    box-shadow: 0 4px 10px var(--ombre);
+    margin-bottom: 2rem;
+  }
+  .classe-titre {
+    font-size: 1.2rem;
+    font-weight: 700;
+    color: var(--bleu);
+    margin-bottom: 0.75rem;
+  }
+  table {
+    width: 100%;
+    border-collapse: collapse;
+    margin-bottom: 0.5rem;
+  }
+  th, td { padding: 0.6rem; text-align: left; border-bottom: 1px solid #e5e7eb; }
+  th { color: var(--bleu); font-weight: 700; background-color: #eef2ff; }
+  td.status-paid { color: var(--vert); font-weight: 600; }
+  td.status-unpaid { color: var(--rouge); font-weight: 600; }
+  td.status-partial { color: var(--jaune); font-weight: 600; }
+  .btn-container {
+    display: flex;
+    justify-content: center;
+    gap: 1rem;
+    margin: 1rem 0 2rem;
+  }
+  .btn-export, .btn-retour {
+    display: inline-block;
+    text-decoration: none;
+    background-color: var(--bleu);
+    color: white;
+    padding: 0.8rem 1.6rem;
+    border-radius: 8px;
+    cursor: pointer;
+    transition: background-color 0.2s;
+    font-weight: 600;
+  }
+  .btn-export:hover, .btn-retour:hover { background-color: #1d4ed8; }
+</style>
 </head>
 <body>
-  <header>
-    <h1>📋 Liste Financière des Élèves</h1>
-    <p>État des paiements par classe · Institut Saint Charles Lwanga</p>
-  </header>
+<header>
+  <h1>📋 Liste Financière des Élèves</h1>
+  <h2>État des paiements par classe · ISC Lwanga</h2>
+  <input type="text" id="searchBar" placeholder="Rechercher un élève ou une classe...">
+</header>
 
-  <div id="listeElevesContainer">Chargement des données...</div>
-
+<div class="btn-container">
+  <button class="btn-export" id="exportExcel">📥 Exporter en Excel</button>
   <a href="finance.html" class="btn-retour">← Retour au menu Finance</a>
+</div>
 
-  <script type="module">
-    import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-app.js";
-    import { getFirestore, collection, getDocs } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore.js";
-    import { protectPage } from "./authGuard.js";
+<div id="listeElevesContainer">Chargement des données...</div>
 
-    // Protection : seuls les rôles autorisés peuvent accéder
-    protectPage(["econome", "admin", "directeur_etudes"]);
+<script type="module">
+import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-app.js";
+import { getFirestore, collection, getDocs } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore.js";
+import { protectPage } from "./authGuard.js";
+import * as XLSX from 'https://cdn.jsdelivr.net/npm/xlsx@0.18.5/dist/xlsx.mjs';
 
-    const firebaseConfig = {
-      apiKey: "AIzaSyAgv4TDYnR60TXnns-LISqbZTgcdLT31cc",
-      authDomain: "gestionlwanga.firebaseapp.com",
-      projectId: "gestionlwanga",
-      storageBucket: "gestionlwanga.firebasestorage.app",
-      messagingSenderId: "622604298611",
-      appId: "1:622604298611:web:4ab4314ed3eec6826c3d06"
-    };
-    const app = initializeApp(firebaseConfig);
-    const db = getFirestore(app);
+protectPage(["econome","admin","directeur_etudes"]);
 
-    const container = document.getElementById("listeElevesContainer");
+const firebaseConfig = {
+  apiKey: "AIzaSyAgv4TDYnR60TXnns-LISqbZTgcdLT31cc",
+  authDomain: "gestionlwanga.firebaseapp.com",
+  projectId: "gestionlwanga",
+  storageBucket: "gestionlwanga.firebasestorage.app",
+  messagingSenderId: "622604298611",
+  appId: "1:622604298611:web:4ab4314ed3eec6826c3d06"
+};
+const app = initializeApp(firebaseConfig);
+const db = getFirestore(app);
 
-    async function chargerEleves() {
-      try {
-        const snap = await getDocs(collection(db, "eleves"));
-        if (snap.empty) {
-          container.innerHTML = "<p>Aucun élève enregistré.</p>";
-          return;
-        }
+const container = document.getElementById("listeElevesContainer");
+const searchBar = document.getElementById("searchBar");
+let elevesData = [];
 
-        // Regroupement par classe
-        const classes = {};
-        snap.forEach(doc => {
-          const data = doc.data();
-          const classe = data.classe || "Non spécifiée";
-          if (!classes[classe]) classes[classe] = [];
-          classes[classe].push(data);
-        });
+async function chargerEleves() {
+  try {
+    const snap = await getDocs(collection(db, "eleves"));
+    elevesData = snap.docs.map(doc => ({ id: doc.id, ...doc.data() }));
+    afficherListe();
+  } catch(err) {
+    console.error(err);
+    container.innerHTML = "<p style='color:red'>Erreur lors du chargement des élèves.</p>";
+  }
+}
 
-        container.innerHTML = "";
+function afficherListe(filtre="") {
+  const classes = {};
+  elevesData
+    .filter(el => {
+      const nomComplet = [el.nom, el.postNom, el.prenom].join(" ").toLowerCase();
+      return nomComplet.includes(filtre.toLowerCase()) || (el.classe||"").toLowerCase().includes(filtre.toLowerCase());
+    })
+    .forEach(el => {
+      const classe = el.classe || "Non spécifiée";
+      if (!classes[classe]) classes[classe] = [];
+      classes[classe].push(el);
+    });
 
-        // Affichage par classe
-        for (const [classe, eleves] of Object.entries(classes)) {
-          const section = document.createElement("section");
-          section.classList.add("classe-section");
-          section.innerHTML = `<div class="classe-titre">📚 Classe : ${classe}</div>
-            <table>
-              <thead>
-                <tr>
-                  <th>Nom complet</th>
-                  <th>Frais</th>
-                  <th>Montant dû</th>
-                  <th>Montant payé</th>
-                  <th>Reste</th>
-                  <th>État</th>
-                </tr>
-              </thead>
-              <tbody>
-                ${eleves.map(el => {
-                  const frais = el.frais || "Minerval";
-                  const total = el.total || 0;
-                  const paye = el.paye || 0;
-                  const reste = total - paye;
-                  let statut = "Non payé", css = "status-unpaid";
-                  if (paye >= total) { statut = "Payé"; css = "status-paid"; }
-                  else if (paye > 0 && paye < total) { statut = "Partiel"; css = "status-partial"; }
+  container.innerHTML = "";
 
-                  const nom = [el.nom, el.postNom, el.prenom].filter(Boolean).join(" ");
-                  return `
-                    <tr>
-                      <td>${nom}</td>
-                      <td>${frais}</td>
-                      <td>${total.toLocaleString()} FC</td>
-                      <td>${paye.toLocaleString()} FC</td>
-                      <td>${reste.toLocaleString()} FC</td>
-                      <td class="${css}">${statut}</td>
-                    </tr>`;
-                }).join("")}
-              </tbody>
-            </table>`;
-          container.appendChild(section);
-        }
+  for (const [classe, eleves] of Object.entries(classes)) {
+    const section = document.createElement("section");
+    section.className = "classe-section";
+    section.innerHTML = `<div class="classe-titre">📚 Classe : ${classe}</div>
+      <table>
+        <thead>
+          <tr>
+            <th>Nom complet</th>
+            <th>Frais</th>
+            <th>Montant dû</th>
+            <th>Montant payé</th>
+            <th>Reste</th>
+            <th>État</th>
+          </tr>
+        </thead>
+        <tbody>
+          ${eleves.map(el => {
+            const frais = el.frais || "Minerval";
+            const total = el.total || 0;
+            const paye = el.paye || 0;
+            const reste = total - paye;
+            let statut = "Non payé", css = "status-unpaid";
+            if(paye >= total) { statut="Payé"; css="status-paid"; }
+            else if(paye>0 && paye<total){ statut="Partiel"; css="status-partial"; }
+            const nomComplet = [el.nom, el.postNom, el.prenom].filter(Boolean).join(" ");
+            return `<tr>
+              <td>${nomComplet}</td>
+              <td>${frais}</td>
+              <td>${total.toLocaleString()} FC</td>
+              <td>${paye.toLocaleString()} FC</td>
+              <td>${reste.toLocaleString()} FC</td>
+              <td class="${css}">${statut}</td>
+            </tr>`;
+          }).join("")}
+        </tbody>
+      </table>`;
+    container.appendChild(section);
+  }
+}
 
-      } catch (err) {
-        console.error(err);
-        container.innerHTML = "<p style='color:red'>Erreur lors du chargement des élèves.</p>";
-      }
-    }
+searchBar.addEventListener("input", e => afficherListe(e.target.value));
 
-    chargerEleves();
-  </script>
+document.getElementById("exportExcel").addEventListener("click", () => {
+  const wsData = [["Classe","Nom complet","Frais","Montant dû","Montant payé","Reste","État"]];
+  elevesData.forEach(el => {
+    const nomComplet = [el.nom, el.postNom, el.prenom].filter(Boolean).join(" ");
+    const total = el.total || 0;
+    const paye = el.paye || 0;
+    const reste = total - paye;
+    let statut = paye>=total ? "Payé" : (paye>0?"Partiel":"Non payé");
+    wsData.push([el.classe||"Non spécifiée", nomComplet, el.frais||"Minerval", total, paye, reste, statut]);
+  });
+  const wb = XLSX.utils.book_new();
+  const ws = XLSX.utils.aoa_to_sheet(wsData);
+  XLSX.utils.book_append_sheet(wb, ws, "Élèves");
+  XLSX.writeFile(wb, "liste_eleves_finance.xlsx");
+});
+
+document.addEventListener("DOMContentLoaded", chargerEleves);
+</script>
+<script type="module" src="https://cdn.jsdelivr.net/npm/xlsx@0.18.5/dist/xlsx.mjs"></script>
 </body>
 </html>
