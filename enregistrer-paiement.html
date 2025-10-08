@@ -1,154 +1,104 @@
 <!DOCTYPE html>
 <html lang="fr">
 <head>
-  <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Enregistrer un Paiement · ISC Lwanga</title>
   <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700&display=swap" rel="stylesheet">
   <style>
-    :root {
-      --bleu-fonce: #1e40af;
-      --gris-fonce: #1f2937;
-      --indigo: #4f46e5;
-      --vert: #10b981;
-      --fond: #f4f6f8;
-      --ombre-legere: rgba(0,0,0,0.08);
-    }
     body {
       font-family: 'Inter', sans-serif;
-      background-color: var(--fond);
+      background: #f9fafb;
       margin: 0;
-      padding: 2rem 1rem;
-      color: var(--gris-fonce);
-    }
-    h1 { text-align: center; font-size: 1.8rem; color: var(--bleu-fonce); margin-bottom: 0.5rem; }
-    h2 { text-align: center; font-size: 1rem; color: #6b7280; margin-bottom: 2rem; }
-
-    .container {
-      max-width: 700px;
-      margin: auto;
-      background-color: white;
       padding: 2rem;
-      border-radius: 12px;
-      box-shadow: 0 4px 10px var(--ombre-legere);
+      color: #1f2937;
     }
-
-    .form-grid { display: grid; grid-template-columns: 1fr; gap: 1.5rem; }
-    @media (min-width: 600px) { .form-grid { grid-template-columns: 1fr 1fr; } }
-    .full-width { grid-column: 1 / -1; }
-
-    .form-group label { font-weight: 600; display: block; margin-bottom: 0.3rem; font-size: 0.9rem; }
+    h1, h2 { text-align: center; margin-bottom: .5rem; }
+    h1 { color: #1e40af; }
+    .container {
+      max-width: 750px;
+      margin: 2rem auto;
+      background: white;
+      border-radius: 12px;
+      padding: 2rem;
+      box-shadow: 0 4px 10px rgba(0,0,0,0.08);
+    }
+    label { font-weight: 600; display: block; margin-bottom: .4rem; }
     input, select {
-      width: 100%; padding: 0.75rem; border: 1px solid #d1d5db; border-radius: 6px;
-      font-size: 1rem; background-color: #f9fafb; box-sizing: border-box;
+      width: 100%; padding: .75rem; border: 1px solid #d1d5db; border-radius: 6px;
+      font-size: 1rem; background: #f9fafb; margin-bottom: 1rem;
     }
     input:focus, select:focus {
-      border-color: var(--indigo);
-      box-shadow: 0 0 0 2px rgba(79,70,229,0.2);
-      outline: none;
+      border-color: #4f46e5; outline: none; box-shadow: 0 0 0 2px rgba(79,70,229,.2);
     }
-
-    #montant-du-container {
-      padding: 1rem; background-color: #eef2ff; border: 1px dashed var(--indigo);
-      border-radius: 8px; margin-bottom: 2rem; text-align: center;
+    button {
+      background: #10b981; color: white; font-weight: 700;
+      padding: 1rem; border: none; border-radius: 8px; width: 100%;
+      cursor: pointer; transition: .2s;
     }
-    #montant-du-value { font-size: 1.8rem; color: var(--indigo); font-weight: 800; margin-top: 0.5rem; }
-
-    .btn-enregistrer {
-      display: block; width: 100%; padding: 1rem; margin-top: 2rem;
-      background-color: var(--vert); color: white; border: none; border-radius: 8px;
-      font-weight: 700; font-size: 1.1rem; cursor: pointer; transition: background-color 0.2s;
-    }
-    .btn-enregistrer:hover { background-color: #059669; }
-    .btn-retour { display: block; text-align: center; margin-top: 1.5rem; color: var(--gris-fonce); text-decoration: none; font-size: 0.9rem; }
-    .btn-retour:hover { color: var(--bleu-fonce); }
-
-    /* Zone de notification */
-    #notification-area {
-      position: fixed; top: 1rem; right: 1rem; z-index: 9999;
-    }
-    .notification {
-      opacity: 0; transform: translateY(-10px); transition: all 0.3s;
-      background: white; border-left: 5px solid var(--vert); padding: 1rem 1.2rem;
-      border-radius: 6px; margin-bottom: 10px; box-shadow: 0 3px 8px rgba(0,0,0,0.1);
-    }
-    .notification.error { border-left-color: #ef4444; }
-    .notification.show { opacity: 1; transform: translateY(0); }
+    button:hover { background: #059669; }
+    .btn-retour { text-align:center; display:block; margin-top:1rem; color:#1e40af; text-decoration:none; }
+    .info-box { background:#eef2ff; border:1px dashed #4f46e5; border-radius:8px; padding:1rem; margin-bottom:1rem; text-align:center; }
+    .info-box strong { font-size:1.3rem; color:#4f46e5; }
   </style>
 </head>
 <body>
   <h1>Enregistrer un Paiement</h1>
-  <h2>Gestion des transactions de frais de scolarité</h2>
+  <h2>Économe · Contrôle et suivi des transactions</h2>
 
   <div class="container">
-    <form id="paiementForm">
-      <div class="form-grid">
-        <div class="form-group full-width">
-          <label for="recherche-eleve">Rechercher un élève (Nom ou Matricule)</label>
-          <input type="text" id="recherche-eleve" placeholder="Ex: GABBY UMBA ou 2025/001" required>
-        </div>
+    <form id="formPaiement">
+      <label>Rechercher un élève (nom ou matricule)</label>
+      <input type="text" id="searchEleve" placeholder="Ex: Umba Gabby ou 2025/001" required>
 
-        <div class="form-group">
-          <label for="eleve-selectionne">Élève trouvé :</label>
-          <select id="eleve-selectionne" required>
-            <option value="">-- Sélectionnez un élève --</option>
-          </select>
-        </div>
-        <div class="form-group">
-          <label for="classe">Classe :</label>
-          <input type="text" id="classe" disabled>
-        </div>
+      <label>Élève trouvé</label>
+      <select id="eleveSelect" required>
+        <option value="">-- Sélectionner un élève --</option>
+      </select>
+
+      <label>Classe</label>
+      <input type="text" id="classe" disabled>
+
+      <div class="info-box">
+        Montant restant dû : <strong id="soldeRestant">$ 0.00</strong>
       </div>
 
-      <div id="montant-du-container" class="full-width">
-        <p>Montant des frais de scolarité restants dus :</p>
-        <div id="montant-du-value">$ 0.00</div>
-      </div>
+      <label>Type de frais</label>
+      <select id="typeFrais" required>
+        <option value="frais_scolaires">Frais scolaires</option>
+        <option value="uniforme">Uniforme</option>
+        <option value="examen">Examen</option>
+      </select>
 
-      <div class="form-grid">
-        <div class="form-group">
-          <label for="montant-paye">Montant payé ($) *</label>
-          <input type="number" id="montant-paye" min="0" required>
-        </div>
+      <label>Montant payé ($)</label>
+      <input type="number" id="montantPaye" min="0" required>
 
-        <div class="form-group">
-          <label for="date-paiement">Date de la transaction *</label>
-          <input type="date" id="date-paiement" required>
-        </div>
+      <label>Date de paiement</label>
+      <input type="date" id="datePaiement" required>
 
-        <div class="form-group">
-          <label for="methode">Méthode de paiement *</label>
-          <select id="methode" required>
-            <option value="cash">Espèces</option>
-            <option value="bancaire">Virement Bancaire</option>
-            <option value="mobile">Paiement Mobile</option>
-          </select>
-        </div>
+      <label>Méthode de paiement</label>
+      <select id="methode" required>
+        <option value="Espèces">Espèces</option>
+        <option value="Virement Bancaire">Virement Bancaire</option>
+        <option value="Paiement Mobile">Paiement Mobile</option>
+      </select>
 
-        <div class="form-group">
-          <label for="reference">Référence (optionnel)</label>
-          <input type="text" id="reference" placeholder="ID Transaction ou N° Chèque">
-        </div>
-      </div>
+      <label>Référence (facultatif)</label>
+      <input type="text" id="reference" placeholder="Code transaction / Chèque">
 
-      <button type="submit" class="btn-enregistrer">✅ Enregistrer le Paiement</button>
+      <button type="submit">✅ Enregistrer et générer le reçu</button>
     </form>
 
-    <a href="paiements.html" class="btn-retour">← Retour au menu Gestion Financière</a>
+    <a href="liste-paiements.html" class="btn-retour">← Retour à la liste des paiements</a>
   </div>
 
-  <div id="notification-area"></div>
-
   <script type="module">
-    import { protectPage, showNotification } from './authGuard.js';
     import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-app.js";
-    import { getFirestore, collection, query, where, getDocs, addDoc, doc, updateDoc, getDoc } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore.js";
-    import { getAuth } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-auth.js";
+    import { getFirestore, collection, getDocs, doc, updateDoc, addDoc, query, where } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore.js";
+    import { protectPage, showNotification } from "./authGuard.js";
 
-    // 🔒 Protection : seulement pour ECONOME
-    protectPage(['econome']);
+    protectPage(['econome','admin','prefet']);
 
-    // 🔥 Config Firebase
     const firebaseConfig = {
       apiKey: "AIzaSyAgv4TDYnR60TXnns-LISqbZTgcdLT31cc",
       authDomain: "gestionlwanga.firebaseapp.com",
@@ -159,92 +109,78 @@
     };
     const app = initializeApp(firebaseConfig);
     const db = getFirestore(app);
-    const auth = getAuth(app);
 
-    // 🔎 Recherche élève (nom ou matricule)
-    const rechercheInput = document.getElementById("recherche-eleve");
-    const selectEleve = document.getElementById("eleve-selectionne");
-    const montantDu = document.getElementById("montant-du-value");
+    const eleveSelect = document.getElementById("eleveSelect");
+    const searchEleve = document.getElementById("searchEleve");
     const classeInput = document.getElementById("classe");
+    const soldeRestant = document.getElementById("soldeRestant");
+    const form = document.getElementById("formPaiement");
 
-    rechercheInput.addEventListener("input", async (e) => {
-      const valeur = e.target.value.trim();
-      selectEleve.innerHTML = '<option value="">Recherche...</option>';
+    let eleves = [];
 
-      if (valeur.length < 2) return;
+    async function chargerEleves() {
+      const snap = await getDocs(collection(db, "eleves"));
+      eleves = snap.docs.map(doc => ({ id: doc.id, ...doc.data() }));
+      remplirListe();
+    }
 
-      const q = query(collection(db, "eleves"),
-        where("nomComplet", ">=", valeur.toUpperCase()),
-        where("nomComplet", "<=", valeur.toUpperCase() + "\uf8ff")
-      );
+    function remplirListe(filtre="") {
+      eleveSelect.innerHTML = '<option value="">-- Sélectionner un élève --</option>';
+      eleves
+        .filter(e => 
+          e.nom.toLowerCase().includes(filtre.toLowerCase()) ||
+          e.postnom.toLowerCase().includes(filtre.toLowerCase()) ||
+          e.prenom.toLowerCase().includes(filtre.toLowerCase()) ||
+          e.matricule.toLowerCase().includes(filtre.toLowerCase())
+        )
+        .forEach(e => {
+          const opt = document.createElement('option');
+          opt.value = e.id;
+          opt.textContent = `${e.nom} ${e.postnom} ${e.prenom} (${e.classe})`;
+          eleveSelect.appendChild(opt);
+        });
+    }
 
-      const snapshot = await getDocs(q);
-      selectEleve.innerHTML = '<option value="">-- Sélectionnez un élève --</option>';
-      snapshot.forEach(docSnap => {
-        const d = docSnap.data();
-        const option = document.createElement("option");
-        option.value = docSnap.id;
-        option.textContent = `${d.nom} ${d.postNom} ${d.prenom} (${d.classe})`;
-        selectEleve.appendChild(option);
+    searchEleve.addEventListener("input", e => remplirListe(e.target.value));
+
+    eleveSelect.addEventListener("change", () => {
+      const eleve = eleves.find(e => e.id === eleveSelect.value);
+      if (!eleve) return;
+      classeInput.value = eleve.classe;
+      soldeRestant.textContent = `$ ${eleve.solde_restant?.toFixed(2) || 0}`;
+    });
+
+    form.addEventListener("submit", async e => {
+      e.preventDefault();
+      const eleve = eleves.find(e => e.id === eleveSelect.value);
+      if (!eleve) return alert("Veuillez sélectionner un élève.");
+
+      const montant = parseFloat(document.getElementById("montantPaye").value);
+      if (montant <= 0) return alert("Montant invalide");
+
+      const data = {
+        matricule: eleve.matricule,
+        nomComplet: `${eleve.nom} ${eleve.postnom} ${eleve.prenom}`,
+        classe: eleve.classe,
+        type_frais: document.getElementById("typeFrais").value,
+        montant_paye: montant,
+        date_paiement: document.getElementById("datePaiement").value,
+        methode: document.getElementById("methode").value,
+        reference: document.getElementById("reference").value || "",
+        timestamp: Date.now(),
+      };
+
+      await addDoc(collection(db, "paiements"), data);
+      await updateDoc(doc(db, "eleves", eleve.id), {
+        solde_restant: (eleve.solde_restant || 0) - montant
       });
 
-      if (snapshot.empty) showNotification("Aucun élève trouvé", "error");
+      alert(`✅ Paiement enregistré pour ${data.nomComplet} : $${montant.toFixed(2)}\nSolde mis à jour avec succès.`);
+      form.reset();
+      soldeRestant.textContent = "$ 0.00";
     });
 
-    // ⚙️ Quand un élève est sélectionné
-    selectEleve.addEventListener("change", async () => {
-      const eleveId = selectEleve.value;
-      if (!eleveId) return;
-
-      const docSnap = await getDoc(doc(db, "eleves", eleveId));
-      if (!docSnap.exists()) return showNotification("Élève introuvable", "error");
-
-      const data = docSnap.data();
-      classeInput.value = data.classe || "N/A";
-      montantDu.textContent = `$ ${(data.solde || 0).toFixed(2)}`;
-    });
-
-    // 💵 Soumission du paiement
-    document.getElementById("paiementForm").addEventListener("submit", async (e) => {
-      e.preventDefault();
-      const eleveId = selectEleve.value;
-      const montant = parseFloat(document.getElementById("montant-paye").value);
-      const methode = document.getElementById("methode").value;
-      const reference = document.getElementById("reference").value || "-";
-      const datePaiement = document.getElementById("date-paiement").value;
-
-      if (!eleveId || montant <= 0) return showNotification("Veuillez remplir tous les champs obligatoires", "error");
-
-      try {
-        // Récupérer élève
-        const eleveRef = doc(db, "eleves", eleveId);
-        const eleveSnap = await getDoc(eleveRef);
-        const eleveData = eleveSnap.data();
-        const nouveauSolde = (eleveData.solde || 0) - montant;
-
-        // Ajouter un enregistrement
-        await addDoc(collection(db, "paiements"), {
-          eleveId,
-          montant,
-          methode,
-          reference,
-          datePaiement,
-          classe: eleveData.classe,
-          eleveNom: `${eleveData.nom} ${eleveData.postNom} ${eleveData.prenom}`,
-          createdAt: new Date(),
-        });
-
-        // Mettre à jour le solde de l’élève
-        await updateDoc(eleveRef, { solde: nouveauSolde });
-
-        montantDu.textContent = `$ ${nouveauSolde.toFixed(2)}`;
-        showNotification(`Paiement enregistré avec succès ! Nouveau solde : $${nouveauSolde.toFixed(2)}`);
-        e.target.reset();
-      } catch (err) {
-        console.error(err);
-        showNotification("Erreur lors de l’enregistrement du paiement", "error");
-      }
-    });
+    document.addEventListener("DOMContentLoaded", chargerEleves);
   </script>
 </body>
 </html>
