@@ -72,7 +72,6 @@
     import { getAuth, signOut, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-auth.js";
     import { getFirestore, doc, getDoc } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore.js";
 
-    // 🔥 Config Firebase centralisée
     const firebaseConfig = {
       apiKey: "AIzaSyAgv4TDYnR60TXnns-LISqbZTgcdLT31cc",
       authDomain: "gestionlwanga.firebaseapp.com",
@@ -93,7 +92,6 @@
     const menuGrid = document.querySelector(".menu-grid");
     const notificationArea = document.getElementById("notification-area");
 
-    // 🔹 Notifications centralisées
     function showNotification(msg, type="success") {
       const notif = document.createElement("div");
       notif.className = `notification ${type}`;
@@ -106,7 +104,6 @@
       },4000);
     }
 
-    // 🔹 Mapping rôle → modules
     const roleModules = {
       prefet: ["eleves","enseignants","bulletins","cours","paiements","admin"],
       admin: ["eleves","enseignants","bulletins","cours","paiements","admin"],
@@ -125,9 +122,8 @@
       admin: {title:"Paramètres Admin", icon:"⚙️", link:"admin.html"}
     };
 
-    // 🔹 Vérification Auth + rôle
     onAuthStateChanged(auth, async (user)=>{
-      if(!user){ window.location.href="login.html"; return; }
+      if(!user){ window.location.href="connexion.html"; return; }
 
       try {
         const snap = await getDoc(doc(db,"users",user.uid));
@@ -139,7 +135,6 @@
         dashboardTitle.textContent = `Dashboard · ${role.toUpperCase()} · ISC Lwanga`;
         userInfo.textContent = `${nom} (${role})`;
 
-        // 🔹 Statistiques dynamiques
         const statsData = [
           {title:"Élèves Inscrits", value:1245, footer:"+5 ce mois", color:"stat-bleu"},
           {title:"Enseignants Actifs", value:48, footer:"Taux : 98%", color:"stat-vert"},
@@ -154,7 +149,6 @@
           statsGrid.appendChild(card);
         });
 
-        // 🔹 Modules dynamiques
         menuGrid.innerHTML="";
         const modules = roleModules[role] || [];
         modules.forEach(mod=>{
@@ -171,23 +165,22 @@
         if(modules.length===0){
           showNotification("⛔ Votre rôle ne permet pas l'accès au dashboard.","error");
           await signOut(auth);
-          window.location.href="login.html";
+          window.location.href="connexion.html";
         }
 
       } catch(err){
         console.error(err);
         showNotification(err.message,"error");
         await signOut(auth);
-        window.location.href="login.html";
+        window.location.href="connexion.html";
       }
     });
 
-    // 🔹 Déconnexion
     logoutBtn.addEventListener("click", async ()=>{
       try{
         await signOut(auth);
         showNotification("✅ Déconnexion réussie !");
-        setTimeout(()=>window.location.href="login.html",500);
+        setTimeout(()=>window.location.href="connexion.html",500);
       }catch(err){
         console.error(err);
         showNotification("Erreur lors de la déconnexion","error");
