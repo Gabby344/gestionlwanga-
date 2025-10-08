@@ -3,13 +3,14 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Connexion Administrateur - Institut Saint Charles Lwanga</title>
+  <title>Connexion Administrateur / Préfet · ISC Lwanga</title>
   <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700;800&display=swap" rel="stylesheet">
   <style>
     :root {
       --bleu-fonce: #1e40af;
       --gris-fonce: #1f2937;
       --vert-action: #047857;
+      --rouge-action: #ef4444;
       --fond-principal: #f4f6f8;
       --gris-bordure: #d1d5db;
       --ombre-form: rgba(0,0,0,0.1);
@@ -25,88 +26,64 @@
       align-items: center;
       min-height: 100vh;
     }
-    .login-container {
-      max-width: 400px;
-      width: 90%;
-    }
+    .login-container { max-width: 400px; width: 90%; }
     .login-card {
       background: white;
       padding: 2.5rem;
       border-radius: 16px;
       box-shadow: 0 10px 25px var(--ombre-form);
       text-align: center;
+      position: relative;
     }
-    .logo {
-      font-size: 1.5rem;
-      font-weight: 800;
-      color: var(--bleu-fonce);
-      margin-bottom: 2rem;
-      border-bottom: 2px solid #f3f4f6;
-      padding-bottom: 1rem;
-    }
-    h1 {
-      font-size: 1.5rem;
-      color: var(--gris-fonce);
-      margin-top: 0;
-      margin-bottom: 1.5rem;
-    }
-    .form-group {
+    .logo img {
+      width: 80px;
+      height: 80px;
+      object-fit: contain;
       margin-bottom: 1rem;
     }
+    .title {
+      font-size: 1.5rem;
+      color: var(--gris-fonce);
+      font-weight: 700;
+      margin: 0 0 1.5rem 0;
+    }
+    .form-group { margin-bottom: 1rem; }
     input[type="email"], input[type="password"] {
-      width: 100%;
-      padding: 1rem;
-      border: 1px solid var(--gris-bordure);
-      border-radius: 8px;
-      box-sizing: border-box;
-      font-size: 1rem;
-      background-color: #f9fafb;
+      width: 100%; padding: 1rem; border: 1px solid var(--gris-bordure);
+      border-radius: 8px; box-sizing: border-box; font-size: 1rem; background-color: #f9fafb;
       transition: border-color 0.2s, box-shadow 0.2s;
     }
     input:focus {
       border-color: var(--bleu-fonce);
-      box-shadow: 0 0 0 3px rgba(30, 64, 175, 0.1);
-      outline: none;
-      background-color: white;
+      box-shadow: 0 0 0 3px rgba(30,64,175,0.1);
+      outline: none; background-color: white;
     }
     .btn-connecter {
-      width: 100%;
-      background-color: var(--vert-action);
-      color: white;
-      font-weight: 700;
-      padding: 1rem;
-      border: none;
-      border-radius: 8px;
-      font-size: 1.1rem;
-      cursor: pointer;
-      margin-top: 1.5rem;
+      width: 100%; background-color: var(--vert-action); color: white;
+      font-weight: 700; padding: 1rem; border: none; border-radius: 8px;
+      font-size: 1.1rem; cursor: pointer; margin-top: 1.5rem;
       transition: background-color 0.2s;
     }
-    .btn-connecter:hover {
-      background-color: #065f46;
-    }
-    .forgot-password {
-      display: block;
-      margin-top: 1rem;
-      font-size: 0.85rem;
-      color: #6b7280;
-      text-decoration: none;
-    }
-    .forgot-password:hover {
-      color: var(--bleu-fonce);
+    .btn-connecter:hover { background-color: #065f46; }
+    .forgot-password { display: block; margin-top: 1rem; font-size: 0.85rem; color: #6b7280; text-decoration: none; }
+    .forgot-password:hover { color: var(--bleu-fonce); }
+    #message {
+      margin-top: 1.5rem; font-size: 0.95rem; font-weight: 500;
+      min-height: 20px; transition: all 0.3s;
     }
   </style>
 </head>
 <body>
-
   <div class="login-container">
     <div class="login-card">
-      <div class="logo">Institut Saint Charles Lwanga (SIGS)</div>
-      <h1>Connexion Administrateur</h1>
+      <div class="logo">
+        <img src="logo.png" alt="Logo ISC Lwanga">
+      </div>
+      <div class="title">Connexion Administrateur / Préfet</div>
 
       <form id="loginForm">
         <div class="form-group">
-          <input type="email" id="email" placeholder="Adresse E-mail Admin" required />
+          <input type="email" id="email" placeholder="Adresse E-mail" required />
         </div>
         <div class="form-group">
           <input type="password" id="password" placeholder="Mot de passe" required />
@@ -115,17 +92,17 @@
         <a href="#" class="forgot-password">Mot de passe oublié ?</a>
       </form>
 
-      <p id="message" style="margin-top: 1.5rem; font-size: 0.9rem;"></p>
+      <p id="message"></p>
     </div>
   </div>
 
   <!-- Firebase SDKs -->
-  <script src="https://www.gstatic.com/firebasejs/10.5.2/firebase-app.js"></script>
-  <script src="https://www.gstatic.com/firebasejs/10.5.2/firebase-auth.js"></script>
-  <script src="https://www.gstatic.com/firebasejs/10.5.2/firebase-firestore.js"></script>
+  <script type="module">
+    import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-app.js";
+    import { getAuth, signInWithEmailAndPassword, signOut } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-auth.js";
+    import { getFirestore, doc, getDoc } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore.js";
 
-  <script>
-    // Configuration Firebase
+    // ⚡ Configuration Firebase
     const firebaseConfig = {
       apiKey: "TA_CLE_API",
       authDomain: "TON_PROJET.firebaseapp.com",
@@ -134,41 +111,57 @@
       messagingSenderId: "TON_ID",
       appId: "TON_APP_ID"
     };
-    firebase.initializeApp(firebaseConfig);
-    const auth = firebase.auth();
-    const db = firebase.firestore();
 
-    // Gestion du formulaire
-    document.getElementById('loginForm').addEventListener('submit', function(e) {
+    const app = initializeApp(firebaseConfig);
+    const auth = getAuth(app);
+    const db = getFirestore(app);
+
+    const form = document.getElementById("loginForm");
+    const message = document.getElementById("message");
+
+    // Table de redirections selon rôle
+    const dashboards = {
+      admin: "dashboard_admin.html",
+      prefet: "dashboard_prefet.html",
+      directeur_etudes: "dashboard_directeur_etudes.html",
+      directeur_discipline: "dashboard_directeur_discipline.html",
+      secretaire: "dashboard_secretaire.html",
+      econome: "dashboard_econome.html",
+      enseignant: "dashboard_enseignant.html",
+      eleve: "dashboard_eleve.html"
+    };
+
+    form.addEventListener("submit", async (e) => {
       e.preventDefault();
-      const email = document.getElementById('email').value.trim();
-      const password = document.getElementById('password').value.trim();
-      const messageElement = document.getElementById('message');
+      const email = document.getElementById("email").value.trim();
+      const password = document.getElementById("password").value;
 
-      auth.signInWithEmailAndPassword(email, password)
-        .then((userCredential) => {
-          const uid = userCredential.user.uid;
-          db.collection("users").doc(uid).get().then((doc) => {
-            if (doc.exists && doc.data().role === "admin") {
-              messageElement.style.color = 'green';
-              messageElement.innerHTML = "✅ Connexion réussie! Redirection...";
-              setTimeout(() => {
-                window.location.href = 'dashboard.html';
-              }, 1000);
-            } else {
-              messageElement.style.color = 'red';
-              messageElement.innerHTML = "⛔ Accès refusé. Vous n'êtes pas administrateur.";
-              auth.signOut();
-            }
-          });
-        })
-        .catch((error) => {
-          messageElement.style.color = 'red';
-          messageElement.innerHTML = "❌ Erreur : " + error.message;
-        });
+      message.textContent = "";
+      message.style.color = "black";
+
+      try {
+        const userCredential = await signInWithEmailAndPassword(auth, email, password);
+        const uid = userCredential.user.uid;
+
+        const userDoc = await getDoc(doc(db, "users", uid));
+        if (!userDoc.exists()) throw new Error("Profil utilisateur introuvable.");
+
+        const role = (userDoc.data().role || "").toLowerCase();
+
+        if (dashboards[role]) {
+          message.style.color = "green";
+          message.textContent = "✅ Connexion réussie ! Redirection...";
+          setTimeout(() => { window.location.href = dashboards[role]; }, 1000);
+        } else {
+          message.style.color = "red";
+          message.textContent = "⛔ Accès refusé. Rôle non autorisé.";
+          await signOut(auth);
+        }
+      } catch (err) {
+        message.style.color = "red";
+        message.textContent = "❌ Erreur : " + err.message;
+      }
     });
   </script>
 </body>
 </html>
-
-
