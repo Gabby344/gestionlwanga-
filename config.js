@@ -1,4 +1,4 @@
-// config.js - version centralisée pour tous les modules
+// config.js
 import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-app.js";
 import { getAuth } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-auth.js";
 import { getFirestore } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore.js";
@@ -13,11 +13,9 @@ const firebaseConfig = {
 };
 
 const app = initializeApp(firebaseConfig);
-
 export const auth = getAuth(app);
 export const db = getFirestore(app);
 
-// 🔹 Mapping rôle → dashboard (centralisé ici aussi si tu veux)
 export const roleRedirects = {
   admin: "dashboard-admin.html",
   prefet: "dashboard-prefet.html",
@@ -26,5 +24,6 @@ export const roleRedirects = {
   secretaire: "dashboard-secretaire.html",
   econome: "dashboard-econome.html",
   enseignant: "dashboard-enseignant.html",
-  eleve: "dashboard-eleve.html"
+  eleve: "dashboard-eleve.html",
+  parent: "dashboard-eleve.html"
 };
