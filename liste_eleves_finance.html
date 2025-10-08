@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Liste des Élèves · Gestion Financière</title>
+<title>Liste des Élèves · Gestion Financière - Institut Saint Charles Lwanga</title>
 <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700&display=swap" rel="stylesheet">
 <style>
   :root {
@@ -86,12 +86,13 @@
 <body>
 <header>
   <h1>📋 Liste Financière des Élèves</h1>
-  <h2>État des paiements par classe · ISC Lwanga</h2>
+  <h2>État des paiements par classe · Institut Saint Charles Lwanga</h2>
   <input type="text" id="searchBar" placeholder="Rechercher un élève ou une classe...">
 </header>
 
 <div class="btn-container">
   <button class="btn-export" id="exportExcel">📥 Exporter en Excel</button>
+  <button class="btn-export" id="exportPDF">🖨️ Exporter en PDF</button>
   <a href="finance.html" class="btn-retour">← Retour au menu Finance</a>
 </div>
 
@@ -102,6 +103,7 @@ import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.2/fireba
 import { getFirestore, collection, getDocs } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore.js";
 import { protectPage } from "./authGuard.js";
 import * as XLSX from 'https://cdn.jsdelivr.net/npm/xlsx@0.18.5/dist/xlsx.mjs';
+import jsPDF from 'https://cdn.jsdelivr.net/npm/jspdf@2.5.1/dist/jspdf.es.min.js';
 
 protectPage(["econome","admin","directeur_etudes"]);
 
@@ -145,7 +147,6 @@ function afficherListe(filtre="") {
     });
 
   container.innerHTML = "";
-
   for (const [classe, eleves] of Object.entries(classes)) {
     const section = document.createElement("section");
     section.className = "classe-section";
@@ -201,11 +202,62 @@ document.getElementById("exportExcel").addEventListener("click", () => {
   const wb = XLSX.utils.book_new();
   const ws = XLSX.utils.aoa_to_sheet(wsData);
   XLSX.utils.book_append_sheet(wb, ws, "Élèves");
-  XLSX.writeFile(wb, "liste_eleves_finance.xlsx");
+  XLSX.writeFile(wb, "liste_eleves_institut_saint_charles_lwanga.xlsx");
 });
+
+document.getElementById("exportPDF").addEventListener("click", () => {
+  const doc = new jsPDF();
+  doc.setFontSize(16);
+  doc.text("Institut Saint Charles Lwanga", 105, 15, null, null, "center");
+  doc.setFontSize(12);
+  doc.text(`Liste Financière des Élèves - ${new Date().toLocaleDateString()}`, 105, 23, null, null, "center");
+  let y = 30;
+
+  for (const [classe, eleves] of Object.entries(groupByClasse(elevesData))) {
+    doc.setFontSize(13);
+    doc.text(`Classe : ${classe}`, 10, y);
+    y += 6;
+    doc.setFontSize(11);
+    doc.autoTable({
+      startY: y,
+      head: [["Nom complet","Frais","Montant dû","Montant payé","Reste","État"]],
+      body: eleves.map(el => {
+        const nomComplet = [el.nom, el.postNom, el.prenom].filter(Boolean).join(" ");
+        const total = el.total || 0;
+        const paye = el.paye || 0;
+        const reste = total - paye;
+        let statut = paye>=total ? "Payé" : (paye>0?"Partiel":"Non payé");
+        return [nomComplet, el.frais||"Minerval", total, paye, reste, statut];
+      }),
+      theme: 'grid',
+      headStyles: { fillColor: [30,58,138], textColor: 255 },
+      bodyStyles: { fontSize: 10 },
+      startY: y,
+      margin: { left: 10, right: 10 },
+      styles: { overflow: 'linebreak' }
+    });
+    y = doc.lastAutoTable.finalY + 10;
+  }
+  doc.save("liste_eleves_institut_saint_charles_lwanga.pdf");
+});
+
+function groupByClasse(data) {
+  const classes = {};
+  data.forEach(el => {
+    const classe = el.classe || "Non spécifiée";
+    if (!classes[classe]) classes[classe] = [];
+    classes[classe].push(el);
+  });
+  return classes;
+}
 
 document.addEventListener("DOMContentLoaded", chargerEleves);
 </script>
+
+<!-- jsPDF et AutoTable -->
+<script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf-autotable/3.5.28/jspdf.plugin.autotable.min.js"></script>
 <script type="module" src="https://cdn.jsdelivr.net/npm/xlsx@0.18.5/dist/xlsx.mjs"></script>
+
 </body>
 </html>
