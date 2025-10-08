@@ -3,43 +3,37 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Dashboard Directeur des Études · Institut Saint Charles Lwanga</title>
+<title>Dashboard Directeur Études · ISC Lwanga</title>
 <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700&display=swap" rel="stylesheet">
 <style>
 :root {
-  --bleu-fonce:#1e40af;
-  --gris-fonce:#1f2937;
-  --vert:#10b981;
-  --jaune:#f59e0b;
-  --rouge:#ef4444;
-  --fond:#f4f6f8;
-  --ombre-legere:rgba(0,0,0,0.08);
-  --ombre-hover:rgba(0,0,0,0.15);
+  --bleu-fonce:#1e40af; --gris-fonce:#1f2937; --vert:#10b981; --rouge:#ef4444; --fond:#f4f6f8;
+  --ombre-legere:rgba(0,0,0,0.08); --ombre-hover:rgba(0,0,0,0.15);
 }
-body {font-family:'Inter',sans-serif;background-color:var(--fond);margin:0;color:var(--gris-fonce);}
-.header {background:white;padding:1rem 2rem;box-shadow:0 1px 5px var(--ombre-legere);display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:1rem;}
-.header-left {display:flex;align-items:center;gap:1rem;}
-.header img {height:50px;width:50px;object-fit:contain;}
-.header h1 {font-size:1.5rem;color:var(--bleu-fonce);margin:0;font-weight:700;}
-.user-info {font-size:0.95rem;color:#374151;font-weight:500;}
-.btn-logout {background-color:var(--rouge); color:white; padding:0.6rem 1rem; border:none; border-radius:6px; font-weight:600; cursor:pointer; transition:background-color 0.2s;}
-.btn-logout:hover {background-color:#b91c1c;}
-.main-content {max-width:1200px;margin:auto;padding:1rem 1rem 2rem;}
-.section-title {font-size:1.3rem;font-weight:700;color:var(--gris-fonce);margin-bottom:1rem;padding-bottom:0.5rem;border-bottom:1px solid #e5e7eb;}
-.stats-grid {display:grid; grid-template-columns:repeat(auto-fit,minmax(220px,1fr)); gap:1.5rem; margin-bottom:2rem;}
-.card-stat {background:white; padding:1.5rem; border-radius:12px; box-shadow:0 4px 10px var(--ombre-legere); border-left:5px solid var(--jaune); transition:transform 0.2s, box-shadow 0.2s;}
-.card-stat:hover {transform:translateY(-3px); box-shadow:0 6px 15px var(--ombre-hover);}
-.card-stat-title {font-size:0.85rem;font-weight:600;color:#6b7280;text-transform:uppercase;margin-bottom:0.5rem;}
-.card-stat-value {font-size:2.5rem;font-weight:800;color:var(--gris-fonce);line-height:1;}
-.menu-grid {display:grid; grid-template-columns:repeat(auto-fit,minmax(180px,1fr)); gap:1.5rem;}
-.menu-item {background:white; padding:1.5rem; border-radius:10px; box-shadow:0 3px 6px var(--ombre-legere); text-align:center; text-decoration:none; color:var(--gris-fonce); transition:all 0.2s; border:1px solid #e5e7eb; font-weight:600;}
-.menu-item:hover {background-color:var(--jaune); color:white; border-color:var(--jaune); transform:scale(1.05);}
-.menu-item .icon {font-size:2.5rem; margin-bottom:0.5rem;}
-#notification-area {position:fixed; top:20px; right:20px; z-index:1000;}
-.notification {padding:1rem 1.5rem; border-radius:8px; margin-bottom:10px; box-shadow:0 4px 6px rgba(0,0,0,0.1); color:white; font-weight:500; opacity:0; transform:translateX(100%); transition:opacity 0.3s, transform 0.3s;}
-.notification.show {opacity:1; transform:translateX(0);}
-.notification.success {background-color:var(--vert);}
-.notification.error {background-color:var(--rouge);}
+body{font-family:'Inter',sans-serif;background:var(--fond);margin:0;color:var(--gris-fonce);}
+.header{background:white;padding:1rem 2rem;box-shadow:0 1px 5px var(--ombre-legere);display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:1rem;}
+.header-left{display:flex;align-items:center;gap:1rem;}
+.header img{height:50px;width:50px;object-fit:contain;}
+.header h1{font-size:1.5rem;color:var(--bleu-fonce);margin:0;font-weight:700;}
+.user-info{font-size:0.95rem;color:#374151;font-weight:500;}
+.btn-logout{background-color:var(--rouge); color:white; padding:0.6rem 1rem; border:none; border-radius:6px; font-weight:600; cursor:pointer; transition:background-color 0.2s;}
+.btn-logout:hover{background-color:#b91c1c;}
+.main-content{max-width:1200px;margin:auto;padding:1rem 1rem 2rem;}
+.section-title{font-size:1.3rem;font-weight:700;color:var(--gris-fonce);margin-bottom:1rem;padding-bottom:0.5rem;border-bottom:1px solid #e5e7eb;}
+.stats-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(220px,1fr));gap:1.5rem;margin-bottom:2rem;}
+.card-stat{background:white;padding:1.5rem;border-radius:12px;box-shadow:0 4px 10px var(--ombre-legere);border-left:5px solid var(--bleu-fonce);transition:transform 0.2s, box-shadow 0.2s;}
+.card-stat:hover{transform:translateY(-3px);box-shadow:0 6px 15px var(--ombre-hover);}
+.card-stat-title{font-size:0.85rem;font-weight:600;color:#6b7280;text-transform:uppercase;margin-bottom:0.5rem;}
+.card-stat-value{font-size:2.5rem;font-weight:800;color:var(--gris-fonce);line-height:1;}
+.menu-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(180px,1fr));gap:1.5rem;}
+.menu-item{background:white;padding:1.5rem;border-radius:10px;box-shadow:0 3px 6px var(--ombre-legere);text-align:center;text-decoration:none;color:var(--gris-fonce);transition:all 0.2s;border:1px solid #e5e7eb;font-weight:600;}
+.menu-item:hover{background-color:var(--bleu-fonce);color:white;border-color:var(--bleu-fonce);transform:scale(1.05);}
+.menu-item .icon{font-size:2.5rem;margin-bottom:0.5rem;}
+#notification-area{position:fixed;top:20px;right:20px;z-index:1000;}
+.notification{padding:1rem 1.5rem;border-radius:8px;margin-bottom:10px;box-shadow:0 4px 6px rgba(0,0,0,0.1);color:white;font-weight:500;opacity:0;transform:translateX(100%);transition:opacity 0.3s, transform 0.3s;}
+.notification.show{opacity:1;transform:translateX(0);}
+.notification.success{background-color:var(--vert);}
+.notification.error{background-color:var(--rouge);}
 @media(max-width:600px){.header-left h1{font-size:1.2rem;}.card-stat-value{font-size:2rem;}.menu-item .icon{font-size:2rem;}}
 </style>
 </head>
@@ -47,17 +41,15 @@ body {font-family:'Inter',sans-serif;background-color:var(--fond);margin:0;color
 <div id="notification-area"></div>
 <div class="header">
   <div class="header-left">
-    <img src="IMG_7373.jpeg" alt="Logo Institut Saint Charles Lwanga">
-    <h1 id="dashboardTitle">Dashboard · Directeur des Études · ISC Lwanga</h1>
+    <img src="IMG_7373.jpeg" alt="Logo ISC Lwanga">
+    <h1 id="dashboardTitle">Dashboard · Directeur Études · ISC Lwanga</h1>
   </div>
   <div class="user-info" id="userInfo"></div>
   <button class="btn-logout" id="logoutBtn">🚪 Déconnexion</button>
 </div>
-
 <div class="main-content">
-  <h2 class="section-title">Aperçu des Élèves & Bulletins</h2>
+  <h2 class="section-title">Aperçu Actuel</h2>
   <div class="stats-grid"></div>
-
   <h2 class="section-title">Modules de Gestion</h2>
   <div class="menu-grid"></div>
 </div>
@@ -66,18 +58,27 @@ body {font-family:'Inter',sans-serif;background-color:var(--fond);margin:0;color
 import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-app.js";
 import { getAuth, signOut, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-auth.js";
 import { getFirestore, collection, getDocs, doc, getDoc } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore.js";
+import { protectPage } from './authGuard.js'; // ✅ Appel authGuard
 
-const firebaseConfig = { apiKey:"AIzaSyAgv4TDYnR60TXnns-LISqbZTgcdLT31cc", authDomain:"gestionlwanga.firebaseapp.com", projectId:"gestionlwanga", storageBucket:"gestionlwanga.firebasestorage.app", messagingSenderId:"622604298611", appId:"1:622604298611:web:4ab4314ed3eec6826c3d06" };
+const firebaseConfig = {
+  apiKey:"AIzaSyAgv4TDYnR60TXnns-LISqbZTgcdLT31cc",
+  authDomain:"gestionlwanga.firebaseapp.com",
+  projectId:"gestionlwanga",
+  storageBucket:"gestionlwanga.firebasestorage.app",
+  messagingSenderId:"622604298611",
+  appId:"1:622604298611:web:4ab4314ed3eec6826c3d06"
+};
+
 const app = initializeApp(firebaseConfig);
 const auth = getAuth(app);
 const db = getFirestore(app);
 
-const dashboardTitle = document.getElementById("dashboardTitle");
-const userInfo = document.getElementById("userInfo");
-const logoutBtn = document.getElementById("logoutBtn");
-const statsGrid = document.querySelector(".stats-grid");
-const menuGrid = document.querySelector(".menu-grid");
-const notificationArea = document.getElementById("notification-area");
+const dashboardTitle=document.getElementById("dashboardTitle");
+const userInfo=document.getElementById("userInfo");
+const logoutBtn=document.getElementById("logoutBtn");
+const statsGrid=document.querySelector(".stats-grid");
+const menuGrid=document.querySelector(".menu-grid");
+const notificationArea=document.getElementById("notification-area");
 
 function showNotification(msg,type="success"){
   const notif=document.createElement("div");
@@ -88,53 +89,65 @@ function showNotification(msg,type="success"){
   setTimeout(()=>{notif.classList.remove('show'); setTimeout(()=>notificationArea.removeChild(notif),300);},4000);
 }
 
-// Modules Directeur des Études
-const roleModules={directeur_etudes:["eleves","bulletins","cours"]};
+const roleModules={
+  directeur_etudes:["eleves","enseignants","bulletins","cours"]
+};
+
 const moduleLinks={
-  eleves:{title:"Gestion des Élèves", icon:"📚", link:"eleves.html"},
-  bulletins:{title:"Notes & Bulletins", icon:"🧮", link:"bulletins.html"},
-  cours:{title:"Planning des Cours", icon:"📆", link:"cours.html"}
+  eleves:{title:"Gestion des Élèves",icon:"📚",link:"eleves-directeur.html"},
+  enseignants:{title:"Gestion des Enseignants",icon:"👨‍🏫",link:"liste-enseignants.html"},
+  bulletins:{title:"Notes & Bulletins",icon:"🧮",link:"bulletins.html"},
+  cours:{title:"Planning des Cours",icon:"📆",link:"assignation-cours.html"}
 };
 
 async function fetchStats(){
   try{
     const elevesSnap=await getDocs(collection(db,"eleves"));
+    const enseignantsSnap=await getDocs(collection(db,"enseignants"));
     const bulletinsSnap=await getDocs(collection(db,"bulletins"));
-    return { eleves:elevesSnap.size, bulletins:bulletinsSnap.size };
-  }catch(err){ console.error(err); return {eleves:0, bulletins:0}; }
+    return {eleves:elevesSnap.size,enseignants:enseignantsSnap.size,bulletins:bulletinsSnap.size};
+  }catch(err){console.error(err);return {eleves:0,enseignants:0,bulletins:0};}
 }
 
-onAuthStateChanged(auth, async(user)=>{
-  if(!user){ window.location.href="login.html"; return; }
+onAuthStateChanged(auth,async(user)=>{
+  if(!user){window.location.href="login.html";return;}
   try{
     const snap=await getDoc(doc(db,"users",user.uid));
-    if(!snap.exists()) throw new Error("Profil introuvable.");
+    if(!snap.exists())throw new Error("Profil introuvable.");
     const data=snap.data();
-    if(data.role!=="directeur_etudes"){ await signOut(auth); window.location.href="login.html"; }
+    if(data.role!=="directeur_etudes"){await signOut(auth);window.location.href="login.html";}
     userInfo.textContent=`${data.nom} ${data.postNom} ${data.prenom} (Directeur Études)`;
 
     const stats=await fetchStats();
     statsGrid.innerHTML="";
-    Object.entries(stats).forEach(([k,v])=>{
+    Object.entries(stats).forEach(([key,value])=>{
       const card=document.createElement("div");
       card.className="card-stat";
-      card.innerHTML=`<p class="card-stat-title">${k.charAt(0).toUpperCase()+k.slice(1)}</p><p class="card-stat-value">${v}</p>`;
+      card.innerHTML=`<p class="card-stat-title">${key.charAt(0).toUpperCase()+key.slice(1)}</p><p class="card-stat-value">${value}</p>`;
       statsGrid.appendChild(card);
     });
 
     menuGrid.innerHTML="";
     roleModules.directeur_etudes.forEach(mod=>{
       const m=moduleLinks[mod];
-      if(m){ const item=document.createElement("a"); item.href=m.link; item.className="menu-item"; item.innerHTML=`<div class="icon">${m.icon}</div><div>${m.title}</div>`; menuGrid.appendChild(item);}
+      if(m){
+        const item=document.createElement("a");
+        item.href=m.link;
+        item.className="menu-item";
+        item.innerHTML=`<div class="icon">${m.icon}</div><div>${m.title}</div>`;
+        menuGrid.appendChild(item);
+      }
     });
-
-  }catch(err){ console.error(err); showNotification(err.message,"error"); await signOut(auth); window.location.href="login.html"; }
+  }catch(err){console.error(err);showNotification(err.message,"error");await signOut(auth);window.location.href="login.html";}
 });
 
-logoutBtn.addEventListener("click", async()=>{
-  try{ await signOut(auth); showNotification("✅ Déconnexion réussie !"); setTimeout(()=>window.location.href="login.html",500);}
-  catch(err){ console.error(err); showNotification("Erreur lors de la déconnexion","error");}
+logoutBtn.addEventListener("click",async()=>{
+  try{await signOut(auth);showNotification("✅ Déconnexion réussie !");setTimeout(()=>window.location.href="login.html",500);}
+  catch(err){console.error(err);showNotification("Erreur lors de la déconnexion","error");}
 });
+
+// 🔐 Protection de page
+protectPage(["directeur_etudes"]);
 </script>
 </body>
 </html>
