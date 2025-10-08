@@ -3,14 +3,14 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Enregistrer un Paiement - Institut Saint Charles Lwanga</title>
+  <title>Enregistrer un Paiement · ISC Lwanga</title>
   <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700&display=swap" rel="stylesheet">
   <style>
     :root {
       --bleu-fonce: #1e40af;
       --gris-fonce: #1f2937;
-      --indigo: #4f46e5; /* Couleur principale du module Paiements */
-      --vert: #10b981; /* Bouton d'action positif */
+      --indigo: #4f46e5;
+      --vert: #10b981;
       --fond: #f4f6f8;
       --ombre-legere: rgba(0,0,0,0.08);
     }
@@ -21,20 +21,9 @@
       padding: 2rem 1rem;
       color: var(--gris-fonce);
     }
-    h1 {
-      text-align: center;
-      font-size: 1.8rem;
-      color: var(--bleu-fonce);
-      margin-bottom: 0.5rem;
-    }
-    h2 {
-      text-align: center;
-      font-size: 1rem;
-      font-weight: normal;
-      color: #6b7280;
-      margin-bottom: 2rem;
-    }
-    
+    h1 { text-align: center; font-size: 1.8rem; color: var(--bleu-fonce); margin-bottom: 0.5rem; }
+    h2 { text-align: center; font-size: 1rem; color: #6b7280; margin-bottom: 2rem; }
+
     .container {
       max-width: 700px;
       margin: auto;
@@ -44,235 +33,218 @@
       box-shadow: 0 4px 10px var(--ombre-legere);
     }
 
-    /* --- Formulaire & Champs --- */
-    .form-grid {
-      display: grid;
-      grid-template-columns: 1fr;
-      gap: 1.5rem;
-    }
-    @media (min-width: 600px) {
-        .form-grid {
-            grid-template-columns: 1fr 1fr;
-        }
-    }
-    .full-width {
-        grid-column: 1 / -1;
-    }
-    
-    .form-group label {
-      display: block;
-      font-weight: 600;
-      margin-bottom: 0.3rem;
-      font-size: 0.9rem;
-    }
-    input[type="text"], input[type="number"], select, input[type="date"] {
-      width: 100%;
-      padding: 0.75rem;
-      border: 1px solid #d1d5db;
-      border-radius: 6px;
-      box-sizing: border-box; 
-      font-size: 1rem;
-      background-color: #f9fafb;
+    .form-grid { display: grid; grid-template-columns: 1fr; gap: 1.5rem; }
+    @media (min-width: 600px) { .form-grid { grid-template-columns: 1fr 1fr; } }
+    .full-width { grid-column: 1 / -1; }
+
+    .form-group label { font-weight: 600; display: block; margin-bottom: 0.3rem; font-size: 0.9rem; }
+    input, select {
+      width: 100%; padding: 0.75rem; border: 1px solid #d1d5db; border-radius: 6px;
+      font-size: 1rem; background-color: #f9fafb; box-sizing: border-box;
     }
     input:focus, select:focus {
-        border-color: var(--indigo);
-        box-shadow: 0 0 0 2px rgba(79, 70, 229, 0.2);
-        outline: none;
+      border-color: var(--indigo);
+      box-shadow: 0 0 0 2px rgba(79,70,229,0.2);
+      outline: none;
     }
 
-    /* --- Statut & Montant --- */
     #montant-du-container {
-        padding: 1rem;
-        background-color: #eef2ff; /* Bleu très clair */
-        border: 1px dashed var(--indigo);
-        border-radius: 8px;
-        margin-bottom: 2rem;
-        text-align: center;
+      padding: 1rem; background-color: #eef2ff; border: 1px dashed var(--indigo);
+      border-radius: 8px; margin-bottom: 2rem; text-align: center;
     }
-    #montant-du-container p {
-        margin: 0;
-        font-weight: 600;
-        color: var(--gris-fonce);
-    }
-    #montant-du-value {
-        font-size: 1.8rem;
-        color: var(--indigo);
-        font-weight: 800;
-        margin-top: 0.5rem;
-    }
+    #montant-du-value { font-size: 1.8rem; color: var(--indigo); font-weight: 800; margin-top: 0.5rem; }
 
-    /* --- Bouton d'Action Principale --- */
     .btn-enregistrer {
-      display: block;
-      width: 100%;
-      padding: 1rem;
-      margin-top: 2rem;
-      background-color: var(--vert);
-      color: white;
-      border: none;
-      border-radius: 8px;
-      font-weight: 700;
-      font-size: 1.1rem;
-      cursor: pointer;
-      transition: background-color 0.2s;
+      display: block; width: 100%; padding: 1rem; margin-top: 2rem;
+      background-color: var(--vert); color: white; border: none; border-radius: 8px;
+      font-weight: 700; font-size: 1.1rem; cursor: pointer; transition: background-color 0.2s;
     }
-    .btn-enregistrer:hover {
-      background-color: #059669;
-    }
+    .btn-enregistrer:hover { background-color: #059669; }
+    .btn-retour { display: block; text-align: center; margin-top: 1.5rem; color: var(--gris-fonce); text-decoration: none; font-size: 0.9rem; }
+    .btn-retour:hover { color: var(--bleu-fonce); }
 
-    /* Bouton de retour */
-    .btn-retour {
-        display: block;
-        text-align: center;
-        margin-top: 1.5rem;
-        color: var(--gris-fonce);
-        text-decoration: none;
-        font-size: 0.9rem;
-        padding: 0.5rem;
+    /* Zone de notification */
+    #notification-area {
+      position: fixed; top: 1rem; right: 1rem; z-index: 9999;
     }
-    .btn-retour:hover {
-        color: var(--bleu-fonce);
+    .notification {
+      opacity: 0; transform: translateY(-10px); transition: all 0.3s;
+      background: white; border-left: 5px solid var(--vert); padding: 1rem 1.2rem;
+      border-radius: 6px; margin-bottom: 10px; box-shadow: 0 3px 8px rgba(0,0,0,0.1);
     }
+    .notification.error { border-left-color: #ef4444; }
+    .notification.show { opacity: 1; transform: translateY(0); }
   </style>
 </head>
 <body>
-  <h1>Enregistrer une Transaction</h1>
-  <h2>Formulaire pour documenter un paiement de frais de scolarité.</h2>
+  <h1>Enregistrer un Paiement</h1>
+  <h2>Gestion des transactions de frais de scolarité</h2>
 
   <div class="container">
-    <form>
-        <div class="form-grid">
-            <div class="form-group full-width">
-                <label for="recherche-eleve">Rechercher l'élève (Nom ou Matricule)</label>
-                <input type="text" id="recherche-eleve" placeholder="Ex: GABBY UMBA ou 2025/001" oninput="simulerRecherche(this.value)" required>
-            </div>
-            
-            <div class="form-group">
-                <label for="eleve-selectionne">Élève trouvé :</label>
-                <select id="eleve-selectionne" required onchange="mettreAJourStatut(this.value)">
-                    <option value="">-- Veuillez rechercher un élève --</option>
-                    <option value="ID001" selected>Gabby Umba (6ème Commerciale)</option>
-                    <option value="ID002">Ndaya Kabulo (5ème Scientifique)</option>
-                </select>
-            </div>
-             <div class="form-group">
-                <label for="classe">Classe :</label>
-                <input type="text" id="classe" value="6ème Commerciale" disabled>
-            </div>
-        </div>
-        
-        <hr class="full-width" style="border: 0; border-top: 1px solid #e5e7eb; margin: 2rem 0;">
-
-        <div class="form-grid">
-            
-            <div id="montant-du-container" class="full-width">
-                <p>Montant des frais de scolarité restants dus (Total) :</p>
-                <div id="montant-du-value">$ 450.00</div>
-            </div>
-            
-            <div class="form-group">
-                <label for="montant-paye">Montant Payé aujourd'hui ($) *</label>
-                <input type="number" id="montant-paye" min="0" value="150" required>
-            </div>
-            
-            <div class="form-group">
-                <label for="date-paiement">Date de la transaction *</label>
-                <input type="date" id="date-paiement" value="2025-10-06" required>
-            </div>
-
-            <div class="form-group">
-                <label for="methode">Méthode de paiement *</label>
-                <select id="methode" required>
-                    <option value="cash">Espèces</option>
-                    <option value="bancaire">Virement Bancaire</option>
-                    <option value="mobile">Paiement Mobile (M-Pesa, Airtel Money)</option>
-                </select>
-            </div>
-             <div class="form-group">
-                <label for="reference">Référence (Chèque/Transaction)</label>
-                <input type="text" id="reference" placeholder="Optionnel">
-            </div>
+    <form id="paiementForm">
+      <div class="form-grid">
+        <div class="form-group full-width">
+          <label for="recherche-eleve">Rechercher un élève (Nom ou Matricule)</label>
+          <input type="text" id="recherche-eleve" placeholder="Ex: GABBY UMBA ou 2025/001" required>
         </div>
 
-        <button type="submit" class="btn-enregistrer" onclick="event.preventDefault(); simulerEnregistrement()">
-            ✅ Enregistrer la transaction et imprimer le reçu
-        </button>
+        <div class="form-group">
+          <label for="eleve-selectionne">Élève trouvé :</label>
+          <select id="eleve-selectionne" required>
+            <option value="">-- Sélectionnez un élève --</option>
+          </select>
+        </div>
+        <div class="form-group">
+          <label for="classe">Classe :</label>
+          <input type="text" id="classe" disabled>
+        </div>
+      </div>
+
+      <div id="montant-du-container" class="full-width">
+        <p>Montant des frais de scolarité restants dus :</p>
+        <div id="montant-du-value">$ 0.00</div>
+      </div>
+
+      <div class="form-grid">
+        <div class="form-group">
+          <label for="montant-paye">Montant payé ($) *</label>
+          <input type="number" id="montant-paye" min="0" required>
+        </div>
+
+        <div class="form-group">
+          <label for="date-paiement">Date de la transaction *</label>
+          <input type="date" id="date-paiement" required>
+        </div>
+
+        <div class="form-group">
+          <label for="methode">Méthode de paiement *</label>
+          <select id="methode" required>
+            <option value="cash">Espèces</option>
+            <option value="bancaire">Virement Bancaire</option>
+            <option value="mobile">Paiement Mobile</option>
+          </select>
+        </div>
+
+        <div class="form-group">
+          <label for="reference">Référence (optionnel)</label>
+          <input type="text" id="reference" placeholder="ID Transaction ou N° Chèque">
+        </div>
+      </div>
+
+      <button type="submit" class="btn-enregistrer">✅ Enregistrer le Paiement</button>
     </form>
-    
+
     <a href="paiements.html" class="btn-retour">← Retour au menu Gestion Financière</a>
   </div>
 
-  <script>
-    // Fonctions JS pour simuler le comportement du backend
-    
-    // Simule la recherche et la mise à jour des frais dus
-    function mettreAJourStatut(eleveId) {
-        const montantDu = document.getElementById('montant-du-value');
-        const classeInput = document.getElementById('classe');
-        const eleveSelect = document.getElementById('eleve-selectionne');
-        const selectedOption = eleveSelect.options[eleveSelect.selectedIndex].text;
-        
-        let montant = 0;
-        let classe = '';
+  <div id="notification-area"></div>
 
-        if (eleveId === 'ID001') {
-            montant = 450.00;
-            classe = '6ème Commerciale';
-        } else if (eleveId === 'ID002') {
-            montant = 800.00;
-            classe = '5ème Scientifique';
-        } else {
-            montant = 0.00;
-            classe = 'N/A';
-        }
-        
-        montantDu.textContent = `$ ${montant.toFixed(2)}`;
-        classeInput.value = classe;
-        
-        // Mettre à jour le bouton d'enregistrement avec le nom (UX Pro)
-        document.querySelector('.btn-enregistrer').innerHTML = `✅ Enregistrer la transaction pour ${selectedOption.split('(')[0].trim()}`;
-    }
+  <script type="module">
+    import { protectPage, showNotification } from './authGuard.js';
+    import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-app.js";
+    import { getFirestore, collection, query, where, getDocs, addDoc, doc, updateDoc, getDoc } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore.js";
+    import { getAuth } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-auth.js";
 
-    // Simule la recherche en tapant
-    function simulerRecherche(searchText) {
-        // En vrai, ceci déclencherait un appel AJAX/Firestore pour remplir le <select>
-        // Ici, on met juste à jour l'affichage si l'utilisateur vide le champ.
-        if (searchText.length < 3) {
-             document.getElementById('montant-du-value').textContent = `$ 0.00`;
-             document.getElementById('classe').value = '';
-        } else {
-             // Simuler la sélection automatique après recherche
-             document.getElementById('eleve-selectionne').value = 'ID001';
-             mettreAJourStatut('ID001');
-        }
-    }
-    
-    // Simule l'action du bouton de soumission
-    function simulerEnregistrement() {
-        const montant = parseFloat(document.getElementById('montant-paye').value);
-        const eleveNom = document.getElementById('eleve-selectionne').options[document.getElementById('eleve-selectionne').selectedIndex].text.split('(')[0].trim();
-        
-        if (isNaN(montant) || montant <= 0) {
-            alert("Veuillez entrer un montant valide.");
-            return;
-        }
+    // 🔒 Protection : seulement pour ECONOME
+    protectPage(['econome']);
 
-        alert(`Transaction enregistrée ! 
-               Élève: ${eleveNom}
-               Montant payé: $${montant.toFixed(2)}
-               Nouveau solde restant: $300.00 (Simulé)
-               
-               Un reçu a été généré.`);
-        
-        // Vider le formulaire ou rediriger en production
-        // window.location.href = 'liste-paiements.html'; 
-    }
-    
-    // Chargement initial pour afficher les données par défaut
-    document.addEventListener('DOMContentLoaded', () => {
-        mettreAJourStatut('ID001');
+    // 🔥 Config Firebase
+    const firebaseConfig = {
+      apiKey: "AIzaSyAgv4TDYnR60TXnns-LISqbZTgcdLT31cc",
+      authDomain: "gestionlwanga.firebaseapp.com",
+      projectId: "gestionlwanga",
+      storageBucket: "gestionlwanga.firebasestorage.app",
+      messagingSenderId: "622604298611",
+      appId: "1:622604298611:web:4ab4314ed3eec6826c3d06"
+    };
+    const app = initializeApp(firebaseConfig);
+    const db = getFirestore(app);
+    const auth = getAuth(app);
+
+    // 🔎 Recherche élève (nom ou matricule)
+    const rechercheInput = document.getElementById("recherche-eleve");
+    const selectEleve = document.getElementById("eleve-selectionne");
+    const montantDu = document.getElementById("montant-du-value");
+    const classeInput = document.getElementById("classe");
+
+    rechercheInput.addEventListener("input", async (e) => {
+      const valeur = e.target.value.trim();
+      selectEleve.innerHTML = '<option value="">Recherche...</option>';
+
+      if (valeur.length < 2) return;
+
+      const q = query(collection(db, "eleves"),
+        where("nomComplet", ">=", valeur.toUpperCase()),
+        where("nomComplet", "<=", valeur.toUpperCase() + "\uf8ff")
+      );
+
+      const snapshot = await getDocs(q);
+      selectEleve.innerHTML = '<option value="">-- Sélectionnez un élève --</option>';
+      snapshot.forEach(docSnap => {
+        const d = docSnap.data();
+        const option = document.createElement("option");
+        option.value = docSnap.id;
+        option.textContent = `${d.nom} ${d.postNom} ${d.prenom} (${d.classe})`;
+        selectEleve.appendChild(option);
+      });
+
+      if (snapshot.empty) showNotification("Aucun élève trouvé", "error");
     });
 
+    // ⚙️ Quand un élève est sélectionné
+    selectEleve.addEventListener("change", async () => {
+      const eleveId = selectEleve.value;
+      if (!eleveId) return;
+
+      const docSnap = await getDoc(doc(db, "eleves", eleveId));
+      if (!docSnap.exists()) return showNotification("Élève introuvable", "error");
+
+      const data = docSnap.data();
+      classeInput.value = data.classe || "N/A";
+      montantDu.textContent = `$ ${(data.solde || 0).toFixed(2)}`;
+    });
+
+    // 💵 Soumission du paiement
+    document.getElementById("paiementForm").addEventListener("submit", async (e) => {
+      e.preventDefault();
+      const eleveId = selectEleve.value;
+      const montant = parseFloat(document.getElementById("montant-paye").value);
+      const methode = document.getElementById("methode").value;
+      const reference = document.getElementById("reference").value || "-";
+      const datePaiement = document.getElementById("date-paiement").value;
+
+      if (!eleveId || montant <= 0) return showNotification("Veuillez remplir tous les champs obligatoires", "error");
+
+      try {
+        // Récupérer élève
+        const eleveRef = doc(db, "eleves", eleveId);
+        const eleveSnap = await getDoc(eleveRef);
+        const eleveData = eleveSnap.data();
+        const nouveauSolde = (eleveData.solde || 0) - montant;
+
+        // Ajouter un enregistrement
+        await addDoc(collection(db, "paiements"), {
+          eleveId,
+          montant,
+          methode,
+          reference,
+          datePaiement,
+          classe: eleveData.classe,
+          eleveNom: `${eleveData.nom} ${eleveData.postNom} ${eleveData.prenom}`,
+          createdAt: new Date(),
+        });
+
+        // Mettre à jour le solde de l’élève
+        await updateDoc(eleveRef, { solde: nouveauSolde });
+
+        montantDu.textContent = `$ ${nouveauSolde.toFixed(2)}`;
+        showNotification(`Paiement enregistré avec succès ! Nouveau solde : $${nouveauSolde.toFixed(2)}`);
+        e.target.reset();
+      } catch (err) {
+        console.error(err);
+        showNotification("Erreur lors de l’enregistrement du paiement", "error");
+      }
+    });
   </script>
 </body>
 </html>
