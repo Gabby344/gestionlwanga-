@@ -1,0 +1,79 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>Suivi des Paiements · Économe · Institut Saint Charles Lwanga</title>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700&display=swap" rel="stylesheet">
+<style>
+:root{--bleu-fonce:#1e40af;--gris-fonce:#1f2937;--vert:#10b981;--fond:#f4f6f8;--ombre-legere:rgba(0,0,0,0.08);}
+body{font-family:'Inter',sans-serif;background-color:var(--fond);margin:0;padding:2rem;color:var(--gris-fonce);}
+h1,h2{text-align:center;} h1{color:var(--bleu-fonce);} h2{font-weight:400;color:#6b7280;}
+.container{max-width:900px;margin:auto;}
+.table{width:100%;border-collapse:collapse;margin-top:1rem;background:white;box-shadow:0 4px 10px var(--ombre-legere);border-radius:12px;}
+.table th, .table td{padding:0.8rem;text-align:left;border-bottom:1px solid #e5e7eb;}
+.table th{background:#eef2ff;font-weight:600;}
+</style>
+</head>
+<body>
+<div class="container">
+<h1>Suivi des Paiements</h1>
+<h2>Économe · Institut Saint Charles Lwanga</h2>
+
+<table class="table">
+<thead>
+<tr>
+  <th>Nom Complet</th>
+  <th>Classe</th>
+  <th>Montant Restant ($)</th>
+  <th>Montant Payé ($)</th>
+</tr>
+</thead>
+<tbody id="tbody-paiements"></tbody>
+</table>
+</div>
+
+<script type="module">
+import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-app.js";
+import { getFirestore, collection, getDocs } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore.js";
+import { getAuth, onAuthStateChanged, signOut } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-auth.js";
+
+const firebaseConfig = {apiKey:"AIzaSyAgv4TDYnR60TXnns-LISqbZTgcdLT31cc",authDomain:"gestionlwanga.firebaseapp.com",projectId:"gestionlwanga",storageBucket:"gestionlwanga.firebasestorage.app",messagingSenderId:"622604298611",appId:"1:622604298611:web:4ab4314ed3eec6826c3d06"};
+const app = initializeApp(firebaseConfig);
+const db = getFirestore(app);
+const auth = getAuth(app);
+
+const tbody = document.getElementById("tbody-paiements");
+let elevesData = [];
+
+onAuthStateChanged(auth, user=>{
+  if(!user){ window.location.href="login.html"; return; }
+  getUserRole(user.uid).then(role=>{
+    if(role!=="econome" && role!=="admin" && role!=="prefet"){signOut(auth); window.location.href="login.html";}
+  });
+  chargerPaiements();
+});
+
+async function getUserRole(uid){
+  const snap = await import("https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore.js").then(m=>m.getDoc(m.doc(db,"users",uid)));
+  return snap.data().role?.toLowerCase()??"";
+}
+
+async function chargerPaiements(){
+  tbody.innerHTML="";
+  const snap = await getDocs(collection(db,"eleves"));
+  snap.forEach(doc=>{
+    const e = doc.data();
+    const tr = document.createElement("tr");
+    tr.innerHTML = `
+      <td>${e.nom} ${e.postNom} ${e.prenom}</td>
+      <td>${e.classe}</td>
+      <td>${e.fraisRestants??0}</td>
+      <td>${e.montantPaye??0}</td>
+    `;
+    tbody.appendChild(tr);
+  });
+}
+</script>
+</body>
+</html>
