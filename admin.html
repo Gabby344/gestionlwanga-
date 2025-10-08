@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Connexion Administrateur - Institut Saint Charles Lwanga</title>
+  <title>Connexion Administrateur / Préfet - ISC Lwanga</title>
   <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700;800&display=swap" rel="stylesheet">
   <style>
     :root {
@@ -14,6 +14,7 @@
       --gris-bordure: #d1d5db;
       --ombre-form: rgba(0,0,0,0.1);
     }
+
     body {
       font-family: 'Inter', sans-serif;
       background-color: var(--fond-principal);
@@ -25,10 +26,12 @@
       align-items: center;
       min-height: 100vh;
     }
+
     .login-container {
       max-width: 400px;
       width: 90%;
     }
+
     .login-card {
       background: white;
       padding: 2.5rem;
@@ -36,6 +39,7 @@
       box-shadow: 0 10px 25px var(--ombre-form);
       text-align: center;
     }
+
     .logo {
       width: 80px;
       height: 80px;
@@ -43,15 +47,18 @@
       display: block;
       object-fit: contain;
     }
+
     h1 {
       font-size: 1.5rem;
       color: var(--gris-fonce);
       margin-top: 0;
       margin-bottom: 1.5rem;
     }
+
     .form-group {
       margin-bottom: 1rem;
     }
+
     input[type="email"], input[type="password"] {
       width: 100%;
       padding: 1rem;
@@ -62,12 +69,14 @@
       background-color: #f9fafb;
       transition: border-color 0.2s, box-shadow 0.2s;
     }
+
     input:focus {
       border-color: var(--bleu-fonce);
       box-shadow: 0 0 0 3px rgba(30, 64, 175, 0.1);
       outline: none;
       background-color: white;
     }
+
     .btn-connecter {
       width: 100%;
       background-color: var(--vert-action);
@@ -81,9 +90,11 @@
       margin-top: 1.5rem;
       transition: background-color 0.2s;
     }
+
     .btn-connecter:hover {
       background-color: #065f46;
     }
+
     .forgot-password {
       display: block;
       margin-top: 1rem;
@@ -91,9 +102,11 @@
       color: #6b7280;
       text-decoration: none;
     }
+
     .forgot-password:hover {
       color: var(--bleu-fonce);
     }
+
     #message {
       margin-top: 1.5rem;
       font-size: 0.9rem;
@@ -104,7 +117,7 @@
 <body>
   <div class="login-container">
     <div class="login-card">
-      <img src="IMG_7373.jpeg" alt="Logo Institut Saint Charles Lwanga" class="logo" />
+      <img src="IMG_7373.jpeg" alt="Logo ISC Lwanga" class="logo" />
       <h1>Connexion Administrateur / Préfet</h1>
 
       <form id="loginForm">
@@ -122,14 +135,11 @@
     </div>
   </div>
 
-  <!-- Firebase SDK -->
   <script type="module">
-    // Import Firebase
     import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-app.js";
     import { getAuth, signInWithEmailAndPassword } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-auth.js";
     import { getFirestore, doc, getDoc } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore.js";
 
-    // Configuration Firebase
     const firebaseConfig = {
       apiKey: "AIzaSyAgv4TDYnR60TXnns-LISqbZTgcdLT31cc",
       authDomain: "gestionlwanga.firebaseapp.com",
@@ -165,16 +175,16 @@
       const password = document.getElementById('password').value.trim();
 
       try {
-        // Connexion Firebase Auth
+        // Connexion Firebase
         const userCredential = await signInWithEmailAndPassword(auth, email, password);
         const user = userCredential.user;
 
-        // Vérifier rôle dans Firestore
+        // Vérifier rôle Firestore
         const userDoc = await getDoc(doc(db, "users", user.uid));
         if (!userDoc.exists()) throw new Error("Profil utilisateur introuvable.");
-        const role = userDoc.data().role;
+        const role = userDoc.data().role.toLowerCase();
 
-        if (!dashboards[role]) {
+        if (!["admin","prefet"].includes(role)) {
           messageElement.style.color = "red";
           messageElement.textContent = "⛔ Accès refusé. Rôle non autorisé.";
           await auth.signOut();
