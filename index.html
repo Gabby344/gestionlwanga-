@@ -2,140 +2,102 @@
 <html lang="fr">
 <head>
   <meta charset="UTF-8" />
-  <title>Accueil · Institut Saint Charles Lwanga</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Institut Saint Charles Lwanga</title>
   <link rel="icon" type="image/jpeg" href="logo.jpeg">
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700&display=swap" rel="stylesheet">
   <style>
-    @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700&display=swap');
+    :root {
+      --bleu-principal: #1e40af;
+      --bleu-clair: #3b82f6;
+      --fond-gradient: linear-gradient(135deg, var(--bleu-principal), var(--bleu-clair));
+      --ombre: rgba(0,0,0,0.15);
+      --blanc: #ffffff;
+    }
+
+    * { margin:0; padding:0; box-sizing:border-box; }
 
     body {
       font-family: 'Inter', sans-serif;
-      background: linear-gradient(135deg, #007bff, #00a8ff);
-      margin: 0;
+      background: var(--fond-gradient);
       display: flex;
       justify-content: center;
       align-items: center;
-      height: 100vh;
+      min-height: 100vh;
     }
 
     .container {
-      background: white;
-      padding: 40px 30px;
-      border-radius: 12px;
-      box-shadow: 0 8px 25px rgba(0,0,0,0.15);
-      width: 100%;
+      background: var(--blanc);
+      padding: 50px 35px;
+      border-radius: 16px;
+      box-shadow: 0 10px 30px var(--ombre);
       max-width: 400px;
+      width: 100%;
       text-align: center;
-      animation: fadeIn 0.7s ease;
+      animation: fadeIn 0.8s ease-in-out;
     }
 
     .container img {
-      width: 80px;
+      width: 90px;
       margin-bottom: 20px;
     }
 
-    h2 {
+    h1 {
+      font-size: 1.6rem;
+      color: var(--bleu-principal);
       margin-bottom: 25px;
-      color: #007bff;
       font-weight: 700;
     }
 
-    input, button {
-      width: 100%;
-      padding: 12px;
-      margin-bottom: 15px;
-      border-radius: 6px;
-      border: 1px solid #ccc;
-      font-size: 15px;
+    p {
+      font-size: 0.95rem;
+      color: #374151;
+      margin-bottom: 30px;
     }
 
-    button {
-      background: #007bff;
+    .btn {
+      display: inline-block;
+      padding: 12px 20px;
+      background: var(--bleu-principal);
       color: white;
+      font-weight: 600;
+      font-size: 1rem;
       border: none;
-      font-weight: bold;
+      border-radius: 8px;
       cursor: pointer;
-      transition: 0.3s;
-    }
-
-    button:hover {
-      background: #0056b3;
-    }
-
-    #errorMessage {
-      color: red;
-      font-size: 14px;
-      margin-bottom: 10px;
-      min-height: 18px;
-    }
-
-    .link {
-      display: block;
-      margin-top: 10px;
-      color: #007bff;
       text-decoration: none;
-      font-size: 14px;
+      transition: all 0.3s ease;
     }
 
-    .link:hover {
-      text-decoration: underline;
+    .btn:hover {
+      background: #0f2f79;
+      transform: scale(1.03);
+    }
+
+    footer {
+      margin-top: 25px;
+      font-size: 0.8rem;
+      color: #6b7280;
     }
 
     @keyframes fadeIn {
-      from { opacity: 0; transform: translateY(15px); }
-      to { opacity: 1; transform: translateY(0); }
+      from { opacity:0; transform: translateY(15px); }
+      to { opacity:1; transform: translateY(0); }
+    }
+
+    @media(max-width:480px){
+      .container { padding: 35px 20px; }
+      h1 { font-size: 1.4rem; }
     }
   </style>
 </head>
 <body>
   <div class="container">
-    <img src="IMG_7373.jpeg" alt="Logo Institut Saint Charles Lwanga">
-    <h2>Connexion · Institut Saint Charles Lwanga</h2>
-
-    <form id="loginForm">
-      <input type="email" id="email" placeholder="Adresse e-mail" required />
-      <input type="password" id="password" placeholder="Mot de passe" required />
-      <button type="submit">Se connecter</button>
-    </form>
-
-    <p id="errorMessage"></p>
-    <a href="inscription.html" class="link">Créer un compte</a>
+    <img src="IMG_7373.jpeg" alt="Logo ISC Lwanga">
+    <h1>Bienvenue à l'Institut Saint Charles Lwanga</h1>
+    <p>Accédez à votre espace sécurisé pour gérer vos activités pédagogiques et administratives.</p>
+    <a href="connexion.html" class="btn">Se connecter</a>
+    <footer>&copy; 2025 Institut Saint Charles Lwanga · Tous droits réservés</footer>
   </div>
-
-  <script type="module">
-    import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-app.js";
-    import { getAuth, signInWithEmailAndPassword } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-auth.js";
-
-    const firebaseConfig = {
-      apiKey: "AIzaSyAgv4TDYnR60TXnns-LISqbZTgcdLT31cc",
-      authDomain: "gestionlwanga.firebaseapp.com",
-      projectId: "gestionlwanga",
-      storageBucket: "gestionlwanga.firebasestorage.app",
-      messagingSenderId: "622604298611",
-      appId: "1:622604298611:web:4ab4314ed3eec6826c3d06"
-    };
-
-    const app = initializeApp(firebaseConfig);
-    const auth = getAuth(app);
-
-    const loginForm = document.getElementById("loginForm");
-    const errorMessage = document.getElementById("errorMessage");
-
-    loginForm.addEventListener("submit", async (e) => {
-      e.preventDefault();
-      errorMessage.textContent = "";
-
-      const email = document.getElementById("email").value.trim();
-      const password = document.getElementById("password").value;
-
-      try {
-        const userCredential = await signInWithEmailAndPassword(auth, email, password);
-        const user = userCredential.user;
-        alert("✅ Connexion réussie ! Bienvenue " + user.email);
-        window.location.href = "dashboard.html";
-      } catch (error) {
-        errorMessage.textContent = "❌ Erreur : " + error.message;
-      }
-    });
-  </script>
 </body>
 </html>
