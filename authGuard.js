@@ -1,4 +1,4 @@
-// ✅ authGuard.js - Version ultra-pro, stable et adaptée à ta structure
+// ✅ authGuard.js - Ultra-pro, stable et compatible avec tes dashboards
 import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-app.js";
 import { getAuth, onAuthStateChanged, signOut } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-auth.js";
 import { getFirestore, doc, getDoc } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore.js";
@@ -17,20 +17,20 @@ const app = initializeApp(firebaseConfig);
 const auth = getAuth(app);
 const db = getFirestore(app);
 
-// 🎯 Pages d’accueil par rôle (selon tes fichiers réels)
+// 🎯 Pages d’accueil et dashboards par rôle
 export const roleRedirects = {
-  admin: "accueil-admin.html",
-  prefet: "accueil-admin.html", // Même accès complet que l’admin
-  directeur_etudes: "dashboard.html",
-  directeur_discipline: "dashboard.html",
-  secretaire: "dashboard.html",
-  econome: "finance.html",
-  enseignant: "accueil-enseignant.html",
+  admin: "dashboard-admin.html",
+  prefet: "dashboard-prefet.html",
+  directeur_etudes: "dashboard-directeur-etudes.html",
+  directeur_discipline: "dashboard-directeur-discipline.html",
+  secretaire: "dashboard-secretaire.html",
+  econome: "dashboard-econome.html",
+  enseignant: "dashboard-enseignant.html",
   eleve: "accueil-utilisateur.html",
   parent: "accueil-utilisateur.html",
 };
 
-// 🔔 Notifications élégantes (intégrées dans le DOM)
+// 🔔 Notifications stylées
 export function showNotification(msg, type = "success") {
   let area = document.getElementById("notification-area");
   if (!area) {
@@ -58,7 +58,7 @@ export function showNotification(msg, type = "success") {
   notif.style.opacity = "0";
   notif.style.transform = "translateY(-10px)";
   notif.style.backgroundColor = type === "error" ? "#e74c3c" : "#2ecc71";
-  
+
   area.appendChild(notif);
   setTimeout(() => {
     notif.style.opacity = "1";
@@ -87,23 +87,22 @@ export async function protectPage(allowedRoles = []) {
       const role = (data.role || "inconnu").toLowerCase();
       const nom = [data.nom, data.postNom, data.prenom].filter(Boolean).join(" ") || "Utilisateur";
 
-      // 🔹 Affichage infos utilisateur (si éléments HTML existent)
+      // 🔹 Affichage infos utilisateur (si éléments HTML présents)
       const userInfo = document.getElementById("userInfo");
       const dashboardTitle = document.getElementById("dashboardTitle");
       if (userInfo) userInfo.textContent = `${nom} (${role})`;
       if (dashboardTitle) dashboardTitle.textContent = `Tableau de bord · ${role.toUpperCase()} · ISC Lwanga`;
 
-      // 🔹 Redirection automatique vers sa page d’accueil
+      // 🔹 Redirection automatique vers sa page d’accueil si non autorisé
       const currentPage = window.location.pathname.split("/").pop();
       const redirectPage = roleRedirects[role];
 
-      // Si l’utilisateur est connecté mais pas sur sa page d’accueil
       if (redirectPage && currentPage !== redirectPage && allowedRoles.length === 0) {
         console.log(`Redirection automatique de ${role} vers ${redirectPage}`);
         return (window.location.href = redirectPage);
       }
 
-      // 🔹 Vérification d’accès si la page est restreinte
+      // 🔹 Vérification d’accès si page restreinte
       if (allowedRoles.length && !allowedRoles.includes(role)) {
         showNotification("⛔ Accès refusé : rôle non autorisé.", "error");
         await signOut(auth);
