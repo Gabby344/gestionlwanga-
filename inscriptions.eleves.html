@@ -1,0 +1,172 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Inscriptions des Élèves · Institut Saint Charles Lwanga</title>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700&display=swap" rel="stylesheet">
+<style>
+:root {
+  --bleu-fonce: #1e40af;
+  --gris-fonce: #1f2937;
+  --vert: #10b981;
+  --fond: #f4f6f8;
+  --ombre: rgba(0,0,0,0.08);
+}
+body {font-family:'Inter', sans-serif; margin:0; padding:2rem; background:var(--fond); color:var(--gris-fonce);}
+h1 {text-align:center; color:var(--bleu-fonce); margin-bottom:0.5rem;}
+h2 {text-align:center; font-weight:400; color:#6b7280; margin-bottom:2rem;}
+.container {max-width:1000px; margin:auto; background:white; padding:2rem; border-radius:12px; box-shadow:0 4px 15px var(--ombre);}
+form .form-group {margin-bottom:1rem;}
+label {display:block; font-weight:600; margin-bottom:0.3rem;}
+input, select {width:100%; padding:0.75rem; border:1px solid #d1d5db; border-radius:6px; font-size:1rem;}
+input:focus, select:focus {outline:none; border-color:var(--bleu-fonce); box-shadow:0 0 0 2px rgba(30,64,175,0.2);}
+button {padding:1rem 1.5rem; background:var(--vert); color:white; border:none; border-radius:8px; font-weight:700; cursor:pointer; width:100%;}
+button:hover {background:#059669;}
+.table-container {margin-top:2rem; overflow-x:auto;}
+table {width:100%; border-collapse:collapse; margin-top:1rem;}
+th, td {padding:0.75rem; text-align:left; border-bottom:1px solid #e5e7eb;}
+th {background:#f3f4f6; font-weight:600;}
+.filter {margin-bottom:1rem; display:flex; gap:1rem; flex-wrap:wrap; align-items:center;}
+.filter label {margin:0; font-weight:500;}
+.filter select {width:auto;}
+@media(max-width:600px){.filter{flex-direction:column;align-items:flex-start;}}
+</style>
+</head>
+<body>
+
+<h1>Inscriptions des Élèves</h1>
+<h2>Institut Saint Charles Lwanga - Gestion centralisée</h2>
+
+<div class="container">
+  <form id="formInscription">
+    <div class="form-group">
+      <label for="nom">Nom :</label>
+      <input type="text" id="nom" required placeholder="Ex: GABBY">
+    </div>
+    <div class="form-group">
+      <label for="postNom">Postnom :</label>
+      <input type="text" id="postNom" required placeholder="Ex: UMBA">
+    </div>
+    <div class="form-group">
+      <label for="prenom">Prénom :</label>
+      <input type="text" id="prenom" required placeholder="Ex: Gabriel">
+    </div>
+    <div class="form-group">
+      <label for="classe">Classe :</label>
+      <select id="classe" required>
+        <option value="">-- Sélectionnez une classe --</option>
+        <option value="6ème Commerciale">6ème Commerciale</option>
+        <option value="5ème Scientifique">5ème Scientifique</option>
+        <option value="4ème Littéraire">4ème Littéraire</option>
+      </select>
+    </div>
+    <div class="form-group">
+      <label for="matricule">Matricule :</label>
+      <input type="text" id="matricule" required placeholder="Ex: 2025/001">
+    </div>
+    <button type="submit">✅ Inscrire l'Élève</button>
+  </form>
+
+  <div class="filter">
+    <label for="filterClasse">Filtrer par classe :</label>
+    <select id="filterClasse">
+      <option value="">Toutes les classes</option>
+      <option value="6ème Commerciale">6ème Commerciale</option>
+      <option value="5ème Scientifique">5ème Scientifique</option>
+      <option value="4ème Littéraire">4ème Littéraire</option>
+    </select>
+  </div>
+
+  <div class="table-container">
+    <table id="elevesTable">
+      <thead>
+        <tr>
+          <th>Nom</th>
+          <th>Postnom</th>
+          <th>Prénom</th>
+          <th>Classe</th>
+          <th>Matricule</th>
+          <th>Date Inscription</th>
+        </tr>
+      </thead>
+      <tbody>
+        <!-- Les élèves seront insérés ici -->
+      </tbody>
+    </table>
+  </div>
+</div>
+
+<script type="module">
+import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-app.js";
+import { getFirestore, collection, addDoc, onSnapshot, query, orderBy } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore.js";
+
+const firebaseConfig = {
+  apiKey: "AIzaSyAgv4TDYnR60TXnns-LISqbZTgcdLT31cc",
+  authDomain: "gestionlwanga.firebaseapp.com",
+  projectId: "gestionlwanga",
+  storageBucket: "gestionlwanga.firebasestorage.app",
+  messagingSenderId: "622604298611",
+  appId: "1:622604298611:web:4ab4314ed3eec6826c3d06"
+};
+
+const app = initializeApp(firebaseConfig);
+const db = getFirestore(app);
+
+const form = document.getElementById('formInscription');
+const elevesTable = document.getElementById('elevesTable').querySelector('tbody');
+const filterClasse = document.getElementById('filterClasse');
+
+form.addEventListener('submit', async e => {
+  e.preventDefault();
+  const nom = document.getElementById('nom').value.trim();
+  const postNom = document.getElementById('postNom').value.trim();
+  const prenom = document.getElementById('prenom').value.trim();
+  const classe = document.getElementById('classe').value;
+  const matricule = document.getElementById('matricule').value.trim();
+  if(!nom||!postNom||!prenom||!classe||!matricule) return alert("Tous les champs sont obligatoires !");
+  try{
+    await addDoc(collection(db,"eleves"),{
+      nom, postNom, prenom, classe, matricule, dateInscription:new Date()
+    });
+    alert(`✅ Élève ${nom} ${postNom} ${prenom} inscrit avec succès !`);
+    form.reset();
+  }catch(err){
+    console.error(err);
+    alert("❌ Erreur lors de l'inscription, réessayez.");
+  }
+});
+
+// Liste en temps réel
+const q = query(collection(db,"eleves"), orderBy("dateInscription","desc"));
+onSnapshot(q, snapshot => {
+  const eleves = snapshot.docs.map(doc => ({id: doc.id, ...doc.data()}));
+  renderTable(eleves);
+});
+
+filterClasse.addEventListener('change', ()=> {
+  onSnapshot(query(collection(db,"eleves"), orderBy("dateInscription","desc")), snapshot => {
+    const eleves = snapshot.docs.map(doc => ({id: doc.id, ...doc.data()}));
+    renderTable(eleves, filterClasse.value);
+  });
+});
+
+function renderTable(eleves, filter="") {
+  elevesTable.innerHTML = "";
+  const filtered = filter ? eleves.filter(e=>e.classe===filter) : eleves;
+  filtered.forEach(e => {
+    const tr = document.createElement('tr');
+    tr.innerHTML = `
+      <td>${e.nom}</td>
+      <td>${e.postNom}</td>
+      <td>${e.prenom}</td>
+      <td>${e.classe}</td>
+      <td>${e.matricule}</td>
+      <td>${new Date(e.dateInscription.seconds*1000).toLocaleDateString()}</td>
+    `;
+    elevesTable.appendChild(tr);
+  });
+}
+</script>
+</body>
+</html>
