@@ -1,36 +1,9 @@
-// ✅ authGuard.js - Ultra-pro, stable et compatible avec tes dashboards
-import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-app.js";
-import { getAuth, onAuthStateChanged, signOut } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-auth.js";
-import { getFirestore, doc, getDoc } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore.js";
+// authGuard.js - Version finale, stable et centralisée
+import { auth, db, roleRedirects } from './config.js';
+import { onAuthStateChanged, signOut } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-auth.js";
+import { doc, getDoc } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore.js";
 
-// 🔥 Configuration Firebase
-const firebaseConfig = {
-  apiKey: "AIzaSyAgv4TDYnR60TXnns-LISqbZTgcdLT31cc",
-  authDomain: "gestionlwanga.firebaseapp.com",
-  projectId: "gestionlwanga",
-  storageBucket: "gestionlwanga.firebasestorage.app",
-  messagingSenderId: "622604298611",
-  appId: "1:622604298611:web:4ab4314ed3eec6826c3d06"
-};
-
-const app = initializeApp(firebaseConfig);
-const auth = getAuth(app);
-const db = getFirestore(app);
-
-// 🎯 Pages d’accueil et dashboards par rôle
-export const roleRedirects = {
-  admin: "dashboard-admin.html",
-  prefet: "dashboard-prefet.html",
-  directeur_etudes: "dashboard-directeur-etudes.html",
-  directeur_discipline: "dashboard-directeur-discipline.html",
-  secretaire: "dashboard-secretaire.html",
-  econome: "dashboard-econome.html",
-  enseignant: "dashboard-enseignant.html",
-  eleve: "accueil-utilisateur.html",
-  parent: "accueil-utilisateur.html",
-};
-
-// 🔔 Notifications stylées
+// 🔔 Notifications élégantes
 export function showNotification(msg, type = "success") {
   let area = document.getElementById("notification-area");
   if (!area) {
@@ -87,13 +60,13 @@ export async function protectPage(allowedRoles = []) {
       const role = (data.role || "inconnu").toLowerCase();
       const nom = [data.nom, data.postNom, data.prenom].filter(Boolean).join(" ") || "Utilisateur";
 
-      // 🔹 Affichage infos utilisateur (si éléments HTML présents)
+      // 🔹 Affichage infos utilisateur (si éléments HTML existent)
       const userInfo = document.getElementById("userInfo");
       const dashboardTitle = document.getElementById("dashboardTitle");
       if (userInfo) userInfo.textContent = `${nom} (${role})`;
       if (dashboardTitle) dashboardTitle.textContent = `Tableau de bord · ${role.toUpperCase()} · ISC Lwanga`;
 
-      // 🔹 Redirection automatique vers sa page d’accueil si non autorisé
+      // 🔹 Redirection automatique vers sa page d’accueil si page vide
       const currentPage = window.location.pathname.split("/").pop();
       const redirectPage = roleRedirects[role];
 
@@ -102,7 +75,7 @@ export async function protectPage(allowedRoles = []) {
         return (window.location.href = redirectPage);
       }
 
-      // 🔹 Vérification d’accès si page restreinte
+      // 🔹 Vérification d’accès si la page est restreinte
       if (allowedRoles.length && !allowedRoles.includes(role)) {
         showNotification("⛔ Accès refusé : rôle non autorisé.", "error");
         await signOut(auth);
