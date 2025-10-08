@@ -1,221 +1,163 @@
 <!DOCTYPE html>
 <html lang="fr">
 <head>
-  <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Dashboard · Institut Saint Charles Lwanga</title>
-  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700;800&display=swap" rel="stylesheet">
-  <style>
-    :root {
-      --bleu-fonce: #1e40af;
-      --gris-fonce: #1f2937;
-      --vert: #10b981;
-      --jaune: #f59e0b;
-      --rouge: #ef4444;
-      --fond: #f4f6f8;
-      --ombre-legere: rgba(0,0,0,0.08);
-      --sidebar-width: 220px;
-    }
-    * { box-sizing: border-box; margin: 0; padding: 0; font-family: 'Inter', sans-serif; }
-    body { background-color: var(--fond); color: var(--gris-fonce); display: flex; min-height: 100vh; }
-
-    /* SIDEBAR */
-    .sidebar {
-      width: var(--sidebar-width);
-      background: white;
-      box-shadow: 2px 0 5px var(--ombre-legere);
-      padding: 1rem;
-      display: flex;
-      flex-direction: column;
-      position: fixed;
-      top: 0;
-      left: 0;
-      height: 100%;
-    }
-    .sidebar h2 { color: var(--bleu-fonce); font-size: 1.4rem; margin-bottom: 2rem; text-align: center; }
-    .menu-item {
-      display: flex;
-      align-items: center;
-      padding: 0.8rem 1rem;
-      margin-bottom: 1rem;
-      border-radius: 8px;
-      color: var(--gris-fonce);
-      text-decoration: none;
-      font-weight: 600;
-      transition: all 0.2s;
-    }
-    .menu-item:hover { background-color: var(--bleu-fonce); color: white; transform: scale(1.05); }
-    .menu-item .icon { margin-right: 0.8rem; font-size: 1.5rem; }
-
-    /* HEADER */
-    .header {
-      margin-left: var(--sidebar-width);
-      background: white;
-      padding: 1rem 2rem;
-      display: flex;
-      justify-content: space-between;
-      align-items: center;
-      box-shadow: 0 1px 5px var(--ombre-legere);
-    }
-    .user-info { font-weight: 500; }
-    .btn-logout { background-color: var(--rouge); color: white; padding: 0.5rem 1rem; border: none; border-radius: 6px; cursor: pointer; transition: 0.2s; }
-    .btn-logout:hover { background-color: #b91c1c; }
-
-    /* MAIN CONTENT */
-    .main-content { margin-left: var(--sidebar-width); padding: 2rem; flex: 1; }
-    .section-title { font-size: 1.3rem; font-weight: 700; margin-bottom: 1rem; border-bottom: 1px solid #e5e7eb; padding-bottom: 0.5rem; }
-
-    /* STATS */
-    .stats-grid { display: grid; grid-template-columns: repeat(auto-fit,minmax(220px,1fr)); gap: 1.5rem; margin-bottom: 2rem; }
-    .card-stat { background:white; padding:1.5rem; border-radius:12px; box-shadow:0 4px 10px var(--ombre-legere); border-left:5px solid var(--bleu-fonce); transition: 0.3s; }
-    .card-stat:hover { transform: translateY(-3px); box-shadow: 0 6px 15px rgba(0,0,0,0.15); }
-    .card-stat-title { font-size:0.85rem; font-weight:600; color:#6b7280; text-transform:uppercase; margin-bottom:0.5rem; }
-    .card-stat-value { font-size:2rem; font-weight:800; color:var(--gris-fonce); }
-    .card-stat-footer { font-size:0.8rem; color:#9ca3af; margin-top:0.5rem; }
-
-    /* NOTIFICATIONS */
-    #notification-area { position: fixed; top: 20px; right: 20px; z-index: 1000; }
-    .notification { padding:1rem 1.5rem; border-radius:8px; margin-bottom:10px; box-shadow:0 4px 6px rgba(0,0,0,0.1); color:white; font-weight:500; opacity:0; transform:translateX(100%); transition: opacity 0.3s, transform 0.3s; }
-    .notification.show { opacity:1; transform:translateX(0); }
-    .notification.success { background-color: var(--vert); }
-    .notification.error { background-color: var(--rouge); }
-
-    @media(max-width:900px){
-      .sidebar { position: relative; width: 100%; height: auto; display:flex; flex-direction:row; overflow-x:auto; padding:0.5rem; }
-      .main-content { margin-left: 0; padding: 1rem; }
-      .header { margin-left:0; }
-      .menu-item { margin-right:1rem; margin-bottom:0; }
-    }
-  </style>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Dashboard · ISC Lwanga</title>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700;800&display=swap" rel="stylesheet">
+<style>
+:root {
+  --bleu-fonce:#1e40af; --gris-fonce:#1f2937; --vert:#10b981; --jaune:#f59e0b; --rouge:#ef4444;
+  --fond:#f4f6f8; --ombre-legere:rgba(0,0,0,0.08); --sidebar-width:220px;
+}
+*{box-sizing:border-box;margin:0;padding:0;font-family:'Inter',sans-serif;}
+body{background:var(--fond);color:var(--gris-fonce);display:flex;min-height:100vh;}
+.sidebar{width:var(--sidebar-width);background:white;box-shadow:2px 0 5px var(--ombre-legere);padding:1rem;display:flex;flex-direction:column;position:fixed;top:0;left:0;height:100%;}
+.sidebar h2{color:var(--bleu-fonce);font-size:1.4rem;margin-bottom:2rem;text-align:center;}
+.menu-item{display:flex;align-items:center;padding:0.8rem 1rem;margin-bottom:1rem;border-radius:8px;color:var(--gris-fonce);text-decoration:none;font-weight:600;transition:all 0.2s;}
+.menu-item:hover{background-color:var(--bleu-fonce);color:white;transform:scale(1.05);}
+.menu-item .icon{margin-right:0.8rem;font-size:1.5rem;}
+.header{margin-left:var(--sidebar-width);background:white;padding:1rem 2rem;display:flex;justify-content:space-between;align-items:center;box-shadow:0 1px 5px var(--ombre-legere);}
+.user-info{font-weight:500;}
+.btn-logout{background-color:var(--rouge);color:white;padding:0.5rem 1rem;border:none;border-radius:6px;cursor:pointer;transition:0.2s;}
+.btn-logout:hover{background-color:#b91c1c;}
+.main-content{margin-left:var(--sidebar-width);padding:2rem;flex:1;}
+.section-title{font-size:1.3rem;font-weight:700;margin-bottom:1rem;border-bottom:1px solid #e5e7eb;padding-bottom:0.5rem;}
+.stats-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(220px,1fr));gap:1.5rem;margin-bottom:2rem;}
+.card-stat{background:white;padding:1.5rem;border-radius:12px;box-shadow:0 4px 10px var(--ombre-legere);border-left:5px solid var(--bleu-fonce);transition:0.3s;}
+.card-stat:hover{transform:translateY(-3px);box-shadow:0 6px 15px rgba(0,0,0,0.15);}
+.card-stat-title{font-size:0.85rem;font-weight:600;color:#6b7280;text-transform:uppercase;margin-bottom:0.5rem;}
+.card-stat-value{font-size:2rem;font-weight:800;color:var(--gris-fonce);}
+.card-stat-footer{font-size:0.8rem;color:#9ca3af;margin-top:0.5rem;}
+#notification-area{position:fixed;top:20px;right:20px;z-index:1000;}
+.notification{padding:1rem 1.5rem;border-radius:8px;margin-bottom:10px;box-shadow:0 4px 6px rgba(0,0,0,0.1);color:white;font-weight:500;opacity:0;transform:translateX(100%);transition:opacity 0.3s,transform 0.3s;}
+.notification.show{opacity:1;transform:translateX(0);}
+.notification.success{background-color:var(--vert);}
+.notification.error{background-color:var(--rouge);}
+@media(max-width:900px){.sidebar{position:relative;width:100%;height:auto;display:flex;flex-direction:row;overflow-x:auto;padding:0.5rem;}.main-content{margin-left:0;padding:1rem;}.header{margin-left:0;}.menu-item{margin-right:1rem;margin-bottom:0;}}
+</style>
 </head>
 <body>
-  <div id="notification-area"></div>
 
-  <!-- SIDEBAR -->
-  <div class="sidebar">
-    <h2>ISC Lwanga</h2>
-    <a href="#" class="menu-item" id="link-eleves"><span class="icon">📚</span> Élèves</a>
-    <a href="#" class="menu-item" id="link-enseignants"><span class="icon">👨‍🏫</span> Enseignants</a>
-    <a href="#" class="menu-item" id="link-bulletins"><span class="icon">🧮</span> Bulletins</a>
-    <a href="#" class="menu-item" id="link-cours"><span class="icon">📆</span> Cours</a>
-    <a href="#" class="menu-item" id="link-paiements"><span class="icon">💰</span> Paiements</a>
-    <a href="#" class="menu-item" id="link-admin"><span class="icon">⚙️</span> Paramètres Admin</a>
-  </div>
+<div id="notification-area"></div>
 
-  <!-- HEADER -->
-  <div class="header">
-    <div class="user-info" id="userInfo">Utilisateur</div>
-    <button class="btn-logout" id="logoutBtn">🚪 Déconnexion</button>
-  </div>
+<div class="sidebar">
+<h2>ISC Lwanga</h2>
+<a href="#" class="menu-item" id="link-eleves"><span class="icon">📚</span> Élèves</a>
+<a href="#" class="menu-item" id="link-enseignants"><span class="icon">👨‍🏫</span> Enseignants</a>
+<a href="#" class="menu-item" id="link-bulletins"><span class="icon">🧮</span> Bulletins</a>
+<a href="#" class="menu-item" id="link-cours"><span class="icon">📆</span> Cours</a>
+<a href="#" class="menu-item" id="link-paiements"><span class="icon">💰</span> Paiements</a>
+<a href="#" class="menu-item" id="link-admin"><span class="icon">⚙️</span> Paramètres Admin</a>
+</div>
 
-  <!-- MAIN CONTENT -->
-  <div class="main-content">
-    <h2 class="section-title">Aperçu Actuel</h2>
-    <div class="stats-grid" id="statsGrid"></div>
-  </div>
+<div class="header">
+<div class="user-info" id="userInfo">Utilisateur</div>
+<button class="btn-logout" id="logoutBtn">🚪 Déconnexion</button>
+</div>
 
-  <!-- Firebase & Logic -->
-  <script type="module">
-    import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-app.js";
-    import { getAuth, signOut, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-auth.js";
-    import { getFirestore, doc, getDoc } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore.js";
+<div class="main-content">
+<h2 class="section-title">Aperçu Actuel</h2>
+<div class="stats-grid" id="statsGrid"></div>
+</div>
 
-    const firebaseConfig = {
-      apiKey: "AIzaSyAgv4TDYnR60TXnns-LISqbZTgcdLT31cc",
-      authDomain: "gestionlwanga.firebaseapp.com",
-      projectId: "gestionlwanga",
-      storageBucket: "gestionlwanga.firebasestorage.app",
-      messagingSenderId: "622604298611",
-      appId: "1:622604298611:web:4ab4314ed3eec6826c3d06"
-    };
+<script type="module">
+import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-app.js";
+import { getAuth, signOut, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-auth.js";
+import { getFirestore, doc, getDoc } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore.js";
 
-    const app = initializeApp(firebaseConfig);
-    const auth = getAuth(app);
-    const db = getFirestore(app);
+const firebaseConfig = {
+apiKey:"AIzaSyAgv4TDYnR60TXnns-LISqbZTgcdLT31cc",
+authDomain:"gestionlwanga.firebaseapp.com",
+projectId:"gestionlwanga",
+storageBucket:"gesti**onlwanga**.firebasestorage.app",
+messagingSenderId:"622604298611",
+appId:"1:622604298611:web:4ab4314ed3eec6826c3d06"
+};
 
-    const userInfo = document.getElementById("userInfo");
-    const logoutBtn = document.getElementById("logoutBtn");
-    const statsGrid = document.getElementById("statsGrid");
-    const notificationArea = document.getElementById("notification-area");
+const app = initializeApp(firebaseConfig);
+const auth = getAuth(app);
+const db = getFirestore(app);
 
-    function showNotification(msg, type="success") {
-      const notif = document.createElement("div");
-      notif.className = `notification ${type}`;
-      notif.textContent = msg;
-      notificationArea.appendChild(notif);
-      setTimeout(()=>notif.classList.add('show'),10);
-      setTimeout(()=>{
-        notif.classList.remove('show');
-        setTimeout(()=>notificationArea.removeChild(notif),300);
-      },4000);
-    }
+const userInfo=document.getElementById("userInfo");
+const logoutBtn=document.getElementById("logoutBtn");
+const statsGrid=document.getElementById("statsGrid");
+const notificationArea=document.getElementById("notification-area");
 
-    const moduleLinks = {
-      eleves: "eleves.html",
-      enseignants: "enseignants.html",
-      bulletins: "bulletins.html",
-      cours: "cours.html",
-      paiements: "paiements.html",
-      admin: "admin.html"
-    };
+function showNotification(msg,type="success"){
+  const notif=document.createElement("div");
+  notif.className=`notification ${type}`;
+  notif.textContent=msg;
+  notificationArea.appendChild(notif);
+  setTimeout(()=>notif.classList.add('show'),10);
+  setTimeout(()=>{notif.classList.remove('show'); setTimeout(()=>notificationArea.removeChild(notif),300);},4000);
+}
 
-    onAuthStateChanged(auth, async (user) => {
-      if(!user){ window.location.href="connexion.html"; return; }
-      try {
-        const snap = await getDoc(doc(db,"users",user.uid));
-        if(!snap.exists()) throw new Error("Profil introuvable dans Firestore.");
-        const data = snap.data();
-        const role = (data.role || "").toLowerCase();
-        const nom = [data.nom, data.postNom, data.prenom].filter(Boolean).join(" ") || "Utilisateur";
-        userInfo.textContent = `${nom} (${role})`;
+const moduleLinks={
+  eleves:"eleves.html",
+  enseignants:"enseignants.html",
+  bulletins:"bulletins.html",
+  cours:"cours.html",
+  paiements:"paiements.html",
+  admin:"admin.html"
+};
 
-        // Statistiques exemple
-        const statsData = [
-          {title:"Élèves Inscrits", value:1245, footer:"+5 ce mois"},
-          {title:"Enseignants Actifs", value:48, footer:"Taux : 98%"},
-          {title:"Notes à Saisir", value:"3 classes", footer:"Deadline : 15 oct"},
-          {title:"Frais Impayés", value:22, footer:"Total dû : $5,400"}
-        ];
-        statsGrid.innerHTML = "";
-        statsData.forEach(stat => {
-          const card = document.createElement("div");
-          card.className = "card-stat";
-          card.innerHTML = `<p class="card-stat-title">${stat.title}</p>
-                            <p class="card-stat-value">${stat.value}</p>
-                            <p class="card-stat-footer">${stat.footer}</p>`;
-          statsGrid.appendChild(card);
-        });
+onAuthStateChanged(auth,async (user)=>{
+  if(!user){window.location.href="connexion.html";return;}
+  try{
+    const snap=await getDoc(doc(db,"users",user.uid));
+    if(!snap.exists())throw new Error("Profil introuvable dans Firestore.");
+    const data=snap.data();
+    const role=(data.role||"").toLowerCase();
+    const nom=[data.nom,data.postNom,data.prenom].filter(Boolean).join(" ")||"Utilisateur";
+    userInfo.textContent=`${nom} (${role})`;
 
-        // Gestion liens sidebar selon rôle
-        const allowedModules = ["eleves","enseignants","bulletins","cours","paiements"];
-        if(role === "admin" || role === "prefet") allowedModules.push("admin");
+    const statsData=[
+      {title:"Élèves Inscrits",value:1245,footer:"+5 ce mois"},
+      {title:"Enseignants Actifs",value:48,footer:"Taux : 98%"},
+      {title:"Notes à Saisir",value:"3 classes",footer:"Deadline : 15 oct"},
+      {title:"Frais Impayés",value:22,footer:"Total dû : $5,400"}
+    ];
+    statsGrid.innerHTML="";
+    statsData.forEach(stat=>{
+      const card=document.createElement("div");
+      card.className="card-stat";
+      card.innerHTML=`<p class="card-stat-title">${stat.title}</p>
+                      <p class="card-stat-value">${stat.value}</p>
+                      <p class="card-stat-footer">${stat.footer}</p>`;
+      statsGrid.appendChild(card);
+    });
 
-        Object.keys(moduleLinks).forEach(id=>{
-          const link = document.getElementById(`link-${id}`);
-          if(link) {
-            if(allowedModules.includes(id)) link.href = moduleLinks[id];
-            else link.style.display = "none";
-          }
-        });
+    // Gestion modules
+    const allowedModules=["eleves","enseignants","bulletins","cours","paiements"];
+    if(role==="admin" || role==="prefet") allowedModules.push("admin");
 
-      } catch(err){
-        console.error(err);
-        showNotification(err.message,"error");
-        await signOut(auth);
-        window.location.href="connexion.html";
+    Object.keys(moduleLinks).forEach(id=>{
+      const link=document.getElementById(`link-${id}`);
+      if(link){
+        if(allowedModules.includes(id)) link.href=moduleLinks[id];
+        else link.style.display="none";
       }
     });
 
-    logoutBtn.addEventListener("click", async ()=>{
-      try{
-        await signOut(auth);
-        showNotification("✅ Déconnexion réussie !");
-        setTimeout(()=>window.location.href="connexion.html",500);
-      }catch(err){
-        console.error(err);
-        showNotification("Erreur lors de la déconnexion","error");
-      }
-    });
-  </script>
+  }catch(err){
+    console.error(err);
+    showNotification(err.message,"error");
+    await signOut(auth);
+    window.location.href="connexion.html";
+  }
+});
+
+logoutBtn.addEventListener("click",async ()=>{
+  try{
+    await signOut(auth);
+    showNotification("✅ Déconnexion réussie !");
+    setTimeout(()=>window.location.href="connexion.html",500);
+  }catch(err){
+    console.error(err);
+    showNotification("Erreur lors de la déconnexion","error");
+  }
+});
+</script>
 </body>
 </html>
