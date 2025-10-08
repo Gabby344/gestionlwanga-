@@ -162,6 +162,7 @@ body {
     <input type="email" id="email" placeholder="Email">
     <input type="password" id="password" placeholder="Mot de passe">
     <select id="role">
+      <option value="">-- Choisir un rôle --</option>
       <option value="admin">Admin</option>
       <option value="prefet">Préfet</option>
       <option value="enseignant">Enseignant</option>
@@ -192,8 +193,12 @@ body {
 
 <script type="module">
 import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-app.js";
-import { getAuth, onAuthStateChanged, signOut, createUserWithEmailAndPassword, sendPasswordResetEmail } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-auth.js";
-import { getFirestore, collection, doc, setDoc, getDocs, deleteDoc } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore.js";
+import { 
+  getAuth, onAuthStateChanged, signOut, createUserWithEmailAndPassword, sendPasswordResetEmail
+} from "https://www.gstatic.com/firebasejs/10.12.2/firebase-auth.js";
+import { 
+  getFirestore, collection, doc, setDoc, getDocs, deleteDoc
+} from "https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore.js";
 
 const firebaseConfig = {
   apiKey: "AIzaSyAgv4TDYnR60TXnns-LISqbZTgcdLT31cc",
@@ -203,6 +208,7 @@ const firebaseConfig = {
   messagingSenderId: "622604298611",
   appId: "1:622604298611:web:4ab4314ed3eec6826c3d06"
 };
+
 const app = initializeApp(firebaseConfig);
 const auth = getAuth(app);
 const db = getFirestore(app);
@@ -211,6 +217,7 @@ const userInfo = document.getElementById('userInfo');
 const logoutBtn = document.getElementById('logoutBtn');
 const notificationArea = document.getElementById('notification-area');
 
+// ✅ Notification stylée
 function showNotification(msg, type="success"){
   const notif = document.createElement("div");
   notif.className = `notification ${type}`;
@@ -223,24 +230,24 @@ function showNotification(msg, type="success"){
   },4000);
 }
 
+// ✅ Vérifier que l'utilisateur est connecté sinon rediriger vers la page de connexion
 onAuthStateChanged(auth, user => {
-  if(!user) window.location.href = "admin.html"; // ou login
-  else {
-    const uid = user.uid;
-    const docRef = doc(db,"users",uid);
-    // afficher info utilisateur
-    getDocs(collection(db,"users")).then(snapshot=>{
-      userInfo.textContent = user.email;
-    });
+  if(!user){
+    window.location.href = "index.html"; // ← redirection vers page de connexion
+  } else {
+    userInfo.textContent = user.email;
+    loadUsers();
   }
 });
 
+// ✅ Déconnexion propre avec redirection
 logoutBtn.addEventListener("click", async ()=>{
   await signOut(auth);
   showNotification("Déconnexion réussie");
-  setTimeout(()=>window.location.href="admin.html",500);
+  setTimeout(()=>window.location.href="index.html",800); // redirection page de connexion
 });
 
+// ✅ Création d'utilisateur
 const createUserBtn = document.getElementById("createUserBtn");
 createUserBtn.addEventListener("click", async ()=>{
   const nom = document.getElementById("nom").value.trim();
@@ -250,17 +257,28 @@ createUserBtn.addEventListener("click", async ()=>{
   const password = document.getElementById("password").value.trim();
   const role = document.getElementById("role").value;
 
-  if(!nom || !prenom || !email || !password) { showNotification("Remplissez tous les champs","error"); return; }
+  if(!nom || !prenom || !email || !password || !role){
+    showNotification("Remplissez tous les champs","error");
+    return;
+  }
 
-  try{
-    const userCredential = await createUserWithEmailAndPassword(auth,email,password);
-    const uid = userCredential.user.uid;
-    await setDoc(doc(db,"users",uid),{nom,postNom,prenom,email,role});
-    showNotification("Utilisateur créé avec succès");
+  try {
+    const userCredential = await createUserWithEmailAndPassword(auth, email, password);
+    const newUser = userCredential.user;
+
+    await setDoc(doc(db,"users",newUser.uid),{
+      nom, postNom, prenom, email, role,
+      createdAt: new Date().toISOString()
+    });
+
+    showNotification("✅ Utilisateur créé avec succès !");
     loadUsers();
-  }catch(err){ showNotification(err.message,"error"); }
+  } catch(err){
+    showNotification("Erreur : " + err.message,"error");
+  }
 });
 
+// ✅ Charger les utilisateurs
 async function loadUsers(){
   const tbody = document.querySelector("#usersTable tbody");
   tbody.innerHTML = "";
@@ -269,31 +287,31 @@ async function loadUsers(){
     const data = docSnap.data();
     const tr = document.createElement("tr");
     tr.innerHTML = `
-      <td>${data.nom} ${data.postNom} ${data.prenom}</td>
+      <td>${data.nom || ''} ${data.postNom || ''} ${data.prenom || ''}</td>
       <td>${data.email}</td>
       <td>${data.role}</td>
       <td>
-        <button onclick="resetPassword('${data.email}')">Réinitialiser MD</button>
-        <button onclick="deleteUser('${docSnap.id}')">Supprimer</button>
+        <button onclick="resetPassword('${data.email}')">🔑 Réinitialiser</button>
+        <button onclick="deleteUser('${docSnap.id}')">🗑️ Supprimer</button>
       </td>`;
     tbody.appendChild(tr);
   });
 }
-async function resetPassword(email){
+
+// ✅ Fonctions globales
+window.resetPassword = async (email)=>{
   try{
     await sendPasswordResetEmail(auth,email);
     showNotification("Email de réinitialisation envoyé à " + email);
   }catch(err){ showNotification(err.message,"error"); }
 }
-async function deleteUser(uid){
+
+window.deleteUser = async (uid)=>{
   if(!confirm("Voulez-vous vraiment supprimer cet utilisateur ?")) return;
   await deleteDoc(doc(db,"users",uid));
   showNotification("Utilisateur supprimé");
   loadUsers();
 }
-
-// Charger la liste au démarrage
-loadUsers();
 </script>
 </body>
 </html>
