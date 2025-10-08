@@ -1,4 +1,4 @@
-// authGuard.js - Version ultra-pro
+// ✅ authGuard.js - Version ultra-pro, stable et adaptée à ta structure
 import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-app.js";
 import { getAuth, onAuthStateChanged, signOut } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-auth.js";
 import { getFirestore, doc, getDoc } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore.js";
@@ -17,90 +17,117 @@ const app = initializeApp(firebaseConfig);
 const auth = getAuth(app);
 const db = getFirestore(app);
 
-// 🔹 Mapping rôle → page par défaut
+// 🎯 Pages d’accueil par rôle (selon tes fichiers réels)
 export const roleRedirects = {
-  admin: "dashboard_admin.html",
-  prefet: "dashboard_prefet.html",
-  directeur_etudes: "dashboard_directeur_etudes.html",
-  directeur_discipline: "dashboard_directeur_discipline.html",
-  secretaire: "dashboard_secretaire.html",
-  econome: "dashboard_econome.html",
-  enseignant: "dashboard_enseignant.html",
-  eleve: "dashboard_eleve.html"
+  admin: "accueil-admin.html",
+  prefet: "accueil-admin.html", // Même accès complet que l’admin
+  directeur_etudes: "dashboard.html",
+  directeur_discipline: "dashboard.html",
+  secretaire: "dashboard.html",
+  econome: "finance.html",
+  enseignant: "accueil-enseignant.html",
+  eleve: "accueil-utilisateur.html",
+  parent: "accueil-utilisateur.html",
 };
 
-// 🔹 Notifications
+// 🔔 Notifications élégantes (intégrées dans le DOM)
 export function showNotification(msg, type = "success") {
   let area = document.getElementById("notification-area");
-  if(!area){
+  if (!area) {
     area = document.createElement("div");
     area.id = "notification-area";
+    area.style.position = "fixed";
+    area.style.top = "20px";
+    area.style.right = "20px";
+    area.style.zIndex = "9999";
+    area.style.display = "flex";
+    area.style.flexDirection = "column";
+    area.style.gap = "10px";
     document.body.appendChild(area);
   }
+
   const notif = document.createElement("div");
-  notif.className = `notification ${type}`;
   notif.textContent = msg;
+  notif.style.padding = "12px 18px";
+  notif.style.borderRadius = "8px";
+  notif.style.fontSize = "14px";
+  notif.style.fontWeight = "600";
+  notif.style.color = "#fff";
+  notif.style.boxShadow = "0 3px 8px rgba(0,0,0,0.2)";
+  notif.style.transition = "all 0.3s ease";
+  notif.style.opacity = "0";
+  notif.style.transform = "translateY(-10px)";
+  notif.style.backgroundColor = type === "error" ? "#e74c3c" : "#2ecc71";
+  
   area.appendChild(notif);
-  setTimeout(()=>notif.classList.add("show"),10);
-  setTimeout(()=>{
-    notif.classList.remove("show");
-    setTimeout(()=>area.removeChild(notif),300);
-  },4000);
+  setTimeout(() => {
+    notif.style.opacity = "1";
+    notif.style.transform = "translateY(0)";
+  }, 50);
+  setTimeout(() => {
+    notif.style.opacity = "0";
+    notif.style.transform = "translateY(-10px)";
+    setTimeout(() => notif.remove(), 300);
+  }, 4000);
 }
 
-// 🔹 Fonction principale pour protéger une page
+// 🧭 Protection des pages selon le rôle
 export async function protectPage(allowedRoles = []) {
-  onAuthStateChanged(auth, async (user)=>{
-    if(!user){
+  onAuthStateChanged(auth, async (user) => {
+    if (!user) {
       showNotification("🔒 Veuillez vous connecter.", "error");
-      return window.location.href="login.html";
+      return (window.location.href = "login.html");
     }
 
     try {
-      const snap = await getDoc(doc(db,"users",user.uid));
-      if(!snap.exists()) throw new Error("Profil introuvable dans Firestore.");
+      const userDoc = await getDoc(doc(db, "users", user.uid));
+      if (!userDoc.exists()) throw new Error("Profil introuvable dans Firestore.");
 
-      const data = snap.data();
+      const data = userDoc.data();
       const role = (data.role || "inconnu").toLowerCase();
       const nom = [data.nom, data.postNom, data.prenom].filter(Boolean).join(" ") || "Utilisateur";
 
-      // Affichage utilisateur
+      // 🔹 Affichage infos utilisateur (si éléments HTML existent)
       const userInfo = document.getElementById("userInfo");
       const dashboardTitle = document.getElementById("dashboardTitle");
-      if(userInfo) userInfo.textContent = `${nom} (${role})`;
-      if(dashboardTitle) dashboardTitle.textContent = `Dashboard · ${role.toUpperCase()} · ISC Lwanga`;
+      if (userInfo) userInfo.textContent = `${nom} (${role})`;
+      if (dashboardTitle) dashboardTitle.textContent = `Tableau de bord · ${role.toUpperCase()} · ISC Lwanga`;
 
-      // Vérification rôle autorisé pour la page
-      if(allowedRoles.length && !allowedRoles.includes(role)){
-        showNotification("⛔ Accès refusé pour votre rôle.", "error");
-        await signOut(auth);
-        return window.location.href="login.html";
-      }
-
-      // Si page spécifique pour rôle
+      // 🔹 Redirection automatique vers sa page d’accueil
       const currentPage = window.location.pathname.split("/").pop();
       const redirectPage = roleRedirects[role];
-      if(redirectPage && currentPage !== redirectPage && allowedRoles.length===0){
-        window.location.href = redirectPage;
+
+      // Si l’utilisateur est connecté mais pas sur sa page d’accueil
+      if (redirectPage && currentPage !== redirectPage && allowedRoles.length === 0) {
+        console.log(`Redirection automatique de ${role} vers ${redirectPage}`);
+        return (window.location.href = redirectPage);
       }
 
-    } catch(err){
-      console.error(err);
+      // 🔹 Vérification d’accès si la page est restreinte
+      if (allowedRoles.length && !allowedRoles.includes(role)) {
+        showNotification("⛔ Accès refusé : rôle non autorisé.", "error");
+        await signOut(auth);
+        return (window.location.href = "login.html");
+      }
+
+      console.log(`✅ Accès autorisé pour : ${role}`);
+    } catch (err) {
+      console.error("Erreur authGuard:", err);
       showNotification(err.message, "error");
       await signOut(auth);
-      window.location.href="login.html";
+      window.location.href = "login.html";
     }
   });
 }
 
-// 🔹 Déconnexion centralisée
+// 🚪 Déconnexion centralisée
 export async function logoutUser() {
-  try{
+  try {
     await signOut(auth);
     showNotification("✅ Déconnexion réussie !");
-    setTimeout(()=>window.location.href="login.html",500);
-  }catch(err){
-    console.error(err);
-    showNotification("Erreur lors de la déconnexion","error");
+    setTimeout(() => (window.location.href = "login.html"), 800);
+  } catch (err) {
+    console.error("Erreur de déconnexion:", err);
+    showNotification("Erreur lors de la déconnexion.", "error");
   }
 }
