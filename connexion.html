@@ -4,13 +4,15 @@
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>Connexion · Institut Saint Charles Lwanga</title>
-  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600&display=swap" rel="stylesheet">
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700&display=swap" rel="stylesheet">
 
   <style>
     :root {
       --bleu: #1e3a8a;
       --bleu-clair: #3b82f6;
       --fond: #f9fafb;
+      --vert: #10b981;
+      --rouge: #ef4444;
       --ombre: rgba(0, 0, 0, 0.1);
     }
 
@@ -24,37 +26,40 @@
       margin: 0;
       padding: 1rem;
       color: #333;
+      position: relative;
     }
 
     .container {
       background: white;
-      padding: 40px 35px;
+      padding: 45px 35px;
       border-radius: 12px;
-      box-shadow: 0 8px 25px var(--ombre);
+      box-shadow: 0 12px 25px var(--ombre);
       width: 100%;
       max-width: 420px;
       text-align: center;
       animation: fadeIn 0.6s ease-in-out;
+      position: relative;
+      z-index: 1;
     }
 
     .logo {
       width: 80px;
       height: 80px;
       object-fit: contain;
-      margin-bottom: 10px;
+      margin-bottom: 15px;
     }
 
     h2 {
       color: var(--bleu);
-      margin-bottom: 25px;
-      font-weight: 600;
-      font-size: 1.4rem;
+      margin-bottom: 30px;
+      font-weight: 700;
+      font-size: 1.5rem;
     }
 
     input, button {
       width: 100%;
-      padding: 12px;
-      margin-bottom: 15px;
+      padding: 14px;
+      margin-bottom: 18px;
       border-radius: 8px;
       font-size: 15px;
     }
@@ -62,13 +67,13 @@
     input {
       border: 1px solid #d1d5db;
       background-color: #f9fafb;
-      transition: border-color 0.2s;
+      transition: border-color 0.3s, box-shadow 0.3s;
     }
 
     input:focus {
       border-color: var(--bleu);
       outline: none;
-      box-shadow: 0 0 0 2px #dbeafe;
+      box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.2);
     }
 
     button {
@@ -77,39 +82,34 @@
       border: none;
       font-weight: 600;
       cursor: pointer;
-      transition: background 0.3s, transform 0.1s;
+      transition: background 0.3s, transform 0.1s, box-shadow 0.2s;
     }
 
     button:hover {
       background: #0f2f79;
       transform: scale(1.02);
+      box-shadow: 0 4px 15px rgba(0,0,0,0.2);
     }
 
-    #errorMessage {
-      color: #dc2626;
-      font-size: 14px;
-      margin-top: 5px;
-      margin-bottom: 10px;
+    #errorMessage, #successMessage {
+      font-size: 0.95rem;
+      margin-bottom: 12px;
+      min-height: 20px;
+      font-weight: 500;
     }
 
-    #successMessage {
-      color: #16a34a;
-      font-size: 14px;
-      margin-top: 5px;
-      margin-bottom: 10px;
-    }
+    #errorMessage { color: var(--rouge); }
+    #successMessage { color: var(--vert); }
 
     .link {
       display: block;
-      margin-top: 15px;
+      margin-top: 12px;
       color: var(--bleu);
       text-decoration: none;
-      font-size: 0.9rem;
+      font-size: 0.95rem;
     }
 
-    .link:hover {
-      text-decoration: underline;
-    }
+    .link:hover { text-decoration: underline; }
 
     footer {
       text-align: center;
@@ -122,12 +122,41 @@
       from { opacity: 0; transform: translateY(15px); }
       to { opacity: 1; transform: translateY(0); }
     }
+
+    /* Notifications */
+    #notification-area {
+      position: fixed;
+      top: 20px;
+      right: 20px;
+      z-index: 1000;
+    }
+    .notification {
+      padding: 1rem 1.5rem;
+      border-radius: 8px;
+      margin-bottom: 10px;
+      box-shadow: 0 4px 8px rgba(0,0,0,0.15);
+      font-weight: 500;
+      color: white;
+      opacity: 0;
+      transform: translateX(100%);
+      transition: opacity 0.3s, transform 0.3s;
+      min-width: 220px;
+    }
+    .notification.show { opacity: 1; transform: translateX(0); }
+    .notification.success { background-color: var(--vert); }
+    .notification.error { background-color: var(--rouge); }
+
+    @media(max-width:480px){
+      .container { padding: 35px 25px; }
+      h2 { font-size: 1.3rem; }
+      input, button { padding: 12px; font-size: 14px; }
+    }
   </style>
 </head>
 
 <body>
   <div class="container">
-    <img src="IMG_7373.jpeg" alt="Logo Institut Saint Charles Lwanga" class="logo">
+    <img src="IMG_7373.jpeg" alt="Logo ISC Lwanga" class="logo">
     <h2>Connexion · Institut Saint Charles Lwanga</h2>
 
     <form id="loginForm">
@@ -141,12 +170,11 @@
 
     <a href="index.html" class="link">← Retour à l’accueil</a>
 
-    <footer>
-      &copy; 2025 Institut Saint Charles Lwanga · Tous droits réservés
-    </footer>
+    <footer>&copy; 2025 Institut Saint Charles Lwanga · Tous droits réservés</footer>
   </div>
 
-  <!-- Script Firebase + logique de connexion -->
+  <div id="notification-area"></div>
+
   <script type="module" src="./js/login.js"></script>
 </body>
 </html>
