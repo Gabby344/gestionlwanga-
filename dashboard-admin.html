@@ -67,6 +67,7 @@ body { font-family:'Inter', sans-serif; background-color:var(--fond); margin:0; 
 import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-app.js";
 import { getAuth, signOut, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-auth.js";
 import { getFirestore, collection, getDocs, doc, getDoc } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore.js";
+import { protectPage } from './authGuard.js'; // ← Import authGuard
 
 const firebaseConfig = {
   apiKey: "AIzaSyAgv4TDYnR60TXnns-LISqbZTgcdLT31cc",
@@ -135,8 +136,8 @@ onAuthStateChanged(auth, async (user)=>{
     const snap = await getDoc(doc(db,"users",user.uid));
     if(!snap.exists()) throw new Error("Profil introuvable.");
     const data = snap.data();
-    if(data.role !== "admin"){ await signOut(auth); window.location.href="login.html"; }
-    userInfo.textContent = `${data.nom} ${data.postNom} ${data.prenom} (Admin)`;
+    if(!["admin","prefet"].includes(data.role)){ await signOut(auth); window.location.href="login.html"; }
+    userInfo.textContent = `${data.nom} ${data.postNom} ${data.prenom} (${data.role.toUpperCase()})`;
 
     const stats = await fetchStats();
     statsGrid.innerHTML="";
@@ -162,10 +163,14 @@ onAuthStateChanged(auth, async (user)=>{
   } catch(err){ console.error(err); showNotification(err.message,"error"); await signOut(auth); window.location.href="login.html"; }
 });
 
+// 🚪 Déconnexion
 logoutBtn.addEventListener("click", async ()=>{
   try{ await signOut(auth); showNotification("✅ Déconnexion réussie !"); setTimeout(()=>window.location.href="login.html",500); }
   catch(err){ console.error(err); showNotification("Erreur lors de la déconnexion","error"); }
 });
+
+// ✅ Protection de page via authGuard
+protectPage(['admin','prefet']);
 </script>
 </body>
 </html>
