@@ -3,8 +3,8 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Dashboard · Administration · ISC Lwanga</title>
-  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700;800&display=swap" rel="stylesheet">
+  <title>Dashboard · ISC Lwanga</title>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700&display=swap" rel="stylesheet">
   <style>
     :root {
       --bleu-fonce: #1e40af;
@@ -44,16 +44,16 @@
     .notification.show {opacity:1; transform:translateX(0);}
     .notification.success {background-color:var(--vert);}
     .notification.error {background-color:var(--rouge);}
-    .notification.warning {background-color:var(--jaune);}
     @media(max-width:600px){.header-left h1{font-size:1.2rem;}.card-stat-value{font-size:2rem;}.menu-item .icon{font-size:2rem;}}
   </style>
 </head>
 <body>
   <div id="notification-area"></div>
+
   <div class="header">
     <div class="header-left">
       <img src="logo.png" alt="Logo ISC Lwanga">
-      <h1 id="dashboardTitle">Dashboard · Administration · ISC Lwanga</h1>
+      <h1 id="dashboardTitle">Dashboard · ISC Lwanga</h1>
     </div>
     <div class="user-info" id="userInfo"></div>
     <button class="btn-logout" id="logoutBtn">🚪 Déconnexion</button>
@@ -72,7 +72,7 @@
     import { getAuth, signOut, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-auth.js";
     import { getFirestore, doc, getDoc } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore.js";
 
-    // 🔥 Configuration Firebase annexée
+    // 🔥 Config Firebase centralisée
     const firebaseConfig = {
       apiKey: "AIzaSyAgv4TDYnR60TXnns-LISqbZTgcdLT31cc",
       authDomain: "gestionlwanga.firebaseapp.com",
@@ -91,40 +91,41 @@
     const logoutBtn = document.getElementById("logoutBtn");
     const statsGrid = document.querySelector(".stats-grid");
     const menuGrid = document.querySelector(".menu-grid");
+    const notificationArea = document.getElementById("notification-area");
 
+    // 🔹 Notifications centralisées
     function showNotification(msg, type="success") {
-      const area = document.getElementById('notification-area');
-      const notif = document.createElement('div');
+      const notif = document.createElement("div");
       notif.className = `notification ${type}`;
       notif.textContent = msg;
-      area.appendChild(notif);
+      notificationArea.appendChild(notif);
       setTimeout(()=>notif.classList.add('show'),10);
-      setTimeout(()=>{ notif.classList.remove('show'); setTimeout(()=>area.removeChild(notif),300); },4000);
+      setTimeout(()=>{
+        notif.classList.remove('show');
+        setTimeout(()=>notificationArea.removeChild(notif),300);
+      },4000);
     }
 
-    const modulesByRole = {
-      admin: ["Gestion des Élèves","Gestion des Enseignants","Notes & Bulletins","Planning des Cours","Suivi des Paiements","Paramètres Admin"],
-      prefet: ["Gestion des Élèves","Gestion des Enseignants","Notes & Bulletins","Planning des Cours","Suivi des Paiements","Paramètres Admin"],
-      directeur_etudes: ["Gestion des Élèves","Notes & Bulletins","Planning des Cours","Gestion des Enseignants"],
-      directeur_discipline: ["Gestion des Élèves","Gestion des Enseignants","Discipline & Messages"],
-      econome: ["Suivi des Paiements"],
-      secretaire: ["Gestion des Élèves","Gestion des Enseignants"],
-      enseignant: ["Notes & Bulletins","Planning des Cours"],
-      eleve: ["Voir Planning","Voir Bulletins"]
+    // 🔹 Mapping rôle → modules
+    const roleModules = {
+      prefet: ["eleves","enseignants","bulletins","cours","paiements","admin"],
+      admin: ["eleves","enseignants","bulletins","cours","paiements","admin"],
+      econome: ["paiements"],
+      directeur_etudes: ["eleves","bulletins","cours"],
+      directeur_discipline: ["bulletins","cours"],
+      secretaire: ["eleves"]
     };
 
-    const allModules = [
-      {title:"Gestion des Élèves", icon:"📚", link:"eleves.html"},
-      {title:"Gestion des Enseignants", icon:"👨‍🏫", link:"enseignants.html"},
-      {title:"Notes & Bulletins", icon:"🧮", link:"bulletins.html"},
-      {title:"Planning des Cours", icon:"📆", link:"cours.html"},
-      {title:"Suivi des Paiements", icon:"💰", link:"paiements.html"},
-      {title:"Paramètres Admin", icon:"⚙️", link:"admin.html"},
-      {title:"Discipline & Messages", icon:"📣", link:"voir-messages.html"},
-      {title:"Voir Planning", icon:"📅", link:"voir-planning.html"},
-      {title:"Voir Bulletins", icon:"📝", link:"voir-bulletin.html"}
-    ];
+    const moduleLinks = {
+      eleves: {title:"Gestion des Élèves", icon:"📚", link:"eleves.html"},
+      enseignants: {title:"Gestion des Enseignants", icon:"👨‍🏫", link:"enseignants.html"},
+      bulletins: {title:"Notes & Bulletins", icon:"🧮", link:"bulletins.html"},
+      cours: {title:"Planning des Cours", icon:"📆", link:"cours.html"},
+      paiements: {title:"Suivi des Paiements", icon:"💰", link:"paiements.html"},
+      admin: {title:"Paramètres Admin", icon:"⚙️", link:"admin.html"}
+    };
 
+    // 🔹 Vérification Auth + rôle
     onAuthStateChanged(auth, async (user)=>{
       if(!user){ window.location.href="login.html"; return; }
 
@@ -138,10 +139,11 @@
         dashboardTitle.textContent = `Dashboard · ${role.toUpperCase()} · ISC Lwanga`;
         userInfo.textContent = `${nom} (${role})`;
 
+        // 🔹 Statistiques dynamiques
         const statsData = [
-          {title:"Élèves Inscrits", value:1245, footer:"+5 nouveaux ce mois", color:"stat-bleu"},
-          {title:"Enseignants Actifs", value:48, footer:"Taux d'assiduité : 98%", color:"stat-vert"},
-          {title:"Notes à Saisir (T3)", value:"3 classes", footer:"Deadline : 15 octobre", color:"stat-jaune"},
+          {title:"Élèves Inscrits", value:1245, footer:"+5 ce mois", color:"stat-bleu"},
+          {title:"Enseignants Actifs", value:48, footer:"Taux : 98%", color:"stat-vert"},
+          {title:"Notes à Saisir", value:"3 classes", footer:"Deadline : 15 oct", color:"stat-jaune"},
           {title:"Frais Impayés", value:22, footer:"Total dû : $5,400", color:"stat-rouge"}
         ];
         statsGrid.innerHTML="";
@@ -152,19 +154,21 @@
           statsGrid.appendChild(card);
         });
 
+        // 🔹 Modules dynamiques
         menuGrid.innerHTML="";
-        const allowedModules = modulesByRole[role] || [];
-        allModules.forEach(mod=>{
-          if(allowedModules.includes(mod.title)){
+        const modules = roleModules[role] || [];
+        modules.forEach(mod=>{
+          const m = moduleLinks[mod];
+          if(m){
             const item=document.createElement("a");
-            item.href=mod.link;
+            item.href=m.link;
             item.className="menu-item";
-            item.innerHTML=`<div class="icon">${mod.icon}</div><div>${mod.title}</div>`;
+            item.innerHTML=`<div class="icon">${m.icon}</div><div>${m.title}</div>`;
             menuGrid.appendChild(item);
           }
         });
 
-        if(role==="inconnu"){
+        if(modules.length===0){
           showNotification("⛔ Votre rôle ne permet pas l'accès au dashboard.","error");
           await signOut(auth);
           window.location.href="login.html";
@@ -178,12 +182,13 @@
       }
     });
 
+    // 🔹 Déconnexion
     logoutBtn.addEventListener("click", async ()=>{
-      try {
+      try{
         await signOut(auth);
         showNotification("✅ Déconnexion réussie !");
         setTimeout(()=>window.location.href="login.html",500);
-      } catch(err){
+      }catch(err){
         console.error(err);
         showNotification("Erreur lors de la déconnexion","error");
       }
