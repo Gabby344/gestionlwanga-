@@ -15,30 +15,10 @@
       --fond: #f4f6f8;
       --ombre-legere: rgba(0,0,0,0.08);
     }
-    body {
-      font-family: 'Inter', sans-serif;
-      margin:0;
-      background-color: var(--fond);
-      color: var(--gris-fonce);
-    }
-    header {
-      background-color:white;
-      padding:1rem 2rem;
-      box-shadow:0 1px 5px var(--ombre-legere);
-      display:flex;
-      justify-content:space-between;
-      align-items:center;
-    }
+    body { font-family: 'Inter', sans-serif; margin:0; background-color: var(--fond); color: var(--gris-fonce);}
+    header { background-color:white; padding:1rem 2rem; box-shadow:0 1px 5px var(--ombre-legere); display:flex; justify-content:space-between; align-items:center;}
     header h1 {margin:0;font-size:1.5rem;color:var(--bleu-fonce);}
-    .btn-logout {
-      background-color: var(--rouge);
-      color:white;
-      border:none;
-      padding:.5rem 1rem;
-      border-radius:6px;
-      font-weight:600;
-      cursor:pointer;
-    }
+    .btn-logout { background-color: var(--rouge); color:white; border:none; padding:.5rem 1rem; border-radius:6px; font-weight:600; cursor:pointer;}
     main {max-width:1200px;margin:2rem auto;padding:0 1rem;}
     h2 {margin-bottom:1rem;}
     table {width:100%;border-collapse:collapse;margin-top:1rem;background:white;border-radius:8px;overflow:hidden;}
@@ -47,11 +27,13 @@
     button.action-btn {padding:.3rem .6rem;border:none;border-radius:5px;color:white;cursor:pointer;margin-right:.3rem;}
     .edit {background-color:#3b82f6;}
     .delete {background-color:#ef4444;}
+    .reset {background-color:#fbbf24;}
     .add-user {background-color:var(--vert);margin-bottom:1rem;}
     form {display:flex;flex-wrap:wrap;gap:.5rem;background:white;padding:1rem;border-radius:8px;margin-bottom:1rem;box-shadow:0 3px 6px var(--ombre-legere);}
     form input, form select {padding:.5rem;font-size:1rem;border:1px solid #d1d5db;border-radius:6px;flex:1;}
     form button {flex:none;}
     #message {margin-top:.5rem;font-weight:600;}
+    @media(max-width:700px){form {flex-direction:column;}}
   </style>
 </head>
 <body>
@@ -62,14 +44,15 @@
 </header>
 
 <main>
-  <h2>Gestion des Utilisateurs</h2>
+  <h2>Ajouter / Modifier Utilisateur</h2>
 
-  <form id="addUserForm">
+  <form id="userForm">
+    <input type="hidden" id="uid">
     <input type="text" id="nom" placeholder="Nom" required>
     <input type="text" id="postNom" placeholder="PostNom">
     <input type="text" id="prenom" placeholder="Prénom">
     <input type="email" id="email" placeholder="Email" required>
-    <input type="password" id="password" placeholder="Mot de passe" required>
+    <input type="password" id="password" placeholder="Mot de passe (laisser vide si inchangé)">
     <select id="role" required>
       <option value="">-- Rôle --</option>
       <option value="admin">Admin</option>
@@ -81,7 +64,7 @@
       <option value="enseignant">Enseignant</option>
       <option value="eleve">Élève</option>
     </select>
-    <button type="submit" class="add-user">Ajouter</button>
+    <button type="submit" class="add-user">Enregistrer</button>
     <span id="message"></span>
   </form>
 
@@ -102,8 +85,8 @@
 
 <script type="module">
   import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-app.js";
-  import { getAuth, signOut, createUserWithEmailAndPassword } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-auth.js";
-  import { getFirestore, doc, setDoc, collection, getDocs, deleteDoc } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore.js";
+  import { getAuth, signOut, createUserWithEmailAndPassword, updatePassword, updateEmail } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-auth.js";
+  import { getFirestore, doc, setDoc, collection, getDocs, deleteDoc, updateDoc } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore.js";
 
   const firebaseConfig = {
     apiKey: "AIzaSyAgv4TDYnR60TXnns-LISqbZTgcdLT31cc",
@@ -124,14 +107,14 @@
     window.location.href = 'admin.html';
   });
 
-  const addUserForm = document.getElementById('addUserForm');
+  const userForm = document.getElementById('userForm');
   const messageElement = document.getElementById('message');
   const usersTableBody = document.querySelector('#usersTable tbody');
 
   async function loadUsers() {
     usersTableBody.innerHTML = '';
     const querySnapshot = await getDocs(collection(db, "users"));
-    querySnapshot.forEach((docSnap) => {
+    querySnapshot.forEach(docSnap => {
       const data = docSnap.data();
       const tr = document.createElement('tr');
       tr.innerHTML = `
@@ -143,15 +126,17 @@
         <td>
           <button class="action-btn edit" data-id="${docSnap.id}">✏️</button>
           <button class="action-btn delete" data-id="${docSnap.id}">🗑️</button>
+          <button class="action-btn reset" data-id="${docSnap.id}">🔑</button>
         </td>
       `;
       usersTableBody.appendChild(tr);
     });
   }
 
-  addUserForm.addEventListener('submit', async (e) => {
+  userForm.addEventListener('submit', async e => {
     e.preventDefault();
     messageElement.textContent = '';
+    const uid = document.getElementById('uid').value;
     const nom = document.getElementById('nom').value.trim();
     const postNom = document.getElementById('postNom').value.trim();
     const prenom = document.getElementById('prenom').value.trim();
@@ -160,12 +145,20 @@
     const role = document.getElementById('role').value;
 
     try {
-      const userCredential = await createUserWithEmailAndPassword(auth, email, password);
-      const uid = userCredential.user.uid;
-      await setDoc(doc(db, "users", uid), { nom, postNom, prenom, email, role });
-      messageElement.style.color = "green";
-      messageElement.textContent = "Utilisateur ajouté avec succès !";
-      addUserForm.reset();
+      if(uid){ // Modification
+        const userRef = doc(db, "users", uid);
+        await updateDoc(userRef, { nom, postNom, prenom, email, role });
+        messageElement.style.color = "green";
+        messageElement.textContent = "Utilisateur modifié avec succès !";
+      } else { // Création
+        const userCredential = await createUserWithEmailAndPassword(auth, email, password);
+        const newUid = userCredential.user.uid;
+        await setDoc(doc(db, "users", newUid), { nom, postNom, prenom, email, role });
+        messageElement.style.color = "green";
+        messageElement.textContent = "Utilisateur ajouté avec succès !";
+      }
+      userForm.reset();
+      document.getElementById('uid').value = '';
       loadUsers();
     } catch(error) {
       messageElement.style.color = "red";
@@ -173,15 +166,33 @@
     }
   });
 
-  usersTableBody.addEventListener('click', async (e) => {
+  usersTableBody.addEventListener('click', async e => {
+    const uid = e.target.dataset.id;
     if(e.target.classList.contains('delete')){
-      const uid = e.target.dataset.id;
       if(confirm("Supprimer cet utilisateur ?")){
         await deleteDoc(doc(db, "users", uid));
         loadUsers();
       }
+    } else if(e.target.classList.contains('edit')){
+      const userDoc = await doc(db, "users", uid).get();
+      const data = (await userDoc).data();
+      document.getElementById('uid').value = uid;
+      document.getElementById('nom').value = data.nom || '';
+      document.getElementById('postNom').value = data.postNom || '';
+      document.getElementById('prenom').value = data.prenom || '';
+      document.getElementById('email').value = data.email;
+      document.getElementById('role').value = data.role;
+    } else if(e.target.classList.contains('reset')){
+      const newPassword = prompt("Entrez le nouveau mot de passe :");
+      if(newPassword){
+        try {
+          // Pour réinitialiser le mot de passe Firebase Auth côté admin, il faudrait utiliser Admin SDK côté serveur.
+          alert("⚠️ Réinitialisation mot de passe via Admin SDK nécessaire. Pour la version front-end, utilisez 'mot de passe oublié'.");
+        } catch(err) {
+          alert("Erreur : " + err.message);
+        }
+      }
     }
-    // Ici tu peux ajouter l'édition si besoin
   });
 
   loadUsers();
