@@ -154,6 +154,12 @@ body {
 </div>
 
 <div class="main-content">
+  <h2 class="section-title">Initialiser la Base Firestore</h2>
+  <div class="card">
+    <p>Ce bouton configure les rôles, les administrateurs et les classes de l’école.</p>
+    <button onclick="configInitiale()">🛠 Initialiser la base Firestore</button>
+  </div>
+
   <h2 class="section-title">Créer un Utilisateur</h2>
   <div class="card">
     <input type="text" id="nom" placeholder="Nom">
@@ -217,7 +223,6 @@ const userInfo = document.getElementById('userInfo');
 const logoutBtn = document.getElementById('logoutBtn');
 const notificationArea = document.getElementById('notification-area');
 
-// ✅ Notification stylée
 function showNotification(msg, type="success"){
   const notif = document.createElement("div");
   notif.className = `notification ${type}`;
@@ -230,21 +235,19 @@ function showNotification(msg, type="success"){
   },4000);
 }
 
-// ✅ Vérifier que l'utilisateur est connecté sinon rediriger vers la page de connexion
 onAuthStateChanged(auth, user => {
   if(!user){
-    window.location.href = "index.html"; // ← redirection vers page de connexion
+    window.location.href = "index.html";
   } else {
     userInfo.textContent = user.email;
     loadUsers();
   }
 });
 
-// ✅ Déconnexion propre avec redirection
 logoutBtn.addEventListener("click", async ()=>{
   await signOut(auth);
   showNotification("Déconnexion réussie");
-  setTimeout(()=>window.location.href="index.html",800); // redirection page de connexion
+  setTimeout(()=>window.location.href="index.html",800);
 });
 
 // ✅ Création d'utilisateur
@@ -311,6 +314,129 @@ window.deleteUser = async (uid)=>{
   await deleteDoc(doc(db,"users",uid));
   showNotification("Utilisateur supprimé");
   loadUsers();
+}
+
+// ✅ Configuration initiale Firestore
+function configInitiale() {
+  const roles = {
+    prefet: {
+      accès: [
+        "accès total",
+        "suivi des rapports",
+        "gestion des comptes",
+        "contrôle des modules",
+        "vue sur toutes les structures"
+      ]
+    },
+    directeur_etudes: {
+      accès: [
+        "gestion des classes",
+        "gestion des enseignants",
+        "suivi des programmes",
+        "planification académique"
+      ]
+    },
+    directeur_discipline: {
+      accès: [
+        "suivi disciplinaire",
+        "gestion des sanctions",
+        "rapport de comportement",
+        "coordination des surveillants"
+      ]
+    },
+    secretaire: {
+      accès: [
+        "inscription des élèves",
+        "gestion des documents",
+        "planning scolaire",
+        "communication interne"
+      ]
+    },
+    econome: {
+      accès: [
+        "gestion financière",
+        "suivi des paiements",
+        "rapport de trésorerie",
+        "budget et dépenses"
+      ]
+    }
+  };
+
+  Object.entries(roles).forEach(([role, data]) => {
+    setDoc(doc(db, "roles", role), data);
+  });
+
+  const admins = [
+    {
+      id: "gabby_umba",
+      nom: "Gabby Umba",
+      rôle: "prefet",
+      email: "gabby@ecole.com"
+    },
+    {
+      id: "michel_lembe",
+      nom: "Père Michel Lembe Sds",
+      rôle: "prefet",
+      email: "prefet@ecole.com"
+    },
+    {
+      id: "delphin_kagunge",
+      nom: "Mr Delphin Kagunge",
+      rôle: "directeur_etudes",
+      email: "etudes@ecole.com"
+    },
+    {
+      id: "modeste_makong",
+      nom: "Mr Modeste Makong",
+      rôle: "directeur_discipline",
+      email: "discipline@ecole.com"
+    },
+    {
+      id: "secretaire",
+      nom: "Secrétaire Général",
+      rôle: "secretaire",
+      email: "secretariat@ecole.com"
+    },
+    {
+      id: "gabin_sds",
+      nom: "Père Gabin Sds",
+      rôle: "econome",
+      email: "finance@ecole.com"
+    }
+  ];
+
+  admins.forEach(admin => {
+    setDoc(doc(db, "administrateurs", admin.id), admin);
+  });
+
+  const classes = [
+    "7eme EB", "8eme EB",
+    "1ere Scientifique", "2eme Scientifique", "3eme Scientifique", "4eme Scientifique",
+    "1ere Commerciale et Gestion", "2eme Commerciale et Gestion", "3eme Commerciale et Gestion", "4eme Commerciale et Gestion",
+    "1ere Agronomie", "2eme Agronomie", "3eme Agronomie", "4eme Agronomie",
+    "1ere Pédagogie Générale", "2eme Pédagogie Générale", "3eme Pédagogie Générale", "4eme Pédagogie Générale"
+  ];
+
+  classes.forEach((classe, index) => {
+    setDoc(doc(db, "classes", `classe_${index + 1}`), {
+      nom: classe,
+      niveau: classe.split(" ")[0],
+      spécialité: classe.split(" ").slice(1).join(" "),
+      liste_eleves: []
+    });
+  });
+
+  setDoc(doc(db, "utilisateurs", "enseignants"), {
+    description: "Tous les enseignants inscrits",
+    liste: []
+  });
+
+  setDoc(doc(db, "utilisateurs", "eleves"), {
+    description: "Tous les élèves inscrits",
+    liste: []
+  });
+
+  showNotification("✅ Base Firestore initialisée avec succès !");
 }
 </script>
 </body>
