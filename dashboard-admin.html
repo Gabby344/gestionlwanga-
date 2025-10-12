@@ -1,53 +1,141 @@
 <!DOCTYPE html>
 <html lang="fr">
 <head>
-<meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Dashboard Admin · ISC Lwanga</title>
-<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700&display=swap" rel="stylesheet">
-<style>
-:root {
-  --bleu-fonce: #1e40af; --gris-fonce: #1f2937; --vert: #10b981; --rouge: #ef4444; --fond: #f4f6f8;
-}
-body { font-family:'Inter', sans-serif; background:var(--fond); margin:0; color:var(--gris-fonce);}
-.header {background:white; padding:1rem 2rem; box-shadow:0 1px 5px rgba(0,0,0,0.08); display:flex; justify-content:space-between; align-items:center;}
-.header h1{margin:0;color:var(--bleu-fonce);}
-.user-info{font-weight:500;}
-.btn-logout{background:var(--rouge);color:white;padding:0.5rem 1rem;border:none;border-radius:6px;cursor:pointer;}
-.main-content{max-width:1200px;margin:auto;padding:1rem;}
-.card-stat{background:white;padding:1rem;border-radius:10px;box-shadow:0 2px 6px rgba(0,0,0,0.1);margin-bottom:1rem;}
-.menu-item{background:white;padding:1rem;border-radius:8px;text-align:center;text-decoration:none;color:var(--gris-fonce);display:inline-block;width:150px;margin:0.5rem;}
-</style>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Dashboard Admin · ISC Lwanga</title>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700&display=swap" rel="stylesheet">
+  <style>
+    :root {
+      --bleu-fonce: #1e40af;
+      --gris-fonce: #1f2937;
+      --vert: #10b981;
+      --rouge: #ef4444;
+      --fond: #f4f6f8;
+    }
+    body {
+      font-family: 'Inter', sans-serif;
+      background: var(--fond);
+      margin: 0;
+      color: var(--gris-fonce);
+    }
+    .header {
+      background: white;
+      padding: 1rem 2rem;
+      box-shadow: 0 1px 5px rgba(0,0,0,0.08);
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+    }
+    .header h1 {
+      margin: 0;
+      color: var(--bleu-fonce);
+      font-weight: 700;
+    }
+    .user-info {
+      font-weight: 500;
+    }
+    .btn-logout {
+      background: var(--rouge);
+      color: white;
+      padding: 0.5rem 1rem;
+      border: none;
+      border-radius: 6px;
+      cursor: pointer;
+    }
+    .main-content {
+      max-width: 1200px;
+      margin: auto;
+      padding: 1rem;
+    }
+    .card-stat {
+      background: white;
+      padding: 1rem;
+      border-radius: 10px;
+      box-shadow: 0 2px 6px rgba(0,0,0,0.1);
+      margin-bottom: 1rem;
+      font-weight: 600;
+    }
+    .menu-item {
+      background: white;
+      padding: 1rem;
+      border-radius: 8px;
+      text-align: center;
+      text-decoration: none;
+      color: var(--gris-fonce);
+      display: inline-block;
+      width: 150px;
+      margin: 0.5rem;
+      box-shadow: 0 1px 4px rgba(0,0,0,0.05);
+      transition: transform 0.2s;
+    }
+    .menu-item:hover {
+      transform: scale(1.05);
+    }
+  </style>
 </head>
 <body>
-<div id="notification-area"></div>
+  <div id="notification-area"></div>
 
-<div class="header">
-  <h1 id="dashboardTitle">Dashboard Admin</h1>
-  <div class="user-info" id="userInfo"></div>
-  <button class="btn-logout" id="logoutBtn">Déconnexion</button>
-</div>
+  <div class="header">
+    <h1 id="dashboardTitle">Dashboard Admin</h1>
+    <div class="user-info" id="userInfo">Chargement...</div>
+    <button class="btn-logout" id="logoutBtn">Déconnexion</button>
+  </div>
 
-<div class="main-content">
-  <h2>Statistiques</h2>
-  <div class="card-stat" id="stat-eleves">Élèves: 0</div>
-  <div class="card-stat" id="stat-enseignants">Enseignants: 0</div>
-  <div class="card-stat" id="stat-bulletins">Bulletins: 0</div>
-  <div class="card-stat" id="stat-paiements">Paiements: 0</div>
+  <div class="main-content">
+    <h2>Statistiques</h2>
+    <div class="card-stat" id="stat-eleves">Élèves: ...</div>
+    <div class="card-stat" id="stat-enseignants">Enseignants: ...</div>
+    <div class="card-stat" id="stat-bulletins">Bulletins: ...</div>
+    <div class="card-stat" id="stat-paiements">Paiements: ...</div>
 
-  <h2>Modules</h2>
-  <a href="eleves.html" class="menu-item">Gestion Élèves</a>
-  <a href="enseignants.html" class="menu-item">Gestion Enseignants</a>
-  <a href="bulletins.html" class="menu-item">Bulletins</a>
-  <a href="cours.html" class="menu-item">Planning Cours</a>
-  <a href="paiements.html" class="menu-item">Suivi Paiements</a>
-  <a href="admin.html" class="menu-item">Paramètres Admin</a>
-</div>
+    <h2>Modules</h2>
+    <a href="eleves.html" class="menu-item">Gestion Élèves</a>
+    <a href="enseignants.html" class="menu-item">Gestion Enseignants</a>
+    <a href="bulletins.html" class="menu-item">Bulletins</a>
+    <a href="cours.html" class="menu-item">Planning Cours</a>
+    <a href="paiements.html" class="menu-item">Suivi Paiements</a>
+    <a href="admin.html" class="menu-item">Paramètres Admin</a>
+  </div>
 
-<script type="module">
-import { protectPage, logoutUser } from './authGuard.js';
-protectPage(['admin']);
-document.getElementById('logoutBtn').addEventListener('click', logoutUser);
-</script>
+  <script type="module">
+    import { protectPage, logoutUser } from './authGuard.js';
+    import { auth, db } from './config.js';
+    import { onAuthStateChanged } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-auth.js";
+    import { doc, getDoc, collection, getDocs } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore.js";
+
+    protectPage(['admin']);
+    document.getElementById('logoutBtn').addEventListener('click', logoutUser);
+
+    const userInfo = document.getElementById('userInfo');
+
+    onAuthStateChanged(auth, async user => {
+      if (user) {
+        const userDoc = await getDoc(doc(db, "users", user.uid));
+        if (userDoc.exists()) {
+          const data = userDoc.data();
+          userInfo.textContent = `${data.nom || ''} ${data.prenom || ''} (${data.role})`;
+        }
+
+        // Charger les statistiques
+        const elevesSnap = await getDocs(collection(db, "users"));
+        const enseignants = [];
+        const eleves = [];
+        elevesSnap.forEach(doc => {
+          const d = doc.data();
+          if (d.role === "enseignant") enseignants.push(d);
+          if (d.role === "eleve") eleves.push(d);
+        });
+
+        document.getElementById("stat-eleves").textContent = `Élèves: ${eleves.length}`;
+        document.getElementById("stat-enseignants").textContent = `Enseignants: ${enseignants.length}`;
+
+        // Simuler les autres stats (à connecter plus tard)
+        document.getElementById("stat-bulletins").textContent = `Bulletins: ${Math.floor(eleves.length * 0.8)}`;
+        document.getElementById("stat-paiements").textContent = `Paiements: ${Math.floor(eleves.length * 0.6)}`;
+      }
+    });
+  </script>
 </body>
 </html>
