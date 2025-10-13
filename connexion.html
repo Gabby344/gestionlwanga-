@@ -144,14 +144,12 @@
     import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-app.js";
     import { getAuth, signInWithEmailAndPassword } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-auth.js";
     import { getFirestore, doc, getDoc } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore.js";
+    import { roleRedirects } from './roles.js';
 
     const firebaseConfig = {
       apiKey: "AIzaSyAgv4TDYnR60TXnns-LISqbZTgcdLT31cc",
       authDomain: "gestionlwanga.firebaseapp.com",
-      projectId: "gestionlwanga",
-      storageBucket: "gestionlwanga.firebasestorage.app",
-      messagingSenderId: "622604298611",
-      appId: "1:622604298611:web:4ab4314ed3eec6826c3d06"
+      projectId: "gestionlwanga"
     };
 
     const app = initializeApp(firebaseConfig);
@@ -174,29 +172,21 @@
         const userCredential = await signInWithEmailAndPassword(auth, email, password);
         const user = userCredential.user;
 
-        // Récupérer le rôle depuis Firestore
         const snap = await getDoc(doc(db, "users", user.uid));
-        if(!snap.exists()) throw new Error("Profil utilisateur introuvable.");
+        if (!snap.exists()) throw new Error("Profil utilisateur introuvable.");
 
         const data = snap.data();
         const role = (data.role || "inconnu").toLowerCase();
+        const redirectUrl = roleRedirects[role];
+
+        if (!redirectUrl) throw new Error("Rôle non reconnu : " + role);
 
         successMessage.textContent = `✅ Connexion réussie ! Bienvenue ${data.nom || user.email}`;
+        console.log("✅ UID :", user.uid);
+        console.log("✅ Rôle :", role);
+        console.log("✅ Redirection vers :", redirectUrl);
 
-        // Redirection selon rôle
-        const roleRedirects = {
-          admin: "dashboard.html",
-          prefet: "dashboard.html",
-          directeur_etudes: "dashboard.html",
-          directeur_discipline: "dashboard.html",
-          secretaire: "dashboard.html",
-          econome: "dashboard.html",
-          enseignant: "dashboard.html",
-          eleve: "dashboard.html"
-        };
-
-        const redirectUrl = roleRedirects[role] || "connexion.html";
-        setTimeout(()=> window.location.href = redirectUrl, 700);
+        setTimeout(() => window.location.href = redirectUrl, 700);
 
       } catch (err) {
         console.error(err);
