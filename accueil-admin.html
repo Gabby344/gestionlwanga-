@@ -149,13 +149,13 @@
 
       const data = docSnap.data();
       const nomComplet = [data.nom, data.postNom, data.prenom].filter(Boolean).join(" ") || "Utilisateur";
-      const role = data.role?.toLowerCase() || "inconnu";
+      const role = data.role?.toLowerCase().trim() || "inconnu";
 
       welcomeMsg.textContent = `Bienvenue ${nomComplet} · Rôle : ${role}`;
 
       const modules = modulesParRole[role];
-      if (!modules) {
-        welcomeMsg.textContent += " · Aucun module disponible.";
+      if (!modules || modules.length === 0) {
+        moduleList.innerHTML = "<p style='text-align:center;'>⛔ Aucun module disponible pour ce rôle.</p>";
         return;
       }
 
