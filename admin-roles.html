@@ -1,0 +1,193 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Gestion des rôles · Admin</title>
+  <link rel="icon" href="favicon.ico" />
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600&display=swap" rel="stylesheet" />
+  <style>
+    body {
+      font-family: 'Inter', sans-serif;
+      background-color: #f9fafb;
+      color: #374151;
+      padding: 2rem;
+    }
+
+    h1 {
+      text-align: center;
+      color: #1e3a8a;
+      margin-bottom: 1rem;
+    }
+
+    .section {
+      max-width: 800px;
+      margin: auto;
+      background: white;
+      padding: 2rem;
+      border-radius: 12px;
+      box-shadow: 0 4px 10px rgba(0,0,0,0.05);
+      margin-bottom: 2rem;
+    }
+
+    .section h2 {
+      color: #1e3a8a;
+      margin-bottom: 1rem;
+    }
+
+    input, select, textarea {
+      width: 100%;
+      padding: 0.75rem;
+      margin-bottom: 1rem;
+      border: 1px solid #d1d5db;
+      border-radius: 8px;
+      font-size: 1rem;
+    }
+
+    button {
+      padding: 0.75rem 1rem;
+      background-color: #1e3a8a;
+      color: white;
+      border: none;
+      border-radius: 8px;
+      font-weight: 600;
+      cursor: pointer;
+    }
+
+    .role-card {
+      background-color: #f1f5f9;
+      padding: 1rem;
+      border-radius: 8px;
+      margin-bottom: 1rem;
+    }
+
+    .role-card h3 {
+      margin: 0;
+      color: #1e3a8a;
+    }
+
+    .role-card ul {
+      margin-top: 0.5rem;
+      padding-left: 1.2rem;
+    }
+
+    #notification-area {
+      position: fixed;
+      top: 20px;
+      right: 20px;
+      z-index: 9999;
+      font-weight: 600;
+      padding: 0.75rem 1rem;
+      border-radius: 8px;
+      background-color: #1e3a8a;
+      color: white;
+      display: none;
+    }
+  </style>
+</head>
+<body>
+  <h1>🔐 Gestion des rôles et utilisateurs</h1>
+
+  <div class="section">
+    <h2>👤 Ajouter un utilisateur</h2>
+    <input type="text" id="userNom" placeholder="Nom complet" />
+    <input type="email" id="userEmail" placeholder="Email" />
+    <select id="userRole">
+      <option value="">Sélectionner un rôle</option>
+      <option value="prefet">Prefet</option>
+      <option value="directeur_etudes">Directeur des études</option>
+      <option value="directeur_discipline">Directeur de discipline</option>
+      <option value="secretaire">Secrétaire</option>
+      <option value="econome">Économe</option>
+    </select>
+    <button onclick="ajouterUtilisateur()">➕ Ajouter</button>
+  </div>
+
+  <div class="section">
+    <h2>📋 Rôles et modules</h2>
+    <div id="rolesContainer">Chargement...</div>
+  </div>
+
+  <div id="notification-area"></div>
+
+  <script type="module">
+    import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-app.js";
+    import { getAuth, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-auth.js";
+    import { getFirestore, collection, doc, setDoc, getDocs } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore.js";
+
+    const firebaseConfig = {
+      apiKey: "AIzaSyAgv4TDYnR60TXnns-LISqbZTgcdLT31cc",
+      authDomain: "gestionlwanga.firebaseapp.com",
+      projectId: "gestionlwanga"
+    };
+
+    const app = initializeApp(firebaseConfig);
+    const auth = getAuth(app);
+    const db = getFirestore(app);
+
+    const notify = document.getElementById("notification-area");
+    const rolesContainer = document.getElementById("rolesContainer");
+
+    function showNotification(message, type = "success") {
+      notify.textContent = message;
+      notify.style.backgroundColor = type === "error" ? "#dc2626" : "#1e3a8a";
+      notify.style.display = "block";
+      setTimeout(() => notify.style.display = "none", 3000);
+    }
+
+    async function ajouterUtilisateur() {
+      const nom = document.getElementById("userNom").value.trim();
+      const email = document.getElementById("userEmail").value.trim();
+      const role = document.getElementById("userRole").value;
+
+      if (!nom || !email || !role) {
+        showNotification("⛔ Tous les champs sont requis", "error");
+        return;
+      }
+
+      const uid = email.split("@")[0].replace(/\./g, "_");
+
+      try {
+        await setDoc(doc(db, "users", uid), {
+          nom,
+          email,
+          role,
+          createdAt: new Date().toISOString()
+        });
+        showNotification("✅ Utilisateur ajouté !");
+      } catch (err) {
+        console.error(err);
+        showNotification("❌ Erreur lors de l’ajout", "error");
+      }
+    }
+
+    async function chargerRoles() {
+      try {
+        const snap = await getDocs(collection(db, "roles"));
+        rolesContainer.innerHTML = "";
+        snap.forEach(docSnap => {
+          const data = docSnap.data();
+          const div = document.createElement("div");
+          div.className = "role-card";
+          div.innerHTML = `
+            <h3>${docSnap.id}</h3>
+            <ul>${data.modules.map(m => `<li>${m}</li>`).join("")}</ul>
+          `;
+          rolesContainer.appendChild(div);
+        });
+      } catch (err) {
+        console.error(err);
+        showNotification("❌ Erreur de chargement des rôles", "error");
+      }
+    }
+
+    onAuthStateChanged(auth, (user) => {
+      if (!user) {
+        window.location.href = "login.html";
+        return;
+      }
+      chargerRoles();
+    });
+  </script>
+</body>
+</html>
