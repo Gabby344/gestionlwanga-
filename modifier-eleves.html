@@ -3,108 +3,203 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Ajouter un élève</title>
-  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600&display=swap" rel="stylesheet">
+  <title>Modifier Élève · Secrétaire</title>
+  <link rel="icon" href="favicon.ico" />
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600&display=swap" rel="stylesheet" />
   <style>
-    :root {
-      --bleu: #1e3a8a;
-      --gris: #374151;
-      --vert: #065f46;
-      --fond: #f9fafb;
-    }
     body {
       font-family: 'Inter', sans-serif;
-      background-color: var(--fond);
-      margin: 0;
+      background-color: #f9fafb;
+      color: #374151;
       padding: 2rem;
-      color: var(--gris);
     }
+
     h1 {
       text-align: center;
-      color: var(--bleu);
+      color: #1e3a8a;
       margin-bottom: 1rem;
     }
-    form {
-      max-width: 400px;
+
+    .search {
+      max-width: 500px;
       margin: auto;
-      background: white;
-      padding: 1.5rem;
-      border-radius: 8px;
-      box-shadow: 0 0 10px rgba(0,0,0,0.05);
+      margin-bottom: 2rem;
+      display: flex;
+      gap: 1rem;
     }
-    input, select, button {
-      width: 100%;
+
+    .search input {
+      flex: 1;
       padding: 0.75rem;
-      margin-bottom: 1rem;
-      border: 1px solid var(--gris);
-      border-radius: 4px;
+      border: 1px solid #d1d5db;
+      border-radius: 8px;
       font-size: 1rem;
     }
-    button {
-      background-color: var(--vert);
+
+    .search button {
+      padding: 0.75rem 1rem;
+      background-color: #1e3a8a;
       color: white;
-      font-weight: bold;
+      border: none;
+      border-radius: 8px;
+      font-weight: 600;
       cursor: pointer;
     }
-    button:hover {
-      background-color: #047857;
+
+    form {
+      max-width: 600px;
+      margin: auto;
+      background: white;
+      padding: 2rem;
+      border-radius: 12px;
+      box-shadow: 0 4px 10px rgba(0,0,0,0.05);
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 1rem;
     }
-    #message {
-      text-align: center;
-      margin-top: 1rem;
+
+    form input, form select {
+      padding: 0.75rem;
+      border: 1px solid #d1d5db;
+      border-radius: 8px;
+      font-size: 1rem;
+      width: 100%;
+    }
+
+    form button {
+      grid-column: span 2;
+      padding: 0.75rem;
+      background-color: #1e3a8a;
+      color: white;
+      border: none;
+      border-radius: 8px;
+      font-weight: 600;
+      cursor: pointer;
+    }
+
+    #notification-area {
+      position: fixed;
+      top: 20px;
+      right: 20px;
+      z-index: 9999;
+    }
+
+    @media (max-width: 600px) {
+      form {
+        grid-template-columns: 1fr;
+      }
+      form button {
+        grid-column: span 1;
+      }
     }
   </style>
 </head>
 <body>
-  <h1>➕ Ajouter un élève</h1>
-  <form id="eleveForm">
+  <h1>🛠️ Modifier une fiche élève</h1>
+
+  <div class="search">
+    <input type="text" id="eleveId" placeholder="ID du document Firestore" />
+    <button id="loadBtn">🔍 Charger</button>
+  </div>
+
+  <form id="modificationForm" style="display:none;">
     <input type="text" id="nom" placeholder="Nom" required />
+    <input type="text" id="postNom" placeholder="Post-nom" />
     <input type="text" id="prenom" placeholder="Prénom" required />
-    <input type="text" id="classe" placeholder="Classe (ex: 6e A)" required />
-    <input type="date" id="dateNaissance" required />
-    <select id="statutPaiement">
-      <option value="">Statut de paiement</option>
-      <option value="Payé">Payé</option>
-      <option value="Partiel">Partiel</option>
-      <option value="Non payé">Non payé</option>
+    <select id="sexe" required>
+      <option value="">Sexe</option>
+      <option value="masculin">Masculin</option>
+      <option value="féminin">Féminin</option>
     </select>
-    <button type="submit">Enregistrer</button>
+    <input type="date" id="dateNaissance" required />
+    <input type="text" id="classe" placeholder="Classe" required />
+    <input type="text" id="section" placeholder="Section" />
+    <input type="text" id="option" placeholder="Option" />
+    <input type="text" id="adresse" placeholder="Adresse" />
+    <input type="text" id="tuteurNom" placeholder="Nom du tuteur" />
+    <input type="tel" id="tuteurTel" placeholder="Téléphone du tuteur" />
+    <button type="submit">💾 Enregistrer les modifications</button>
   </form>
-  <p id="message"></p>
 
-  <!-- Firebase SDK -->
-  <script src="https://www.gstatic.com/firebasejs/10.5.2/firebase-app.js"></script>
-  <script src="https://www.gstatic.com/firebasejs/10.5.2/firebase-firestore.js"></script>
+  <div id="notification-area"></div>
 
-  <script>
+  <script type="module">
+    import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-app.js";
+    import { getAuth } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-auth.js";
+    import { getFirestore, doc, getDoc, updateDoc } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore.js";
+    import { protectPage, showNotification } from './authGuard.js';
+
+    protectPage(["secretaire"]);
+
     const firebaseConfig = {
-      apiKey: "TON_API_KEY",
-      authDomain: "TON_DOMAINE.firebaseapp.com",
-      projectId: "TON_PROJECT_ID",
+      apiKey: "AIzaSyAgv4TDYnR60TXnns-LISqbZTgcdLT31cc",
+      authDomain: "gestionlwanga.firebaseapp.com",
+      projectId: "gestionlwanga"
     };
-    firebase.initializeApp(firebaseConfig);
-    const db = firebase.firestore();
 
-    document.getElementById('eleveForm').addEventListener('submit', function(e) {
+    const app = initializeApp(firebaseConfig);
+    const auth = getAuth(app);
+    const db = getFirestore(app);
+
+    const loadBtn = document.getElementById("loadBtn");
+    const eleveIdInput = document.getElementById("eleveId");
+    const form = document.getElementById("modificationForm");
+
+    loadBtn.addEventListener("click", async () => {
+      const id = eleveIdInput.value.trim();
+      if (!id) return showNotification("⛔ Veuillez entrer un ID valide", "error");
+
+      try {
+        const snap = await getDoc(doc(db, "eleves", id));
+        if (!snap.exists()) return showNotification("⛔ Élève introuvable", "error");
+
+        const data = snap.data();
+        form.nom.value = data.nom || "";
+        form.postNom.value = data.postNom || "";
+        form.prenom.value = data.prenom || "";
+        form.sexe.value = data.sexe || "";
+        form.dateNaissance.value = data.dateNaissance || "";
+        form.classe.value = data.classe || "";
+        form.section.value = data.section || "";
+        form.option.value = data.option || "";
+        form.adresse.value = data.adresse || "";
+        form.tuteurNom.value = data.tuteurNom || "";
+        form.tuteurTel.value = data.tuteurTel || "";
+
+        form.style.display = "grid";
+        showNotification("✅ Élève chargé !");
+      } catch (err) {
+        console.error(err);
+        showNotification("❌ Erreur lors du chargement", "error");
+      }
+    });
+
+    form.addEventListener("submit", async (e) => {
       e.preventDefault();
-      const nom = document.getElementById('nom').value;
-      const prenom = document.getElementById('prenom').value;
-      const classe = document.getElementById('classe').value;
-      const dateNaissance = document.getElementById('dateNaissance').value;
-      const statutPaiement = document.getElementById('statutPaiement').value;
+      const id = eleveIdInput.value.trim();
+      if (!id) return;
 
-      db.collection("eleves").add({
-        nom,
-        prenom,
-        classe,
-        dateNaissance,
-        statutPaiement
-      }).then(() => {
-        document.getElementById('message').textContent = "✅ Élève ajouté avec succès !";
-        document.getElementById('eleveForm').reset();
-      }).catch((error) => {
-        document.getElementById('message').textContent = "❌ Erreur : " + error.message;
-      });
+      const updated = {
+        nom: form.nom.value.trim(),
+        postNom: form.postNom.value.trim(),
+        prenom: form.prenom.value.trim(),
+        sexe: form.sexe.value,
+        dateNaissance: form.dateNaissance.value,
+        classe: form.classe.value.trim(),
+        section: form.section.value.trim(),
+        option: form.option.value.trim(),
+        adresse: form.adresse.value.trim(),
+        tuteurNom: form.tuteurNom.value.trim(),
+        tuteurTel: form.tuteurTel.value.trim()
+      };
+
+      try {
+        await updateDoc(doc(db, "eleves", id), updated);
+        showNotification("✅ Modifications enregistrées !");
+      } catch (err) {
+        console.error(err);
+        showNotification("❌ Erreur lors de l’enregistrement", "error");
+      }
     });
   </script>
 </body>
