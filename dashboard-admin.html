@@ -3,150 +3,216 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Dashboard Admin · ISC Lwanga</title>
+  <title>Tableau de bord · Admin</title>
   <link rel="icon" href="favicon.ico" />
-  <meta name="theme-color" content="#1e40af" />
-  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700&display=swap" rel="stylesheet" />
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600&display=swap" rel="stylesheet" />
   <style>
     :root {
-      --bleu-fonce: #1e40af;
-      --gris-fonce: #1f2937;
-      --vert: #10b981;
+      --bleu: #1e3a8a;
+      --bleu-clair: #3b82f6;
+      --gris: #374151;
+      --fond: #f9fafb;
+      --carte: #ffffff;
+      --ombre: rgba(0, 0, 0, 0.05);
       --rouge: #ef4444;
-      --fond: #f4f6f8;
+      --jaune: #facc15;
+      --vert: #10b981;
     }
+
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
+
     body {
       font-family: 'Inter', sans-serif;
-      background: var(--fond);
-      margin: 0;
-      color: var(--gris-fonce);
+      background-color: var(--fond);
+      color: var(--gris);
+      padding: 2rem;
     }
-    .header {
-      background: white;
-      padding: 1rem 2rem;
-      box-shadow: 0 1px 5px rgba(0,0,0,0.08);
-      display: flex;
-      justify-content: space-between;
-      align-items: center;
-    }
-    .header h1 {
-      margin: 0;
-      color: var(--bleu-fonce);
+
+    h1 {
+      text-align: center;
+      color: var(--bleu);
+      margin-bottom: 1rem;
       font-weight: 700;
     }
-    .user-info {
+
+    .info {
+      text-align: center;
+      margin-bottom: 2rem;
+      font-size: 1rem;
       font-weight: 500;
     }
-    .btn-logout {
-      background: var(--rouge);
-      color: white;
-      padding: 0.5rem 1rem;
-      border: none;
-      border-radius: 6px;
-      cursor: pointer;
-    }
-    .main-content {
-      max-width: 1200px;
+
+    .grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+      gap: 1.2rem;
+      max-width: 1000px;
       margin: auto;
-      padding: 1rem;
     }
-    .card-stat {
-      background: white;
-      padding: 1rem;
-      border-radius: 10px;
-      box-shadow: 0 2px 6px rgba(0,0,0,0.1);
-      margin-bottom: 1rem;
-      font-weight: 600;
-      transition: background 0.3s ease, transform 0.3s ease;
-    }
-    .card-stat:hover {
-      background: #e0f2fe;
-      transform: translateY(-2px);
-    }
-    .menu-item {
-      background: white;
-      padding: 1rem;
-      border-radius: 8px;
+
+    .card {
+      background-color: var(--carte);
+      padding: 1.2rem;
+      border-radius: 12px;
+      box-shadow: 0 4px 10px var(--ombre);
       text-align: center;
-      text-decoration: none;
-      color: var(--gris-fonce);
-      display: inline-block;
-      width: 150px;
-      margin: 0.5rem;
-      box-shadow: 0 1px 4px rgba(0,0,0,0.05);
-      transition: transform 0.2s;
+      transition: transform 0.2s ease, background 0.2s ease;
     }
-    .menu-item:hover {
-      transform: scale(1.05);
+
+    .card:hover {
+      transform: translateY(-4px);
+      background-color: #f1f5f9;
+    }
+
+    .card h2 {
+      font-size: 2rem;
+      color: var(--bleu);
+      margin-bottom: 0.5rem;
+    }
+
+    .card p {
+      font-size: 0.95rem;
+      color: #6b7280;
+    }
+
+    .alertes {
+      margin-top: 3rem;
+      max-width: 800px;
+      margin-inline: auto;
+    }
+
+    .alertes h3 {
+      color: var(--rouge);
+      margin-bottom: 1rem;
+      text-align: center;
+    }
+
+    .alerte {
+      background-color: #fef2f2;
+      border-left: 4px solid var(--rouge);
+      padding: 1rem;
+      margin-bottom: 1rem;
+      border-radius: 8px;
+      font-size: 0.95rem;
+    }
+
+    footer {
+      margin-top: 4rem;
+      text-align: center;
+      font-size: 0.85rem;
+      color: #6b7280;
+    }
+
+    @media (max-width: 600px) {
+      .card h2 {
+        font-size: 1.5rem;
+      }
     }
   </style>
 </head>
 <body>
-  <div id="notification-area" aria-live="polite"></div>
+  <h1>📊 Tableau de bord Administratif</h1>
+  <div class="info" id="adminInfo">Chargement...</div>
 
-  <div class="header" role="banner">
-    <h1 id="dashboardTitle">Tableau de bord · ADMIN · ISC Lwanga</h1>
-    <div class="user-info" id="userInfo">Chargement...</div>
-    <button class="btn-logout" id="logoutBtn" aria-label="Déconnexion">Déconnexion</button>
+  <div class="grid" id="statsGrid">
+    <!-- Statistiques dynamiques -->
   </div>
 
-  <div class="main-content" role="main">
-    <h2>Bienvenue 👋</h2>
-    <p id="welcomeMessage">Chargement du profil...</p>
-
-    <h2>Statistiques</h2>
-    <div class="card-stat" id="stat-eleves">Élèves: ...</div>
-    <div class="card-stat" id="stat-enseignants">Enseignants: ...</div>
-    <div class="card-stat" id="stat-bulletins">Bulletins: ...</div>
-    <div class="card-stat" id="stat-paiements">Paiements: ...</div>
-
-    <h2>Modules</h2>
-    <a href="eleves.html" class="menu-item">Gestion Élèves</a>
-    <a href="enseignants.html" class="menu-item">Gestion Enseignants</a>
-    <a href="bulletins.html" class="menu-item">Bulletins</a>
-    <a href="cours.html" class="menu-item">Planning Cours</a>
-    <a href="paiements.html" class="menu-item">Suivi Paiements</a>
-    <a href="admin.html" class="menu-item">Paramètres Admin</a>
+  <div class="alertes" id="alertesSection">
+    <h3>🔔 Alertes</h3>
+    <!-- Alertes dynamiques -->
   </div>
+
+  <footer>
+    &copy; 2025 · Institut Saint Charles Lwanga · Lubumbashi
+  </footer>
 
   <script type="module">
-    import { protectPage, logoutUser } from './authGuard.js';
-    import { auth, db } from './config.js';
-    import { onAuthStateChanged } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-auth.js";
-    import { doc, getDoc, collection, getDocs } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore.js";
+    import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-app.js";
+    import { getAuth, onAuthStateChanged, signOut } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-auth.js";
+    import { getFirestore, collection, getDocs, doc, getDoc, query, where } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore.js";
+    import { protectPage } from './authGuard.js';
 
-    protectPage(['admin']);
-    document.getElementById('logoutBtn').addEventListener('click', logoutUser);
+    protectPage(["admin"]);
 
-    const userInfo = document.getElementById('userInfo');
-    const welcomeMessage = document.getElementById('welcomeMessage');
+    const firebaseConfig = {
+      apiKey: "AIzaSyAgv4TDYnR60TXnns-LISqbZTgcdLT31cc",
+      authDomain: "gestionlwanga.firebaseapp.com",
+      projectId: "gestionlwanga"
+    };
 
-    onAuthStateChanged(auth, async user => {
-      if (!user) return;
+    const app = initializeApp(firebaseConfig);
+    const auth = getAuth(app);
+    const db = getFirestore(app);
 
-      const userDoc = await getDoc(doc(db, "users", user.uid));
-      if (!userDoc.exists()) return;
+    const adminInfo = document.getElementById("adminInfo");
+    const statsGrid = document.getElementById("statsGrid");
+    const alertesSection = document.getElementById("alertesSection");
 
-      const data = userDoc.data();
-      const nomComplet = [data.nom, data.postNom, data.prenom].filter(Boolean).join(" ") || "Administrateur";
-      const role = data.role || "admin";
+    onAuthStateChanged(auth, async (user) => {
+      if (!user) {
+        window.location.href = "login.html";
+        return;
+      }
 
-      userInfo.textContent = `${nomComplet} (${role})`;
-      welcomeMessage.textContent = `Bonjour ${nomComplet}, prêt à orchestrer l’école ?`;
+      const snap = await getDoc(doc(db, "users", user.uid));
+      if (!snap.exists()) {
+        adminInfo.textContent = "⛔ Profil introuvable.";
+        return;
+      }
 
-      const usersSnap = await getDocs(collection(db, "users"));
-      let eleves = 0, enseignants = 0;
+      const data = snap.data();
+      const role = data.role?.toLowerCase().trim() || "inconnu";
+      const nomComplet = [data.nom, data.postNom, data.prenom].filter(Boolean).join(" ") || "Admin";
 
-      usersSnap.forEach(doc => {
-        const r = doc.data().role;
-        if (r === "eleve") eleves++;
-        if (r === "enseignant") enseignants++;
+      if (role !== "admin") {
+        adminInfo.textContent = "⛔ Accès refusé.";
+        await signOut(auth);
+        window.location.href = "login.html";
+        return;
+      }
+
+      adminInfo.textContent = `Bienvenue ${nomComplet} · Rôle : ${role}`;
+
+      // 📊 Statistiques dynamiques
+      const [elevesSnap, enseignantsSnap, paiementsSnap, bulletinsSnap] = await Promise.all([
+        getDocs(collection(db, "eleves")),
+        getDocs(query(collection(db, "users"), where("role", "==", "enseignant"))),
+        getDocs(collection(db, "paiements")),
+        getDocs(collection(db, "bulletins"))
+      ]);
+
+      const stats = [
+        { label: "🎒 Élèves", value: elevesSnap.size },
+        { label: "🧑‍🏫 Enseignants", value: enseignantsSnap.size },
+        { label: "💰 Paiements", value: paiementsSnap.size },
+        { label: "📄 Bulletins", value: bulletinsSnap.size }
+      ];
+
+      stats.forEach(stat => {
+        const div = document.createElement("div");
+        div.className = "card";
+        div.innerHTML = `<h2>${stat.value}</h2><p>${stat.label}</p>`;
+        statsGrid.appendChild(div);
       });
 
-      document.getElementById("stat-eleves").textContent = `Élèves: ${eleves}`;
-      document.getElementById("stat-enseignants").textContent = `Enseignants: ${enseignants}`;
-      document.getElementById("stat-bulletins").textContent = `Bulletins: ${Math.floor(eleves * 0.8)}`;
-      document.getElementById("stat-paiements").textContent = `Paiements: ${Math.floor(eleves * 0.6)}`;
+      // 🔔 Alertes simulées (à adapter selon ta structure)
+      const alertes = [
+        "5 paiements en retard détectés ce mois.",
+        "12 bulletins non encore validés.",
+        "3 élèves sans affectation de classe."
+      ];
+
+      alertes.forEach(msg => {
+        const div = document.createElement("div");
+        div.className = "alerte";
+        div.textContent = msg;
+        alertesSection.appendChild(div);
+      });
     });
   </script>
 </body>
