@@ -1,10 +1,12 @@
 <!DOCTYPE html>
 <html lang="fr">
 <head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>Dashboard Admin · ISC Lwanga</title>
-  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700&display=swap" rel="stylesheet">
+  <link rel="icon" href="favicon.ico" />
+  <meta name="theme-color" content="#1e40af" />
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700&display=swap" rel="stylesheet" />
   <style>
     :root {
       --bleu-fonce: #1e40af;
@@ -55,6 +57,11 @@
       box-shadow: 0 2px 6px rgba(0,0,0,0.1);
       margin-bottom: 1rem;
       font-weight: 600;
+      transition: background 0.3s ease, transform 0.3s ease;
+    }
+    .card-stat:hover {
+      background: #e0f2fe;
+      transform: translateY(-2px);
     }
     .menu-item {
       background: white;
@@ -75,15 +82,18 @@
   </style>
 </head>
 <body>
-  <div id="notification-area"></div>
+  <div id="notification-area" aria-live="polite"></div>
 
-  <div class="header">
-    <h1 id="dashboardTitle">Dashboard Admin</h1>
+  <div class="header" role="banner">
+    <h1 id="dashboardTitle">Tableau de bord · ADMIN · ISC Lwanga</h1>
     <div class="user-info" id="userInfo">Chargement...</div>
-    <button class="btn-logout" id="logoutBtn">Déconnexion</button>
+    <button class="btn-logout" id="logoutBtn" aria-label="Déconnexion">Déconnexion</button>
   </div>
 
-  <div class="main-content">
+  <div class="main-content" role="main">
+    <h2>Bienvenue 👋</h2>
+    <p id="welcomeMessage">Chargement du profil...</p>
+
     <h2>Statistiques</h2>
     <div class="card-stat" id="stat-eleves">Élèves: ...</div>
     <div class="card-stat" id="stat-enseignants">Enseignants: ...</div>
@@ -109,32 +119,34 @@
     document.getElementById('logoutBtn').addEventListener('click', logoutUser);
 
     const userInfo = document.getElementById('userInfo');
+    const welcomeMessage = document.getElementById('welcomeMessage');
 
     onAuthStateChanged(auth, async user => {
-      if (user) {
-        const userDoc = await getDoc(doc(db, "users", user.uid));
-        if (userDoc.exists()) {
-          const data = userDoc.data();
-          userInfo.textContent = `${data.nom || ''} ${data.prenom || ''} (${data.role})`;
-        }
+      if (!user) return;
 
-        // Charger les statistiques
-        const elevesSnap = await getDocs(collection(db, "users"));
-        const enseignants = [];
-        const eleves = [];
-        elevesSnap.forEach(doc => {
-          const d = doc.data();
-          if (d.role === "enseignant") enseignants.push(d);
-          if (d.role === "eleve") eleves.push(d);
-        });
+      const userDoc = await getDoc(doc(db, "users", user.uid));
+      if (!userDoc.exists()) return;
 
-        document.getElementById("stat-eleves").textContent = `Élèves: ${eleves.length}`;
-        document.getElementById("stat-enseignants").textContent = `Enseignants: ${enseignants.length}`;
+      const data = userDoc.data();
+      const nomComplet = [data.nom, data.postNom, data.prenom].filter(Boolean).join(" ") || "Administrateur";
+      const role = data.role || "admin";
 
-        // Simuler les autres stats (à connecter plus tard)
-        document.getElementById("stat-bulletins").textContent = `Bulletins: ${Math.floor(eleves.length * 0.8)}`;
-        document.getElementById("stat-paiements").textContent = `Paiements: ${Math.floor(eleves.length * 0.6)}`;
-      }
+      userInfo.textContent = `${nomComplet} (${role})`;
+      welcomeMessage.textContent = `Bonjour ${nomComplet}, prêt à orchestrer l’école ?`;
+
+      const usersSnap = await getDocs(collection(db, "users"));
+      let eleves = 0, enseignants = 0;
+
+      usersSnap.forEach(doc => {
+        const r = doc.data().role;
+        if (r === "eleve") eleves++;
+        if (r === "enseignant") enseignants++;
+      });
+
+      document.getElementById("stat-eleves").textContent = `Élèves: ${eleves}`;
+      document.getElementById("stat-enseignants").textContent = `Enseignants: ${enseignants}`;
+      document.getElementById("stat-bulletins").textContent = `Bulletins: ${Math.floor(eleves * 0.8)}`;
+      document.getElementById("stat-paiements").textContent = `Paiements: ${Math.floor(eleves * 0.6)}`;
     });
   </script>
 </body>
