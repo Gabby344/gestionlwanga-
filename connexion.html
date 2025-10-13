@@ -7,8 +7,119 @@
   <link rel="icon" type="image/jpeg" href="logo.jpeg">
   <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700&display=swap" rel="stylesheet">
   <style>
-    /* Styles inchangés — déjà excellents */
-    /* ... */
+    :root {
+      --bleu-principal: #1e40af;
+      --bleu-clair: #3b82f6;
+      --fond-gradient: linear-gradient(135deg, var(--bleu-principal), var(--bleu-clair));
+      --ombre: rgba(0,0,0,0.15);
+      --blanc: #ffffff;
+      --rouge: #ef4444;
+      --vert: #10b981;
+    }
+
+    * { margin:0; padding:0; box-sizing:border-box; }
+
+    body {
+      font-family: 'Inter', sans-serif;
+      background: var(--fond-gradient);
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      min-height: 100vh;
+    }
+
+    .container {
+      background: var(--blanc);
+      padding: 50px 35px;
+      border-radius: 16px;
+      box-shadow: 0 10px 30px var(--ombre);
+      max-width: 400px;
+      width: 100%;
+      text-align: center;
+      animation: fadeIn 0.8s ease-in-out;
+    }
+
+    .container img {
+      width: 90px;
+      margin-bottom: 20px;
+    }
+
+    h1 {
+      font-size: 1.5rem;
+      color: var(--bleu-principal);
+      margin-bottom: 25px;
+      font-weight: 700;
+    }
+
+    form {
+      display: flex;
+      flex-direction: column;
+      gap: 15px;
+      margin-bottom: 15px;
+    }
+
+    input {
+      padding: 12px;
+      border-radius: 8px;
+      border: 1px solid #d1d5db;
+      font-size: 1rem;
+      transition: all 0.3s ease;
+    }
+
+    input:focus {
+      outline: none;
+      border-color: var(--bleu-principal);
+      box-shadow: 0 0 0 2px #dbeafe;
+    }
+
+    button {
+      padding: 12px;
+      background: var(--bleu-principal);
+      color: var(--blanc);
+      border: none;
+      border-radius: 8px;
+      font-weight: 600;
+      cursor: pointer;
+      font-size: 1rem;
+      transition: all 0.3s ease;
+    }
+
+    button:hover {
+      background: #0f2f79;
+      transform: scale(1.02);
+    }
+
+    #errorMessage, #successMessage {
+      font-size: 0.9rem;
+      min-height: 18px;
+    }
+
+    #errorMessage { color: var(--rouge); margin-bottom: 10px; }
+    #successMessage { color: var(--vert); margin-bottom: 10px; }
+
+    .link {
+      color: var(--bleu-principal);
+      text-decoration: none;
+      font-size: 0.9rem;
+    }
+
+    .link:hover { text-decoration: underline; }
+
+    footer {
+      margin-top: 20px;
+      font-size: 0.8rem;
+      color: #6b7280;
+    }
+
+    @keyframes fadeIn {
+      from { opacity:0; transform: translateY(15px); }
+      to { opacity:1; transform: translateY(0); }
+    }
+
+    @media(max-width:480px){
+      .container { padding: 35px 20px; }
+      h1 { font-size: 1.3rem; }
+    }
   </style>
 </head>
 <body>
