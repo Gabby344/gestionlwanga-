@@ -3,230 +3,250 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Liste des Élèves · ISC Lwanga</title>
-  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700&display=swap" rel="stylesheet">
+  <title>Liste des élèves · Secrétaire</title>
+  <link rel="icon" href="favicon.ico" />
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600&display=swap" rel="stylesheet" />
   <style>
-    :root {
-      --bleu-fonce: #1e40af;
-      --gris-fonce: #1f2937;
-      --fond: #f9fafb;
-      --indigo: #4f46e5;
-      --ombre-legere: rgba(0, 0, 0, 0.08);
-      --vert: #10b981;
-    }
     body {
       font-family: 'Inter', sans-serif;
-      background-color: var(--fond);
-      margin: 0;
-      padding: 2rem 1rem;
-      color: var(--gris-fonce);
+      background-color: #f9fafb;
+      color: #374151;
+      padding: 2rem;
     }
 
     h1 {
       text-align: center;
-      color: var(--bleu-fonce);
-      font-size: 1.8rem;
-      margin-bottom: 0.3rem;
-    }
-    h2 {
-      text-align: center;
-      color: #6b7280;
-      font-weight: 400;
-      font-size: 1rem;
-      margin-bottom: 2rem;
+      color: #1e3a8a;
+      margin-bottom: 1rem;
     }
 
-    .toolbar {
-      display: flex;
-      justify-content: space-between;
-      align-items: center;
+    .actions {
+      max-width: 700px;
+      margin: auto;
       margin-bottom: 1.5rem;
-      flex-wrap: wrap;
+      display: flex;
       gap: 1rem;
+      justify-content: space-between;
     }
 
-    select, input[type="text"] {
-      padding: 0.6rem 1rem;
+    .actions input {
+      flex: 1;
+      padding: 0.75rem;
       border: 1px solid #d1d5db;
-      border-radius: 6px;
+      border-radius: 8px;
       font-size: 1rem;
-      background-color: white;
     }
 
-    .table-container {
-      background: white;
-      border-radius: 12px;
-      box-shadow: 0 3px 8px var(--ombre-legere);
-      overflow-x: auto;
+    .actions button {
+      padding: 0.75rem 1rem;
+      background-color: #1e3a8a;
+      color: white;
+      border: none;
+      border-radius: 8px;
+      font-weight: 600;
+      cursor: pointer;
     }
 
     table {
       width: 100%;
       border-collapse: collapse;
-      min-width: 900px;
+      background: white;
+      box-shadow: 0 4px 10px rgba(0,0,0,0.05);
+      border-radius: 12px;
+      overflow: hidden;
     }
 
     th, td {
+      padding: 0.75rem;
       text-align: left;
-      padding: 0.9rem 1rem;
       border-bottom: 1px solid #e5e7eb;
     }
 
     th {
-      background-color: var(--indigo);
+      background-color: #1e3a8a;
       color: white;
-      text-transform: uppercase;
-      font-size: 0.85rem;
     }
 
     tr:hover {
-      background-color: #f3f4f6;
+      background-color: #f1f5f9;
+    }
+
+    .btn {
+      padding: 0.4rem 0.8rem;
+      background-color: #1e3a8a;
+      color: white;
+      border: none;
+      border-radius: 6px;
+      font-size: 0.9rem;
+      cursor: pointer;
+      text-decoration: none;
+      margin-right: 0.5rem;
+    }
+
+    .btn.delete {
+      background-color: #dc2626;
+    }
+
+    .btn.view {
+      background-color: #059669;
     }
 
     #notification-area {
       position: fixed;
-      top: 1rem;
-      right: 1rem;
+      top: 20px;
+      right: 20px;
       z-index: 9999;
+      font-weight: 600;
+      padding: 0.75rem 1rem;
+      border-radius: 8px;
+      background-color: #1e3a8a;
+      color: white;
+      display: none;
     }
-    .notification {
-      opacity: 0;
-      transform: translateY(-10px);
-      transition: all 0.3s;
-      background: white;
-      border-left: 5px solid var(--vert);
-      padding: 1rem 1.2rem;
-      border-radius: 6px;
-      margin-bottom: 10px;
-      box-shadow: 0 3px 8px rgba(0, 0, 0, 0.1);
+
+    .stats {
+      max-width: 700px;
+      margin: 2rem auto 1rem;
+      font-weight: 500;
+      color: #1e3a8a;
     }
-    .notification.error { border-left-color: #ef4444; }
-    .notification.show { opacity: 1; transform: translateY(0); }
   </style>
 </head>
 <body>
-  <h1>Liste des Élèves</h1>
-  <h2>Affichage global pour tous les utilisateurs autorisés</h2>
+  <h1>📁 Liste des élèves inscrits</h1>
 
-  <div class="toolbar">
-    <input type="text" id="searchInput" placeholder="🔍 Rechercher un élève... (nom, matricule)">
-    <select id="filterClasse">
-      <option value="">Toutes les classes</option>
-    </select>
+  <div class="actions">
+    <input type="text" id="searchInput" placeholder="🔍 Rechercher par nom ou classe..." />
+    <button onclick="exportCSV()">📤 Exporter</button>
   </div>
 
-  <div class="table-container">
-    <table>
-      <thead>
-        <tr>
-          <th>Matricule</th>
-          <th>Nom</th>
-          <th>Post-Nom</th>
-          <th>Prénom</th>
-          <th>Classe</th>
-          <th>Sexe</th>
-          <th>Solde ($)</th>
-        </tr>
-      </thead>
-      <tbody id="tableEleves">
-        <tr><td colspan="7" style="text-align:center; padding:1rem;">Chargement...</td></tr>
-      </tbody>
-    </table>
-  </div>
+  <div class="stats" id="statsArea"></div>
+
+  <table id="eleveTable">
+    <thead>
+      <tr>
+        <th>Nom complet</th>
+        <th>Classe</th>
+        <th>Sexe</th>
+        <th>Actions</th>
+      </tr>
+    </thead>
+    <tbody></tbody>
+  </table>
 
   <div id="notification-area"></div>
 
   <script type="module">
-    import { protectPage, showNotification } from './authGuard.js';
     import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-app.js";
-    import { getFirestore, collection, getDocs } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore.js";
+    import { getAuth, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-auth.js";
+    import { getFirestore, collection, getDocs, deleteDoc, doc } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore.js";
 
-    // 🔒 Protection : accessible à tous les rôles autorisés
-    protectPage(['admin','prefet','directeur_etudes','directeur_discipline','secretaire','econome','enseignant']);
-
-    // 🔥 Config Firebase
     const firebaseConfig = {
       apiKey: "AIzaSyAgv4TDYnR60TXnns-LISqbZTgcdLT31cc",
       authDomain: "gestionlwanga.firebaseapp.com",
-      projectId: "gestionlwanga",
-      storageBucket: "gestionlwanga.firebasestorage.app",
-      messagingSenderId: "622604298611",
-      appId: "1:622604298611:web:4ab4314ed3eec6826c3d06"
+      projectId: "gestionlwanga"
     };
+
     const app = initializeApp(firebaseConfig);
+    const auth = getAuth(app);
     const db = getFirestore(app);
 
-    const tableEleves = document.getElementById("tableEleves");
+    const tbody = document.querySelector("tbody");
     const searchInput = document.getElementById("searchInput");
-    const filterClasse = document.getElementById("filterClasse");
+    const notify = document.getElementById("notification-area");
+    const statsArea = document.getElementById("statsArea");
 
-    let eleves = [];
+    let allEleves = [];
 
-    async function chargerEleves() {
+    function showNotification(message, type = "success") {
+      notify.textContent = message;
+      notify.style.backgroundColor = type === "error" ? "#dc2626" : "#1e3a8a";
+      notify.style.display = "block";
+      setTimeout(() => notify.style.display = "none", 3000);
+    }
+
+    function renderTable(data) {
+      tbody.innerHTML = "";
+      data.forEach(eleve => {
+        const tr = document.createElement("tr");
+        tr.innerHTML = `
+          <td>${eleve.nom} ${eleve.postNom || ""} ${eleve.prenom}</td>
+          <td>${eleve.classe}</td>
+          <td>${eleve.sexe}</td>
+          <td>
+            <a class="btn" href="modifier-eleves.html?id=${eleve.id}">✏️ Modifier</a>
+            <button class="btn delete" onclick="supprimerEleve('${eleve.id}')">🗑 Supprimer</button>
+            <a class="btn view" href="fiche-eleve.html?id=${eleve.id}">📄 Voir fiche</a>
+          </td>
+        `;
+        tbody.appendChild(tr);
+      });
+      afficherStats(data);
+    }
+
+    function afficherStats(data) {
+      const stats = {};
+      data.forEach(e => {
+        stats[e.classe] = (stats[e.classe] || 0) + 1;
+      });
+      statsArea.innerHTML = Object.entries(stats)
+        .map(([classe, count]) => `📊 ${classe} : ${count} élève(s)`)
+        .join(" · ");
+    }
+
+    window.supprimerEleve = async function(id) {
+      if (!confirm("🗑 Supprimer cet élève ?")) return;
       try {
-        const snapshot = await getDocs(collection(db, "eleves"));
-        eleves = snapshot.docs.map(doc => ({ id: doc.id, ...doc.data() }));
-        remplirClasses();
-        afficherTable(eleves);
+        await deleteDoc(doc(db, "eleves", id));
+        allEleves = allEleves.filter(e => e.id !== id);
+        renderTable(allEleves);
+        showNotification("✅ Élève supprimé !");
       } catch (err) {
         console.error(err);
-        showNotification("Erreur lors du chargement des élèves", "error");
+        showNotification("❌ Erreur de suppression", "error");
       }
-    }
+    };
 
-    function remplirClasses() {
-      const classesUniques = [...new Set(eleves.map(e => e.classe))].filter(Boolean).sort();
-      filterClasse.innerHTML = '<option value="">Toutes les classes</option>';
-      classesUniques.forEach(cl => {
-        const opt = document.createElement('option');
-        opt.value = cl;
-        opt.textContent = cl;
-        filterClasse.appendChild(opt);
-      });
-    }
+    window.exportCSV = function() {
+      const rows = allEleves.map(e => [
+        `"${e.nom} ${e.postNom || ""} ${e.prenom}"`,
+        `"${e.classe}"`,
+        `"${e.sexe}"`
+      ]);
+      const csv = ["Nom complet,Classe,Sexe", ...rows.map(r => r.join(","))].join("\n");
+      const blob = new Blob([csv], { type: "text/csv" });
+      const url = URL.createObjectURL(blob);
+      const a = document.createElement("a");
+      a.href = url;
+      a.download = "eleves.csv";
+      a.click();
+    };
 
-    function afficherTable(liste) {
-      if (liste.length === 0) {
-        tableEleves.innerHTML = `<tr><td colspan="7" style="text-align:center; padding:1rem;">Aucun élève trouvé.</td></tr>`;
+    searchInput.addEventListener("input", () => {
+      const q = searchInput.value.toLowerCase();
+      const filtered = allEleves.filter(e =>
+        `${e.nom} ${e.postNom} ${e.prenom}`.toLowerCase().includes(q) ||
+        e.classe.toLowerCase().includes(q)
+      );
+      renderTable(filtered);
+    });
+
+    onAuthStateChanged(auth, async (user) => {
+      if (!user) {
+        window.location.href = "login.html";
         return;
       }
 
-      tableEleves.innerHTML = liste.map(e => `
-        <tr>
-          <td>${e.matricule || '-'}</td>
-          <td>${e.nom || '-'}</td>
-          <td>${e.postNom || '-'}</td>
-          <td>${e.prenom || '-'}</td>
-          <td>${e.classe || '-'}</td>
-          <td>${e.sexe || '-'}</td>
-          <td style="font-weight:600; color:${(e.solde ?? 0) > 0 ? '#ef4444' : '#10b981'};">
-            $ ${(e.solde ?? 0).toFixed(2)}
-          </td>
-        </tr>
-      `).join('');
-    }
-
-    // 🔍 Recherche et filtrage dynamique
-    function filtrer() {
-      const search = searchInput.value.toLowerCase();
-      const classe = filterClasse.value;
-      const filtres = eleves.filter(e => {
-        const matchSearch =
-          (e.nom || '').toLowerCase().includes(search) ||
-          (e.postNom || '').toLowerCase().includes(search) ||
-          (e.prenom || '').toLowerCase().includes(search) ||
-          (e.matricule || '').toLowerCase().includes(search);
-        const matchClasse = classe ? e.classe === classe : true;
-        return matchSearch && matchClasse;
-      });
-      afficherTable(filtres);
-    }
-
-    searchInput.addEventListener('input', filtrer);
-    filterClasse.addEventListener('change', filtrer);
-
-    // 🚀 Chargement initial
-    document.addEventListener('DOMContentLoaded', chargerEleves);
+      try {
+        const snap = await getDocs(collection(db, "eleves"));
+        allEleves = snap.docs.map(doc => ({ id: doc.id, ...doc.data() }));
+        renderTable(allEleves);
+        showNotification("✅ Élèves chargés !");
+      } catch (err) {
+        console.error(err);
+        showNotification("❌ Erreur de chargement", "error");
+      }
+    });
   </script>
 </body>
 </html>
