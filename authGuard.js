@@ -49,6 +49,7 @@ export function showNotification(msg, type = "success") {
 export function protectPage(allowedRoles = []) {
   onAuthStateChanged(auth, async (user) => {
     if (!user) {
+      console.warn("⛔ Utilisateur non connecté.");
       window.location.href = "login.html";
       return;
     }
@@ -58,8 +59,11 @@ export function protectPage(allowedRoles = []) {
       if (!snap.exists()) throw new Error("Profil introuvable");
 
       const data = snap.data();
-      const role = (data.role || "inconnu").toLowerCase();
+      const role = (data.role || "inconnu").toLowerCase().trim();
       const nomComplet = [data.nom, data.postNom, data.prenom].filter(Boolean).join(" ") || "Utilisateur";
+
+      console.log("🔐 Rôle détecté :", role);
+      console.log("📄 Page actuelle :", window.location.pathname.split("/").pop());
 
       // ✅ Affichage dans l’interface
       const userInfo = document.getElementById("userInfo");
@@ -67,9 +71,10 @@ export function protectPage(allowedRoles = []) {
       if (userInfo) userInfo.textContent = `${nomComplet} (${role})`;
       if (dashboardTitle) dashboardTitle.textContent = `Tableau de bord · ${role.toUpperCase()} · ISC Lwanga`;
 
-      // ✅ Vérification du rôle
-      if (allowedRoles.length && !allowedRoles.includes(role)) {
+      // ✅ Vérification stricte du rôle
+      if (allowedRoles.length > 0 && !allowedRoles.includes(role)) {
         showNotification("⛔ Accès refusé", "error");
+        console.warn("⛔ Rôle non autorisé :", role);
         await signOut(auth);
         window.location.href = "login.html";
         return;
@@ -79,12 +84,13 @@ export function protectPage(allowedRoles = []) {
       const currentPage = window.location.pathname.split("/").pop();
       const expectedPage = roleRedirects[role];
       if (expectedPage && currentPage !== expectedPage && allowedRoles.length === 0) {
+        console.log("↪️ Redirection vers :", expectedPage);
         window.location.href = expectedPage;
       }
 
     } catch (err) {
-      console.error(err);
-      showNotification(err.message, "error");
+      console.error("⛔ Erreur authGuard :", err);
+      showNotification(err.message || "Erreur inconnue", "error");
       await signOut(auth);
       window.location.href = "login.html";
     }
@@ -97,7 +103,7 @@ export async function logoutUser() {
     await signOut(auth);
     window.location.href = "login.html";
   } catch (err) {
-    console.error(err);
+    console.error("⛔ Erreur déconnexion :", err);
     showNotification("Erreur déconnexion", "error");
   }
 }
