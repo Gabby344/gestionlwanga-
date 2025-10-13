@@ -101,41 +101,37 @@
         { label: "📚 Cours", url: "cours.html" },
         { label: "📝 Bulletins", url: "bulletins.html" },
         { label: "💰 Paiements", url: "liste-paiements.html" },
-        { label: "⚙️ Paramètres", url: "parametre-admin.html" },
-        { label: "📋 Discipline", url: "dashboard-directeur-discipline.html" },
-        { label: "📄 Inscriptions", url: "inscriptions.eleves.html" },
-        { label: "📁 Dossiers élèves", url: "liste-eleves.html" },
-        { label: "📁 Dossiers enseignants", url: "liste-enseignants.html" },
-        { label: "📊 Finances", url: "finance.html" },
-        { label: "📬 Messages", url: "voir-messages.html" },
-        { label: "📅 Planning", url: "planning-classes.html" },
-        { label: "🧑‍🏫 Affectation des cours", url: "assignation-cours.html" },
-        { label: "📈 Historique paiements", url: "historique-paiements.html" },
-        { label: "🧾 Config frais", url: "config-frais.html" },
-        { label: "🔐 Gestion des rôles", url: "gestion-roles.html" }
-      ],
-      prefet: [
-        { label: "👥 Élèves", url: "liste-eleves.html" },
-        { label: "📋 Discipline", url: "dashboard-prefet.html" },
-        { label: "📄 Inscriptions", url: "inscriptions.eleves.html" },
-        { label: "📁 Dossiers enseignants", url: "liste-enseignants.html" },
-        { label: "📬 Messages", url: "voir-messages.html" },
-        { label: "📊 Finances", url: "finance.html" },
-        { label: "🧾 Config frais", url: "config-frais.html" },
-        { label: "🧑‍🏫 Affectation des cours", url: "assignation-cours.html" }
+        { label: "⚙️ Paramètres", url: "parametre-admin.html" }
       ],
       secretaire: [
         { label: "📄 Inscriptions", url: "inscriptions.eleves.html" },
-        { label: "📁 Dossiers élèves", url: "liste-eleves.html" },
         { label: "📁 Ajouter élèves", url: "ajouter-eleves.html" },
         { label: "📁 Modifier élèves", url: "modifier-eleves.html" },
+        { label: "📁 Liste élèves", url: "liste-eleves.html" }
+      ],
+      prefet: [
+        { label: "📋 Discipline", url: "dashboard-prefet.html" },
+        { label: "📁 Liste élèves", url: "liste-eleves.html" },
+        { label: "📬 Messages", url: "voir-messages.html" }
+      ],
+      econome: [
+        { label: "💰 Paiements", url: "liste-paiements.html" },
+        { label: "🧾 Config frais", url: "config-frais.html" },
+        { label: "📈 Historique", url: "historique-paiements.html" }
+      ],
+      directeur_etudes: [
+        { label: "📚 Cours", url: "cours.html" },
+        { label: "📝 Générer bulletins", url: "generer-bulletins.html" },
+        { label: "📬 Messages", url: "voir-messages.html" }
+      ],
+      directeur_discipline: [
+        { label: "📋 Discipline", url: "dashboard-directeur-discipline.html" },
         { label: "📬 Messages", url: "voir-messages.html" }
       ],
       enseignant: [
         { label: "📚 Mes cours", url: "cours.html" },
         { label: "📝 Saisie des notes", url: "saisie-notes.html" },
-        { label: "👥 Élèves", url: "eleves.html" },
-        { label: "📬 Messages", url: "voir-messages.html" }
+        { label: "👥 Élèves", url: "eleves.html" }
       ],
       eleve: [
         { label: "📄 Mon bulletin", url: "voir-bulletin.html" },
@@ -143,21 +139,6 @@
         { label: "💰 Paiements", url: "voir-paiement.html" },
         { label: "📬 Messages", url: "voir-messages.html" },
         { label: "👤 Mon profil", url: "voir-profil.html" }
-      ],
-      econome: [
-        { label: "💰 Paiements", url: "liste-paiements.html" },
-        { label: "📊 Finances", url: "finance.html" },
-        { label: "📈 Historique paiements", url: "historique-paiements.html" },
-        { label: "🧾 Config frais", url: "config-frais.html" }
-      ],
-      directeur_etudes: [
-        { label: "📚 Cours", url: "cours.html" },
-        { label: "📝 Bulletins", url: "generer-bulletins.html" },
-        { label: "📬 Messages", url: "voir-messages.html" }
-      ],
-      directeur_discipline: [
-        { label: "📋 Discipline", url: "dashboard-directeur-discipline.html" },
-        { label: "📬 Messages", url: "voir-messages.html" }
       ]
     };
 
@@ -180,7 +161,7 @@
       welcomeMsg.textContent = `Bienvenue ${nomComplet} · Rôle : ${role}`;
 
       const modules = modulesParRole[role];
-            if (!modules || modules.length === 0) {
+      if (!modules || modules.length === 0) {
         moduleList.innerHTML = "<p style='text-align:center;'>⛔ Aucun module disponible pour ce rôle.</p>";
         return;
       }
