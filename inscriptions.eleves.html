@@ -1,237 +1,149 @@
 <!DOCTYPE html>
 <html lang="fr">
 <head>
-<meta charset="UTF-8" />
-<meta name="viewport" content="width=device-width, initial-scale=1.0" />
-<title>Inscriptions des Élèves · Secrétaire · ISC Lwanga</title>
-<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700&display=swap" rel="stylesheet">
-<style>
-:root {
-  --bleu-fonce: #1e40af;
-  --gris-fonce: #1f2937;
-  --vert: #10b981;
-  --rouge: #ef4444;
-  --fond: #f4f6f8;
-  --ombre-legere: rgba(0,0,0,0.08);
-  --ombre-hover: rgba(0,0,0,0.15);
-}
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Inscription Élève · Secrétaire</title>
+  <link rel="icon" href="favicon.ico" />
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600&display=swap" rel="stylesheet" />
+  <style>
+    body {
+      font-family: 'Inter', sans-serif;
+      background-color: #f9fafb;
+      color: #374151;
+      padding: 2rem;
+    }
 
-body {font-family:'Inter',sans-serif;background:var(--fond);margin:0;padding:2rem;color:var(--gris-fonce);}
-h1,h2{text-align:center;} h1{color:var(--bleu-fonce);} h2{font-weight:400;color:#6b7280;}
-.container{max-width:900px;margin:auto;background:white;padding:2rem;border-radius:12px;box-shadow:0 4px 15px var(--ombre-legere);}
-.form-group{margin-bottom:1rem;}
-label{display:block;font-weight:600;margin-bottom:0.3rem;}
-input, select{width:100%;padding:0.6rem;border-radius:6px;border:1px solid #d1d5db;}
-input:focus, select:focus{outline:none;border-color:var(--bleu-fonce);box-shadow:0 0 0 2px rgba(30,64,175,0.2);}
-.btn{width:100%;padding:1rem;border:none;border-radius:8px;color:white;font-weight:700;cursor:pointer;margin-top:1rem;}
-.btn-vert{background:var(--vert);}
-.table-container{margin-top:2rem;overflow-x:auto;}
-table{width:100%;border-collapse:collapse;margin-top:1rem;}
-th, td{padding:0.75rem;text-align:left;border-bottom:1px solid #e5e7eb;}
-th{background:#f3f4f6;font-weight:600;}
-.filter{margin-bottom:1rem;display:flex;gap:1rem;flex-wrap:wrap;align-items:center;}
-.filter label{margin:0;font-weight:500;}
-.filter select{width:auto;}
-.notification{padding:1rem 1.5rem;border-radius:8px;margin-bottom:10px;box-shadow:0 4px 6px rgba(0,0,0,0.1);color:white;font-weight:500;opacity:0;transform:translateX(100%);transition:opacity 0.3s, transform 0.3s;}
-.notification.show{opacity:1;transform:translateX(0);}
-.notification.success{background-color:var(--vert);}
-.notification.error{background-color:var(--rouge);}
-@media(max-width:600px){.filter{flex-direction:column;align-items:flex-start;}}
-</style>
+    h1 {
+      text-align: center;
+      color: #1e3a8a;
+      margin-bottom: 1rem;
+    }
+
+    form {
+      max-width: 600px;
+      margin: auto;
+      background: white;
+      padding: 2rem;
+      border-radius: 12px;
+      box-shadow: 0 4px 10px rgba(0,0,0,0.05);
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 1rem;
+    }
+
+    form input, form select {
+      padding: 0.75rem;
+      border: 1px solid #d1d5db;
+      border-radius: 8px;
+      font-size: 1rem;
+      width: 100%;
+    }
+
+    form button {
+      grid-column: span 2;
+      padding: 0.75rem;
+      background-color: #1e3a8a;
+      color: white;
+      border: none;
+      border-radius: 8px;
+      font-weight: 600;
+      cursor: pointer;
+      transition: background 0.2s ease;
+    }
+
+    form button:hover {
+      background-color: #0f2f79;
+    }
+
+    #notification-area {
+      position: fixed;
+      top: 20px;
+      right: 20px;
+      z-index: 9999;
+    }
+
+    @media (max-width: 600px) {
+      form {
+        grid-template-columns: 1fr;
+      }
+      form button {
+        grid-column: span 1;
+      }
+    }
+  </style>
 </head>
 <body>
+  <h1>📝 Inscription d’un nouvel élève</h1>
+  <form id="inscriptionForm">
+    <input type="text" id="nom" placeholder="Nom" required />
+    <input type="text" id="postNom" placeholder="Post-nom" />
+    <input type="text" id="prenom" placeholder="Prénom" required />
+    <select id="sexe" required>
+      <option value="">Sexe</option>
+      <option value="masculin">Masculin</option>
+      <option value="féminin">Féminin</option>
+    </select>
+    <input type="date" id="dateNaissance" required />
+    <input type="text" id="classe" placeholder="Classe (ex: 6e A)" required />
+    <input type="text" id="section" placeholder="Section (ex: Scientifique)" />
+    <input type="text" id="option" placeholder="Option (ex: Math-Physique)" />
+    <input type="text" id="adresse" placeholder="Adresse" />
+    <input type="text" id="tuteurNom" placeholder="Nom du tuteur" />
+    <input type="tel" id="tuteurTel" placeholder="Téléphone du tuteur" />
+    <button type="submit">📥 Enregistrer l’élève</button>
+  </form>
 
-<div id="notification-area"></div>
+  <div id="notification-area"></div>
 
-<div class="container">
-<h1>Inscription des Élèves</h1>
-<h2>Secrétaire · ISC Lwanga</h2>
+  <script type="module">
+    import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-app.js";
+    import { getAuth, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-auth.js";
+    import { getFirestore, collection, addDoc } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore.js";
+    import { protectPage, showNotification } from './authGuard.js';
 
-<form id="form-eleve">
-<div class="form-group">
-  <label>Nom :</label>
-  <input type="text" id="nom" required>
-</div>
-<div class="form-group">
-  <label>Postnom :</label>
-  <input type="text" id="postnom" required>
-</div>
-<div class="form-group">
-  <label>Prénom :</label>
-  <input type="text" id="prenom" required>
-</div>
-<div class="form-group">
-  <label>Classe :</label>
-  <select id="classe" required>
-    <option value="">-- Choisir une classe --</option>
-    <option>7ème EB</option>
-    <option>8ème EB</option>
-    <option>1ère Commerciale & Gestion</option>
-    <option>2ème Commerciale & Gestion</option>
-    <option>3ème Commerciale & Gestion</option>
-    <option>4ème Commerciale & Gestion</option>
-    <option>1ère Agriculture</option>
-    <option>2ème Agriculture</option>
-    <option>3ème Agriculture</option>
-    <option>4ème Agriculture</option>
-    <option>1ère Scientifique</option>
-    <option>2ème Scientifique</option>
-    <option>3ème Scientifique</option>
-    <option>4ème Scientifique</option>
-    <option>1ère Pédagogie Générale</option>
-    <option>2ème Pédagogie Générale</option>
-    <option>3ème Pédagogie Générale</option>
-    <option>4ème Pédagogie Générale</option>
-  </select>
-</div>
-<div class="form-group">
-  <label>Frais Restants ($) :</label>
-  <input type="number" id="frais" value="0" min="0">
-</div>
+    protectPage(["secretaire"]);
 
-<button type="submit" class="btn btn-vert">✅ Enregistrer l'Élève</button>
-</form>
+    const firebaseConfig = {
+      apiKey: "AIzaSyAgv4TDYnR60TXnns-LISqbZTgcdLT31cc",
+      authDomain: "gestionlwanga.firebaseapp.com",
+      projectId: "gestionlwanga"
+    };
 
-<div class="filter">
-  <label for="filterClasse">Filtrer par classe :</label>
-  <select id="filterClasse">
-    <option value="">Toutes les classes</option>
-    <option>7ème EB</option>
-    <option>8ème EB</option>
-    <option>1ère Commerciale & Gestion</option>
-    <option>2ème Commerciale & Gestion</option>
-    <option>3ème Commerciale & Gestion</option>
-    <option>4ème Commerciale & Gestion</option>
-    <option>1ère Agriculture</option>
-    <option>2ème Agriculture</option>
-    <option>3ème Agriculture</option>
-    <option>4ème Agriculture</option>
-    <option>1ère Scientifique</option>
-    <option>2ème Scientifique</option>
-    <option>3ème Scientifique</option>
-    <option>4ème Scientifique</option>
-    <option>1ère Pédagogie Générale</option>
-    <option>2ème Pédagogie Générale</option>
-    <option>3ème Pédagogie Générale</option>
-    <option>4ème Pédagogie Générale</option>
-  </select>
-</div>
+    const app = initializeApp(firebaseConfig);
+    const auth = getAuth(app);
+    const db = getFirestore(app);
 
-<div class="table-container">
-  <table id="elevesTable">
-    <thead>
-      <tr>
-        <th>Nom</th>
-        <th>Postnom</th>
-        <th>Prénom</th>
-        <th>Classe</th>
-        <th>Frais Restants</th>
-        <th>Date Inscription</th>
-      </tr>
-    </thead>
-    <tbody>
-      <!-- Élèves en temps réel -->
-    </tbody>
-  </table>
-</div>
-</div>
+    const form = document.getElementById("inscriptionForm");
 
-<script type="module">
-import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-app.js";
-import { getFirestore, collection, addDoc, onSnapshot, query, orderBy } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore.js";
-import { getAuth, onAuthStateChanged, signOut } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-auth.js";
+    form.addEventListener("submit", async (e) => {
+      e.preventDefault();
 
-const firebaseConfig = {
-  apiKey:"AIzaSyAgv4TDYnR60TXnns-LISqbZTgcdLT31cc",
-  authDomain:"gestionlwanga.firebaseapp.com",
-  projectId:"gestionlwanga",
-  storageBucket:"gestionlwanga.firebasestorage.app",
-  messagingSenderId:"622604298611",
-  appId:"1:622604298611:web:4ab4314ed3eec6826c3d06"
-};
+      const eleve = {
+        nom: form.nom.value.trim(),
+        postNom: form.postNom.value.trim(),
+        prenom: form.prenom.value.trim(),
+        sexe: form.sexe.value,
+        dateNaissance: form.dateNaissance.value,
+        classe: form.classe.value.trim(),
+        section: form.section.value.trim(),
+        option: form.option.value.trim(),
+        adresse: form.adresse.value.trim(),
+        tuteurNom: form.tuteurNom.value.trim(),
+        tuteurTel: form.tuteurTel.value.trim(),
+        dateInscription: new Date().toISOString(),
+        statut: "actif"
+      };
 
-const app = initializeApp(firebaseConfig);
-const db = getFirestore(app);
-const auth = getAuth(app);
-
-const form = document.getElementById("form-eleve");
-const elevesTable = document.getElementById("elevesTable").querySelector("tbody");
-const filterClasse = document.getElementById("filterClasse");
-const notificationArea = document.getElementById("notification-area");
-
-function showNotification(msg, type="success"){
-  const notif = document.createElement("div");
-  notif.className = `notification ${type}`;
-  notif.textContent = msg;
-  notificationArea.appendChild(notif);
-  setTimeout(()=>notif.classList.add("show"),10);
-  setTimeout(()=>{
-    notif.classList.remove("show");
-    setTimeout(()=>notificationArea.removeChild(notif),300);
-  },4000);
-}
-
-onAuthStateChanged(auth, user=>{
-  if(!user){ window.location.href="login.html"; return; }
-  getUserRole(user.uid).then(role=>{
-    if(role!=="secretaire"){ signOut(auth); window.location.href="login.html"; }
-  });
-});
-
-async function getUserRole(uid){
-  const snap = await import("https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore.js")
-                  .then(m => m.getDoc(m.doc(db,"users",uid)));
-  return snap.data().role?.toLowerCase() ?? "";
-}
-
-form.addEventListener("submit", async e=>{
-  e.preventDefault();
-  const data = {
-    nom: document.getElementById("nom").value.trim(),
-    postNom: document.getElementById("postnom").value.trim(),
-    prenom: document.getElementById("prenom").value.trim(),
-    classe: document.getElementById("classe").value,
-    fraisRestants: parseFloat(document.getElementById("frais").value) || 0,
-    dateInscription: new Date()
-  };
-  try{
-    await addDoc(collection(db,"eleves"), data);
-    showNotification(`✅ Élève ${data.nom} ${data.postNom} enregistré !`);
-    e.target.reset();
-  }catch(err){ console.error(err); showNotification("❌ Erreur lors de l'enregistrement", "error"); }
-});
-
-// Liste temps réel
-const q = query(collection(db,"eleves"), orderBy("dateInscription","desc"));
-onSnapshot(q, snapshot=>{
-  const eleves = snapshot.docs.map(doc=>({id:doc.id,...doc.data()}));
-  renderTable(eleves);
-});
-
-filterClasse.addEventListener("change", ()=>{
-  const val = filterClasse.value;
-  onSnapshot(q, snapshot=>{
-    const eleves = snapshot.docs.map(doc=>({id:doc.id,...doc.data()}));
-    renderTable(eleves, val);
-  });
-});
-
-function renderTable(eleves, filter=""){
-  elevesTable.innerHTML = "";
-  const filtered = filter ? eleves.filter(e=>e.classe===filter) : eleves;
-  filtered.forEach(e=>{
-    const tr = document.createElement("tr");
-    tr.innerHTML = `
-      <td>${e.nom}</td>
-      <td>${e.postNom}</td>
-      <td>${e.prenom}</td>
-      <td>${e.classe}</td>
-      <td>${e.fraisRestants.toFixed(2)}</td>
-      <td>${new Date(e.dateInscription.seconds ? e.dateInscription.seconds*1000 : e.dateInscription).toLocaleDateString()}</td>
-    `;
-    elevesTable.appendChild(tr);
-  });
-}
-</script>
+      try {
+        await addDoc(collection(db, "eleves"), eleve);
+        showNotification("✅ Élève inscrit avec succès !");
+        form.reset();
+      } catch (err) {
+        console.error(err);
+        showNotification("❌ Erreur lors de l’inscription", "error");
+      }
+    });
+  </script>
 </body>
 </html>
