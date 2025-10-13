@@ -4,60 +4,94 @@
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>Espace Élève · Institut Saint Charles Lwanga</title>
-  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600&display=swap" rel="stylesheet">
+  <link rel="icon" href="favicon.ico" />
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600&display=swap" rel="stylesheet" />
   <style>
     :root {
       --bleu: #1e3a8a;
+      --bleu-clair: #3b82f6;
       --gris: #374151;
       --fond: #f9fafb;
-      --ombre: rgba(0,0,0,0.05);
+      --ombre: rgba(0, 0, 0, 0.05);
+      --hover: #e0e7ff;
     }
+
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
+
     body {
       font-family: 'Inter', sans-serif;
       background-color: var(--fond);
-      margin: 0;
-      padding: 2rem 1rem;
       color: var(--gris);
+      padding: 2rem 1rem;
     }
+
     header {
       text-align: center;
       margin-bottom: 2rem;
     }
+
     header h1 {
-      font-size: 1.6rem;
+      font-size: 1.8rem;
       color: var(--bleu);
-      margin-bottom: 0.3rem;
+      font-weight: 700;
     }
+
     header p {
-      font-size: 0.95rem;
-      color: var(--gris);
+      font-size: 1rem;
+      color: #6b7280;
+      margin-top: 0.3rem;
     }
+
     .menu {
-      display: flex;
-      flex-direction: column;
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
       gap: 1rem;
-      max-width: 400px;
+      max-width: 600px;
       margin: auto;
     }
+
     .menu a {
-      display: block;
       background-color: white;
       padding: 1rem;
-      border-radius: 8px;
+      border-radius: 10px;
       text-decoration: none;
       color: var(--bleu);
       font-weight: 600;
-      box-shadow: 0 0 5px var(--ombre);
-      transition: background-color 0.2s;
+      box-shadow: 0 4px 8px var(--ombre);
+      text-align: center;
+      transition: background 0.2s ease, transform 0.2s ease;
     }
+
     .menu a:hover {
-      background-color: #e0e7ff;
+      background-color: var(--hover);
+      transform: translateY(-2px);
     }
+
+    .user-info {
+      text-align: center;
+      margin-bottom: 2rem;
+      font-size: 1rem;
+      font-weight: 500;
+    }
+
     footer {
-      margin-top: 3rem;
+      margin-top: 4rem;
       text-align: center;
       font-size: 0.85rem;
       color: #6b7280;
+    }
+
+    @media (max-width: 500px) {
+      header h1 {
+        font-size: 1.5rem;
+      }
+      .menu {
+        grid-template-columns: 1fr;
+      }
     }
   </style>
 </head>
@@ -66,6 +100,8 @@
     <h1>Espace Élève</h1>
     <p>Institut Saint Charles Lwanga · Lubumbashi</p>
   </header>
+
+  <div class="user-info" id="userInfo">Chargement du profil...</div>
 
   <div class="menu">
     <a href="voir-bulletin.html">📄 Consulter mon bulletin</a>
@@ -78,5 +114,40 @@
   <footer>
     &copy; 2025 · Tous droits réservés · Version élève
   </footer>
+
+  <script type="module">
+    import { getAuth, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-auth.js";
+    import { getFirestore, doc, getDoc } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore.js";
+    import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-app.js";
+
+    const firebaseConfig = {
+      apiKey: "AIzaSyAgv4TDYnR60TXnns-LISqbZTgcdLT31cc",
+      authDomain: "gestionlwanga.firebaseapp.com",
+      projectId: "gestionlwanga"
+    };
+
+    const app = initializeApp(firebaseConfig);
+    const auth = getAuth(app);
+    const db = getFirestore(app);
+
+    const userInfo = document.getElementById("userInfo");
+
+    onAuthStateChanged(auth, async (user) => {
+      if (!user) {
+        window.location.href = "login.html";
+        return;
+      }
+
+      const snap = await getDoc(doc(db, "users", user.uid));
+      if (!snap.exists()) {
+        userInfo.textContent = "⛔ Profil introuvable.";
+        return;
+      }
+
+      const data = snap.data();
+      const nomComplet = [data.nom, data.postNom, data.prenom].filter(Boolean).join(" ");
+      userInfo.textContent = `Bienvenue ${nomComplet} · Rôle : ${data.role}`;
+    });
+  </script>
 </body>
 </html>
