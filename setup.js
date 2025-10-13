@@ -7,100 +7,92 @@ async function configInitiale() {
 
   // 🔐 Définir les rôles et leurs modules
   const roles = {
-    prefet: {
-      modules: [
-        "accès total",
-        "suivi des rapports",
-        "gestion des comptes",
-        "contrôle des modules",
-        "vue sur toutes les structures"
-      ]
-    },
-    directeur_etudes: {
-      modules: [
-        "gestion des classes",
-        "gestion des enseignants",
-        "suivi des programmes",
-        "planification académique"
-      ]
-    },
-    directeur_discipline: {
-      modules: [
-        "suivi disciplinaire",
-        "gestion des sanctions",
-        "rapport de comportement",
-        "coordination des surveillants"
-      ]
-    },
-    secretaire: {
-      modules: [
-        "inscription des élèves",
-        "gestion des documents",
-        "planning scolaire",
-        "communication interne"
-      ]
-    },
-    econome: {
-      modules: [
-        "gestion financière",
-        "suivi des paiements",
-        "rapport de trésorerie",
-        "budget et dépenses"
-      ]
-    }
+    prefet: [
+      "accès total",
+      "suivi des rapports",
+      "gestion des comptes",
+      "contrôle des modules",
+      "vue sur toutes les structures"
+    ],
+    directeur_etudes: [
+      "gestion des classes",
+      "gestion des enseignants",
+      "suivi des programmes",
+      "planification académique"
+    ],
+    directeur_discipline: [
+      "suivi disciplinaire",
+      "gestion des sanctions",
+      "rapport de comportement",
+      "coordination des surveillants"
+    ],
+    secretaire: [
+      "inscription des élèves",
+      "gestion des documents",
+      "planning scolaire",
+      "communication interne"
+    ],
+    econome: [
+      "gestion financière",
+      "suivi des paiements",
+      "rapport de trésorerie",
+      "budget et dépenses"
+    ]
   };
 
   // 📌 Créer les rôles dans Firestore
-  for (const [role, data] of Object.entries(roles)) {
+  for (const [role, modules] of Object.entries(roles)) {
     await db.collection("roles").doc(role).set({
-      ...data,
+      modules,
       createdAt: timestamp
     });
   }
 
-  // 👥 Créer les administrateurs
+  // 👥 Créer les utilisateurs administratifs
   const admins = [
     {
-      id: "gabby_umba",
+      uid: "gabby_umba",
       nom: "Gabby Umba",
-      role: "prefet",
-      email: "gabby@ecole.com"
+      email: "gabby@ecole.com",
+      role: "prefet"
     },
     {
-      id: "michel_lembe",
+      uid: "michel_lembe",
       nom: "Père Michel Lembe Sds",
-      role: "prefet",
-      email: "prefet@ecole.com"
+      email: "prefet@ecole.com",
+      role: "prefet"
     },
     {
-      id: "delphin_kagunge",
+      uid: "delphin_kagunge",
       nom: "Mr Delphin Kagunge",
-      role: "directeur_etudes",
-      email: "etudes@ecole.com"
+      email: "etudes@ecole.com",
+      role: "directeur_etudes"
     },
     {
-      id: "modeste_makong",
+      uid: "modeste_makong",
       nom: "Mr Modeste Makong",
-      role: "directeur_discipline",
-      email: "discipline@ecole.com"
+      email: "discipline@ecole.com",
+      role: "directeur_discipline"
     },
     {
-      id: "secretaire",
+      uid: "secretaire",
       nom: "Secrétaire Général",
-      role: "secretaire",
-      email: "secretariat@ecole.com"
+      email: "secretariat@ecole.com",
+      role: "secretaire"
     },
     {
-      id: "gabin_sds",
+      uid: "gabin_sds",
       nom: "Père Gabin Sds",
-      role: "econome",
-      email: "finance@ecole.com"
+      email: "finance@ecole.com",
+      role: "econome"
     }
   ];
 
   for (const admin of admins) {
-    await db.collection("users").doc(admin.id).set({
-      ...admin,
+    await db.collection("users").doc(admin.uid).set({
+      nom: admin.nom,
+      email: admin.email,
+      role: admin.role,
       createdAt: timestamp
     });
   }
@@ -129,16 +121,29 @@ async function configInitiale() {
 
   for (let i = 0; i < classes.length; i++) {
     const nom = classes[i];
+    const niveau = nom.split(" ")[0];
+    const spécialité = nom.split(" ").slice(1).join(" ");
     await db.collection("classes").doc(`classe_${i + 1}`).set({
       nom,
-      niveau: nom.split(" ")[0],
-      spécialité: nom.split(" ").slice(1).join(" "),
+      niveau,
+      spécialité,
       liste_eleves: [],
       createdAt: timestamp
     });
   }
 
-  // 📦 Préparer les collections pour utilisateurs
+  // 📦 Préparer les modules Firestore pour chaque rôle
+  const modulesGlobal = new Set(Object.values(roles).flat());
+  for (const module of modulesGlobal) {
+    const id = module.toLowerCase().replace(/\s+/g, "_");
+    await db.collection("modules").doc(id).set({
+      nom: module,
+      description: `Module initialisé pour ${id}`,
+      createdAt: timestamp
+    });
+  }
+
+  // 👨‍🏫 Préparer les collections utilisateurs
   await db.collection("utilisateurs").doc("enseignants").set({
     description: "Tous les enseignants inscrits",
     liste: [],
@@ -148,12 +153,6 @@ async function configInitiale() {
   await db.collection("utilisateurs").doc("eleves").set({
     description: "Tous les élèves inscrits",
     liste: [],
-    createdAt: timestamp
-  });
-
-  // 📁 Modules centralisés (optionnel)
-  await db.collection("modules").doc("structure").set({
-    modules: Object.values(roles).flatMap(r => r.modules),
     createdAt: timestamp
   });
 
