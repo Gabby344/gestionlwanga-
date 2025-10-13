@@ -21,7 +21,7 @@
     }
 
     form {
-      max-width: 600px;
+      max-width: 700px;
       margin: auto;
       background: white;
       padding: 2rem;
@@ -61,6 +61,12 @@
       top: 20px;
       right: 20px;
       z-index: 9999;
+      font-weight: 600;
+      padding: 0.75rem 1rem;
+      border-radius: 8px;
+      background-color: #1e3a8a;
+      color: white;
+      display: none;
     }
 
     @media (max-width: 600px) {
@@ -75,6 +81,7 @@
 </head>
 <body>
   <h1>📝 Inscription d’un nouvel élève</h1>
+
   <form id="inscriptionForm">
     <input type="text" id="nom" placeholder="Nom" required />
     <input type="text" id="postNom" placeholder="Post-nom" />
@@ -100,9 +107,6 @@
     import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-app.js";
     import { getAuth, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-auth.js";
     import { getFirestore, collection, addDoc } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore.js";
-    import { protectPage, showNotification } from './authGuard.js';
-
-    protectPage(["secretaire"]);
 
     const firebaseConfig = {
       apiKey: "AIzaSyAgv4TDYnR60TXnns-LISqbZTgcdLT31cc",
@@ -115,34 +119,49 @@
     const db = getFirestore(app);
 
     const form = document.getElementById("inscriptionForm");
+    const notify = document.getElementById("notification-area");
 
-    form.addEventListener("submit", async (e) => {
-      e.preventDefault();
+    function showNotification(message, type = "success") {
+      notify.textContent = message;
+      notify.style.backgroundColor = type === "error" ? "#dc2626" : "#1e3a8a";
+      notify.style.display = "block";
+      setTimeout(() => notify.style.display = "none", 3000);
+    }
 
-      const eleve = {
-        nom: form.nom.value.trim(),
-        postNom: form.postNom.value.trim(),
-        prenom: form.prenom.value.trim(),
-        sexe: form.sexe.value,
-        dateNaissance: form.dateNaissance.value,
-        classe: form.classe.value.trim(),
-        section: form.section.value.trim(),
-        option: form.option.value.trim(),
-        adresse: form.adresse.value.trim(),
-        tuteurNom: form.tuteurNom.value.trim(),
-        tuteurTel: form.tuteurTel.value.trim(),
-        dateInscription: new Date().toISOString(),
-        statut: "actif"
-      };
-
-      try {
-        await addDoc(collection(db, "eleves"), eleve);
-        showNotification("✅ Élève inscrit avec succès !");
-        form.reset();
-      } catch (err) {
-        console.error(err);
-        showNotification("❌ Erreur lors de l’inscription", "error");
+    onAuthStateChanged(auth, (user) => {
+      if (!user) {
+        window.location.href = "login.html";
+        return;
       }
+
+      form.addEventListener("submit", async (e) => {
+        e.preventDefault();
+
+        const eleve = {
+          nom: form.nom.value.trim(),
+          postNom: form.postNom.value.trim(),
+          prenom: form.prenom.value.trim(),
+          sexe: form.sexe.value,
+          dateNaissance: form.dateNaissance.value,
+          classe: form.classe.value.trim(),
+          section: form.section.value.trim(),
+          option: form.option.value.trim(),
+          adresse: form.adresse.value.trim(),
+          tuteurNom: form.tuteurNom.value.trim(),
+          tuteurTel: form.tuteurTel.value.trim(),
+          dateInscription: new Date().toISOString(),
+          statut: "actif"
+        };
+
+        try {
+          await addDoc(collection(db, "eleves"), eleve);
+          showNotification("✅ Élève inscrit avec succès !");
+          form.reset();
+        } catch (err) {
+          console.error(err);
+          showNotification("❌ Erreur lors de l’inscription", "error");
+        }
+      });
     });
   </script>
 </body>
