@@ -3,31 +3,41 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Accueil Admin · Institut Saint Charles Lwanga</title>
-  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600&display=swap" rel="stylesheet">
+  <title>Accueil · Institut Saint Charles Lwanga</title>
+  <link rel="icon" href="favicon.ico" />
+  <meta name="theme-color" content="#1e40af" />
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600&display=swap" rel="stylesheet" />
   <style>
+    :root {
+      --bleu: #1e3a8a;
+      --gris: #374151;
+      --fond: #f9fafb;
+      --hover: #e0e7ff;
+    }
     body {
       font-family: 'Inter', sans-serif;
-      background-color: #f9fafb;
+      background-color: var(--fond);
       margin: 0;
       padding: 2rem;
-      color: #374151;
+      color: var(--gris);
     }
     h1 {
       text-align: center;
-      color: #1e3a8a;
+      color: var(--bleu);
       margin-bottom: 1rem;
+      font-weight: 700;
     }
     .welcome {
       text-align: center;
       margin-bottom: 2rem;
       font-size: 1.1rem;
+      font-weight: 500;
     }
     .modules {
-      max-width: 600px;
+      max-width: 700px;
       margin: auto;
       display: grid;
-      grid-template-columns: 1fr;
+      grid-template-columns: repeat(auto-fit, minmax(160px, 1fr));
       gap: 1rem;
     }
     .module {
@@ -37,12 +47,13 @@
       box-shadow: 0 0 5px rgba(0,0,0,0.05);
       text-align: center;
       font-weight: 600;
-      color: #1e3a8a;
+      color: var(--bleu);
       text-decoration: none;
-      transition: background 0.2s;
+      transition: background 0.2s, transform 0.2s;
     }
     .module:hover {
-      background-color: #e0e7ff;
+      background-color: var(--hover);
+      transform: translateY(-2px);
     }
     footer {
       margin-top: 3rem;
@@ -53,8 +64,8 @@
   </style>
 </head>
 <body>
-  <h1>🏫 Espace Administratif</h1>
-  <div class="welcome" id="welcomeMsg">Chargement...</div>
+  <h1>🏫 Espace Personnel</h1>
+  <div class="welcome" id="welcomeMsg">Chargement du profil...</div>
   <div class="modules" id="moduleList"></div>
 
   <footer>
@@ -62,14 +73,14 @@
   </footer>
 
   <script type="module">
-    import { initializeApp } from "https://www.gstatic.com/firebasejs/10.5.2/firebase-app.js";
-    import { getAuth, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/10.5.2/firebase-auth.js";
-    import { getFirestore, doc, getDoc } from "https://www.gstatic.com/firebasejs/10.5.2/firebase-firestore.js";
+    import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-app.js";
+    import { getAuth, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-auth.js";
+    import { getFirestore, doc, getDoc } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore.js";
 
     const firebaseConfig = {
-      apiKey: "TON_API_KEY",
-      authDomain: "TON_DOMAINE.firebaseapp.com",
-      projectId: "TON_PROJECT_ID"
+      apiKey: "AIzaSyAgv4TDYnR60TXnns-LISqbZTgcdLT31cc",
+      authDomain: "gestionlwanga.firebaseapp.com",
+      projectId: "gestionlwanga"
     };
 
     const app = initializeApp(firebaseConfig);
@@ -80,13 +91,19 @@
     const moduleList = document.getElementById("moduleList");
 
     const modulesParRole = {
-      prefet: [
+      admin: [
+        { label: "📊 Tableau de bord", url: "dashboard-admin.html" },
         { label: "👥 Utilisateurs", url: "liste-utilisateurs.html" },
         { label: "📚 Cours", url: "cours.html" },
         { label: "📝 Bulletins", url: "bulletins.html" },
-        { label: "📋 Sanctions", url: "discipline.html" },
-        { label: "📄 Inscriptions", url: "inscriptions.html" },
-        { label: "💰 Paiements", url: "paiements.html" }
+        { label: "💰 Paiements", url: "paiements.html" },
+        { label: "⚙️ Paramètres", url: "admin.html" }
+      ],
+      prefet: [
+        { label: "👥 Élèves", url: "eleves.html" },
+        { label: "📋 Discipline", url: "discipline.html" },
+        { label: "📝 Bulletins", url: "bulletins.html" },
+        { label: "📄 Inscriptions", url: "inscriptions.html" }
       ],
       directeur_etudes: [
         { label: "📚 Cours", url: "cours.html" },
@@ -103,34 +120,56 @@
       econome: [
         { label: "💰 Paiements", url: "paiements.html" },
         { label: "📊 Rapports financiers", url: "rapports.html" }
+      ],
+      enseignant: [
+        { label: "📚 Cours", url: "cours.html" },
+        { label: "📝 Notes", url: "saisie-notes.html" },
+        { label: "👥 Élèves", url: "eleves.html" }
+      ],
+      eleve: [
+        { label: "📝 Mes Bulletins", url: "mes-bulletins.html" },
+        { label: "📆 Emploi du temps", url: "emploi-du-temps.html" },
+        { label: "👤 Mon profil", url: "profil.html" }
       ]
     };
 
     onAuthStateChanged(auth, async (user) => {
-      if (user) {
-        const docRef = doc(db, "utilisateurs", user.uid);
-        const docSnap = await getDoc(docRef);
+      if (!user) {
+        window.location.href = "login.html";
+        return;
+      }
 
-        if (docSnap.exists()) {
-          const data = docSnap.data();
-          const nomComplet = `${data.nom} ${data.postNom} ${data.prenom}`;
-          const role = data.role;
+      const docRef = doc(db, "users", user.uid);
+      const docSnap = await getDoc(docRef);
 
-          welcomeMsg.textContent = `Bienvenue ${nomComplet} · Rôle : ${role}`;
+      if (!docSnap.exists()) {
+        welcomeMsg.textContent = "⛔ Profil introuvable.";
+        return;
+      }
 
-          const modules = modulesParRole[role] || [];
-          modules.forEach(mod => {
-            const link = document.createElement("a");
-            link.className = "module";
-            link.href = mod.url;
-            link.textContent = mod.label;
-            moduleList.appendChild(link);
-          });
-        } else {
-          welcomeMsg.textContent = "Utilisateur non reconnu.";
-        }
-      } else {
-        window.location.href = "connexion.html";
+      const data = docSnap.data();
+      const nomComplet = [data.nom, data.postNom, data.prenom].filter(Boolean).join(" ") || "Utilisateur";
+      const role = data.role?.toLowerCase() || "inconnu";
+
+      welcomeMsg.textContent = `Bienvenue ${nomComplet} · Rôle : ${role}`;
+
+      const modules = modulesParRole[role];
+      if (!modules) {
+        welcomeMsg.textContent += " · Aucun module disponible.";
+        return;
+      }
+
+      modules.forEach(mod => {
+        const link = document.createElement("a");
+        link.className = "module";
+        link.href = mod.url;
+        link.textContent = mod.label;
+        moduleList.appendChild(link);
+      });
+
+      // Redirection automatique si rôle admin
+      if (role === "admin") {
+        window.location.href = "dashboard-admin.html";
       }
     });
   </script>
