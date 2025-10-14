@@ -1,153 +1,350 @@
 <!DOCTYPE html>
 <html lang="fr">
+
 <head>
   <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Espace Élève · Institut Saint Charles Lwanga</title>
-  <link rel="icon" href="favicon.ico" />
-  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600&display=swap" rel="stylesheet" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Accueil Utilisateur - ISC Lwanga</title>
+  <link
+    href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700&display=swap"
+    rel="stylesheet" />
   <style>
-    :root {
-      --bleu: #1e3a8a;
-      --bleu-clair: #3b82f6;
-      --gris: #374151;
-      --fond: #f9fafb;
-      --ombre: rgba(0, 0, 0, 0.05);
-      --hover: #e0e7ff;
-    }
-
+    /* RESET & BASE */
     * {
-      margin: 0;
-      padding: 0;
       box-sizing: border-box;
     }
 
     body {
-      font-family: 'Inter', sans-serif;
-      background-color: var(--fond);
-      color: var(--gris);
-      padding: 2rem 1rem;
+      margin: 0;
+      font-family: "Inter", sans-serif;
+      background-color: #f9fafb;
+      color: #1e293b;
+      min-height: 100vh;
+      display: flex;
+      flex-direction: column;
     }
 
+    a {
+      color: inherit;
+      text-decoration: none;
+    }
+
+    /* HEADER */
     header {
-      text-align: center;
-      margin-bottom: 2rem;
+      background: linear-gradient(90deg, #1e3a8a, #2563eb);
+      color: white;
+      padding: 1.5rem 2rem;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      box-shadow: 0 2px 10px rgb(37 99 235 / 0.3);
     }
 
     header h1 {
-      font-size: 1.8rem;
-      color: var(--bleu);
       font-weight: 700;
+      font-size: 1.6rem;
+      margin: 0;
+      letter-spacing: 1px;
+      user-select: none;
     }
 
-    header p {
-      font-size: 1rem;
-      color: #6b7280;
-      margin-top: 0.3rem;
-    }
-
-    .menu {
-      display: grid;
-      grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
-      gap: 1rem;
-      max-width: 600px;
-      margin: auto;
-    }
-
-    .menu a {
-      background-color: white;
-      padding: 1rem;
-      border-radius: 10px;
-      text-decoration: none;
-      color: var(--bleu);
+    /* BTN DECONNEXION */
+    #logoutBtn {
+      background-color: #ef4444;
+      border: none;
+      padding: 0.55rem 1.3rem;
+      border-radius: 8px;
       font-weight: 600;
-      box-shadow: 0 4px 8px var(--ombre);
+      cursor: pointer;
+      color: white;
+      transition: background-color 0.25s ease;
+      font-size: 0.9rem;
+      box-shadow: 0 2px 8px rgb(239 68 68 / 0.4);
+      user-select: none;
+    }
+
+    #logoutBtn:hover {
+      background-color: #b91c1c;
+      box-shadow: 0 4px 14px rgb(185 28 28 / 0.6);
+    }
+
+    /* MAIN */
+    main {
+      max-width: 980px;
+      margin: 2.5rem auto;
+      padding: 0 1rem 3rem;
+      flex-grow: 1;
+      display: flex;
+      flex-direction: column;
+    }
+
+    .welcome {
+      font-size: 1.4rem;
+      font-weight: 600;
+      margin-bottom: 1.8rem;
+      color: #334155;
+      user-select: none;
+    }
+
+    /* MODULES GRID */
+    .modules {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+      gap: 1.6rem;
+    }
+
+    .module-card {
+      background-color: white;
+      border-radius: 14px;
+      box-shadow: 0 6px 15px rgb(0 0 0 / 0.05);
+      padding: 1.8rem 1.5rem;
+      font-weight: 600;
+      font-size: 1.1rem;
+      color: #1e293b;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      justify-content: center;
       text-align: center;
-      transition: background 0.2s ease, transform 0.2s ease;
+      transition: transform 0.25s ease, box-shadow 0.25s ease, background-color 0.25s ease,
+        color 0.25s ease;
+      user-select: none;
+      border: 2px solid transparent;
+      position: relative;
+      overflow: hidden;
     }
 
-    .menu a:hover {
-      background-color: var(--hover);
-      transform: translateY(-2px);
+    .module-card::before {
+      content: "";
+      position: absolute;
+      inset: 0;
+      background: linear-gradient(135deg, #2563eb, #1e40af);
+      opacity: 0;
+      transition: opacity 0.3s ease;
+      border-radius: 14px;
+      z-index: 0;
     }
 
-    .user-info {
-      text-align: center;
-      margin-bottom: 2rem;
-      font-size: 1rem;
-      font-weight: 500;
+    .module-card:hover {
+      color: white;
+      transform: translateY(-6px);
+      box-shadow: 0 14px 26px rgb(37 99 235 / 0.4);
+      border-color: #2563eb;
     }
 
+    .module-card:hover::before {
+      opacity: 1;
+    }
+
+    .module-card > span {
+      position: relative;
+      z-index: 1;
+    }
+
+    /* FOOTER */
     footer {
-      margin-top: 4rem;
       text-align: center;
-      font-size: 0.85rem;
-      color: #6b7280;
+      padding: 1.2rem 0;
+      font-size: 0.9rem;
+      color: #64748b;
+      user-select: none;
     }
 
-    @media (max-width: 500px) {
+    /* RESPONSIVE */
+    @media (max-width: 480px) {
       header h1 {
-        font-size: 1.5rem;
+        font-size: 1.3rem;
       }
-      .menu {
-        grid-template-columns: 1fr;
+
+      main {
+        margin: 1.5rem auto;
+      }
+
+      .module-card {
+        font-size: 1rem;
+        padding: 1.4rem 1.2rem;
       }
     }
   </style>
 </head>
+
 <body>
   <header>
-    <h1>Espace Élève</h1>
-    <p>Institut Saint Charles Lwanga · Lubumbashi</p>
+    <h1>ISC Lwanga - Tableau de bord</h1>
+    <button id="logoutBtn" aria-label="Se déconnecter">Déconnexion</button>
   </header>
 
-  <div class="user-info" id="userInfo">Chargement du profil...</div>
+  <main>
+    <p class="welcome" id="welcomeMsg">Chargement de vos données...</p>
 
-  <div class="menu">
-    <a href="voir-bulletin.html">📄 Consulter mon bulletin</a>
-    <a href="voir-planning.html">📅 Voir mon emploi du temps</a>
-    <a href="voir-paiement.html">💰 Suivi des paiements</a>
-    <a href="voir-messages.html">📬 Messages & annonces</a>
-    <a href="voir-profil.html">👤 Mon profil</a>
-  </div>
+    <section class="modules" id="modulesContainer" aria-label="Modules accessibles à l'utilisateur">
+      <!-- Modules seront injectés ici -->
+    </section>
+  </main>
 
   <footer>
-    &copy; 2025 · Tous droits réservés · Version élève
+    &copy; 2025 ISC Lwanga - Tous droits réservés
   </footer>
 
   <script type="module">
-    import { getAuth, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-auth.js";
-    import { getFirestore, doc, getDoc } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore.js";
     import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-app.js";
+    import {
+      getAuth,
+      onAuthStateChanged,
+      signOut
+    } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-auth.js";
+    import {
+      getFirestore,
+      doc,
+      getDoc
+    } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore.js";
 
+    // TODO: Remplace par ta configuration Firebase
     const firebaseConfig = {
-      apiKey: "AIzaSyAgv4TDYnR60TXnns-LISqbZTgcdLT31cc",
-      authDomain: "gestionlwanga.firebaseapp.com",
-      projectId: "gestionlwanga"
+      // Exemple :
+      // apiKey: "xxx",
+      // authDomain: "xxx.firebaseapp.com",
+      // projectId: "xxx",
+      // storageBucket: "xxx.appspot.com",
+      // messagingSenderId: "xxx",
+      // appId: "xxx"
     };
 
     const app = initializeApp(firebaseConfig);
     const auth = getAuth(app);
     const db = getFirestore(app);
 
-    const userInfo = document.getElementById("userInfo");
+    const welcomeMsg = document.getElementById("welcomeMsg");
+    const modulesContainer = document.getElementById("modulesContainer");
+    const logoutBtn = document.getElementById("logoutBtn");
 
+    // Attributions modules par rôle (peut être importé ou maintenu dans Firestore pour plus de dynamique)
+    const roleModules = {
+      prefet: [
+        "Accès total",
+        "Suivi des rapports",
+        "Gestion des comptes",
+        "Contrôle des modules",
+        "Vue sur toutes les structures"
+      ],
+      directeur_etudes: [
+        "Gestion des classes",
+        "Gestion des enseignants",
+        "Suivi des programmes",
+        "Planification académique"
+      ],
+      directeur_discipline: [
+        "Suivi disciplinaire",
+        "Gestion des sanctions",
+        "Rapport de comportement",
+        "Coordination des surveillants"
+      ],
+      secretaire: [
+        "Inscription des élèves",
+        "Gestion des documents",
+        "Planning scolaire",
+        "Communication interne"
+      ],
+      econome: [
+        "Gestion financière",
+        "Suivi des paiements",
+        "Rapport de trésorerie",
+        "Budget et dépenses"
+      ]
+    };
+
+    // Liens / routes vers les pages/modules (adapter selon ton projet)
+    const modulesDetails = {
+      "Accès total": { link: "prefet-dashboard.html" },
+      "Suivi des rapports": { link: "rapports.html" },
+      "Gestion des comptes": { link: "comptes.html" },
+      "Contrôle des modules": { link: "modules.html" },
+      "Vue sur toutes les structures": { link: "structures.html" },
+      "Gestion des classes": { link: "gestion-classes.html" },
+      "Gestion des enseignants": { link: "gestion-enseignants.html" },
+      "Suivi des programmes": { link: "programmes.html" },
+      "Planification académique": { link: "planning.html" },
+      "Suivi disciplinaire": { link: "discipline.html" },
+      "Gestion des sanctions": { link: "sanctions.html" },
+      "Rapport de comportement": { link: "rapports-comportement.html" },
+      "Coordination des surveillants": { link: "surveillants.html" },
+      "Inscription des élèves": { link: "inscriptions.html" },
+      "Gestion des documents": { link: "documents.html" },
+      "Planning scolaire": { link: "planning-scolaire.html" },
+      "Communication interne": { link: "communication.html" },
+      "Gestion financière": { link: "finances.html" },
+      "Suivi des paiements": { link: "paiements.html" },
+      "Rapport de trésorerie": { link: "rapport-tresorerie.html" },
+      "Budget et dépenses": { link: "budget.html" }
+    };
+
+    // Gestion connexion utilisateur
     onAuthStateChanged(auth, async (user) => {
       if (!user) {
+        // Pas connecté => Redirection vers login
         window.location.href = "login.html";
         return;
       }
 
-      const snap = await getDoc(doc(db, "users", user.uid));
-      if (!snap.exists()) {
-        userInfo.textContent = "⛔ Profil introuvable.";
-        return;
-      }
+      try {
+        // Récupérer les données utilisateur Firestore
+        const userDoc = await getDoc(doc(db, "users", user.uid));
+        if (!userDoc.exists()) throw new Error("Utilisateur introuvable dans la base de données");
 
-      const data = snap.data();
-      const nomComplet = [data.nom, data.postNom, data.prenom].filter(Boolean).join(" ");
-      userInfo.textContent = `Bienvenue ${nomComplet} · Rôle : ${data.role}`;
+        const userData = userDoc.data();
+        const role = userData.role;
+
+        welcomeMsg.textContent = `Bonjour, ${userData.nom ?? "Utilisateur"} (${role.replace(/_/g, " ")})`;
+
+        // Nettoyer container modules
+        modulesContainer.innerHTML = "";
+
+        if (roleModules[role]?.length > 0) {
+          // Générer les cartes modules
+          roleModules[role].forEach((module) => {
+            const card = document.createElement("a");
+            card.className = "module-card";
+            card.setAttribute("tabindex", "0");
+            card.setAttribute("role", "button");
+            card.setAttribute("aria-label", `Accéder au module ${module}`);
+
+            const span = document.createElement("span");
+            span.textContent = module;
+            card.appendChild(span);
+
+            // Ajouter lien si défini sinon disable clic
+            if (modulesDetails[module]?.link) {
+              card.href = modulesDetails[module].link;
+              card.target = "_self";
+            } else {
+              card.style.cursor = "default";
+              card.onclick = (e) => e.preventDefault();
+              card.setAttribute("aria-disabled", "true");
+              card.tabIndex = -1;
+            }
+
+            modulesContainer.appendChild(card);
+          });
+        } else {
+          modulesContainer.textContent = "Aucun module disponible pour votre rôle.";
+        }
+
+      } catch (error) {
+        welcomeMsg.textContent = "Erreur lors du chargement des données.";
+        console.error(error);
+      }
+    });
+
+    logoutBtn.addEventListener("click", () => {
+      signOut(auth)
+        .then(() => {
+          window.location.href = "login.html";
+        })
+        .catch((err) => {
+          alert("Erreur lors de la déconnexion : " + err.message);
+        });
     });
   </script>
 </body>
+
 </html>
