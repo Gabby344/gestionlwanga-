@@ -13,6 +13,7 @@
       --gris: #374151;
       --fond: #f9fafb;
       --hover: #e0e7ff;
+      --rouge: #dc2626;
     }
     body {
       font-family: 'Inter', sans-serif;
@@ -21,11 +22,28 @@
       padding: 2rem;
       color: var(--gris);
     }
+    header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 2rem;
+    }
     h1 {
-      text-align: center;
       color: var(--bleu);
-      margin-bottom: 1rem;
+      margin: 0;
       font-weight: 700;
+    }
+    #logoutBtn {
+      background: var(--rouge);
+      color: white;
+      border: none;
+      padding: 0.5rem 1rem;
+      border-radius: 5px;
+      cursor: pointer;
+      font-weight: 600;
+    }
+    #logoutBtn:hover {
+      background: #b91c1c;
     }
     .welcome {
       text-align: center;
@@ -34,10 +52,10 @@
       font-weight: 500;
     }
     .modules {
-      max-width: 700px;
+      max-width: 800px;
       margin: auto;
       display: grid;
-      grid-template-columns: repeat(auto-fit, minmax(160px, 1fr));
+      grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
       gap: 1rem;
     }
     .module {
@@ -50,10 +68,17 @@
       color: var(--bleu);
       text-decoration: none;
       transition: background 0.2s, transform 0.2s;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
     }
     .module:hover {
       background-color: var(--hover);
       transform: translateY(-2px);
+    }
+    .module-icon {
+      font-size: 2rem;
+      margin-bottom: 0.3rem;
     }
     footer {
       margin-top: 3rem;
@@ -64,7 +89,11 @@
   </style>
 </head>
 <body>
-  <h1>🏫 Espace Administratif</h1>
+  <header>
+    <h1>🏫 Espace Administratif</h1>
+    <button id="logoutBtn">Se déconnecter</button>
+  </header>
+
   <div class="welcome" id="welcomeMsg">Chargement du profil...</div>
   <div class="modules" id="moduleList"></div>
 
@@ -74,7 +103,7 @@
 
   <script type="module">
     import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-app.js";
-    import { getAuth, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-auth.js";
+    import { getAuth, onAuthStateChanged, signOut } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-auth.js";
     import { getFirestore, doc, getDoc } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore.js";
 
     const firebaseConfig = {
@@ -89,6 +118,12 @@
 
     const welcomeMsg = document.getElementById("welcomeMsg");
     const moduleList = document.getElementById("moduleList");
+    const logoutBtn = document.getElementById("logoutBtn");
+
+    logoutBtn.addEventListener("click", async () => {
+      await signOut(auth);
+      window.location.href = "login.html";
+    });
 
     const modulesParRole = {
       admin: [
@@ -96,7 +131,7 @@
         { label: "👥 Utilisateurs", url: "liste-utilisateurs.html" },
         { label: "📚 Cours", url: "cours.html" },
         { label: "📝 Bulletins", url: "bulletins.html" },
-        { label: "💰 Paiements", url: "paiements.html" },
+        { label: "💰 Paiements", url: "paiements.eleves.html" },
         { label: "⚙️ Paramètres", url: "admin.html" }
       ],
       prefet: [
@@ -166,7 +201,10 @@
         const link = document.createElement("a");
         link.className = "module";
         link.href = mod.url;
-        link.textContent = mod.label;
+        link.innerHTML = `
+          <div class="module-icon">${mod.label.split(" ")[0]}</div>
+          <div>${mod.label.slice(mod.label.indexOf(" ") + 1)}</div>
+        `;
         moduleList.appendChild(link);
       });
     });
