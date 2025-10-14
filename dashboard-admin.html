@@ -32,11 +32,39 @@
       padding: 2rem;
     }
 
+    header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 2rem;
+    }
+
     h1 {
-      text-align: center;
       color: var(--bleu);
-      margin-bottom: 1rem;
       font-weight: 700;
+    }
+
+    .actions {
+      display: flex;
+      gap: 1rem;
+    }
+
+    .actions a,
+    .actions button {
+      background: var(--bleu);
+      color: white;
+      border: none;
+      padding: 0.5rem 1rem;
+      border-radius: 6px;
+      text-decoration: none;
+      font-weight: 600;
+      cursor: pointer;
+      transition: background 0.2s;
+    }
+
+    .actions a:hover,
+    .actions button:hover {
+      background: #1e40af;
     }
 
     .info {
@@ -115,7 +143,14 @@
   </style>
 </head>
 <body>
-  <h1>📊 Tableau de bord Administratif</h1>
+  <header>
+    <h1>📊 Tableau de bord Administratif</h1>
+    <div class="actions">
+      <a href="accueil-admin.html">🏠 Accueil</a>
+      <button id="logoutBtn">🚪 Déconnexion</button>
+    </div>
+  </header>
+
   <div class="info" id="adminInfo">Chargement...</div>
 
   <div class="grid" id="statsGrid">
@@ -152,6 +187,12 @@
     const adminInfo = document.getElementById("adminInfo");
     const statsGrid = document.getElementById("statsGrid");
     const alertesSection = document.getElementById("alertesSection");
+    const logoutBtn = document.getElementById("logoutBtn");
+
+    logoutBtn.addEventListener("click", async () => {
+      await signOut(auth);
+      window.location.href = "login.html";
+    });
 
     onAuthStateChanged(auth, async (user) => {
       if (!user) {
