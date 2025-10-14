@@ -5,12 +5,10 @@
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1" />
   <title>Accueil Utilisateur - ISC Lwanga</title>
-  <link
-    href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700&display=swap"
-    rel="stylesheet" />
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700&display=swap" rel="stylesheet" />
   <style>
     /* RESET & BASE */
-    * {
+    *, *::before, *::after {
       box-sizing: border-box;
     }
 
@@ -22,6 +20,8 @@
       min-height: 100vh;
       display: flex;
       flex-direction: column;
+      -webkit-font-smoothing: antialiased;
+      -moz-osx-font-smoothing: grayscale;
     }
 
     a {
@@ -38,11 +38,12 @@
       justify-content: space-between;
       align-items: center;
       box-shadow: 0 2px 10px rgb(37 99 235 / 0.3);
+      user-select: none;
     }
 
     header h1 {
       font-weight: 700;
-      font-size: 1.6rem;
+      font-size: 1.8rem;
       margin: 0;
       letter-spacing: 1px;
       user-select: none;
@@ -52,45 +53,50 @@
     #logoutBtn {
       background-color: #ef4444;
       border: none;
-      padding: 0.55rem 1.3rem;
+      padding: 0.6rem 1.4rem;
       border-radius: 8px;
       font-weight: 600;
       cursor: pointer;
       color: white;
-      transition: background-color 0.25s ease;
-      font-size: 0.9rem;
+      transition: background-color 0.25s ease, box-shadow 0.25s ease;
+      font-size: 0.95rem;
       box-shadow: 0 2px 8px rgb(239 68 68 / 0.4);
       user-select: none;
+      flex-shrink: 0;
     }
 
-    #logoutBtn:hover {
+    #logoutBtn:hover,
+    #logoutBtn:focus-visible {
       background-color: #b91c1c;
-      box-shadow: 0 4px 14px rgb(185 28 28 / 0.6);
+      box-shadow: 0 4px 14px rgb(185 28 28 / 0.7);
+      outline-offset: 2px;
+      outline: 2px solid #f87171;
     }
 
     /* MAIN */
     main {
       max-width: 980px;
-      margin: 2.5rem auto;
-      padding: 0 1rem 3rem;
+      margin: 3rem auto 4rem;
+      padding: 0 1rem;
       flex-grow: 1;
       display: flex;
       flex-direction: column;
+      user-select: none;
     }
 
     .welcome {
-      font-size: 1.4rem;
+      font-size: 1.5rem;
       font-weight: 600;
-      margin-bottom: 1.8rem;
+      margin-bottom: 2rem;
       color: #334155;
-      user-select: none;
+      min-height: 2.5rem;
     }
 
     /* MODULES GRID */
     .modules {
       display: grid;
       grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
-      gap: 1.6rem;
+      gap: 1.8rem;
     }
 
     .module-card {
@@ -108,10 +114,12 @@
       text-align: center;
       transition: transform 0.25s ease, box-shadow 0.25s ease, background-color 0.25s ease,
         color 0.25s ease;
-      user-select: none;
-      border: 2px solid transparent;
       position: relative;
       overflow: hidden;
+      border: 2px solid transparent;
+      user-select: none;
+      border-radius: 14px;
+      text-decoration: none;
     }
 
     .module-card::before {
@@ -125,20 +133,49 @@
       z-index: 0;
     }
 
-    .module-card:hover {
+    .module-card:hover,
+    .module-card:focus-visible {
       color: white;
       transform: translateY(-6px);
       box-shadow: 0 14px 26px rgb(37 99 235 / 0.4);
       border-color: #2563eb;
+      outline: none;
     }
 
-    .module-card:hover::before {
+    .module-card:hover::before,
+    .module-card:focus-visible::before {
       opacity: 1;
     }
 
     .module-card > span {
       position: relative;
       z-index: 1;
+    }
+
+    .module-card[aria-disabled="true"] {
+      cursor: not-allowed;
+      color: #94a3b8;
+      background-color: #e2e8f0;
+      box-shadow: none;
+      border-color: #cbd5e1;
+    }
+
+    .module-card[aria-disabled="true"]::before {
+      opacity: 0 !important;
+    }
+
+    /* MESSAGES d'erreur / chargement */
+    .message {
+      font-weight: 600;
+      font-size: 1.1rem;
+      text-align: center;
+      color: #64748b;
+      margin-top: 3rem;
+      user-select: none;
+    }
+
+    .message.error {
+      color: #ef4444;
     }
 
     /* FOOTER */
@@ -148,6 +185,7 @@
       font-size: 0.9rem;
       color: #64748b;
       user-select: none;
+      border-top: 1px solid #e2e8f0;
     }
 
     /* RESPONSIVE */
@@ -157,7 +195,7 @@
       }
 
       main {
-        margin: 1.5rem auto;
+        margin: 2rem auto 3rem;
       }
 
       .module-card {
@@ -175,11 +213,13 @@
   </header>
 
   <main>
-    <p class="welcome" id="welcomeMsg">Chargement de vos données...</p>
+    <p class="welcome" id="welcomeMsg" aria-live="polite">Chargement de vos données...</p>
 
-    <section class="modules" id="modulesContainer" aria-label="Modules accessibles à l'utilisateur">
+    <section class="modules" id="modulesContainer" aria-label="Modules accessibles à l'utilisateur" tabindex="-1">
       <!-- Modules seront injectés ici -->
     </section>
+
+    <p id="message" class="message" role="alert" style="display:none;"></p>
   </main>
 
   <footer>
@@ -199,15 +239,14 @@
       getDoc
     } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore.js";
 
-    // TODO: Remplace par ta configuration Firebase
+    // Configuration Firebase (remplace avec ta config depuis config.js ou ici)
     const firebaseConfig = {
-      // Exemple :
-      // apiKey: "xxx",
-      // authDomain: "xxx.firebaseapp.com",
-      // projectId: "xxx",
-      // storageBucket: "xxx.appspot.com",
-      // messagingSenderId: "xxx",
-      // appId: "xxx"
+      apiKey: "AIzaSyAgv4TDYnR60TXnns-LISqbZTgcdLT31cc",
+      authDomain: "gestionlwanga.firebaseapp.com",
+      projectId: "gestionlwanga",
+      storageBucket: "gestionlwanga.appspot.com",
+      messagingSenderId: "622604298611",
+      appId: "1:622604298611:web:4ab4314ed3eec6826c3d06"
     };
 
     const app = initializeApp(firebaseConfig);
@@ -217,8 +256,9 @@
     const welcomeMsg = document.getElementById("welcomeMsg");
     const modulesContainer = document.getElementById("modulesContainer");
     const logoutBtn = document.getElementById("logoutBtn");
+    const messageEl = document.getElementById("message");
 
-    // Attributions modules par rôle (peut être importé ou maintenu dans Firestore pour plus de dynamique)
+    // Attributions modules par rôle (penser à centraliser en base pour plus flexible)
     const roleModules = {
       prefet: [
         "Accès total",
@@ -250,10 +290,24 @@
         "Suivi des paiements",
         "Rapport de trésorerie",
         "Budget et dépenses"
+      ],
+      enseignant: [
+        "Consultation des classes",
+        "Planification des cours",
+        "Saisie des notes"
+      ],
+      eleve: [
+        "Consultation des notes",
+        "Planning scolaire",
+        "Demandes administratives"
+      ],
+      parent: [
+        "Suivi des notes de l'élève",
+        "Communication avec enseignants",
+        "Paiement en ligne"
       ]
     };
 
-    // Liens / routes vers les pages/modules (adapter selon ton projet)
     const modulesDetails = {
       "Accès total": { link: "prefet-dashboard.html" },
       "Suivi des rapports": { link: "rapports.html" },
@@ -275,8 +329,19 @@
       "Gestion financière": { link: "finances.html" },
       "Suivi des paiements": { link: "paiements.html" },
       "Rapport de trésorerie": { link: "rapport-tresorerie.html" },
-      "Budget et dépenses": { link: "budget.html" }
+      "Budget et dépenses": { link: "budget.html" },
+      "Consultation des classes": { link: "consultation-classes.html" },
+      "Planification des cours": { link: "planification-cours.html" },
+      "Saisie des notes": { link: "saisie-notes.html" },
+      "Consultation des notes": { link: "consultation-notes.html" },
+      "Demandes administratives": { link: "demandes-admin.html" },
+      "Suivi des notes de l'élève": { link: "suivi-notes.html" },
+      "Communication avec enseignants": { link: "communication-enseignants.html" },
+      "Paiement en ligne": { link: "paiement.html" }
     };
+
+    // Capitalize helper
+    const capitalize = (str) => str.charAt(0).toUpperCase() + str.slice(1).replace(/_/g, " ");
 
     // Gestion connexion utilisateur
     onAuthStateChanged(auth, async (user) => {
@@ -286,22 +351,24 @@
         return;
       }
 
+      welcomeMsg.textContent = "Chargement de vos données...";
+      modulesContainer.innerHTML = "";
+      messageEl.style.display = "none";
+
       try {
         // Récupérer les données utilisateur Firestore
         const userDoc = await getDoc(doc(db, "users", user.uid));
-        if (!userDoc.exists()) throw new Error("Utilisateur introuvable dans la base de données");
+        if (!userDoc.exists) throw new Error("Utilisateur introuvable dans la base de données");
 
         const userData = userDoc.data();
         const role = userData.role;
 
-        welcomeMsg.textContent = `Bonjour, ${userData.nom ?? "Utilisateur"} (${role.replace(/_/g, " ")})`;
+        welcomeMsg.textContent = `Bonjour, ${userData.nom ? capitalize(userData.nom) : "Utilisateur"} (${capitalize(role)})`;
 
-        // Nettoyer container modules
-        modulesContainer.innerHTML = "";
+        const modules = roleModules[role];
 
-        if (roleModules[role]?.length > 0) {
-          // Générer les cartes modules
-          roleModules[role].forEach((module) => {
+        if (modules && modules.length > 0) {
+          modules.forEach((module) => {
             const card = document.createElement("a");
             card.className = "module-card";
             card.setAttribute("tabindex", "0");
@@ -312,35 +379,45 @@
             span.textContent = module;
             card.appendChild(span);
 
-            // Ajouter lien si défini sinon disable clic
             if (modulesDetails[module]?.link) {
               card.href = modulesDetails[module].link;
               card.target = "_self";
             } else {
-              card.style.cursor = "default";
-              card.onclick = (e) => e.preventDefault();
+              card.style.cursor = "not-allowed";
               card.setAttribute("aria-disabled", "true");
               card.tabIndex = -1;
+              card.addEventListener("click", (e) => e.preventDefault());
             }
 
             modulesContainer.appendChild(card);
           });
+          // Focus modules container for accessibility
+          modulesContainer.focus();
         } else {
-          modulesContainer.textContent = "Aucun module disponible pour votre rôle.";
+          messageEl.textContent = "Aucun module disponible pour votre rôle.";
+          messageEl.className = "message";
+          messageEl.style.display = "block";
         }
 
       } catch (error) {
         welcomeMsg.textContent = "Erreur lors du chargement des données.";
+        messageEl.textContent = "Une erreur est survenue. Veuillez réessayer plus tard.";
+        messageEl.className = "message error";
+        messageEl.style.display = "block";
         console.error(error);
       }
     });
 
     logoutBtn.addEventListener("click", () => {
+      logoutBtn.disabled = true;
+      logoutBtn.textContent = "Déconnexion...";
       signOut(auth)
         .then(() => {
           window.location.href = "login.html";
         })
         .catch((err) => {
+          logoutBtn.disabled = false;
+          logoutBtn.textContent = "Déconnexion";
           alert("Erreur lors de la déconnexion : " + err.message);
         });
     });
