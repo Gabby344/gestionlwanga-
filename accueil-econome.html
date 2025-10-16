@@ -1,0 +1,50 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+  <meta charset="UTF-8">
+  <title>Tableau de bord — Économe</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <script src="https://kit.fontawesome.com/a2e0e6a56b.js" crossorigin="anonymous"></script>
+  <script type="module" src="authGuard.js"></script>
+</head>
+
+<body class="bg-gray-50 text-gray-900 flex h-screen">
+  <!-- Sidebar -->
+  <aside class="w-64 bg-green-800 text-white flex flex-col">
+    <div class="p-6 text-2xl font-bold border-b border-green-700">
+      💰 Économe
+    </div>
+    <nav class="flex-1 p-4 space-y-3">
+      <a href="enregistrer-paiement.html" class="flex items-center gap-3 p-3 hover:bg-green-700 rounded-lg transition"><i class="fa-solid fa-cash-register"></i> Enregistrer Paiement</a>
+      <a href="liste-paiements.html" class="flex items-center gap-3 p-3 hover:bg-green-700 rounded-lg transition"><i class="fa-solid fa-receipt"></i> Liste Paiements</a>
+      <a href="historique-paiements.html" class="flex items-center gap-3 p-3 hover:bg-green-700 rounded-lg transition"><i class="fa-solid fa-clock-rotate-left"></i> Historique</a>
+      <a href="rapports-financiers.html" class="flex items-center gap-3 p-3 hover:bg-green-700 rounded-lg transition"><i class="fa-solid fa-chart-line"></i> Rapports</a>
+      <a href="profil-utilisateur.html" class="flex items-center gap-3 p-3 hover:bg-green-700 rounded-lg transition"><i class="fa-solid fa-user"></i> Profil</a>
+    </nav>
+    <button id="logoutBtn" class="m-4 bg-red-600 hover:bg-red-700 p-2 rounded-lg"><i class="fa-solid fa-right-from-bracket"></i> Déconnexion</button>
+  </aside>
+
+  <!-- Main content -->
+  <main class="flex-1 p-8 overflow-y-auto">
+    <header class="flex justify-between items-center mb-6">
+      <h1 class="text-3xl font-bold">Tableau de bord de l'Économe</h1>
+      <span id="userInfo" class="text-sm text-gray-600"></span>
+    </header>
+
+    <section class="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-6">
+      <div class="bg-white shadow rounded-xl p-6 hover:shadow-lg transition">
+        <h2 class="font-semibold text-lg mb-2"><i class="fa-solid fa-money-bill-wave mr-2 text-green-600"></i> Paiements</h2>
+        <p class="text-gray-600">Gérez les paiements des élèves et générez les reçus automatiquement.</p>
+      </div>
+      <div class="bg-white shadow rounded-xl p-6 hover:shadow-lg transition">
+        <h2 class="font-semibold text-lg mb-2"><i class="fa-solid fa-chart-pie mr-2 text-green-600"></i> Rapports</h2>
+        <p class="text-gray-600">Consultez les statistiques financières mensuelles et annuelles.</p>
+      </div>
+      <div class="bg-white shadow rounded-xl p-6 hover:shadow-lg transition">
+        <h2 class="font-semibold text-lg mb-2"><i class="fa-solid fa-users mr-2 text-green-600"></i> Élèves</h2>
+        <p class="text-gray-600">Accédez rapidement à la situation de paiement de chaque élève.</p>
+      </div>
+    </section>
+  </main>
+</body>
+</html>
