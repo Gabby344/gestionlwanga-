@@ -1,0 +1,47 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+  <meta charset="UTF-8">
+  <title>Tableau de bord — Élève</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <script src="https://kit.fontawesome.com/a2e0e6a56b.js" crossorigin="anonymous"></script>
+  <script type="module" src="authGuard.js"></script>
+  <script type="module" src="header.js"></script>
+</head>
+<body class="bg-gray-50 text-gray-900 flex h-screen">
+
+  <!-- Sidebar -->
+  <aside class="w-64 bg-indigo-800 text-white flex flex-col">
+    <div class="p-6 text-2xl font-bold border-b border-indigo-700">
+      🎒 Élève
+    </div>
+    <nav class="flex-1 p-4 space-y-3">
+      <a href="voir-bulletin.html" class="flex items-center gap-3 p-3 hover:bg-indigo-700 rounded-lg transition"><i class="fa-solid fa-file-lines"></i> Bulletins</a>
+      <a href="voir-planning.html" class="flex items-center gap-3 p-3 hover:bg-indigo-700 rounded-lg transition"><i class="fa-solid fa-calendar"></i> Planning</a>
+      <a href="voir-messages.html" class="flex items-center gap-3 p-3 hover:bg-indigo-700 rounded-lg transition"><i class="fa-solid fa-envelope"></i> Messages</a>
+      <a href="profil-utilisateur.html" class="flex items-center gap-3 p-3 hover:bg-indigo-700 rounded-lg transition"><i class="fa-solid fa-user"></i> Profil</a>
+    </nav>
+    <button id="logoutBtn" class="m-4 bg-red-600 hover:bg-red-700 p-2 rounded-lg"><i class="fa-solid fa-right-from-bracket"></i> Déconnexion</button>
+  </aside>
+
+  <!-- Main content -->
+  <main class="flex-1 p-8 overflow-y-auto">
+    <header class="mb-6" id="mainHeader"></header>
+
+    <section class="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-6">
+      <div class="bg-white shadow rounded-xl p-6 hover:shadow-lg transition">
+        <h2 class="font-semibold text-lg mb-2"><i class="fa-solid fa-file-lines mr-2 text-indigo-600"></i> Bulletins</h2>
+        <p class="text-gray-600">Consultez vos notes et bulletins scolaires.</p>
+      </div>
+      <div class="bg-white shadow rounded-xl p-6 hover:shadow-lg transition">
+        <h2 class="font-semibold text-lg mb-2"><i class="fa-solid fa-calendar-check mr-2 text-indigo-600"></i> Planning</h2>
+        <p class="text-gray-600">Vérifiez votre emploi du temps et vos cours assignés.</p>
+      </div>
+      <div class="bg-white shadow rounded-xl p-6 hover:shadow-lg transition">
+        <h2 class="font-semibold text-lg mb-2"><i class="fa-solid fa-envelope mr-2 text-indigo-600"></i> Messages</h2>
+        <p class="text-gray-600">Consultez les messages et communications de l'école.</p>
+      </div>
+    </section>
+  </main>
+</body>
+</html>
