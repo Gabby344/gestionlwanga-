@@ -4,117 +4,44 @@
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>Accueil · Institut Saint Charles Lwanga</title>
-  <link rel="icon" href="favicon.ico" />
-  <meta name="theme-color" content="#1e40af" />
-  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600&display=swap" rel="stylesheet" />
-  <style>
-    :root {
-      --bleu: #1e3a8a;
-      --gris: #374151;
-      --fond: #f9fafb;
-      --hover: #e0e7ff;
-      --rouge: #dc2626;
-    }
-    body {
-      font-family: 'Inter', sans-serif;
-      background-color: var(--fond);
-      margin: 0;
-      padding: 2rem;
-      color: var(--gris);
-    }
-    header {
-      display: flex;
-      justify-content: space-between;
-      align-items: center;
-      margin-bottom: 2rem;
-    }
-    h1 {
-      color: var(--bleu);
-      margin: 0;
-      font-weight: 700;
-    }
-    #logoutBtn {
-      background: var(--rouge);
-      color: white;
-      border: none;
-      padding: 0.5rem 1rem;
-      border-radius: 5px;
-      cursor: pointer;
-      font-weight: 600;
-    }
-    #logoutBtn:hover {
-      background: #b91c1c;
-    }
-    .welcome {
-      text-align: center;
-      margin-bottom: 2rem;
-      font-size: 1.1rem;
-      font-weight: 500;
-    }
-    .modules {
-      max-width: 800px;
-      margin: auto;
-      display: grid;
-      grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
-      gap: 1rem;
-    }
-    .module {
-      background-color: white;
-      padding: 1rem;
-      border-radius: 8px;
-      box-shadow: 0 0 5px rgba(0,0,0,0.05);
-      text-align: center;
-      font-weight: 600;
-      color: var(--bleu);
-      text-decoration: none;
-      transition: background 0.2s, transform 0.2s;
-      display: flex;
-      flex-direction: column;
-      align-items: center;
-    }
-    .module:hover {
-      background-color: var(--hover);
-      transform: translateY(-2px);
-    }
-    .module-icon {
-      font-size: 2rem;
-      margin-bottom: 0.3rem;
-    }
-    footer {
-      margin-top: 3rem;
-      text-align: center;
-      font-size: 0.85rem;
-      color: #6b7280;
-    }
-  </style>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <script src="https://kit.fontawesome.com/a2e0e6a56b.js" crossorigin="anonymous"></script>
+  <script type="module" src="authGuard.js"></script>
+  <script type="module" src="header.js"></script>
 </head>
-<body>
-  <header>
-    <h1>🏫 Espace Administratif</h1>
-    <button id="logoutBtn">Se déconnecter</button>
-  </header>
+<body class="bg-gray-50 text-gray-900 flex h-screen">
 
-  <div class="welcome" id="welcomeMsg">Chargement du profil...</div>
-  <div class="modules" id="moduleList"></div>
+  <!-- Sidebar -->
+  <aside class="w-64 bg-blue-900 text-white flex flex-col">
+    <div class="p-6 text-2xl font-bold border-b border-blue-800">
+      👑 Admin
+    </div>
+    <nav class="flex-1 p-4 space-y-3">
+      <a href="dashboard-admin.html" class="flex items-center gap-3 p-3 hover:bg-blue-800 rounded-lg transition"><i class="fa-solid fa-chart-line"></i> Tableau de bord</a>
+      <a href="liste-utilisateurs.html" class="flex items-center gap-3 p-3 hover:bg-blue-800 rounded-lg transition"><i class="fa-solid fa-users"></i> Utilisateurs</a>
+      <a href="cours.html" class="flex items-center gap-3 p-3 hover:bg-blue-800 rounded-lg transition"><i class="fa-solid fa-book"></i> Cours</a>
+      <a href="bulletins.html" class="flex items-center gap-3 p-3 hover:bg-blue-800 rounded-lg transition"><i class="fa-solid fa-file-lines"></i> Bulletins</a>
+      <a href="paiements.eleves.html" class="flex items-center gap-3 p-3 hover:bg-blue-800 rounded-lg transition"><i class="fa-solid fa-money-bill-wave"></i> Paiements</a>
+      <a href="admin.html" class="flex items-center gap-3 p-3 hover:bg-blue-800 rounded-lg transition"><i class="fa-solid fa-gear"></i> Paramètres</a>
+    </nav>
+    <button id="logoutBtn" class="m-4 bg-red-600 hover:bg-red-700 p-2 rounded-lg flex items-center justify-center gap-2"><i class="fa-solid fa-right-from-bracket"></i> Déconnexion</button>
+  </aside>
 
-  <footer>
-    &copy; 2025 · Institut Saint Charles Lwanga · Lubumbashi
-  </footer>
+  <!-- Main content -->
+  <main class="flex-1 p-8 overflow-y-auto">
+    <header class="mb-6" id="mainHeader"></header>
+
+    <div class="text-center mb-8 text-lg font-medium" id="welcomeMsg">Chargement du profil...</div>
+
+    <section class="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-6" id="moduleList">
+      <!-- Modules générés dynamiquement -->
+    </section>
+  </main>
 
   <script type="module">
-    import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-app.js";
-    import { getAuth, onAuthStateChanged, signOut } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-auth.js";
-    import { getFirestore, doc, getDoc } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore.js";
-
-    const firebaseConfig = {
-      apiKey: "AIzaSyAgv4TDYnR60TXnns-LISqbZTgcdLT31cc",
-      authDomain: "gestionlwanga.firebaseapp.com",
-      projectId: "gestionlwanga"
-    };
-
-    const app = initializeApp(firebaseConfig);
-    const auth = getAuth(app);
-    const db = getFirestore(app);
+    import { auth, db } from './config.js';
+    import { onAuthStateChanged, signOut } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-auth.js";
+    import { doc, getDoc } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore.js";
 
     const welcomeMsg = document.getElementById("welcomeMsg");
     const moduleList = document.getElementById("moduleList");
@@ -127,44 +54,12 @@
 
     const modulesParRole = {
       admin: [
-        { label: "📊 Tableau de bord", url: "dashboard-admin.html" },
-        { label: "👥 Utilisateurs", url: "liste-utilisateurs.html" },
-        { label: "📚 Cours", url: "cours.html" },
-        { label: "📝 Bulletins", url: "bulletins.html" },
-        { label: "💰 Paiements", url: "paiements.eleves.html" },
-        { label: "⚙️ Paramètres", url: "admin.html" }
-      ],
-      prefet: [
-        { label: "👥 Élèves", url: "eleves.html" },
-        { label: "📋 Discipline", url: "discipline.html" },
-        { label: "📝 Bulletins", url: "bulletins.html" },
-        { label: "📄 Inscriptions", url: "inscriptions.html" }
-      ],
-      directeur_etudes: [
-        { label: "📚 Cours", url: "cours.html" },
-        { label: "📝 Bulletins", url: "bulletins.html" }
-      ],
-      directeur_discipline: [
-        { label: "📋 Sanctions", url: "discipline.html" },
-        { label: "📆 Présences", url: "presences.html" }
-      ],
-      secretaire: [
-        { label: "📄 Inscriptions", url: "inscriptions.html" },
-        { label: "📁 Documents", url: "documents.html" }
-      ],
-      econome: [
-        { label: "💰 Paiements", url: "paiements.html" },
-        { label: "📊 Rapports financiers", url: "rapports.html" }
-      ],
-      enseignant: [
-        { label: "📚 Cours", url: "cours.html" },
-        { label: "📝 Notes", url: "saisie-notes.html" },
-        { label: "👥 Élèves", url: "eleves.html" }
-      ],
-      eleve: [
-        { label: "📝 Mes Bulletins", url: "mes-bulletins.html" },
-        { label: "📆 Emploi du temps", url: "emploi-du-temps.html" },
-        { label: "👤 Mon profil", url: "profil.html" }
+        { icon: "fa-chart-line", label: "Tableau de bord", url: "dashboard-admin.html" },
+        { icon: "fa-users", label: "Utilisateurs", url: "liste-utilisateurs.html" },
+        { icon: "fa-book", label: "Cours", url: "cours.html" },
+        { icon: "fa-file-lines", label: "Bulletins", url: "bulletins.html" },
+        { icon: "fa-money-bill-wave", label: "Paiements", url: "paiements.eleves.html" },
+        { icon: "fa-gear", label: "Paramètres", url: "admin.html" }
       ]
     };
 
@@ -186,25 +81,19 @@
       const nomComplet = [data.nom, data.postNom, data.prenom].filter(Boolean).join(" ") || "Utilisateur";
       const role = data.role?.toLowerCase().trim() || "inconnu";
 
-      console.log("✅ UID :", user.uid);
-      console.log("✅ Rôle détecté :", role);
-
       welcomeMsg.textContent = `Bienvenue ${nomComplet} · Rôle : ${role}`;
 
-      const modules = modulesParRole[role];
-      if (!modules || modules.length === 0) {
-        moduleList.innerHTML = "<p style='text-align:center;'>⛔ Aucun module disponible pour ce rôle.</p>";
+      const modules = modulesParRole[role] || [];
+      if (!modules.length) {
+        moduleList.innerHTML = "<p class='text-center col-span-full'>⛔ Aucun module disponible pour ce rôle.</p>";
         return;
       }
 
       modules.forEach(mod => {
         const link = document.createElement("a");
-        link.className = "module";
         link.href = mod.url;
-        link.innerHTML = `
-          <div class="module-icon">${mod.label.split(" ")[0]}</div>
-          <div>${mod.label.slice(mod.label.indexOf(" ") + 1)}</div>
-        `;
+        link.className = "bg-white shadow rounded-xl p-6 hover:shadow-lg transition flex flex-col items-center gap-2 text-blue-900 font-semibold";
+        link.innerHTML = `<i class="fa-solid ${mod.icon} text-3xl"></i><span>${mod.label}</span>`;
         moduleList.appendChild(link);
       });
     });
