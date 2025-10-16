@@ -1,0 +1,47 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+  <meta charset="UTF-8">
+  <title>Tableau de bord — Directeur des Études</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <script src="https://kit.fontawesome.com/a2e0e6a56b.js" crossorigin="anonymous"></script>
+  <script type="module" src="authGuard.js"></script>
+</head>
+
+<body class="bg-gray-50 text-gray-900 flex h-screen">
+  <aside class="w-64 bg-indigo-800 text-white flex flex-col">
+    <div class="p-6 text-2xl font-bold border-b border-indigo-700">
+      🎓 Directeur
+    </div>
+    <nav class="flex-1 p-4 space-y-3">
+      <a href="ajouter-enseignants.html" class="flex items-center gap-3 p-3 hover:bg-indigo-700 rounded-lg transition"><i class="fa-solid fa-user-plus"></i> Ajouter Enseignant</a>
+      <a href="planning-classes.html" class="flex items-center gap-3 p-3 hover:bg-indigo-700 rounded-lg transition"><i class="fa-solid fa-calendar-days"></i> Planning</a>
+      <a href="liste-eleves.html" class="flex items-center gap-3 p-3 hover:bg-indigo-700 rounded-lg transition"><i class="fa-solid fa-users"></i> Élèves</a>
+      <a href="profil-utilisateur.html" class="flex items-center gap-3 p-3 hover:bg-indigo-700 rounded-lg transition"><i class="fa-solid fa-user"></i> Profil</a>
+    </nav>
+    <button id="logoutBtn" class="m-4 bg-red-600 hover:bg-red-700 p-2 rounded-lg"><i class="fa-solid fa-right-from-bracket"></i> Déconnexion</button>
+  </aside>
+
+  <main class="flex-1 p-8 overflow-y-auto">
+    <header class="flex justify-between items-center mb-6">
+      <h1 class="text-3xl font-bold">Directeur des Études</h1>
+      <span id="userInfo" class="text-sm text-gray-600"></span>
+    </header>
+
+    <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
+      <div class="bg-white shadow p-6 rounded-xl hover:shadow-lg">
+        <h2 class="font-semibold mb-2">Suivi Pédagogique</h2>
+        <p class="text-gray-600">Consultez les notes, retards, absences et progression.</p>
+      </div>
+      <div class="bg-white shadow p-6 rounded-xl hover:shadow-lg">
+        <h2 class="font-semibold mb-2">Organisation</h2>
+        <p class="text-gray-600">Créez des plannings de cours et gérez les classes.</p>
+      </div>
+      <div class="bg-white shadow p-6 rounded-xl hover:shadow-lg">
+        <h2 class="font-semibold mb-2">Communication</h2>
+        <p class="text-gray-600">Coordonnez les échanges entre enseignants et administration.</p>
+      </div>
+    </div>
+  </main>
+</body>
+</html>
