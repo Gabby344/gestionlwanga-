@@ -1,159 +1,137 @@
+Skip to content
+Navigation Menu
+Gabby344
+gestionlwanga-
+
+Type / to search
+Code
+Issues
+Pull requests
+Actions
+Projects
+Wiki
+Security
+2
+Insights
+Settings
+gestionlwanga-
+/
+accueil-enseignant.html
+in
+main
+
+Edit
+
+Preview
+Indent mode
+
+Spaces
+Indent size
+
+2
+Line wrap mode
+
+No wrap
+Editing accueil-enseignant.html file contents
+1
+2
+3
+4
+5
+6
+7
+8
+9
+10
+11
+12
+13
+14
+15
+16
+17
+18
+19
+20
+21
+22
+23
+24
+25
+26
+27
+28
+29
+30
+31
+32
+33
+34
+35
+36
+37
+38
+39
+40
+41
+42
+43
+44
+45
+46
+47
+48
+49
+50
 <!DOCTYPE html>
 <html lang="fr">
 <head>
-  <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Espace Enseignant · Institut Saint Charles Lwanga</title>
-  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600&display=swap" rel="stylesheet">
-  <style>
-    :root {
-      --bleu: #1e3a8a;
-      --gris: #374151;
-      --fond: #f9fafb;
-      --ombre: rgba(0,0,0,0.05);
-    }
-    body {
-      font-family: 'Inter', sans-serif;
-      background-color: var(--fond);
-      margin: 0;
-      padding: 2rem 1rem;
-      color: var(--gris);
-    }
-    header {
-      text-align: center;
-      margin-bottom: 2rem;
-    }
-    header h1 {
-      font-size: 1.6rem;
-      color: var(--bleu);
-      margin-bottom: 0.3rem;
-    }
-    header p {
-      font-size: 0.95rem;
-      color: var(--gris);
-    }
-    .menu {
-      display: flex;
-      flex-direction: column;
-      gap: 1rem;
-      max-width: 400px;
-      margin: auto;
-    }
-    .menu a {
-      display: block;
-      background-color: white;
-      padding: 1rem;
-      border-radius: 8px;
-      text-decoration: none;
-      color: var(--bleu);
-      font-weight: 600;
-      box-shadow: 0 0 5px var(--ombre);
-      transition: background-color 0.2s;
-    }
-    .menu a:hover {
-      background-color: #e0e7ff;
-    }
-    footer {
-      margin-top: 3rem;
-      text-align: center;
-      font-size: 0.85rem;
-      color: #6b7280;
-    }
-    .btn-logout {
-      margin-top: 2rem;
-      display: inline-block;
-      background-color: #fca5a5;
-      color: #b91c1c;
-      padding: 0.5rem 1rem;
-      border-radius: 6px;
-      font-weight: 600;
-      text-decoration: none;
-      cursor: pointer;
-      transition: 0.2s;
-    }
-    .btn-logout:hover {
-      background-color: #b91c1c;
-      color: white;
-    }
-  </style>
+  <meta charset="UTF-8">
+  <title>Tableau de bord — Enseignant</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <script src="https://kit.fontawesome.com/a2e0e6a56b.js" crossorigin="anonymous"></script>
+  <script type="module" src="authGuard.js"></script>
+  <script type="module" src="header.js"></script>
 </head>
-<body>
-  <header>
-    <h1 id="teacherName">Espace Enseignant</h1>
-    <p>Institut Saint Charles Lwanga · Lubumbashi</p>
-  </header>
+<body class="bg-gray-50 text-gray-900 flex h-screen">
 
-  <div class="menu">
-    <a href="voir-planning.html">📅 Mon emploi du temps</a>
-    <a href="saisie-notes.html">📝 Saisir les notes</a>
-    <a href="bulletins.html">📄 Consulter les bulletins</a>
-    <a href="voir-messages.html">📬 Messages & annonces</a>
-    <a href="voir-profil.html">👤 Mon profil</a>
-  </div>
+  <!-- Sidebar -->
+  <aside class="w-64 bg-blue-800 text-white flex flex-col">
+    <div class="p-6 text-2xl font-bold border-b border-blue-700">
+      🧑‍🏫 Enseignant
+    </div>
+    <nav class="flex-1 p-4 space-y-3">
+      <a href="voir-planning.html" class="flex items-center gap-3 p-3 hover:bg-blue-700 rounded-lg transition"><i class="fa-solid fa-calendar"></i> Planning</a>
+      <a href="saisie-notes.html" class="flex items-center gap-3 p-3 hover:bg-blue-700 rounded-lg transition"><i class="fa-solid fa-pen"></i> Saisie Notes</a>
+      <a href="liste-eleves.html" class="flex items-center gap-3 p-3 hover:bg-blue-700 rounded-lg transition"><i class="fa-solid fa-users"></i> Élèves</a>
+      <a href="voir-bulletin.html" class="flex items-center gap-3 p-3 hover:bg-blue-700 rounded-lg transition"><i class="fa-solid fa-file-lines"></i> Bulletins</a>
+      <a href="voir-messages.html" class="flex items-center gap-3 p-3 hover:bg-blue-700 rounded-lg transition"><i class="fa-solid fa-envelope"></i> Messages</a>
+      <a href="profil-utilisateur.html" class="flex items-center gap-3 p-3 hover:bg-blue-700 rounded-lg transition"><i class="fa-solid fa-user"></i> Profil</a>
+    </nav>
+    <button id="logoutBtn" class="m-4 bg-red-600 hover:bg-red-700 p-2 rounded-lg"><i class="fa-solid fa-right-from-bracket"></i> Déconnexion</button>
+  </aside>
 
-  <div style="text-align:center;">
-    <button class="btn-logout" id="logoutBtn">🚪 Déconnexion</button>
-  </div>
+  <!-- Main content -->
+  <main class="flex-1 p-8 overflow-y-auto">
+    <header class="mb-6" id="mainHeader"></header>
 
-  <footer>
-    &copy; 2025 · Interface enseignant sécurisée · Institut Saint Charles Lwanga
-  </footer>
-
-  <script type="module">
-    import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-app.js";
-    import { getAuth, signOut, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-auth.js";
-    import { getFirestore, doc, getDoc } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore.js";
-
-    // ⚙️ Firebase config (même que ton config.js)
-    const firebaseConfig = {
-      apiKey: "AIzaSyAgv4TDYnR60TXnns-LISqbZTgcdLT31cc",
-      authDomain: "gestionlwanga.firebaseapp.com",
-      projectId: "gestionlwanga",
-      storageBucket: "gestionlwanga.firebasestorage.app",
-      messagingSenderId: "622604298611",
-      appId: "1:622604298611:web:4ab4314ed3eec6826c3d06"
-    };
-
-    const app = initializeApp(firebaseConfig);
-    const auth = getAuth(app);
-    const db = getFirestore(app);
-
-    const teacherName = document.getElementById("teacherName");
-
-    // 🔐 Vérifie si un utilisateur est connecté
-    onAuthStateChanged(auth, async (user) => {
-      if (!user) {
-        window.location.href = "connexion.html";
-        return;
-      }
-
-      try {
-        const userDoc = await getDoc(doc(db, "users", user.uid));
-        if (!userDoc.exists()) throw new Error("Profil enseignant introuvable.");
-
-        const data = userDoc.data();
-        if (data.role !== "enseignant") {
-          alert("⛔ Accès refusé : réservé aux enseignants !");
-          await signOut(auth);
-          window.location.href = "connexion.html";
-          return;
-        }
-
-        // Affiche le nom complet
-        const nomComplet = `${data.nom || ""} ${data.postNom || ""} ${data.prenom || ""}`.trim();
-        teacherName.textContent = `Espace Enseignant · ${nomComplet}`;
-      } catch (err) {
-        alert(err.message);
-        window.location.href = "connexion.html";
-      }
-    });
-
-    // 🚪 Déconnexion
-    document.getElementById("logoutBtn").addEventListener("click", async () => {
-      await signOut(auth);
-      alert("✅ Déconnexion réussie.");
-      window.location.href = "connexion.html";
-    });
-  </script>
+    <section class="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-6">
+      <div class="bg-white shadow rounded-xl p-6 hover:shadow-lg transition">
+        <h2 class="font-semibold text-lg mb-2"><i class="fa-solid fa-calendar-check mr-2 text-blue-600"></i> Planning</h2>
+        <p class="text-gray-600">Consultez votre emploi du temps et les assignations de cours.</p>
+      </div>
+      <div class="bg-white shadow rounded-xl p-6 hover:shadow-lg transition">
+        <h2 class="font-semibold text-lg mb-2"><i class="fa-solid fa-pen mr-2 text-blue-600"></i> Notes</h2>
+        <p class="text-gray-600">Saisissez et mettez à jour les notes de vos élèves facilement.</p>
+      </div>
+      <div class="bg-white shadow rounded-xl p-6 hover:shadow-lg transition">
+        <h2 class="font-semibold text-lg mb-2"><i class="fa-solid fa-users mr-2 text-blue-600"></i> Élèves</h2>
+        <p class="text-gray-600">Accédez à la liste de vos élèves et consultez leurs bulletins.</p>
+      </div>
+    </section>
+  </main>
 </body>
 </html>
+
+Use Control + Shift + m to toggle the tab key moving focus. Alternatively, use esc then tab to move to the next interactive element on the page.
+New File at / · Gabby344/gestionlwanga-
