@@ -1,260 +1,61 @@
 <!DOCTYPE html>
 <html lang="fr">
 <head>
-  <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Tableau de bord · Admin</title>
-  <link rel="icon" href="favicon.ico" />
-  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600&display=swap" rel="stylesheet" />
-  <style>
-    :root {
-      --bleu: #1e3a8a;
-      --bleu-clair: #3b82f6;
-      --gris: #374151;
-      --fond: #f9fafb;
-      --carte: #ffffff;
-      --ombre: rgba(0, 0, 0, 0.05);
-      --rouge: #ef4444;
-      --jaune: #facc15;
-      --vert: #10b981;
-    }
-
-    * {
-      margin: 0;
-      padding: 0;
-      box-sizing: border-box;
-    }
-
-    body {
-      font-family: 'Inter', sans-serif;
-      background-color: var(--fond);
-      color: var(--gris);
-      padding: 2rem;
-    }
-
-    header {
-      display: flex;
-      justify-content: space-between;
-      align-items: center;
-      margin-bottom: 2rem;
-    }
-
-    h1 {
-      color: var(--bleu);
-      font-weight: 700;
-    }
-
-    .actions {
-      display: flex;
-      gap: 1rem;
-    }
-
-    .actions a,
-    .actions button {
-      background: var(--bleu);
-      color: white;
-      border: none;
-      padding: 0.5rem 1rem;
-      border-radius: 6px;
-      text-decoration: none;
-      font-weight: 600;
-      cursor: pointer;
-      transition: background 0.2s;
-    }
-
-    .actions a:hover,
-    .actions button:hover {
-      background: #1e40af;
-    }
-
-    .info {
-      text-align: center;
-      margin-bottom: 2rem;
-      font-size: 1rem;
-      font-weight: 500;
-    }
-
-    .grid {
-      display: grid;
-      grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
-      gap: 1.2rem;
-      max-width: 1000px;
-      margin: auto;
-    }
-
-    .card {
-      background-color: var(--carte);
-      padding: 1.2rem;
-      border-radius: 12px;
-      box-shadow: 0 4px 10px var(--ombre);
-      text-align: center;
-      transition: transform 0.2s ease, background 0.2s ease;
-    }
-
-    .card:hover {
-      transform: translateY(-4px);
-      background-color: #f1f5f9;
-    }
-
-    .card h2 {
-      font-size: 2rem;
-      color: var(--bleu);
-      margin-bottom: 0.5rem;
-    }
-
-    .card p {
-      font-size: 0.95rem;
-      color: #6b7280;
-    }
-
-    .alertes {
-      margin-top: 3rem;
-      max-width: 800px;
-      margin-inline: auto;
-    }
-
-    .alertes h3 {
-      color: var(--rouge);
-      margin-bottom: 1rem;
-      text-align: center;
-    }
-
-    .alerte {
-      background-color: #fef2f2;
-      border-left: 4px solid var(--rouge);
-      padding: 1rem;
-      margin-bottom: 1rem;
-      border-radius: 8px;
-      font-size: 0.95rem;
-    }
-
-    footer {
-      margin-top: 4rem;
-      text-align: center;
-      font-size: 0.85rem;
-      color: #6b7280;
-    }
-
-    @media (max-width: 600px) {
-      .card h2 {
-        font-size: 1.5rem;
-      }
-    }
-  </style>
+  <meta charset="UTF-8">
+  <title>Tableau de bord — Admin</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <script src="https://kit.fontawesome.com/a2e0e6a56b.js" crossorigin="anonymous"></script>
+  <script type="module" src="authGuard.js"></script>
+  <script type="module" src="header.js"></script>
 </head>
-<body>
-  <header>
-    <h1>📊 Tableau de bord Administratif</h1>
-    <div class="actions">
-      <a href="accueil-admin.html">🏠 Accueil</a>
-      <button id="logoutBtn">🚪 Déconnexion</button>
+<body class="bg-gray-50 text-gray-900 flex h-screen">
+
+  <!-- Sidebar -->
+  <aside class="w-64 bg-gray-900 text-white flex flex-col">
+    <div class="p-6 text-2xl font-bold border-b border-gray-800">
+      👑 Admin
     </div>
-  </header>
+    <nav class="flex-1 p-4 space-y-3">
+      <a href="admin-roles.html" class="flex items-center gap-3 p-3 hover:bg-gray-800 rounded-lg transition"><i class="fa-solid fa-shield-alt"></i> Gestion Rôles</a>
+      <a href="ajouter-eleves.html" class="flex items-center gap-3 p-3 hover:bg-gray-800 rounded-lg transition"><i class="fa-solid fa-user-plus"></i> Ajouter Élève</a>
+      <a href="ajouter-enseignants.html" class="flex items-center gap-3 p-3 hover:bg-gray-800 rounded-lg transition"><i class="fa-solid fa-chalkboard-teacher"></i> Ajouter Enseignant</a>
+      <a href="liste-eleves.html" class="flex items-center gap-3 p-3 hover:bg-gray-800 rounded-lg transition"><i class="fa-solid fa-users"></i> Liste Élèves</a>
+      <a href="liste-enseignants.html" class="flex items-center gap-3 p-3 hover:bg-gray-800 rounded-lg transition"><i class="fa-solid fa-user-tie"></i> Liste Enseignants</a>
+      <a href="profil-utilisateur.html" class="flex items-center gap-3 p-3 hover:bg-gray-800 rounded-lg transition"><i class="fa-solid fa-user"></i> Profil</a>
+    </nav>
+    <button id="logoutBtn" class="m-4 bg-red-600 hover:bg-red-700 p-2 rounded-lg"><i class="fa-solid fa-right-from-bracket"></i> Déconnexion</button>
+  </aside>
 
-  <div class="info" id="adminInfo">Chargement...</div>
+  <!-- Main content -->
+  <main class="flex-1 p-8 overflow-y-auto">
+    <header class="mb-6" id="mainHeader"></header>
 
-  <div class="grid" id="statsGrid">
-    <!-- Statistiques dynamiques -->
-  </div>
-
-  <div class="alertes" id="alertesSection">
-    <h3>🔔 Alertes</h3>
-    <!-- Alertes dynamiques -->
-  </div>
-
-  <footer>
-    &copy; 2025 · Institut Saint Charles Lwanga · Lubumbashi
-  </footer>
-
-  <script type="module">
-    import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-app.js";
-    import { getAuth, onAuthStateChanged, signOut } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-auth.js";
-    import { getFirestore, collection, getDocs, doc, getDoc, query, where } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore.js";
-    import { protectPage } from './authGuard.js';
-
-    protectPage(["admin"]);
-
-    const firebaseConfig = {
-      apiKey: "AIzaSyAgv4TDYnR60TXnns-LISqbZTgcdLT31cc",
-      authDomain: "gestionlwanga.firebaseapp.com",
-      projectId: "gestionlwanga"
-    };
-
-    const app = initializeApp(firebaseConfig);
-    const auth = getAuth(app);
-    const db = getFirestore(app);
-
-    const adminInfo = document.getElementById("adminInfo");
-    const statsGrid = document.getElementById("statsGrid");
-    const alertesSection = document.getElementById("alertesSection");
-    const logoutBtn = document.getElementById("logoutBtn");
-
-    logoutBtn.addEventListener("click", async () => {
-      await signOut(auth);
-      window.location.href = "login.html";
-    });
-
-    onAuthStateChanged(auth, async (user) => {
-      if (!user) {
-        window.location.href = "login.html";
-        return;
-      }
-
-      const snap = await getDoc(doc(db, "users", user.uid));
-      if (!snap.exists()) {
-        adminInfo.textContent = "⛔ Profil introuvable.";
-        return;
-      }
-
-      const data = snap.data();
-      const role = data.role?.toLowerCase().trim() || "inconnu";
-      const nomComplet = [data.nom, data.postNom, data.prenom].filter(Boolean).join(" ") || "Admin";
-
-      if (role !== "admin") {
-        adminInfo.textContent = "⛔ Accès refusé.";
-        await signOut(auth);
-        window.location.href = "login.html";
-        return;
-      }
-
-      adminInfo.textContent = `Bienvenue ${nomComplet} · Rôle : ${role}`;
-
-      // 📊 Statistiques dynamiques
-      const [elevesSnap, enseignantsSnap, paiementsSnap, bulletinsSnap] = await Promise.all([
-        getDocs(collection(db, "eleves")),
-        getDocs(query(collection(db, "users"), where("role", "==", "enseignant"))),
-        getDocs(collection(db, "paiements")),
-        getDocs(collection(db, "bulletins"))
-      ]);
-
-      const stats = [
-        { label: "🎒 Élèves", value: elevesSnap.size },
-        { label: "🧑‍🏫 Enseignants", value: enseignantsSnap.size },
-        { label: "💰 Paiements", value: paiementsSnap.size },
-        { label: "📄 Bulletins", value: bulletinsSnap.size }
-      ];
-
-      stats.forEach(stat => {
-        const div = document.createElement("div");
-        div.className = "card";
-        div.innerHTML = `<h2>${stat.value}</h2><p>${stat.label}</p>`;
-        statsGrid.appendChild(div);
-      });
-
-      // 🔔 Alertes simulées (à adapter selon ta structure)
-      const alertes = [
-        "5 paiements en retard détectés ce mois.",
-        "12 bulletins non encore validés.",
-        "3 élèves sans affectation de classe."
-      ];
-
-      alertes.forEach(msg => {
-        const div = document.createElement("div");
-        div.className = "alerte";
-        div.textContent = msg;
-        alertesSection.appendChild(div);
-      });
-    });
-  </script>
+    <section class="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-6">
+      <div class="bg-white shadow rounded-xl p-6 hover:shadow-lg transition">
+        <h2 class="font-semibold text-lg mb-2"><i class="fa-solid fa-shield-alt mr-2 text-gray-700"></i> Gestion des rôles</h2>
+        <p class="text-gray-600">Attribuez et modifiez les rôles des utilisateurs.</p>
+      </div>
+      <div class="bg-white shadow rounded-xl p-6 hover:shadow-lg transition">
+        <h2 class="font-semibold text-lg mb-2"><i class="fa-solid fa-user-plus mr-2 text-gray-700"></i> Ajouter Élève</h2>
+        <p class="text-gray-600">Enregistrez de nouveaux élèves dans le système.</p>
+      </div>
+      <div class="bg-white shadow rounded-xl p-6 hover:shadow-lg transition">
+        <h2 class="font-semibold text-lg mb-2"><i class="fa-solid fa-chalkboard-teacher mr-2 text-gray-700"></i> Ajouter Enseignant</h2>
+        <p class="text-gray-600">Ajoutez de nouveaux enseignants et configurez leurs accès.</p>
+      </div>
+      <div class="bg-white shadow rounded-xl p-6 hover:shadow-lg transition">
+        <h2 class="font-semibold text-lg mb-2"><i class="fa-solid fa-users mr-2 text-gray-700"></i> Liste Élèves</h2>
+        <p class="text-gray-600">Consultez et gérez tous les élèves inscrits.</p>
+      </div>
+      <div class="bg-white shadow rounded-xl p-6 hover:shadow-lg transition">
+        <h2 class="font-semibold text-lg mb-2"><i class="fa-solid fa-user-tie mr-2 text-gray-700"></i> Liste Enseignants</h2>
+        <p class="text-gray-600">Consultez et gérez tous les enseignants.</p>
+      </div>
+      <div class="bg-white shadow rounded-xl p-6 hover:shadow-lg transition">
+        <h2 class="font-semibold text-lg mb-2"><i class="fa-solid fa-file-lines mr-2 text-gray-700"></i> Bulletins & Rapports</h2>
+        <p class="text-gray-600">Générez et consultez les bulletins et rapports de l’école.</p>
+      </div>
+    </section>
+  </main>
 </body>
 </html>
