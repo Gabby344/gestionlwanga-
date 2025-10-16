@@ -1,0 +1,50 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+  <meta charset="UTF-8">
+  <title>Tableau de bord — Directeur de Discipline</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <script src="https://kit.fontawesome.com/a2e0e6a56b.js" crossorigin="anonymous"></script>
+  <script type="module" src="authGuard.js"></script>
+</head>
+
+<body class="bg-gray-50 text-gray-900 flex h-screen">
+  <!-- Sidebar -->
+  <aside class="w-64 bg-orange-800 text-white flex flex-col">
+    <div class="p-6 text-2xl font-bold border-b border-orange-700">
+      ⚖️ Discipline
+    </div>
+    <nav class="flex-1 p-4 space-y-3">
+      <a href="liste-eleves.html" class="flex items-center gap-3 p-3 hover:bg-orange-700 rounded-lg transition"><i class="fa-solid fa-users"></i> Élèves</a>
+      <a href="donner-sanction.html" class="flex items-center gap-3 p-3 hover:bg-orange-700 rounded-lg transition"><i class="fa-solid fa-gavel"></i> Sanctions</a>
+      <a href="rapport-discipline.html" class="flex items-center gap-3 p-3 hover:bg-orange-700 rounded-lg transition"><i class="fa-solid fa-file-alt"></i> Rapports</a>
+      <a href="publier-message.html" class="flex items-center gap-3 p-3 hover:bg-orange-700 rounded-lg transition"><i class="fa-solid fa-bullhorn"></i> Messages</a>
+      <a href="profil-utilisateur.html" class="flex items-center gap-3 p-3 hover:bg-orange-700 rounded-lg transition"><i class="fa-solid fa-user"></i> Profil</a>
+    </nav>
+    <button id="logoutBtn" class="m-4 bg-red-600 hover:bg-red-700 p-2 rounded-lg"><i class="fa-solid fa-right-from-bracket"></i> Déconnexion</button>
+  </aside>
+
+  <!-- Main content -->
+  <main class="flex-1 p-8 overflow-y-auto">
+    <header class="flex justify-between items-center mb-6">
+      <h1 class="text-3xl font-bold">Directeur de Discipline</h1>
+      <span id="userInfo" class="text-sm text-gray-600"></span>
+    </header>
+
+    <section class="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-6">
+      <div class="bg-white shadow rounded-xl p-6 hover:shadow-lg transition">
+        <h2 class="font-semibold text-lg mb-2"><i class="fa-solid fa-user-check mr-2 text-orange-600"></i> Présence & Comportement</h2>
+        <p class="text-gray-600">Surveillez la ponctualité et le comportement des élèves.</p>
+      </div>
+      <div class="bg-white shadow rounded-xl p-6 hover:shadow-lg transition">
+        <h2 class="font-semibold text-lg mb-2"><i class="fa-solid fa-scale-balanced mr-2 text-orange-600"></i> Sanctions</h2>
+        <p class="text-gray-600">Attribuez et suivez les sanctions disciplinaires.</p>
+      </div>
+      <div class="bg-white shadow rounded-xl p-6 hover:shadow-lg transition">
+        <h2 class="font-semibold text-lg mb-2"><i class="fa-solid fa-clipboard-list mr-2 text-orange-600"></i> Rapports</h2>
+        <p class="text-gray-600">Consultez les rapports mensuels de discipline.</p>
+      </div>
+    </section>
+  </main>
+</body>
+</html>
