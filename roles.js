@@ -3,10 +3,10 @@
 // 🌐 Page d'accueil par rôle
 export const roleRedirects = {
   admin: "accueil-admin.html",
-  prefet: "accueil-admin.html",
-  directeur_etudes: "accueil-admin.html",
-  directeur_discipline: "accueil-admin.html",
-  secretaire: "accueil-admin.html",
+  prefet: "accueil-prefet.html",
+  directeur_etudes: "accueil-directeur.html",
+  directeur_discipline: "accueil-directeur-displine.html",
+  secretaire: "accueil-secretaire.html",
   econome: "finance.html",
   enseignant: "accueil-enseignant.html",
   eleve: "accueil-utilisateur.html",
