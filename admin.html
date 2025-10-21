@@ -1,443 +1,496 @@
 <!DOCTYPE html>
 <html lang="fr">
 <head>
-<meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Paramètres Admin · ISC Lwanga</title>
-<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700;800&display=swap" rel="stylesheet">
-<style>
-:root {
-  --bleu-fonce: #1e40af;
-  --gris-fonce: #1f2937;
-  --vert: #10b981;
-  --rouge: #ef4444;
-  --fond: #f4f6f8;
-  --ombre-legere: rgba(0,0,0,0.08);
-}
-body {
-  font-family: 'Inter', sans-serif;
-  margin: 0;
-  background-color: var(--fond);
-  color: var(--gris-fonce);
-}
-.header {
-  background-color: white;
-  padding: 1rem 2rem;
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-  box-shadow: 0 1px 5px var(--ombre-legere);
-}
-.header-left {
-  display: flex;
-  align-items: center;
-  gap: 1rem;
-}
-.header-left img {
-  height: 50px;
-  width: 50px;
-  object-fit: contain;
-}
-.header-left h1 {
-  margin: 0;
-  font-size: 1.5rem;
-  color: var(--bleu-fonce);
-  font-weight: 700;
-}
-.user-info {
-  font-weight: 500;
-  color: #374151;
-}
-.btn-logout {
-  background-color: var(--rouge);
-  color: white;
-  border: none;
-  border-radius: 6px;
-  padding: 0.6rem 1rem;
-  font-weight: 600;
-  cursor: pointer;
-  transition: background-color 0.2s;
-}
-.btn-logout:hover {
-  background-color: #b91c1c;
-}
-.main-content {
-  max-width: 1200px;
-  margin: 2rem auto;
-  padding: 0 1rem 2rem;
-}
-.section-title {
-  font-size: 1.3rem;
-  font-weight: 700;
-  margin-bottom: 1rem;
-  border-bottom: 1px solid #e5e7eb;
-  padding-bottom: 0.5rem;
-}
-.card {
-  background: white;
-  padding: 1rem;
-  border-radius: 10px;
-  box-shadow: 0 3px 6px var(--ombre-legere);
-  margin-bottom: 1rem;
-}
-.card input, .card select {
-  width: 100%;
-  padding: 0.7rem;
-  margin-top: 0.5rem;
-  margin-bottom: 1rem;
-  border-radius: 6px;
-  border: 1px solid #d1d5db;
-  font-size: 1rem;
-}
-.card button {
-  padding: 0.7rem 1.2rem;
-  background-color: var(--bleu-fonce);
-  color: white;
-  border: none;
-  border-radius: 6px;
-  cursor: pointer;
-  font-weight: 600;
-  transition: 0.2s;
-}
-.card button:hover {
-  background-color: #1e3a8a;
-}
-.table-users {
-  width: 100%;
-  border-collapse: collapse;
-}
-.table-users th, .table-users td {
-  border: 1px solid #e5e7eb;
-  padding: 0.7rem;
-  text-align: left;
-}
-.table-users th {
-  background-color: var(--bleu-fonce);
-  color: white;
-}
-.table-users tr:hover {
-  background-color: #f1f5f9;
-}
-.notification {
-  position: fixed;
-  top: 20px;
-  right: 20px;
-  padding: 1rem 1.5rem;
-  border-radius: 8px;
-  color: white;
-  font-weight: 500;
-  opacity: 0;
-  transform: translateX(100%);
-  transition: opacity 0.3s, transform 0.3s;
-  z-index: 1000;
-}
-.notification.show {
-  opacity: 1;
-  transform: translateX(0);
-}
-.notification.success { background-color: var(--vert); }
-.notification.error { background-color: var(--rouge); }
-@media(max-width: 700px){
-  .header-left h1 { font-size: 1.2rem; }
-}
-</style>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Gestion des Utilisateurs Admin | ISC Lwanga</title>
+    <!-- Chargement de Tailwind CSS pour un style moderne et responsive -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <!-- Font Awesome pour les icônes -->
+    <script src="https://kit.fontawesome.com/a2e0e6a56b.js" crossorigin="anonymous"></script>
+    
+    <style>
+        /* Configuration de la police Inter */
+        @import url('https://fonts.googleapis.com/css2?family=Inter:wght@100..900&display=swap');
+        body {
+            font-family: 'Inter', sans-serif;
+        }
+        /* Style des liens dans la barre latérale */
+        .nav-link {
+            transition: all 0.2s;
+        }
+        .nav-link:hover {
+            background-color: #374151; /* gray-700 */
+        }
+        /* Masque le contenu tant que l'AuthGuard n'a pas validé l'utilisateur */
+        body:not(.loaded) {
+            display: none;
+        }
+        /* Style pour les notifications customisées */
+        #notification-area {
+            position: fixed;
+            top: 20px;
+            right: 20px;
+            z-index: 1000;
+        }
+        .notification {
+            padding: 1rem 1.5rem;
+            border-radius: 0.75rem;
+            color: white;
+            font-weight: 500;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+            opacity: 0;
+            transform: translateX(100%);
+            transition: opacity 0.3s, transform 0.3s;
+            margin-bottom: 0.5rem;
+        }
+        .notification.show {
+            opacity: 1;
+            transform: translateX(0);
+        }
+        .notification.success { background-color: #10b981; }
+        .notification.error { background-color: #ef4444; }
+        .notification.info { background-color: #3b82f6; }
+
+    </style>
+    
 </head>
-<body>
-<div id="notification-area"></div>
-<div class="header">
-  <div class="header-left">
-    <img src="IMG_7373.jpeg" alt="Logo ISC Lwanga">
-    <h1>Paramètres Admin</h1>
-  </div>
-  <div class="user-info" id="userInfo"></div>
-  <button class="btn-logout" id="logoutBtn">🚪 Déconnexion</button>
-</div>
 
-<div class="main-content">
-  <h2 class="section-title">Initialiser la Base Firestore</h2>
-  <div class="card">
-    <p>Ce bouton configure les rôles, les administrateurs et les classes de l’école.</p>
-    <button onclick="configInitiale()">🛠 Initialiser la base Firestore</button>
-  </div>
+<body class="bg-gray-100 text-gray-900 flex min-h-screen">
 
-  <h2 class="section-title">Créer un Utilisateur</h2>
-  <div class="card">
-    <input type="text" id="nom" placeholder="Nom">
-    <input type="text" id="postNom" placeholder="PostNom">
-    <input type="text" id="prenom" placeholder="Prénom">
-    <input type="email" id="email" placeholder="Email">
-    <input type="password" id="password" placeholder="Mot de passe">
-    <select id="role">
-      <option value="">-- Choisir un rôle --</option>
-      <option value="admin">Admin</option>
-      <option value="prefet">Préfet</option>
-      <option value="enseignant">Enseignant</option>
-      <option value="eleve">Élève</option>
-      <option value="directeur_etudes">Directeur Études</option>
-      <option value="directeur_discipline">Directeur Discipline</option>
-      <option value="secretaire">Secrétaire</option>
-      <option value="econome">Économe</option>
-    </select>
-    <button id="createUserBtn">Créer Utilisateur</button>
-  </div>
+    <div id="notification-area"></div>
 
-  <h2 class="section-title">Liste des Utilisateurs</h2>
-  <div class="card">
-    <table class="table-users" id="usersTable">
-      <thead>
-        <tr>
-          <th>Nom</th>
-          <th>Email</th>
-          <th>Rôle</th>
-          <th>Actions</th>
-        </tr>
-      </thead>
-      <tbody></tbody>
-    </table>
-  </div>
-</div>
+    <!-- SIDEBAR (Navigation Latérale) - Copiée pour cohérence -->
+    <aside class="w-64 bg-gray-800 text-white flex flex-col shadow-2xl flex-shrink-0">
+        <div class="p-6 text-2xl font-extrabold border-b border-gray-700 bg-gray-900">
+            ISC Lwanga <span class="text-indigo-400">Admin</span>
+        </div>
+        <nav class="flex-1 p-4 space-y-2">
+            
+            <a href="dashboard-admin.html" class="nav-link flex items-center gap-3 p-3 text-gray-200 rounded-lg">
+                <i class="fa-solid fa-gauge-high w-5"></i> Tableau de Bord
+            </a>
+            
+            <div class="pt-4 mt-4 border-t border-gray-700">
+                <p class="text-xs font-semibold uppercase tracking-wider text-gray-400 px-3 pb-2">Gestion Globale</p>
+                <a href="admin.html" class="nav-link flex items-center gap-3 p-3 bg-gray-700 rounded-lg font-semibold text-indigo-300">
+                    <i class="fa-solid fa-users-gear w-5"></i> Comptes & Utilisateurs
+                </a>
+                <a href="admin-roles.html" class="nav-link flex items-center gap-3 p-3 text-gray-200 rounded-lg">
+                    <i class="fa-solid fa-shield-alt w-5"></i> Rôles & Permissions
+                </a>
+                <a href="gestion-classes.html" class="nav-link flex items-center gap-3 p-3 text-gray-200 rounded-lg">
+                    <i class="fa-solid fa-chalkboard w-5"></i> Classes & Matières
+                </a>
+            </div>
 
-<script type="module">
-import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-app.js";
-import { 
-  getAuth, onAuthStateChanged, signOut, createUserWithEmailAndPassword, sendPasswordResetEmail
-} from "https://www.gstatic.com/firebasejs/10.12.2/firebase-auth.js";
-import { 
-  getFirestore, collection, doc, setDoc, getDocs, deleteDoc
-} from "https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore.js";
+            <div class="pt-4 mt-4 border-t border-gray-700">
+                <p class="text-xs font-semibold uppercase tracking-wider text-gray-400 px-3 pb-2">Rapports & Finance</p>
+                <a href="config-frais.html" class="nav-link flex items-center gap-3 p-3 text-gray-200 rounded-lg">
+                    <i class="fa-solid fa-wallet w-5"></i> Gestion Financière
+                </a>
+                <a href="rapport-discipline.html" class="nav-link flex items-center gap-3 p-3 text-gray-200 rounded-lg">
+                    <i class="fa-solid fa-bell w-5"></i> Discipline & Absences
+                </a>
+            </div>
 
-const firebaseConfig = {
-  apiKey: "AIzaSyAgv4TDYnR60TXnns-LISqbZTgcdLT31cc",
-  authDomain: "gestionlwanga.firebaseapp.com",
-  projectId: "gestionlwanga",
-  storageBucket: "gestionlwanga.firebasestorage.app",
-  messagingSenderId: "622604298611",
-  appId: "1:622604298611:web:4ab4314ed3eec6826c3d06"
-};
+        </nav>
+        <!-- Bouton de Déconnexion -->
+        <button id="logoutBtn" class="m-4 bg-red-600 hover:bg-red-700 p-3 rounded-xl font-semibold shadow-lg transition duration-200 flex items-center justify-center gap-3">
+            <i class="fa-solid fa-right-from-bracket"></i> Déconnexion
+        </button>
+    </aside>
 
-const app = initializeApp(firebaseConfig);
-const auth = getAuth(app);
-const db = getFirestore(app);
+    <!-- CONTENU PRINCIPAL -->
+    <main class="flex-1 p-8 overflow-y-auto">
+        
+        <!-- HEADER / BANNIÈRE -->
+        <header class="mb-8 p-6 bg-white rounded-xl shadow-lg border-l-4 border-blue-500 flex flex-col sm:flex-row justify-between items-start sm:items-center">
+            <h1 class="text-3xl font-extrabold text-gray-800 mb-2 sm:mb-0">Gestion des Comptes</h1>
+            <div class="text-right">
+                <p class="text-sm font-semibold text-blue-600" id="userInfo">Chargement...</p>
+                <p class="text-xs text-gray-500">Administrateur système</p>
+            </div>
+        </header>
 
-const userInfo = document.getElementById('userInfo');
-const logoutBtn = document.getElementById('logoutBtn');
-const notificationArea = document.getElementById('notification-area');
+        <!-- Configuration et Création -->
+        <section class="grid grid-cols-1 lg:grid-cols-3 gap-6 mb-8">
+            
+            <!-- Carte 1: Initialisation de la Base de Données -->
+            <div class="bg-white p-6 rounded-xl shadow-lg lg:col-span-1 border-t-4 border-indigo-500">
+                <h2 class="text-xl font-bold text-gray-800 mb-3 flex items-center gap-2">
+                    <i class="fa-solid fa-cogs text-indigo-500"></i> Configuration Initiale
+                </h2>
+                <p class="text-gray-600 mb-4 text-sm">Crée les collections de base (Rôles, Classes, Administrateurs) dans Firestore.</p>
+                <button onclick="configInitiale()" id="initBtn" class="w-full py-2 bg-indigo-600 text-white rounded-lg hover:bg-indigo-700 font-semibold transition duration-200">
+                    <i class="fa-solid fa-hammer mr-2"></i> Initialiser la Base
+                </button>
+            </div>
 
-function showNotification(msg, type="success"){
-  const notif = document.createElement("div");
-  notif.className = `notification ${type}`;
-  notif.textContent = msg;
-  notificationArea.appendChild(notif);
-  setTimeout(()=>notif.classList.add('show'),10);
-  setTimeout(()=>{
-    notif.classList.remove('show');
-    setTimeout(()=>notificationArea.removeChild(notif),300);
-  },4000);
-}
+            <!-- Carte 2: Création d'un Utilisateur -->
+            <div class="bg-white p-6 rounded-xl shadow-lg lg:col-span-2 border-t-4 border-green-500">
+                <h2 class="text-xl font-bold text-gray-800 mb-4 flex items-center gap-2">
+                    <i class="fa-solid fa-user-plus text-green-600"></i> Créer un Nouveau Compte
+                </h2>
+                <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
+                    <input type="text" id="nom" placeholder="Nom" class="p-3 border border-gray-300 rounded-lg focus:ring-green-500 focus:border-green-500">
+                    <input type="text" id="postNom" placeholder="PostNom" class="p-3 border border-gray-300 rounded-lg focus:ring-green-500 focus:border-green-500">
+                    <input type="text" id="prenom" placeholder="Prénom" class="p-3 border border-gray-300 rounded-lg focus:ring-green-500 focus:border-green-500">
+                    <input type="email" id="email" placeholder="Email" class="p-3 border border-gray-300 rounded-lg focus:ring-green-500 focus:border-green-500 md:col-span-2">
+                    <input type="password" id="password" placeholder="Mot de passe" class="p-3 border border-gray-300 rounded-lg focus:ring-green-500 focus:border-green-500">
+                    
+                    <select id="role" class="p-3 border border-gray-300 rounded-lg focus:ring-green-500 focus:border-green-500 md:col-span-2">
+                        <option value="">-- Choisir un rôle --</option>
+                        <option value="admin">Admin (Système)</option>
+                        <option value="prefet">Préfet</option>
+                        <option value="directeur_etudes">Directeur Études</option>
+                        <option value="directeur_discipline">Directeur Discipline</option>
+                        <option value="enseignant">Enseignant</option>
+                        <option value="secretaire">Secrétaire</option>
+                        <option value="econome">Économe</option>
+                        <option value="eleve">Élève</option>
+                    </select>
+                    <button id="createUserBtn" class="w-full py-3 bg-green-600 text-white rounded-lg hover:bg-green-700 font-bold transition duration-200 md:col-span-1">
+                        Créer Utilisateur
+                    </button>
+                </div>
+            </div>
+        </section>
 
-onAuthStateChanged(auth, user => {
-  if(!user){
-    window.location.href = "index.html";
-  } else {
-    userInfo.textContent = user.email;
-    loadUsers();
-  }
-});
+        <!-- Liste des Utilisateurs -->
+        <section>
+            <div class="bg-white p-6 rounded-xl shadow-lg">
+                <h2 class="text-xl font-bold text-gray-800 mb-4 flex items-center gap-2">
+                    <i class="fa-solid fa-list text-blue-600"></i> Liste Complète des Utilisateurs
+                </h2>
+                <div class="overflow-x-auto">
+                    <table class="min-w-full divide-y divide-gray-200 rounded-lg overflow-hidden" id="usersTable">
+                        <thead>
+                            <tr class="text-left text-xs font-semibold text-white uppercase tracking-wider bg-blue-600">
+                                <th class="px-6 py-3">Nom Complet</th>
+                                <th class="px-6 py-3">Email</th>
+                                <th class="px-6 py-3">Rôle</th>
+                                <th class="px-6 py-3">Actions</th>
+                            </tr>
+                        </thead>
+                        <tbody class="divide-y divide-gray-200 text-sm text-gray-700">
+                            <!-- Les lignes seront ajoutées ici par JavaScript -->
+                            <tr>
+                                <td colspan="4" class="text-center py-4 text-gray-500">Chargement des utilisateurs...</td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </section>
 
-logoutBtn.addEventListener("click", async ()=>{
-  await signOut(auth);
-  showNotification("Déconnexion réussie");
-  setTimeout(()=>window.location.href="index.html",800);
-});
+    </main>
 
-// ✅ Création d'utilisateur
-const createUserBtn = document.getElementById("createUserBtn");
-createUserBtn.addEventListener("click", async ()=>{
-  const nom = document.getElementById("nom").value.trim();
-  const postNom = document.getElementById("postNom").value.trim();
-  const prenom = document.getElementById("prenom").value.trim();
-  const email = document.getElementById("email").value.trim();
-  const password = document.getElementById("password").value.trim();
-  const role = document.getElementById("role").value;
+    <!-- LOGIQUE JAVASCRIPT & FIREBASE -->
+    <script type="module">
+    import { initializeApp } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-app.js";
+    import { 
+        getAuth, onAuthStateChanged, signOut, createUserWithEmailAndPassword, sendPasswordResetEmail,
+        signInWithCustomToken, signInAnonymously
+    } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-auth.js";
+    import { 
+        getFirestore, collection, doc, setDoc, getDocs, deleteDoc, getDoc,
+        setLogLevel 
+    } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-firestore.js";
 
-  if(!nom || !prenom || !email || !password || !role){
-    showNotification("Remplissez tous les champs","error");
-    return;
-  }
+    // IMPORTANT: UTILISATION DES VARIABLES GLOBALES FOURNIES PAR LE CONTEXTE
+    const appId = typeof __app_id !== 'undefined' ? __app_id : 'default-app-id';
+    const firebaseConfig = typeof __firebase_config !== 'undefined' ? JSON.parse(__firebase_config) : {};
 
-  try {
-    const userCredential = await createUserWithEmailAndPassword(auth, email, password);
-    const newUser = userCredential.user;
+    // 1. INITIALISATION FIREBASE
+    const app = initializeApp(firebaseConfig);
+    const auth = getAuth(app);
+    const db = getFirestore(app);
+    // setLogLevel('Debug'); // Décommenter pour le débogage
 
-    await setDoc(doc(db,"users",newUser.uid),{
-      nom, postNom, prenom, email, role,
-      createdAt: new Date().toISOString()
+    const USER_COLLECTION = 'users'; // Collection utilisateur simple
+
+    // 2. ÉLÉMENTS DU DOM
+    const userInfo = document.getElementById('userInfo');
+    const logoutBtn = document.getElementById('logoutBtn');
+    const notificationArea = document.getElementById('notification-area');
+    const usersTableBody = document.querySelector("#usersTable tbody");
+    const createUserBtn = document.getElementById("createUserBtn");
+    
+    // 3. FONCTIONNALITÉS UTILITAIRES
+    
+    // Notification (remplace alert/confirm)
+    function showNotification(msg, type = "success") {
+        const notif = document.createElement("div");
+        notif.className = `notification ${type}`;
+        notif.textContent = msg;
+        notificationArea.appendChild(notif);
+        setTimeout(() => notif.classList.add('show'), 10);
+        setTimeout(() => {
+            notif.classList.remove('show');
+            setTimeout(() => notificationArea.removeChild(notif), 300);
+        }, 4000);
+    }
+    
+    // Déconnexion
+    async function handleLogout() {
+        try {
+            await signOut(auth);
+            showNotification("Déconnexion réussie", "info");
+        } catch(error) {
+            console.error("Erreur de déconnexion:", error);
+        } finally {
+            setTimeout(() => window.location.href = "index.html", 800);
+        }
+    }
+
+    // Fonction d'authentification initiale
+    async function initializeAuth() {
+        try {
+            if (typeof __initial_auth_token !== 'undefined' && __initial_auth_token) {
+                await signInWithCustomToken(auth, __initial_auth_token);
+            } else {
+                await signInAnonymously(auth);
+            }
+        } catch (error) {
+            console.error("Erreur d'authentification initiale:", error);
+            showNotification("Erreur d'authentification. Redirection...", "error");
+            // Fallback en cas d'échec critique
+            setTimeout(() => window.location.href = "index.html", 1500);
+        }
+    }
+
+    // 4. LOGIQUE PRINCIPALE ADMIN
+    
+    // ✅ Créer un Utilisateur (Auth + Firestore Doc)
+    async function handleCreateUser() {
+        const nom = document.getElementById("nom").value.trim();
+        const postNom = document.getElementById("postNom").value.trim();
+        const prenom = document.getElementById("prenom").value.trim();
+        const email = document.getElementById("email").value.trim();
+        const password = document.getElementById("password").value.trim();
+        const role = document.getElementById("role").value;
+
+        if (!nom || !prenom || !email || !password || !role) {
+            showNotification("Veuillez remplir tous les champs requis.", "error");
+            return;
+        }
+
+        try {
+            // 1. Création du compte dans Firebase Authentication
+            const userCredential = await createUserWithEmailAndPassword(auth, email, password);
+            const newUser = userCredential.user;
+
+            // 2. Création du document utilisateur dans Firestore
+            await setDoc(doc(db, USER_COLLECTION, newUser.uid), {
+                uid: newUser.uid,
+                nom,
+                postNom,
+                prenom,
+                email,
+                role,
+                createdAt: new Date().toISOString()
+            });
+
+            showNotification(`✅ Utilisateur ${nom} (${role}) créé avec succès !`);
+            loadUsers(); // Recharger la liste
+            // Vider les champs
+            document.querySelectorAll('#nom, #postNom, #prenom, #email, #password, #role').forEach(input => input.value = '');
+            document.getElementById("role").value = '';
+
+        } catch (err) {
+            console.error("Erreur de création d'utilisateur:", err);
+            // Afficher une erreur conviviale
+            let message = "Erreur: Impossible de créer l'utilisateur.";
+            if (err.code === 'auth/email-already-in-use') {
+                message = "Erreur: Cet email est déjà utilisé.";
+            } else if (err.code === 'auth/weak-password') {
+                message = "Erreur: Le mot de passe doit contenir au moins 6 caractères.";
+            }
+            showNotification(message, "error");
+        }
+    }
+    
+    // ✅ Charger les Utilisateurs (depuis Firestore)
+    async function loadUsers() {
+        usersTableBody.innerHTML = '<tr><td colspan="4" class="text-center py-4 text-gray-500">Chargement...</td></tr>';
+        
+        try {
+            const snapshot = await getDocs(collection(db, USER_COLLECTION));
+            
+            if (snapshot.empty) {
+                usersTableBody.innerHTML = '<tr><td colspan="4" class="text-center py-4 text-gray-500">Aucun utilisateur trouvé.</td></tr>';
+                return;
+            }
+
+            usersTableBody.innerHTML = ""; // Vider le contenu
+            
+            snapshot.forEach(docSnap => {
+                const data = docSnap.data();
+                const userId = docSnap.id;
+                
+                const tr = document.createElement("tr");
+                tr.className = "hover:bg-gray-50 transition duration-150";
+                
+                tr.innerHTML = `
+                    <td class="px-6 py-3 whitespace-nowrap">${data.nom || ''} ${data.postNom || ''} ${data.prenom || ''}</td>
+                    <td class="px-6 py-3 whitespace-nowrap text-blue-600 font-medium">${data.email}</td>
+                    <td class="px-6 py-3 whitespace-nowrap">
+                        <span class="px-3 py-1 inline-flex text-xs leading-5 font-semibold rounded-full bg-blue-100 text-blue-800">
+                            ${data.role.charAt(0).toUpperCase() + data.role.slice(1)}
+                        </span>
+                    </td>
+                    <td class="px-6 py-3 whitespace-nowrap space-x-2">
+                        <button onclick="window.resetPassword('${data.email}')" title="Réinitialiser le mot de passe" class="text-indigo-600 hover:text-indigo-900 transition duration-150">
+                            <i class="fa-solid fa-key"></i>
+                        </button>
+                        <button onclick="window.deleteUser('${userId}')" title="Supprimer l'utilisateur" class="text-red-600 hover:text-red-900 transition duration-150">
+                            <i class="fa-solid fa-trash"></i>
+                        </button>
+                    </td>`;
+                usersTableBody.appendChild(tr);
+            });
+        } catch (err) {
+            console.error("Erreur de chargement des utilisateurs:", err);
+            usersTableBody.innerHTML = '<tr><td colspan="4" class="text-center py-4 text-red-500">Erreur lors du chargement.</td></tr>';
+        }
+    }
+    
+    // ✅ Réinitialiser le Mot de Passe (fonction globale)
+    window.resetPassword = async (email) => {
+        try {
+            // Vérification de l'existence de l'utilisateur (optionnel, mais bonne pratique)
+            // Firebase Auth gère déjà la vérification lors de l'envoi
+            await sendPasswordResetEmail(auth, email);
+            showNotification(`✉️ Email de réinitialisation envoyé à ${email}.`, "info");
+        } catch (err) {
+            console.error("Erreur de réinitialisation:", err);
+            showNotification("Erreur: Impossible d'envoyer l'email de réinitialisation. Vérifiez l'email.", "error");
+        }
+    };
+
+    // ✅ Supprimer l'Utilisateur (fonction globale)
+    window.deleteUser = async (uid) => {
+        // NOTE: La suppression d'un compte Auth ne peut pas être effectuée côté client pour un autre utilisateur.
+        // Seul le document Firestore est supprimé ici. La suppression du compte Auth devra être gérée côté serveur
+        // par une fonction Cloud, mais nous simulerons l'action ici pour le document Firestore.
+
+        if (!confirm(`Confirmer la suppression du document Firestore de l'utilisateur ${uid} ?`)) return; // Utilisation temporaire de confirm pour la démo
+
+        try {
+            await deleteDoc(doc(db, USER_COLLECTION, uid));
+            showNotification("🗑️ Document utilisateur Firestore supprimé.", "success");
+            loadUsers();
+        } catch (err) {
+            console.error("Erreur de suppression:", err);
+            showNotification("Erreur: Impossible de supprimer le document.", "error");
+        }
+    };
+    
+    // ✅ Configuration initiale Firestore (Rôles, Classes, Administrateurs)
+    window.configInitiale = async () => {
+        const batch = [];
+        
+        // --- Définition des Rôles ---
+        const roles = {
+            prefet: { description: "Accès total, gestion des comptes, supervision.", accès: ["gestion_comptes", "supervision_generale"] },
+            directeur_etudes: { description: "Gestion académique, classes, programmes.", accès: ["gestion_classes", "suivi_notes"] },
+            directeur_discipline: { description: "Suivi des comportements et des absences.", accès: ["gestion_discipline", "rapports_comportement"] },
+            secretaire: { description: "Inscription des élèves, gestion documentaire.", accès: ["gestion_eleves", "gestion_documents"] },
+            econome: { description: "Gestion financière, frais, paiements.", accès: ["gestion_finance", "suivi_paiements"] },
+            enseignant: { description: "Saisie des notes, suivi de classe.", accès: ["saisie_notes"] },
+            eleve: { description: "Accès à ses notes et à son emploi du temps.", accès: ["vue_notes", "vue_emploi_du_temps"] }
+        };
+
+        Object.entries(roles).forEach(([role, data]) => {
+            batch.push(setDoc(doc(db, "structure_roles", role), data));
+        });
+
+        // --- Définition des Administrateurs (Pour la démo) ---
+        // (Ces documents ne créent PAS les comptes AUTH, ils décrivent juste les rôles)
+        const admins = [
+            { id: "prefet", nom: "Père Michel Lembe Sds", role: "prefet", email: "prefet@ecole.com" },
+            { id: "etudes", nom: "Mr Delphin Kagunge", role: "directeur_etudes", email: "etudes@ecole.com" },
+        ];
+        admins.forEach(admin => {
+            batch.push(setDoc(doc(db, "structure_administrateurs", admin.id), admin));
+        });
+
+        // --- Définition des Classes ---
+        const classes = [
+            "7eme EB", "8eme EB",
+            "1ere Scientifique", "2eme Scientifique", "3eme Scientifique", "4eme Scientifique",
+            "1ere Commerciale et Gestion", "2eme Commerciale et Gestion", "3eme Commerciale et Gestion", "4eme Commerciale et Gestion",
+        ];
+
+        classes.forEach((classe, index) => {
+            batch.push(setDoc(doc(db, "structure_classes", `C${index + 1}`), {
+                nom: classe,
+                niveau: classe.split(" ")[0],
+                specialite: classe.split(" ").slice(1).join(" "),
+                liste_eleves: [],
+                titulaire_uid: null
+            }));
+        });
+        
+        try {
+            await Promise.all(batch);
+            showNotification("✅ Base Firestore initialisée (Rôles, Classes, Admins) !", "success");
+        } catch (error) {
+            console.error("Erreur lors de l'initialisation de la base:", error);
+            showNotification("Erreur: Impossible d'initialiser la base de données.", "error");
+        }
+    }
+
+
+    // 5. GESTION DES ÉVÉNEMENTS & AUTHENTIFICATION
+    
+    // Événement de déconnexion
+    logoutBtn.addEventListener("click", handleLogout);
+    
+    // Événement de création d'utilisateur
+    createUserBtn.addEventListener("click", handleCreateUser);
+
+
+    // Gestion de l'état d'authentification
+    onAuthStateChanged(auth, user => {
+        document.body.classList.add('loaded'); // Afficher le contenu une fois l'état connu
+
+        if (!user) {
+            // Pas d'utilisateur connecté ou token invalide
+            showNotification("Session expirée ou non autorisée.", "error");
+            setTimeout(() => window.location.href = "index.html", 1000);
+        } else {
+            // Utilisateur connecté
+            userInfo.textContent = user.email;
+            
+            // On peut aussi charger ici les données utilisateur (nom, rôle) à partir de Firestore
+            getDoc(doc(db, USER_COLLECTION, user.uid)).then(docSnap => {
+                if (docSnap.exists()) {
+                    const data = docSnap.data();
+                    const role = data.role.charAt(0).toUpperCase() + data.role.slice(1);
+                    userInfo.textContent = `${data.nom || data.email} (${role})`;
+                    
+                    // Simple vérification de rôle: Seuls Admin et Préfet doivent voir cette page
+                    if (data.role !== 'admin' && data.role !== 'prefet') {
+                        showNotification("Accès non autorisé à cette page.", "error");
+                        setTimeout(() => window.location.href = "dashboard-user.html", 1500); // Redirection vers un dashboard générique
+                        return;
+                    }
+                    loadUsers(); // Charger la liste si l'utilisateur est autorisé
+                } else {
+                    console.warn("Document utilisateur manquant dans Firestore. Accès limité.");
+                    loadUsers();
+                }
+            }).catch(err => {
+                console.error("Erreur de récupération du document utilisateur:", err);
+                loadUsers();
+            });
+        }
     });
 
-    showNotification("✅ Utilisateur créé avec succès !");
-    loadUsers();
-  } catch(err){
-    showNotification("Erreur : " + err.message,"error");
-  }
-});
-
-// ✅ Charger les utilisateurs
-async function loadUsers(){
-  const tbody = document.querySelector("#usersTable tbody");
-  tbody.innerHTML = "";
-  const snapshot = await getDocs(collection(db,"users"));
-  snapshot.forEach(docSnap=>{
-    const data = docSnap.data();
-    const tr = document.createElement("tr");
-    tr.innerHTML = `
-      <td>${data.nom || ''} ${data.postNom || ''} ${data.prenom || ''}</td>
-      <td>${data.email}</td>
-      <td>${data.role}</td>
-      <td>
-        <button onclick="resetPassword('${data.email}')">🔑 Réinitialiser</button>
-        <button onclick="deleteUser('${docSnap.id}')">🗑️ Supprimer</button>
-      </td>`;
-    tbody.appendChild(tr);
-  });
-}
-
-// ✅ Fonctions globales
-window.resetPassword = async (email)=>{
-  try{
-    await sendPasswordResetEmail(auth,email);
-    showNotification("Email de réinitialisation envoyé à " + email);
-  }catch(err){ showNotification(err.message,"error"); }
-}
-
-window.deleteUser = async (uid)=>{
-  if(!confirm("Voulez-vous vraiment supprimer cet utilisateur ?")) return;
-  await deleteDoc(doc(db,"users",uid));
-  showNotification("Utilisateur supprimé");
-  loadUsers();
-}
-
-// ✅ Configuration initiale Firestore
-function configInitiale() {
-  const roles = {
-    prefet: {
-      accès: [
-        "accès total",
-        "suivi des rapports",
-        "gestion des comptes",
-        "contrôle des modules",
-        "vue sur toutes les structures"
-      ]
-    },
-    directeur_etudes: {
-      accès: [
-        "gestion des classes",
-        "gestion des enseignants",
-        "suivi des programmes",
-        "planification académique"
-      ]
-    },
-    directeur_discipline: {
-      accès: [
-        "suivi disciplinaire",
-        "gestion des sanctions",
-        "rapport de comportement",
-        "coordination des surveillants"
-      ]
-    },
-    secretaire: {
-      accès: [
-        "inscription des élèves",
-        "gestion des documents",
-        "planning scolaire",
-        "communication interne"
-      ]
-    },
-    econome: {
-      accès: [
-        "gestion financière",
-        "suivi des paiements",
-        "rapport de trésorerie",
-        "budget et dépenses"
-      ]
-    }
-  };
-
-  Object.entries(roles).forEach(([role, data]) => {
-    setDoc(doc(db, "roles", role), data);
-  });
-
-  const admins = [
-    {
-      id: "gabby_umba",
-      nom: "Gabby Umba",
-      rôle: "prefet",
-      email: "gabby@ecole.com"
-    },
-    {
-      id: "michel_lembe",
-      nom: "Père Michel Lembe Sds",
-      rôle: "prefet",
-      email: "prefet@ecole.com"
-    },
-    {
-      id: "delphin_kagunge",
-      nom: "Mr Delphin Kagunge",
-      rôle: "directeur_etudes",
-      email: "etudes@ecole.com"
-    },
-    {
-      id: "modeste_makong",
-      nom: "Mr Modeste Makong",
-      rôle: "directeur_discipline",
-      email: "discipline@ecole.com"
-    },
-    {
-      id: "secretaire",
-      nom: "Secrétaire Général",
-      rôle: "secretaire",
-      email: "secretariat@ecole.com"
-    },
-    {
-      id: "gabin_sds",
-      nom: "Père Gabin Sds",
-      rôle: "econome",
-      email: "finance@ecole.com"
-    }
-  ];
-
-  admins.forEach(admin => {
-    setDoc(doc(db, "administrateurs", admin.id), admin);
-  });
-
-  const classes = [
-    "7eme EB", "8eme EB",
-    "1ere Scientifique", "2eme Scientifique", "3eme Scientifique", "4eme Scientifique",
-    "1ere Commerciale et Gestion", "2eme Commerciale et Gestion", "3eme Commerciale et Gestion", "4eme Commerciale et Gestion",
-    "1ere Agronomie", "2eme Agronomie", "3eme Agronomie", "4eme Agronomie",
-    "1ere Pédagogie Générale", "2eme Pédagogie Générale", "3eme Pédagogie Générale", "4eme Pédagogie Générale"
-  ];
-
-  classes.forEach((classe, index) => {
-    setDoc(doc(db, "classes", `classe_${index + 1}`), {
-      nom: classe,
-      niveau: classe.split(" ")[0],
-      spécialité: classe.split(" ").slice(1).join(" "),
-      liste_eleves: []
-    });
-  });
-
-  setDoc(doc(db, "utilisateurs", "enseignants"), {
-    description: "Tous les enseignants inscrits",
-    liste: []
-  });
-
-  setDoc(doc(db, "utilisateurs", "eleves"), {
-    description: "Tous les élèves inscrits",
-    liste: []
-  });
-
-  showNotification("✅ Base Firestore initialisée avec succès !");
-}
-</script>
+    // Lancement de l'authentification au chargement
+    initializeAuth(); 
+    </script>
 </body>
 </html>
