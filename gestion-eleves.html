@@ -1,0 +1,357 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Gestion des Élèves | Administration ISC Lwanga</title>
+    <!-- Chargement de Tailwind CSS pour un style moderne et responsive -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <!-- Font Awesome pour les icônes -->
+    <script src="https://kit.fontawesome.com/a2e0e6a56b.js" crossorigin="anonymous"></script>
+    
+    <style>
+        /* Configuration de la police Inter */
+        @import url('https://fonts.googleapis.com/css2?family=Inter:wght@100..900&display=swap');
+        body {
+            font-family: 'Inter', sans-serif;
+            background-color: #f3f4f6; /* bg-gray-100 */
+        }
+        body:not(.loaded) { display: none; }
+        #notification-area {
+            position: fixed;
+            top: 20px;
+            right: 20px;
+            z-index: 1000;
+        }
+        .notification {
+            padding: 1rem 1.5rem;
+            border-radius: 0.75rem;
+            color: white;
+            font-weight: 500;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+            opacity: 0;
+            transform: translateX(100%);
+            transition: opacity 0.3s, transform 0.3s;
+            margin-bottom: 0.5rem;
+        }
+        .notification.show { opacity: 1; transform: translateX(0); }
+        .notification.success { background-color: #10b981; }
+        .notification.error { background-color: #ef4444; }
+        .notification.info { background-color: #3b82f6; }
+    </style>
+</head>
+<body>
+    <div id="notification-area"></div>
+    
+    <div class="container mx-auto p-4 sm:p-8">
+        <!-- HEADER -->
+        <header class="text-center mb-8 p-6 bg-white rounded-xl shadow-lg border-b-4 border-violet-500">
+            <h1 class="text-3xl font-extrabold text-gray-800 flex items-center justify-center gap-3">
+                <i class="fa-solid fa-graduation-cap text-violet-500"></i> Registre Central des Élèves
+            </h1>
+            <h2 class="text-lg font-medium text-gray-500 mt-1">
+                Vue complète pour l'Administration (Secrétaire, Préfet, Dir. Études, Admin).
+            </h2>
+            <p id="userInfo" class="text-sm text-indigo-600 font-semibold mt-2">Chargement de l'utilisateur...</p>
+        </header>
+
+        <!-- TABLEAU DE GESTION -->
+        <div class="bg-white p-6 md:p-8 rounded-xl shadow-2xl border-t-4 border-teal-600">
+            <div class="flex flex-col sm:flex-row justify-between items-start sm:items-center mb-6 gap-4">
+                <h3 class="text-xl font-bold text-gray-800 flex items-center gap-2">
+                    <i class="fa-solid fa-list-check text-teal-600"></i> Effectif total: <span id="eleveCount" class="text-2xl font-extrabold text-violet-600">0</span>
+                </h3>
+                <input type="search" id="searchEleves" placeholder="Rechercher par Nom, Matricule, Classe..." class="p-3 border border-gray-300 rounded-lg w-full sm:w-80 focus:ring-teal-500 focus:border-teal-500 transition duration-150" onkeyup="filterEleves()">
+            </div>
+
+            <div class="overflow-x-auto rounded-lg border border-gray-200 shadow-inner">
+                <table class="min-w-full divide-y divide-gray-200">
+                    <thead class="bg-gray-50 sticky top-0">
+                        <tr>
+                            <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Matricule</th>
+                            <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Nom & Prénom</th>
+                            <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Classe</th>
+                            <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Infos Tuteur / Naissance</th>
+                            <th class="px-6 py-3 text-center text-xs font-medium text-gray-500 uppercase tracking-wider w-24">Statut</th>
+                            <th id="actionHeader" class="px-6 py-3 text-center text-xs font-medium text-gray-500 uppercase tracking-wider w-32">Actions</th>
+                        </tr>
+                    </thead>
+                    <tbody id="elevesBody" class="bg-white divide-y divide-gray-200">
+                        <tr>
+                            <td colspan="6" class="text-center py-8 text-gray-500">Chargement des élèves...</td>
+                        </tr>
+                    </tbody>
+                </table>
+                <p id="aucunEleve" class="text-center p-4 text-gray-500 italic hidden">Aucun élève trouvé dans la base de données.</p>
+            </div>
+        </div>
+
+        <button id="logoutBtn" class="mt-8 py-2 px-4 bg-red-600 text-white rounded-lg hover:bg-red-700 font-semibold transition duration-200">
+            <i class="fa-solid fa-sign-out-alt"></i> Déconnexion
+        </button>
+    </div>
+
+    <!-- LOGIQUE JAVASCRIPT & FIREBASE -->
+    <script type="module">
+    import { initializeApp } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-app.js";
+    import { 
+        getAuth, onAuthStateChanged, signOut,
+        signInWithCustomToken, signInAnonymously
+    } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-auth.js";
+    import { 
+        getFirestore, collection, doc, deleteDoc, 
+        onSnapshot, getDoc, query, setLogLevel
+    } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-firestore.js";
+
+    // IMPORTANT: UTILISATION DES VARIABLES GLOBALES FOURNIES PAR LE CONTEXTE
+    const appId = typeof __app_id !== 'undefined' ? __app_id : 'default-app-id';
+    const firebaseConfig = typeof __firebase_config !== 'undefined' ? JSON.parse(__firebase_config) : {};
+    
+    // 1. INITIALISATION FIREBASE
+    const app = initializeApp(firebaseConfig);
+    const auth = getAuth(app);
+    const db = getFirestore(app);
+    
+    // setLogLevel('Debug'); // Décommenter pour le débogage
+
+    // Chemins de collections
+    const ELEVES_PATH = `/artifacts/${appId}/public/data/eleves`;
+    const CLASSES_PATH = `/artifacts/${appId}/public/data/classes`; 
+
+    // 2. ÉLÉMENTS DU DOM
+    const userInfo = document.getElementById('userInfo');
+    const notificationArea = document.getElementById('notification-area');
+    const logoutBtn = document.getElementById('logoutBtn');
+    const elevesBody = document.getElementById('elevesBody');
+    const eleveCountSpan = document.getElementById('eleveCount');
+    const aucunEleve = document.getElementById('aucunEleve');
+    
+    // 3. CACHE ET DONNÉES GLOBALES
+    let currentEleves = [];
+    let classesCache = {}; 
+    let userRole = null;
+    const AUTHORIZED_ROLES = ['admin', 'prefet', 'secretaire', 'directeur_etudes'];
+    const CAN_DELETE_ROLES = ['admin', 'prefet'];
+    
+    // 4. FONCTIONNALITÉS UTILITAIRES
+    function showNotification(msg, type = "success") {
+        const notif = document.createElement("div");
+        notif.className = `notification ${type}`;
+        notif.textContent = msg;
+        notificationArea.appendChild(notif);
+        setTimeout(() => notif.classList.add('show'), 10);
+        setTimeout(() => {
+            notif.classList.remove('show');
+            setTimeout(() => notificationArea.removeChild(notif), 300);
+        }, 4000);
+    }
+    
+    async function handleLogout() {
+        await signOut(auth);
+        setTimeout(() => window.location.href = "index.html", 800);
+    }
+
+    async function initializeAuth() {
+        try {
+            if (typeof __initial_auth_token !== 'undefined' && __initial_auth_token) {
+                await signInWithCustomToken(auth, __initial_auth_token);
+            } else {
+                await signInAnonymously(auth);
+            }
+        } catch (error) {
+            console.error("Erreur d'authentification initiale:", error);
+            showNotification("Erreur d'authentification.", "error");
+            setTimeout(() => window.location.href = "index.html", 1500);
+        }
+    }
+
+    // 5. RENDU DU TABLEAU ET FILTRE
+
+    function renderEleves(data = currentEleves) {
+        elevesBody.innerHTML = '';
+        eleveCountSpan.textContent = data.length;
+
+        if (data.length === 0) {
+            aucunEleve.classList.remove('hidden');
+            return;
+        }
+        aucunEleve.classList.add('hidden');
+        
+        const canDelete = CAN_DELETE_ROLES.includes(userRole);
+
+        data.forEach(item => {
+            const row = elevesBody.insertRow();
+            row.className = 'hover:bg-gray-50 transition duration-150';
+            
+            // Matricule
+            row.insertCell().innerHTML = `<span class="font-mono font-bold text-violet-700 text-sm">${item.matricule}</span>`;
+            
+            // Nom & Prénom
+            row.insertCell().innerHTML = `
+                <span class="font-semibold text-gray-800">${item.nom} ${item.postNom}</span><br>
+                <span class="text-xs text-gray-500">${item.prenom} (${item.sexe.charAt(0).toUpperCase()})</span>
+            `;
+            
+            // Classe
+            row.insertCell().innerHTML = `
+                <span class="font-medium text-indigo-700">${item.classeNom}</span><br>
+                <span class="text-xs text-gray-500">${item.niveauNom} / ${item.sectionNom}</span>
+            `;
+
+            // Infos Tuteur / Naissance
+            row.insertCell().innerHTML = `
+                <span class="text-sm font-medium text-gray-700">Tuteur: ${item.tuteurNom}</span><br>
+                <span class="text-xs text-gray-500">Tel: ${item.tuteurTel} | Né(e) le ${item.dateNaissance} à ${item.lieuNaissance || 'N/A'}</span>
+            `;
+
+            // Statut
+            const statusCell = row.insertCell();
+            statusCell.className = 'px-6 py-3 whitespace-nowrap text-center';
+            const statusColor = item.statut === 'actif' ? 'bg-green-100 text-green-800' : 'bg-yellow-100 text-yellow-800';
+            statusCell.innerHTML = `<span class="px-2 inline-flex text-xs leading-5 font-semibold rounded-full ${statusColor}">${item.statut.charAt(0).toUpperCase() + item.statut.slice(1)}</span>`;
+
+            // Actions (Voir la Fiche + Suppression conditionnelle)
+            const actionsCell = row.insertCell();
+            actionsCell.className = 'px-4 py-3 whitespace-nowrap text-center flex gap-2 justify-center';
+            
+            // Bouton Voir Fiche (Disponible pour tous les rôles autorisés)
+            const viewFn = `window.viewEleveFile('${item.id}', '${item.matricule}')`;
+            actionsCell.innerHTML += `
+                <button onclick="${viewFn}" 
+                        class="p-2 bg-blue-500 text-white rounded-full hover:bg-blue-600 transition duration-150" title="Voir la Fiche Détaillée">
+                    <i class="fa-solid fa-file-invoice text-sm"></i>
+                </button>
+            `;
+            
+            // Bouton Supprimer (Disponible pour Admin/Préfet)
+            if (canDelete) {
+                const deleteFn = `window.deleteEleve('${item.id}', '${item.matricule}', '${item.nom} ${item.postNom}')`;
+                actionsCell.innerHTML += `
+                    <button onclick="${deleteFn}" 
+                            class="p-2 bg-red-500 text-white rounded-full hover:bg-red-600 transition duration-150" title="Supprimer définitivement l'élève">
+                        <i class="fa-solid fa-trash-alt text-sm"></i>
+                    </button>
+                `;
+            }
+        });
+    }
+
+    window.filterEleves = () => {
+        const searchTerm = document.getElementById('searchEleves').value.toLowerCase();
+        const filtered = currentEleves.filter(item =>
+            item.nom.toLowerCase().includes(searchTerm) ||
+            item.postNom.toLowerCase().includes(searchTerm) ||
+            item.prenom.toLowerCase().includes(searchTerm) ||
+            item.matricule.toLowerCase().includes(searchTerm) ||
+            item.classeNom.toLowerCase().includes(searchTerm)
+        );
+        renderEleves(filtered);
+    };
+    
+    window.viewEleveFile = (id, matricule) => {
+        showNotification(`Fonctionnalité 'Voir Fiche' pour ${matricule} à implémenter.`, 'info');
+        // Dans une vraie application, cela ouvrirait une modale ou une nouvelle page avec les détails complets, l'historique de discipline, etc.
+    };
+
+    // 6. CHARGEMENT DES DONNÉES
+    function setupClassesListener() {
+        onSnapshot(query(collection(db, CLASSES_PATH)), (snapshot) => {
+            classesCache = {};
+            snapshot.forEach(docSnap => {
+                classesCache[docSnap.id] = { id: docSnap.id, ...docSnap.data() };
+            });
+            setupElevesListener(); 
+        }, (err) => console.error("Erreur chargement Classes:", err));
+    }
+
+    function setupElevesListener() {
+        onSnapshot(query(collection(db, ELEVES_PATH)), (snapshot) => {
+            currentEleves = [];
+            snapshot.forEach(docSnap => {
+                const data = docSnap.data();
+                const classe = classesCache[data.classeId] || {};
+
+                currentEleves.push({
+                    id: docSnap.id,
+                    ...data,
+                    classeNom: classe.fullName || data.classeNom || 'N/A',
+                    niveauNom: classe.levelName || data.niveauNom || 'N/A',
+                    sectionNom: classe.sectionName || data.sectionName || 'N/A',
+                });
+            });
+            // Tri par classe puis par nom
+            currentEleves.sort((a, b) => {
+                if (a.classeNom !== b.classeNom) {
+                    return a.classeNom.localeCompare(b.classeNom);
+                }
+                return a.nom.localeCompare(b.nom);
+            });
+            renderEleves();
+        }, (err) => console.error("Erreur chargement Élèves:", err));
+    }
+
+    // 7. FONCTION DE SUPPRESSION (Réservée Admin/Préfet)
+    window.deleteEleve = async (id, matricule, nomComplet) => {
+        if (!CAN_DELETE_ROLES.includes(userRole)) {
+            showNotification("Vous n'êtes pas autorisé à supprimer des élèves.", 'error');
+            return;
+        }
+
+        const confirmation = prompt(`Confirmer la suppression de l'élève ${nomComplet} (Matricule: ${matricule}) ? Tapez 'SUPPRIMER' pour continuer.`);
+        if (confirmation !== 'SUPPRIMER') {
+            showNotification("Suppression annulée.", 'info');
+            return;
+        }
+
+        try {
+            await deleteDoc(doc(db, ELEVES_PATH, id));
+            showNotification(`🗑️ Élève ${matricule} supprimé avec succès.`, 'success');
+        } catch (err) {
+            console.error("Erreur de suppression de l'élève:", err);
+            showNotification("Erreur: Impossible de supprimer l'élève.", 'error');
+        }
+    };
+
+
+    // 8. GESTION DES ÉVÉNEMENTS & AUTHENTIFICATION
+    
+    logoutBtn.addEventListener("click", handleLogout);
+    
+    onAuthStateChanged(auth, user => {
+        document.body.classList.add('loaded');
+        const userId = user?.uid;
+
+        if (!user) {
+            showNotification("Session expirée ou non autorisée.", "error");
+            setTimeout(() => window.location.href = "index.html", 1000);
+        } else {
+            getDoc(doc(db, 'users', userId)).then(docSnap => {
+                if (docSnap.exists()) {
+                    const data = docSnap.data();
+                    const role = data.role.charAt(0).toUpperCase() + data.role.slice(1);
+                    userInfo.textContent = `${data.nom || data.email} (${role})`;
+                    userRole = data.role;
+                    
+                    if (!AUTHORIZED_ROLES.includes(userRole)) {
+                        showNotification(`Accès non autorisé. Votre rôle (${role}) n'est pas autorisé à consulter ce registre.`, "error");
+                        setTimeout(() => window.location.href = `dashboard-${userRole}.html`, 1500); 
+                        return;
+                    }
+
+                    setupClassesListener(); 
+
+                } else {
+                    console.warn("Document utilisateur manquant. Accès limité.");
+                    setupClassesListener();
+                }
+            }).catch(err => {
+                console.error("Erreur de récupération du document utilisateur:", err);
+                setupClassesListener();
+            });
+        }
+    });
+
+    initializeAuth();
+    </script>
+</body>
+</html>
