@@ -1,10 +1,10 @@
 <!DOCTYPE html>
 <html lang="fr">
-
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1" />
   <title>Accueil Utilisateur - ISC Lwanga</title>
+  <script src="https://kit.fontawesome.com/a2e0e6a56b.js" crossorigin="anonymous"></script>
   <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700&display=swap" rel="stylesheet" />
   <style>
     /* RESET & BASE */
@@ -31,7 +31,8 @@
 
     /* HEADER */
     header {
-      background: linear-gradient(90deg, #1e3a8a, #2563eb);
+      /* Thème Blue - cohérent avec votre CSS initial */
+      background: linear-gradient(90deg, #1e3a8a, #2563eb); 
       color: white;
       padding: 1.5rem 2rem;
       display: flex;
@@ -227,38 +228,35 @@
   </footer>
 
   <script type="module">
-    import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-app.js";
+    import { initializeApp } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-app.js";
     import {
       getAuth,
       onAuthStateChanged,
-      signOut
-    } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-auth.js";
+      signOut,
+      signInWithCustomToken,
+      signInAnonymously
+    } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-auth.js";
     import {
       getFirestore,
       doc,
       getDoc
-    } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore.js";
+    } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-firestore.js";
 
-    // Configuration Firebase (remplace avec ta config depuis config.js ou ici)
-    const firebaseConfig = {
-      apiKey: "AIzaSyAgv4TDYnR60TXnns-LISqbZTgcdLT31cc",
-      authDomain: "gestionlwanga.firebaseapp.com",
-      projectId: "gestionlwanga",
-      storageBucket: "gestionlwanga.appspot.com",
-      messagingSenderId: "622604298611",
-      appId: "1:622604298611:web:4ab4314ed3eec6826c3d06"
-    };
+    // --- Configuration Firebase (Utilisation des variables globales de l'environnement) ---
+    const appId = typeof __app_id !== 'undefined' ? __app_id : 'default-app-id';
+    const firebaseConfig = typeof __firebase_config !== 'undefined' ? JSON.parse(__firebase_config) : {};
 
     const app = initializeApp(firebaseConfig);
     const auth = getAuth(app);
     const db = getFirestore(app);
 
+    // --- Éléments du DOM ---
     const welcomeMsg = document.getElementById("welcomeMsg");
     const modulesContainer = document.getElementById("modulesContainer");
     const logoutBtn = document.getElementById("logoutBtn");
     const messageEl = document.getElementById("message");
 
-    // Attributions modules par rôle (penser à centraliser en base pour plus flexible)
+    // Attributions modules par rôle (Utilisation des noms de fichiers définis)
     const roleModules = {
       prefet: [
         "Accès total",
@@ -280,9 +278,10 @@
         "Coordination des surveillants"
       ],
       secretaire: [
-        "Inscription des élèves",
-        "Gestion des documents",
-        "Planning scolaire",
+        "Inscription Nouvel Élève", // Nouveau
+        "Gestion des Dossiers Élèves", // Mettre à jour les dossiers existants
+        "Perception Frais Divers", // Nouveau
+        "Impression des Bulletins",
         "Communication interne"
       ],
       econome: [
@@ -305,43 +304,65 @@
         "Suivi des notes de l'élève",
         "Communication avec enseignants",
         "Paiement en ligne"
+      ],
+      admin: [ // Rôle admin par défaut si vous l'utilisez
+          "Gestion des utilisateurs",
+          "Configuration du système"
       ]
     };
 
+    // Mappage des liens (assurez-vous que les liens correspondent à vos fichiers HTML)
     const modulesDetails = {
-      "Accès total": { link: "prefet-dashboard.html" },
-      "Suivi des rapports": { link: "rapports.html" },
-      "Gestion des comptes": { link: "comptes.html" },
-      "Contrôle des modules": { link: "modules.html" },
-      "Vue sur toutes les structures": { link: "structures.html" },
+      // Admin/Préfet (à compléter si nécessaire)
+      "Accès total": { link: "accueil-prefet.html" }, 
+      "Gestion des comptes": { link: "gestion-comptes.html" },
+      // Directeur des Études
       "Gestion des classes": { link: "gestion-classes.html" },
       "Gestion des enseignants": { link: "gestion-enseignants.html" },
-      "Suivi des programmes": { link: "programmes.html" },
-      "Planification académique": { link: "planning.html" },
-      "Suivi disciplinaire": { link: "discipline.html" },
-      "Gestion des sanctions": { link: "sanctions.html" },
-      "Rapport de comportement": { link: "rapports-comportement.html" },
-      "Coordination des surveillants": { link: "surveillants.html" },
-      "Inscription des élèves": { link: "inscriptions.html" },
-      "Gestion des documents": { link: "documents.html" },
-      "Planning scolaire": { link: "planning-scolaire.html" },
-      "Communication interne": { link: "communication.html" },
+      // Secrétaire
+      "Inscription Nouvel Élève": { link: "inscrire-eleve.html" },
+      "Gestion des Dossiers Élèves": { link: "gestion-dossiers-eleves.html" },
+      "Perception Frais Divers": { link: "percevoir-frais-internes.html" },
+      "Impression des Bulletins": { link: "edition-bulletins.html" },
+      "Communication interne": { link: "gestion-courrier.html" },
+      // Économe
       "Gestion financière": { link: "finances.html" },
       "Suivi des paiements": { link: "paiements.html" },
-      "Rapport de trésorerie": { link: "rapport-tresorerie.html" },
-      "Budget et dépenses": { link: "budget.html" },
-      "Consultation des classes": { link: "consultation-classes.html" },
-      "Planification des cours": { link: "planification-cours.html" },
+      // Enseignant
       "Saisie des notes": { link: "saisie-notes.html" },
+      // Élève
       "Consultation des notes": { link: "consultation-notes.html" },
-      "Demandes administratives": { link: "demandes-admin.html" },
+      // Parent
       "Suivi des notes de l'élève": { link: "suivi-notes.html" },
-      "Communication avec enseignants": { link: "communication-enseignants.html" },
-      "Paiement en ligne": { link: "paiement.html" }
+      "Paiement en ligne": { link: "paiement.html" },
+      
+      // Modules par défaut/génériques
+      "Planning scolaire": { link: "planning-scolaire.html" },
+      "Demandes administratives": { link: "demandes-admin.html" },
+      
+      // Modules non-liés (si un module n'a pas de lien, il sera désactivé)
+      "Suivi des rapports": { link: null },
+      "Contrôle des modules": { link: null },
+      "Vue sur toutes les structures": { link: null },
+      "Suivi des programmes": { link: null },
+      "Planification académique": { link: null },
+      "Suivi disciplinaire": { link: null },
+      "Gestion des sanctions": { link: null },
+      "Rapport de comportement": { link: null },
+      "Coordination des surveillants": { link: null },
+      "Rapport de trésorerie": { link: null },
+      "Budget et dépenses": { link: null },
+      "Consultation des classes": { link: null },
+      "Planification des cours": { link: null },
+      "Communication avec enseignants": { link: null },
     };
 
     // Capitalize helper
-    const capitalize = (str) => str.charAt(0).toUpperCase() + str.slice(1).replace(/_/g, " ");
+    const capitalize = (str) => {
+        if (!str) return '';
+        // Gère les noms composés/rôles avec underscores
+        return str.split('_').map(word => word.charAt(0).toUpperCase() + word.slice(1)).join(' ');
+    };
 
     // Gestion connexion utilisateur
     onAuthStateChanged(auth, async (user) => {
@@ -358,12 +379,23 @@
       try {
         // Récupérer les données utilisateur Firestore
         const userDoc = await getDoc(doc(db, "users", user.uid));
-        if (!userDoc.exists) throw new Error("Utilisateur introuvable dans la base de données");
+        
+        if (!userDoc.exists) {
+            console.error("Utilisateur introuvable dans la base de données. Déconnexion.");
+            messageEl.textContent = "Profil introuvable. Veuillez contacter l'administration.";
+            messageEl.className = "message error";
+            messageEl.style.display = "block";
+            await signOut(auth);
+            return;
+        }
 
         const userData = userDoc.data();
-        const role = userData.role;
+        const role = userData.role?.toLowerCase() || 'inconnu';
 
-        welcomeMsg.textContent = `Bonjour, ${userData.nom ? capitalize(userData.nom) : "Utilisateur"} (${capitalize(role)})`;
+        // Affichage du message de bienvenue
+        const displayRole = capitalize(role);
+        const displayNom = userData.nom ? capitalize(userData.nom) : "Utilisateur";
+        welcomeMsg.textContent = `Bonjour, ${displayNom} (${displayRole})`;
 
         const modules = roleModules[role];
 
@@ -379,10 +411,13 @@
             span.textContent = module;
             card.appendChild(span);
 
-            if (modulesDetails[module]?.link) {
-              card.href = modulesDetails[module].link;
+            const linkDetails = modulesDetails[module];
+
+            if (linkDetails?.link) {
+              card.href = linkDetails.link;
               card.target = "_self";
             } else {
+              // Module désactivé ou sans lien
               card.style.cursor = "not-allowed";
               card.setAttribute("aria-disabled", "true");
               card.tabIndex = -1;
@@ -394,17 +429,17 @@
           // Focus modules container for accessibility
           modulesContainer.focus();
         } else {
-          messageEl.textContent = "Aucun module disponible pour votre rôle.";
+          messageEl.textContent = `Aucun module disponible pour votre rôle (${displayRole}).`;
           messageEl.className = "message";
           messageEl.style.display = "block";
         }
 
       } catch (error) {
         welcomeMsg.textContent = "Erreur lors du chargement des données.";
-        messageEl.textContent = "Une erreur est survenue. Veuillez réessayer plus tard.";
+        messageEl.textContent = "Une erreur est survenue lors de la connexion. Veuillez réessayer.";
         messageEl.className = "message error";
         messageEl.style.display = "block";
-        console.error(error);
+        console.error("Erreur Firestore ou Auth:", error);
       }
     });
 
@@ -418,9 +453,24 @@
         .catch((err) => {
           logoutBtn.disabled = false;
           logoutBtn.textContent = "Déconnexion";
-          alert("Erreur lors de la déconnexion : " + err.message);
+          console.error("Erreur lors de la déconnexion :", err.message);
         });
     });
+    
+    // --- Initialisation de l'Authentification via Token ---
+    function initializeAuth() {
+        const token = typeof __initial_auth_token !== 'undefined' ? __initial_auth_token : null;
+        if (token) {
+            signInWithCustomToken(auth, token).catch(e => {
+                console.warn("Custom token sign-in failed. Attempting anonymous sign-in.", e);
+                signInAnonymously(auth);
+            });
+        } else {
+            signInAnonymously(auth);
+        }
+    }
+    window.onload = initializeAuth;
+
   </script>
 </body>
 
