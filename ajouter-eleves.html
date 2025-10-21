@@ -1,242 +1,266 @@
 <!DOCTYPE html>
 <html lang="fr">
 <head>
-  <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Enregistrer un Nouvel Élève - Institut Saint Charles Lwanga</title>
-  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700;800&display=swap" rel="stylesheet">
-  <style>
-    :root {
-      --bleu-fonce: #1e40af; /* Bleu Principal */
-      --gris-fonce: #1f2937;
-      --vert-action: #10b981; /* Bouton d'action positif (Enregistrer) */
-      --gris-clair: #f4f6f8; /* Fond principal */
-      --gris-bordure: #d1d5db; /* Bordure des champs */
-      --ombre-form: rgba(0,0,0,0.1);
-    }
-    body {
-      font-family: 'Inter', sans-serif;
-      background-color: var(--gris-clair);
-      margin: 0;
-      padding: 2rem 1rem;
-      color: var(--gris-fonce);
-    }
-    
-    .header {
-        text-align: center;
-        margin-bottom: 2rem;
-    }
-    .header h1 {
-      font-size: 2rem;
-      color: var(--bleu-fonce);
-      margin-bottom: 0.25rem;
-    }
-    .header p {
-        font-size: 1rem;
-        color: #6b7280;
-    }
-
-    /* --- CONTENEUR ET FORMULAIRE --- */
-    .container {
-        max-width: 700px;
-        margin: auto;
-    }
-    .form-card {
-      background: white;
-      padding: 2rem;
-      border-radius: 12px;
-      box-shadow: 0 4px 12px var(--ombre-form);
-      border-top: 5px solid var(--bleu-fonce);
-    }
-    
-    .form-grid {
-      display: grid;
-      grid-template-columns: 1fr;
-      gap: 1.5rem; /* Espacement professionnel */
-    }
-    @media (min-width: 500px) {
-        .form-grid {
-            grid-template-columns: 1fr 1fr; /* 2 colonnes sur desktop */
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Enregistrer un Nouvel Élève</title>
+    <!-- Chargement de Tailwind CSS et de la police Inter -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700;800&display=swap" rel="stylesheet">
+    <style>
+        body {
+            font-family: 'Inter', sans-serif;
         }
-    }
-    .full-width {
-        grid-column: 1 / -1;
-    }
-
-    /* --- CHAMPS DE FORMULAIRE --- */
-    .form-group label {
-      display: block;
-      font-weight: 600;
-      margin-bottom: 0.5rem;
-      font-size: 0.95rem;
-      color: var(--gris-fonce);
-    }
-    input[type="text"], input[type="date"], select {
-      width: 100%;
-      padding: 0.9rem; /* Plus grand padding pour une meilleure ergonomie */
-      border: 1px solid var(--gris-bordure);
-      border-radius: 8px; /* Bords légèrement plus arrondis */
-      box-sizing: border-box;
-      font-size: 1rem;
-      background-color: #f9fafb;
-      transition: border-color 0.2s, box-shadow 0.2s;
-    }
-    input:focus, select:focus {
-        border-color: var(--bleu-fonce);
-        box-shadow: 0 0 0 3px rgba(30, 64, 175, 0.1);
-        outline: none;
-        background-color: white;
-    }
-    
-    /* --- BOUTON D'ACTION PRINCIPAL --- */
-    .btn-submit {
-      grid-column: 1 / -1; /* Prend toute la largeur */
-      background-color: var(--vert-action);
-      color: white;
-      font-weight: 700;
-      padding: 1rem;
-      border: none;
-      border-radius: 8px;
-      font-size: 1.1rem;
-      cursor: pointer;
-      margin-top: 1rem;
-      transition: background-color 0.2s;
-    }
-    .btn-submit:hover {
-      background-color: #059669;
-    }
-
-    /* --- Message et Retour --- */
-    #message {
-      text-align: center;
-      margin-top: 1.5rem;
-      font-weight: 600;
-    }
-    .btn-retour {
-        display: block;
-        text-align: center;
-        margin-top: 1.5rem;
-        color: var(--gris-fonce);
-        text-decoration: none;
-        font-size: 0.9rem;
-        padding: 0.5rem;
-    }
-    .btn-retour:hover {
-        color: var(--bleu-fonce);
-    }
-  </style>
+    </style>
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    colors: {
+                        'primary-blue': '#1e40af', // bleu-fonce
+                        'action-green': '#10b981', // vert-action
+                    }
+                }
+            }
+        }
+    </script>
 </head>
-<body>
-  
-  <div class="header">
-    <h1>➕ Enregistrer un Nouvel Élève</h1>
-    <p>Remplissez les informations d'inscription pour créer un dossier élève complet.</p>
-  </div>
-
-  <div class="container">
-    <div class="form-card">
-        <form id="eleveForm">
-            <div class="form-grid">
-                
-                <div class="form-group">
-                    <label for="nom">Nom de Famille *</label>
-                    <input type="text" id="nom" placeholder="Ex: UMBA" required />
-                </div>
-                
-                <div class="form-group">
-                    <label for="prenom">Prénoms *</label>
-                    <input type="text" id="prenom" placeholder="Ex: Gabby" required />
-                </div>
-                
-                <div class="form-group">
-                    <label for="classe">Classe d'Affectation *</label>
-                    <select id="classe" required>
-                        <option value="">-- Sélectionner une classe --</option>
-                        <option value="6A">6ème Commerciale A</option>
-                        <option value="5S">5ème Scientifique</option>
-                        <option value="4H">4ème Humanités</option>
-                        </select>
-                </div>
-                
-                <div class="form-group">
-                    <label for="dateNaissance">Date de Naissance *</label>
-                    <input type="date" id="dateNaissance" required />
-                </div>
-                
-                <div class="form-group">
-                    <label for="sexe">Sexe</label>
-                    <select id="sexe">
-                        <option value="">-- Sexe --</option>
-                        <option value="M">Masculin</option>
-                        <option value="F">Féminin</option>
-                    </select>
-                </div>
-
-                <div class="form-group">
-                    <label for="statutPaiement">Statut Initial de Paiement *</label>
-                    <select id="statutPaiement" required>
-                        <option value="">-- Statut de paiement --</option>
-                        <option value="Payé">✅ Payé intégralement</option>
-                        <option value="Partiel">⚠️ Partiel</option>
-                        <option value="Non payé">❌ Non payé (Dossier en attente)</option>
-                    </select>
-                </div>
-                
-                <button type="submit" class="btn-submit">
-                    💾 Enregistrer le Nouvel Élève
-                </button>
-            </div>
-        </form>
+<body class="bg-gray-50 min-h-screen p-4 sm:p-8">
+    
+    <div class="header text-center mb-8 max-w-2xl mx-auto">
+        <h1 class="text-3xl sm:text-4xl font-extrabold text-primary-blue mb-1">
+            ➕ Enregistrer un Nouvel Élève
+        </h1>
+        <p class="text-gray-600">
+            Remplissez les informations d'inscription pour créer un dossier élève complet et attribuer un matricule unique.
+        </p>
     </div>
-    <p id="message"></p>
-    <a href="eleves.html" class="btn-retour">← Retour à la Gestion des Élèves</a>
-  </div>
 
-  <script src="https://www.gstatic.com/firebasejs/10.5.2/firebase-app.js"></script>
-  <script src="https://www.gstatic.com/firebasejs/10.5.2/firebase-firestore.js"></script>
+    <div class="container max-w-4xl mx-auto">
+        <div class="form-card bg-white p-6 sm:p-8 rounded-xl shadow-2xl border-t-8 border-primary-blue">
+            <form id="eleveForm">
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-x-6 gap-y-6">
+                    
+                    <!-- Nom de Famille -->
+                    <div class="form-group">
+                        <label for="nom" class="block font-semibold text-gray-700 mb-1">Nom de Famille *</label>
+                        <input type="text" id="nom" name="nom" class="w-full p-3 border border-gray-300 rounded-lg focus:border-primary-blue focus:ring-4 focus:ring-primary-blue/20 transition duration-150 bg-gray-50" placeholder="Ex: UMBA" required />
+                    </div>
+                    
+                    <!-- Prénoms -->
+                    <div class="form-group">
+                        <label for="prenom" class="block font-semibold text-gray-700 mb-1">Prénoms *</label>
+                        <input type="text" id="prenom" name="prenom" class="w-full p-3 border border-gray-300 rounded-lg focus:border-primary-blue focus:ring-4 focus:ring-primary-blue/20 transition duration-150 bg-gray-50" placeholder="Ex: Gabby" required />
+                    </div>
+                    
+                    <!-- Date de Naissance -->
+                    <div class="form-group">
+                        <label for="dateNaissance" class="block font-semibold text-gray-700 mb-1">Date de Naissance *</label>
+                        <input type="date" id="dateNaissance" name="dateNaissance" class="w-full p-3 border border-gray-300 rounded-lg focus:border-primary-blue focus:ring-4 focus:ring-primary-blue/20 transition duration-150 bg-gray-50" required />
+                    </div>
 
-  <script>
-    const firebaseConfig = {
-      apiKey: "TON_API_KEY",
-      authDomain: "TON_DOMAINE.firebaseapp.com",
-      projectId: "TON_PROJECT_ID",
-    };
-    firebase.initializeApp(firebaseConfig);
-    const db = firebase.firestore();
+                    <!-- Sexe -->
+                    <div class="form-group">
+                        <label for="sexe" class="block font-semibold text-gray-700 mb-1">Sexe</label>
+                        <select id="sexe" name="sexe" class="w-full p-3 border border-gray-300 rounded-lg focus:border-primary-blue focus:ring-4 focus:ring-primary-blue/20 transition duration-150 bg-gray-50">
+                            <option value="">-- Sexe --</option>
+                            <option value="M">Masculin</option>
+                            <option value="F">Féminin</option>
+                        </select>
+                    </div>
 
-    document.getElementById('eleveForm').addEventListener('submit', function(e) {
-      e.preventDefault();
-      
-      // Récupération des données du formulaire
-      const nom = document.getElementById('nom').value;
-      const prenom = document.getElementById('prenom').value;
-      const classe = document.getElementById('classe').value;
-      const dateNaissance = document.getElementById('dateNaissance').value;
-      const statutPaiement = document.getElementById('statutPaiement').value;
-      const sexe = document.getElementById('sexe').value; // Nouveau champ
+                    <!-- Classe d'Affectation -->
+                    <div class="form-group">
+                        <label for="classe" class="block font-semibold text-gray-700 mb-1">Classe d'Affectation *</label>
+                        <select id="classe" name="classe" class="w-full p-3 border border-gray-300 rounded-lg focus:border-primary-blue focus:ring-4 focus:ring-primary-blue/20 transition duration-150 bg-gray-50" required>
+                            <option value="">-- Sélectionner une classe --</option>
+                            <option value="6A">6ème Commerciale A</option>
+                            <option value="6B">6ème Commerciale B</option>
+                            <option value="5S">5ème Scientifique</option>
+                            <option value="4H">4ème Humanités</option>
+                            <option value="3B">3ème Bio-Chimie</option>
+                        </select>
+                    </div>
 
-      // Simulation de la génération du matricule
-      const annee = new Date().getFullYear().toString().slice(-2);
-      const randomID = Math.floor(Math.random() * 900) + 100;
-      const matricule = `${annee}/${classe}-${randomID}`;
+                    <!-- Statut Initial de Paiement -->
+                    <div class="form-group">
+                        <label for="statutPaiement" class="block font-semibold text-gray-700 mb-1">Statut Initial de Paiement *</label>
+                        <select id="statutPaiement" name="statutPaiement" class="w-full p-3 border border-gray-300 rounded-lg focus:border-primary-blue focus:ring-4 focus:ring-primary-blue/20 transition duration-150 bg-gray-50" required>
+                            <option value="">-- Statut de paiement --</option>
+                            <option value="Payé">✅ Payé intégralement</option>
+                            <option value="Partiel">⚠️ Partiel</option>
+                            <option value="Non payé">❌ Non payé</option>
+                        </select>
+                    </div>
+                    
+                    <!-- Bouton de Soumission -->
+                    <button type="submit" class="btn-submit col-span-full mt-4 bg-action-green text-white font-bold py-3 px-6 rounded-lg text-lg hover:bg-emerald-600 transition duration-200 shadow-md hover:shadow-lg disabled:opacity-50 disabled:cursor-not-allowed">
+                        💾 Enregistrer le Nouvel Élève
+                    </button>
+                </div>
+            </form>
+        </div>
+        
+        <!-- Conteneur de Message -->
+        <div id="message" class="mt-6 max-w-xl mx-auto">
+            <!-- Les messages de succès/erreur apparaîtront ici -->
+        </div>
 
+        <a href="#" onclick="alert('La page de gestion des élèves n\'est pas implémentée dans ce fichier unique.'); return false;" class="btn-retour block text-center mt-6 text-gray-600 hover:text-primary-blue font-medium transition duration-200">
+            ← Retour à la Gestion des Élèves
+        </a>
+    </div>
 
-      db.collection("eleves").add({
-        nom,
-        prenom,
-        matricule, // Ajout du matricule
-        classe,
-        dateNaissance,
-        sexe,
-        statutPaiement,
-        dateInscription: firebase.firestore.FieldValue.serverTimestamp() // Bonne pratique
-      }).then(() => {
-        document.getElementById('message').innerHTML = `✅ **Élève ${nom} ${prenom} enregistré !**<br>Matricule attribué : ${matricule}`;
-        document.getElementById('eleveForm').reset();
-      }).catch((error) => {
-        document.getElementById('message').innerHTML = "❌ Erreur d'enregistrement : " + error.message;
-      });
-    });
-  </script>
+    <!-- SCRIPTS FIREBASE ET LOGIQUE APPLICATIVE -->
+    <script type="module">
+        import { initializeApp } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-app.js";
+        import { getAuth, signInAnonymously, signInWithCustomToken, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-auth.js";
+        import { getFirestore, doc, getDoc, addDoc, setDoc, updateDoc, deleteDoc, onSnapshot, collection, query, where, serverTimestamp, setLogLevel } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-firestore.js";
+
+        // -----------------------------------------------------
+        // 1. INITIALISATION ET AUTHENTIFICATION (MANDATAIRE)
+        // -----------------------------------------------------
+
+        const appId = typeof __app_id !== 'undefined' ? __app_id : 'default-app-id';
+        const firebaseConfig = JSON.parse(typeof __firebase_config !== 'undefined' ? __firebase_config : '{}');
+
+        let app, db, auth;
+        let userId = null;
+        let isAuthReady = false;
+
+        // Fonction utilitaire pour afficher les messages
+        function showMessage(text, type) {
+            const messageEl = document.getElementById('message');
+            let colorClass = '';
+            if (type === 'success') {
+                colorClass = 'bg-green-100 text-green-800 border-green-400';
+            } else if (type === 'error') {
+                colorClass = 'bg-red-100 text-red-800 border-red-400';
+            } else {
+                colorClass = 'bg-yellow-100 text-yellow-800 border-yellow-400';
+            }
+            
+            messageEl.innerHTML = `
+                <div role="alert" class="p-4 rounded-lg border-l-4 font-semibold ${colorClass}">
+                    ${text}
+                </div>
+            `;
+        }
+
+        // Utilitaire pour le backoff exponentiel lors des appels API
+        async function fetchWithBackoff(func, maxRetries = 5) {
+            for (let i = 0; i < maxRetries; i++) {
+                try {
+                    return await func();
+                } catch (error) {
+                    if (i === maxRetries - 1) throw error;
+                    const delay = Math.pow(2, i) * 1000;
+                    await new Promise(resolve => setTimeout(resolve, delay));
+                    console.warn(`Retry ${i + 1}/${maxRetries} after ${delay}ms: ${error.message}`);
+                }
+            }
+        }
+        
+        // Initialisation de Firebase
+        if (Object.keys(firebaseConfig).length > 0) {
+            app = initializeApp(firebaseConfig);
+            db = getFirestore(app);
+            auth = getAuth(app);
+            setLogLevel('Debug');
+
+            // Écouteur d'état d'authentification
+            onAuthStateChanged(auth, async (user) => {
+                if (user) {
+                    userId = user.uid;
+                    isAuthReady = true;
+                    console.log("Firebase Auth prêt. User ID:", userId);
+                    showMessage('Prêt à enregistrer l\'élève.', 'info');
+                } else {
+                    const token = typeof __initial_auth_token !== 'undefined' ? __initial_auth_token : null;
+                    try {
+                        if (token) {
+                            await signInWithCustomToken(auth, token);
+                        } else {
+                            await signInAnonymously(auth);
+                        }
+                        // L'écouteur onAuthStateChanged se déclenchera à nouveau avec l'utilisateur
+                    } catch (error) {
+                        console.error("Firebase authentication failed:", error);
+                        showMessage('❌ Erreur d\'authentification Firebase. Veuillez rafraîchir.', 'error');
+                    }
+                }
+            });
+        } else {
+            showMessage('❌ Configuration Firebase manquante. Enregistrement non fonctionnel.', 'error');
+            console.error("Firebase configuration is missing.");
+        }
+
+        // -----------------------------------------------------
+        // 2. LOGIQUE DU FORMULAIRE
+        // -----------------------------------------------------
+
+        const handleFormSubmit = async (e) => {
+            e.preventDefault();
+
+            if (!db || !userId || !isAuthReady) {
+                showMessage('❌ Erreur: En attente de l\'authentification Firebase...', 'error');
+                return;
+            }
+
+            const form = e.target;
+            const btn = document.querySelector('.btn-submit');
+            const originalText = btn.innerHTML;
+
+            btn.disabled = true;
+            btn.innerHTML = '<span class="animate-spin inline-block w-4 h-4 mr-2 border-2 border-t-transparent border-white rounded-full"></span> Chargement...'; // État de chargement
+
+            const nom = form.nom.value.trim().toUpperCase();
+            const prenom = form.prenom.value.trim();
+            const classe = form.classe.value;
+            const dateNaissance = form.dateNaissance.value;
+            const sexe = form.sexe.value;
+            const statutPaiement = form.statutPaiement.value;
+
+            // Logique de génération de Matricule (simple)
+            const annee = new Date().getFullYear().toString().slice(-2);
+            // Utiliser un horodatage pour une unicité (moins de chance de collision que Math.random)
+            const uniquePart = Date.now().toString().slice(-6); 
+            const matricule = `STC-${annee}-${classe}/${uniquePart}`;
+
+            const newEleve = {
+                nom: nom,
+                prenom: prenom,
+                matricule: matricule,
+                classe: classe,
+                dateNaissance: dateNaissance,
+                sexe: sexe,
+                statutPaiement: statutPaiement,
+                dateInscription: serverTimestamp(),
+                anneeScolaire: new Date().getFullYear(),
+                ownerId: userId // Lien avec l'utilisateur
+            };
+
+            // Chemin de la collection sécurisée (Private Data)
+            const collectionPath = `artifacts/${appId}/users/${userId}/eleves`;
+
+            try {
+                await fetchWithBackoff(() => addDoc(collection(db, collectionPath), newEleve));
+
+                showMessage(`✅ L'élève **${nom} ${prenom}** a été enregistré avec succès ! Son matricule est : **${matricule}**`, 'success');
+                form.reset();
+            } catch (error) {
+                showMessage(`❌ Erreur d'enregistrement : ${error.message}`, 'error');
+                console.error("Error adding document: ", error);
+            } finally {
+                btn.disabled = false;
+                btn.innerHTML = originalText;
+            }
+        };
+
+        // Attacher l'écouteur d'événement
+        document.addEventListener('DOMContentLoaded', () => {
+            document.getElementById('eleveForm').addEventListener('submit', handleFormSubmit);
+        });
+    </script>
 </body>
 </html>
