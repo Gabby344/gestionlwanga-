@@ -3,8 +3,8 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Gestion des Utilisateurs Admin | ISC Lwanga</title>
-    <!-- Chargement de Tailwind CSS pour un style moderne et responsive -->
+    <title>Gestion des Rôles Admin | ISC Lwanga</title>
+    <!-- Chargement de Tailwind CSS -->
     <script src="https://cdn.tailwindcss.com"></script>
     <!-- Font Awesome pour les icônes -->
     <script src="https://kit.fontawesome.com/a2e0e6a56b.js" crossorigin="anonymous"></script>
@@ -51,7 +51,6 @@
         .notification.success { background-color: #10b981; }
         .notification.error { background-color: #ef4444; }
         .notification.info { background-color: #3b82f6; }
-
     </style>
     
 </head>
@@ -60,7 +59,7 @@
 
     <div id="notification-area"></div>
 
-    <!-- SIDEBAR (Navigation Latérale) - Copiée pour cohérence -->
+    <!-- SIDEBAR (Navigation Latérale) -->
     <aside class="w-64 bg-gray-800 text-white flex flex-col shadow-2xl flex-shrink-0">
         <div class="p-6 text-2xl font-extrabold border-b border-gray-700 bg-gray-900">
             ISC Lwanga <span class="text-indigo-400">Admin</span>
@@ -73,10 +72,10 @@
             
             <div class="pt-4 mt-4 border-t border-gray-700">
                 <p class="text-xs font-semibold uppercase tracking-wider text-gray-400 px-3 pb-2">Gestion Globale</p>
-                <a href="admin.html" class="nav-link flex items-center gap-3 p-3 bg-gray-700 rounded-lg font-semibold text-indigo-300">
+                <a href="admin.html" class="nav-link flex items-center gap-3 p-3 text-gray-200 rounded-lg">
                     <i class="fa-solid fa-users-gear w-5"></i> Comptes & Utilisateurs
                 </a>
-                <a href="admin-roles.html" class="nav-link flex items-center gap-3 p-3 text-gray-200 rounded-lg">
+                <a href="admin-roles.html" class="nav-link flex items-center gap-3 p-3 bg-gray-700 rounded-lg font-semibold text-indigo-300">
                     <i class="fa-solid fa-shield-alt w-5"></i> Rôles & Permissions
                 </a>
                 <a href="gestion-classes.html" class="nav-link flex items-center gap-3 p-3 text-gray-200 rounded-lg">
@@ -105,78 +104,52 @@
     <main class="flex-1 p-8 overflow-y-auto">
         
         <!-- HEADER / BANNIÈRE -->
-        <header class="mb-8 p-6 bg-white rounded-xl shadow-lg border-l-4 border-blue-500 flex flex-col sm:flex-row justify-between items-start sm:items-center">
-            <h1 class="text-3xl font-extrabold text-gray-800 mb-2 sm:mb-0">Gestion des Comptes</h1>
+        <header class="mb-8 p-6 bg-white rounded-xl shadow-lg border-l-4 border-purple-500 flex flex-col sm:flex-row justify-between items-start sm:items-center">
+            <h1 class="text-3xl font-extrabold text-gray-800 mb-2 sm:mb-0">Gestion des Rôles & Permissions</h1>
             <div class="text-right">
-                <p class="text-sm font-semibold text-blue-600" id="userInfo">Chargement...</p>
+                <p class="text-sm font-semibold text-purple-600" id="userInfo">Chargement...</p>
                 <p class="text-xs text-gray-500">Administrateur système</p>
             </div>
         </header>
 
-        <!-- Configuration et Création -->
-        <section class="grid grid-cols-1 lg:grid-cols-3 gap-6 mb-8">
-            
-            <!-- Carte 1: Initialisation de la Base de Données -->
-            <div class="bg-white p-6 rounded-xl shadow-lg lg:col-span-1 border-t-4 border-indigo-500">
-                <h2 class="text-xl font-bold text-gray-800 mb-3 flex items-center gap-2">
-                    <i class="fa-solid fa-cogs text-indigo-500"></i> Configuration Initiale
-                </h2>
-                <p class="text-gray-600 mb-4 text-sm">Crée les collections de base (Rôles, Classes, Administrateurs) dans Firestore.</p>
-                <button onclick="configInitiale()" id="initBtn" class="w-full py-2 bg-indigo-600 text-white rounded-lg hover:bg-indigo-700 font-semibold transition duration-200">
-                    <i class="fa-solid fa-hammer mr-2"></i> Initialiser la Base
-                </button>
-            </div>
-
-            <!-- Carte 2: Création d'un Utilisateur -->
-            <div class="bg-white p-6 rounded-xl shadow-lg lg:col-span-2 border-t-4 border-green-500">
+        <!-- Création de Rôle -->
+        <section class="mb-8">
+            <div class="bg-white p-6 rounded-xl shadow-lg border-t-4 border-indigo-500">
                 <h2 class="text-xl font-bold text-gray-800 mb-4 flex items-center gap-2">
-                    <i class="fa-solid fa-user-plus text-green-600"></i> Créer un Nouveau Compte
+                    <i class="fa-solid fa-sitemap text-indigo-500"></i> Ajouter un Nouveau Rôle
                 </h2>
-                <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
-                    <input type="text" id="nom" placeholder="Nom" class="p-3 border border-gray-300 rounded-lg focus:ring-green-500 focus:border-green-500">
-                    <input type="text" id="postNom" placeholder="PostNom" class="p-3 border border-gray-300 rounded-lg focus:ring-green-500 focus:border-green-500">
-                    <input type="text" id="prenom" placeholder="Prénom" class="p-3 border border-gray-300 rounded-lg focus:ring-green-500 focus:border-green-500">
-                    <input type="email" id="email" placeholder="Email" class="p-3 border border-gray-300 rounded-lg focus:ring-green-500 focus:border-green-500 md:col-span-2">
-                    <input type="password" id="password" placeholder="Mot de passe" class="p-3 border border-gray-300 rounded-lg focus:ring-green-500 focus:border-green-500">
-                    
-                    <select id="role" class="p-3 border border-gray-300 rounded-lg focus:ring-green-500 focus:border-green-500 md:col-span-2">
-                        <option value="">-- Choisir un rôle --</option>
-                        <option value="admin">Admin (Système)</option>
-                        <option value="prefet">Préfet</option>
-                        <option value="directeur_etudes">Directeur Études</option>
-                        <option value="directeur_discipline">Directeur Discipline</option>
-                        <option value="enseignant">Enseignant</option>
-                        <option value="secretaire">Secrétaire</option>
-                        <option value="econome">Économe</option>
-                        <option value="eleve">Élève</option>
-                    </select>
-                    <button id="createUserBtn" class="w-full py-3 bg-green-600 text-white rounded-lg hover:bg-green-700 font-bold transition duration-200 md:col-span-1">
-                        Créer Utilisateur
+                <div class="grid grid-cols-1 md:grid-cols-4 gap-4">
+                    <input type="text" id="roleId" placeholder="ID du Rôle (ex: censeur)" class="p-3 border border-gray-300 rounded-lg focus:ring-indigo-500 focus:border-indigo-500">
+                    <input type="text" id="roleDescription" placeholder="Description courte" class="p-3 border border-gray-300 rounded-lg focus:ring-indigo-500 focus:border-indigo-500 md:col-span-3">
+                    <input type="text" id="rolePermissions" placeholder="Permissions (séparées par des virgules, ex: vue_notes, gestion_frais)" class="p-3 border border-gray-300 rounded-lg focus:ring-indigo-500 focus:border-indigo-500 md:col-span-3">
+                    <button id="createRoleBtn" class="w-full py-3 bg-indigo-600 text-white rounded-lg hover:bg-indigo-700 font-bold transition duration-200 md:col-span-1">
+                        Créer/Mettre à jour le Rôle
                     </button>
                 </div>
+                <p class="text-xs text-gray-500 mt-2">L'ID du Rôle est utilisé pour identifier les utilisateurs dans la base (ex: élève, enseignant).</p>
             </div>
         </section>
 
-        <!-- Liste des Utilisateurs -->
+        <!-- Liste des Rôles -->
         <section>
             <div class="bg-white p-6 rounded-xl shadow-lg">
                 <h2 class="text-xl font-bold text-gray-800 mb-4 flex items-center gap-2">
-                    <i class="fa-solid fa-list text-blue-600"></i> Liste Complète des Utilisateurs
+                    <i class="fa-solid fa-table-list text-purple-600"></i> Structure des Rôles Actuels
                 </h2>
                 <div class="overflow-x-auto">
-                    <table class="min-w-full divide-y divide-gray-200 rounded-lg overflow-hidden" id="usersTable">
+                    <table class="min-w-full divide-y divide-gray-200 rounded-lg overflow-hidden" id="rolesTable">
                         <thead>
-                            <tr class="text-left text-xs font-semibold text-white uppercase tracking-wider bg-blue-600">
-                                <th class="px-6 py-3">Nom Complet</th>
-                                <th class="px-6 py-3">Email</th>
-                                <th class="px-6 py-3">Rôle</th>
+                            <tr class="text-left text-xs font-semibold text-white uppercase tracking-wider bg-purple-600">
+                                <th class="px-6 py-3">ID du Rôle</th>
+                                <th class="px-6 py-3">Description</th>
+                                <th class="px-6 py-3">Permissions Clés</th>
                                 <th class="px-6 py-3">Actions</th>
                             </tr>
                         </thead>
-                        <tbody class="divide-y divide-gray-200 text-sm text-gray-700">
+                        <tbody class="divide-y divide-gray-200 text-sm text-gray-700" id="rolesTableBody">
                             <!-- Les lignes seront ajoutées ici par JavaScript -->
                             <tr>
-                                <td colspan="4" class="text-center py-4 text-gray-500">Chargement des utilisateurs...</td>
+                                <td colspan="4" class="text-center py-4 text-gray-500">Chargement des rôles...</td>
                             </tr>
                         </tbody>
                     </table>
@@ -190,7 +163,7 @@
     <script type="module">
     import { initializeApp } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-app.js";
     import { 
-        getAuth, onAuthStateChanged, signOut, createUserWithEmailAndPassword, sendPasswordResetEmail,
+        getAuth, onAuthStateChanged, signOut,
         signInWithCustomToken, signInAnonymously
     } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-auth.js";
     import { 
@@ -208,14 +181,15 @@
     const db = getFirestore(app);
     // setLogLevel('Debug'); // Décommenter pour le débogage
 
-    const USER_COLLECTION = 'users'; // Collection utilisateur simple
+    const USER_COLLECTION = 'users'; // Collection utilisateur simple (pour vérification de rôle)
+    const STRUCTURE_ROLES_COLLECTION = 'structure_roles'; // Collection pour les définitions de rôles
 
     // 2. ÉLÉMENTS DU DOM
     const userInfo = document.getElementById('userInfo');
     const logoutBtn = document.getElementById('logoutBtn');
     const notificationArea = document.getElementById('notification-area');
-    const usersTableBody = document.querySelector("#usersTable tbody");
-    const createUserBtn = document.getElementById("createUserBtn");
+    const rolesTableBody = document.getElementById("rolesTableBody");
+    const createRoleBtn = document.getElementById("createRoleBtn");
     
     // 3. FONCTIONNALITÉS UTILITAIRES
     
@@ -255,192 +229,127 @@
         } catch (error) {
             console.error("Erreur d'authentification initiale:", error);
             showNotification("Erreur d'authentification. Redirection...", "error");
-            // Fallback en cas d'échec critique
             setTimeout(() => window.location.href = "index.html", 1500);
         }
     }
 
-    // 4. LOGIQUE PRINCIPALE ADMIN
+    // 4. LOGIQUE PRINCIPALE ADMIN - RÔLES
     
-    // ✅ Créer un Utilisateur (Auth + Firestore Doc)
-    async function handleCreateUser() {
-        const nom = document.getElementById("nom").value.trim();
-        const postNom = document.getElementById("postNom").value.trim();
-        const prenom = document.getElementById("prenom").value.trim();
-        const email = document.getElementById("email").value.trim();
-        const password = document.getElementById("password").value.trim();
-        const role = document.getElementById("role").value;
+    // ✅ Créer/Mettre à jour un Rôle
+    async function handleCreateRole() {
+        const roleId = document.getElementById("roleId").value.trim().toLowerCase();
+        const description = document.getElementById("roleDescription").value.trim();
+        const permissionsStr = document.getElementById("rolePermissions").value.trim();
 
-        if (!nom || !prenom || !email || !password || !role) {
-            showNotification("Veuillez remplir tous les champs requis.", "error");
+        if (!roleId || !description) {
+            showNotification("Veuillez remplir l'ID du Rôle et la Description.", "error");
             return;
         }
 
+        const permissions = permissionsStr
+            .split(',')
+            .map(p => p.trim())
+            .filter(p => p.length > 0);
+
         try {
-            // 1. Création du compte dans Firebase Authentication
-            const userCredential = await createUserWithEmailAndPassword(auth, email, password);
-            const newUser = userCredential.user;
+            const roleData = {
+                description: description,
+                acces: permissions,
+                updatedAt: new Date().toISOString()
+            };
+            
+            // L'ID du document est l'ID du rôle (ex: "eleve", "enseignant")
+            await setDoc(doc(db, STRUCTURE_ROLES_COLLECTION, roleId), roleData);
 
-            // 2. Création du document utilisateur dans Firestore
-            await setDoc(doc(db, USER_COLLECTION, newUser.uid), {
-                uid: newUser.uid,
-                nom,
-                postNom,
-                prenom,
-                email,
-                role,
-                createdAt: new Date().toISOString()
-            });
-
-            showNotification(`✅ Utilisateur ${nom} (${role}) créé avec succès !`);
-            loadUsers(); // Recharger la liste
+            showNotification(`✅ Rôle "${roleId}" créé/mis à jour avec succès !`);
+            loadRoles(); // Recharger la liste
+            
             // Vider les champs
-            document.querySelectorAll('#nom, #postNom, #prenom, #email, #password, #role').forEach(input => input.value = '');
-            document.getElementById("role").value = '';
+            document.getElementById("roleId").value = '';
+            document.getElementById("roleDescription").value = '';
+            document.getElementById("rolePermissions").value = '';
 
         } catch (err) {
-            console.error("Erreur de création d'utilisateur:", err);
-            // Afficher une erreur conviviale
-            let message = "Erreur: Impossible de créer l'utilisateur.";
-            if (err.code === 'auth/email-already-in-use') {
-                message = "Erreur: Cet email est déjà utilisé.";
-            } else if (err.code === 'auth/weak-password') {
-                message = "Erreur: Le mot de passe doit contenir au moins 6 caractères.";
-            }
-            showNotification(message, "error");
+            console.error("Erreur de création/mise à jour de rôle:", err);
+            showNotification("Erreur: Impossible d'enregistrer le rôle.", "error");
         }
     }
     
-    // ✅ Charger les Utilisateurs (depuis Firestore)
-    async function loadUsers() {
-        usersTableBody.innerHTML = '<tr><td colspan="4" class="text-center py-4 text-gray-500">Chargement...</td></tr>';
+    // ✅ Charger les Rôles
+    async function loadRoles() {
+        rolesTableBody.innerHTML = '<tr><td colspan="4" class="text-center py-4 text-gray-500">Chargement...</td></tr>';
         
         try {
-            const snapshot = await getDocs(collection(db, USER_COLLECTION));
+            const snapshot = await getDocs(collection(db, STRUCTURE_ROLES_COLLECTION));
             
             if (snapshot.empty) {
-                usersTableBody.innerHTML = '<tr><td colspan="4" class="text-center py-4 text-gray-500">Aucun utilisateur trouvé.</td></tr>';
+                rolesTableBody.innerHTML = '<tr><td colspan="4" class="text-center py-4 text-gray-500">Aucun rôle défini. Veuillez initialiser ou en créer un.</td></tr>';
                 return;
             }
 
-            usersTableBody.innerHTML = ""; // Vider le contenu
+            rolesTableBody.innerHTML = ""; // Vider le contenu
             
             snapshot.forEach(docSnap => {
+                const roleId = docSnap.id;
                 const data = docSnap.data();
-                const userId = docSnap.id;
+                const permissionsList = (data.acces || []).join(', ');
                 
                 const tr = document.createElement("tr");
                 tr.className = "hover:bg-gray-50 transition duration-150";
                 
                 tr.innerHTML = `
-                    <td class="px-6 py-3 whitespace-nowrap">${data.nom || ''} ${data.postNom || ''} ${data.prenom || ''}</td>
-                    <td class="px-6 py-3 whitespace-nowrap text-blue-600 font-medium">${data.email}</td>
-                    <td class="px-6 py-3 whitespace-nowrap">
-                        <span class="px-3 py-1 inline-flex text-xs leading-5 font-semibold rounded-full bg-blue-100 text-blue-800">
-                            ${data.role.charAt(0).toUpperCase() + data.role.slice(1)}
-                        </span>
-                    </td>
+                    <td class="px-6 py-3 whitespace-nowrap font-bold">${roleId.toUpperCase()}</td>
+                    <td class="px-6 py-3">${data.description || 'N/A'}</td>
+                    <td class="px-6 py-3 text-xs text-green-700">${permissionsList}</td>
                     <td class="px-6 py-3 whitespace-nowrap space-x-2">
-                        <button onclick="window.resetPassword('${data.email}')" title="Réinitialiser le mot de passe" class="text-indigo-600 hover:text-indigo-900 transition duration-150">
-                            <i class="fa-solid fa-key"></i>
+                        <button onclick="window.loadRoleForEdit('${roleId}')" title="Éditer le rôle" class="text-blue-600 hover:text-blue-900 transition duration-150">
+                            <i class="fa-solid fa-edit"></i>
                         </button>
-                        <button onclick="window.deleteUser('${userId}')" title="Supprimer l'utilisateur" class="text-red-600 hover:text-red-900 transition duration-150">
+                        <button onclick="window.deleteRole('${roleId}')" title="Supprimer le rôle" class="text-red-600 hover:text-red-900 transition duration-150">
                             <i class="fa-solid fa-trash"></i>
                         </button>
                     </td>`;
-                usersTableBody.appendChild(tr);
+                rolesTableBody.appendChild(tr);
             });
         } catch (err) {
-            console.error("Erreur de chargement des utilisateurs:", err);
-            usersTableBody.innerHTML = '<tr><td colspan="4" class="text-center py-4 text-red-500">Erreur lors du chargement.</td></tr>';
+            console.error("Erreur de chargement des rôles:", err);
+            rolesTableBody.innerHTML = '<tr><td colspan="4" class="text-center py-4 text-red-500">Erreur lors du chargement des rôles.</td></tr>';
         }
     }
-    
-    // ✅ Réinitialiser le Mot de Passe (fonction globale)
-    window.resetPassword = async (email) => {
+
+    // ✅ Charger un rôle pour l'édition (Fonction globale pour usage dans le HTML)
+    window.loadRoleForEdit = async (roleId) => {
         try {
-            // Vérification de l'existence de l'utilisateur (optionnel, mais bonne pratique)
-            // Firebase Auth gère déjà la vérification lors de l'envoi
-            await sendPasswordResetEmail(auth, email);
-            showNotification(`✉️ Email de réinitialisation envoyé à ${email}.`, "info");
+            const docSnap = await getDoc(doc(db, STRUCTURE_ROLES_COLLECTION, roleId));
+            if (docSnap.exists()) {
+                const data = docSnap.data();
+                document.getElementById("roleId").value = roleId;
+                document.getElementById("roleDescription").value = data.description || '';
+                document.getElementById("rolePermissions").value = (data.acces || []).join(', ');
+                showNotification(`Rôle "${roleId}" chargé pour édition.`, "info");
+            } else {
+                showNotification(`Rôle "${roleId}" non trouvé.`, "error");
+            }
         } catch (err) {
-            console.error("Erreur de réinitialisation:", err);
-            showNotification("Erreur: Impossible d'envoyer l'email de réinitialisation. Vérifiez l'email.", "error");
+            console.error("Erreur de chargement pour édition:", err);
+            showNotification("Erreur lors du chargement des données du rôle.", "error");
         }
     };
 
-    // ✅ Supprimer l'Utilisateur (fonction globale)
-    window.deleteUser = async (uid) => {
-        // NOTE: La suppression d'un compte Auth ne peut pas être effectuée côté client pour un autre utilisateur.
-        // Seul le document Firestore est supprimé ici. La suppression du compte Auth devra être gérée côté serveur
-        // par une fonction Cloud, mais nous simulerons l'action ici pour le document Firestore.
-
-        if (!confirm(`Confirmer la suppression du document Firestore de l'utilisateur ${uid} ?`)) return; // Utilisation temporaire de confirm pour la démo
+    // ✅ Supprimer un Rôle (Fonction globale pour usage dans le HTML)
+    window.deleteRole = async (roleId) => {
+        // NOTE: Utilisation de confirm() temporaire pour la démo, à remplacer par un modal
+        if (!window.confirm(`Êtes-vous sûr de vouloir supprimer la définition du rôle "${roleId}" ? Cela n'affectera PAS les utilisateurs existants ayant ce rôle.`)) return; 
 
         try {
-            await deleteDoc(doc(db, USER_COLLECTION, uid));
-            showNotification("🗑️ Document utilisateur Firestore supprimé.", "success");
-            loadUsers();
+            await deleteDoc(doc(db, STRUCTURE_ROLES_COLLECTION, roleId));
+            showNotification(`🗑️ Rôle "${roleId}" supprimé.`, "success");
+            loadRoles();
         } catch (err) {
-            console.error("Erreur de suppression:", err);
-            showNotification("Erreur: Impossible de supprimer le document.", "error");
+            console.error("Erreur de suppression du rôle:", err);
+            showNotification("Erreur: Impossible de supprimer le rôle.", "error");
         }
     };
-    
-    // ✅ Configuration initiale Firestore (Rôles, Classes, Administrateurs)
-    window.configInitiale = async () => {
-        const batch = [];
-        
-        // --- Définition des Rôles ---
-        const roles = {
-            prefet: { description: "Accès total, gestion des comptes, supervision.", accès: ["gestion_comptes", "supervision_generale"] },
-            directeur_etudes: { description: "Gestion académique, classes, programmes.", accès: ["gestion_classes", "suivi_notes"] },
-            directeur_discipline: { description: "Suivi des comportements et des absences.", accès: ["gestion_discipline", "rapports_comportement"] },
-            secretaire: { description: "Inscription des élèves, gestion documentaire.", accès: ["gestion_eleves", "gestion_documents"] },
-            econome: { description: "Gestion financière, frais, paiements.", accès: ["gestion_finance", "suivi_paiements"] },
-            enseignant: { description: "Saisie des notes, suivi de classe.", accès: ["saisie_notes"] },
-            eleve: { description: "Accès à ses notes et à son emploi du temps.", accès: ["vue_notes", "vue_emploi_du_temps"] }
-        };
-
-        Object.entries(roles).forEach(([role, data]) => {
-            batch.push(setDoc(doc(db, "structure_roles", role), data));
-        });
-
-        // --- Définition des Administrateurs (Pour la démo) ---
-        // (Ces documents ne créent PAS les comptes AUTH, ils décrivent juste les rôles)
-        const admins = [
-            { id: "prefet", nom: "Père Michel Lembe Sds", role: "prefet", email: "prefet@ecole.com" },
-            { id: "etudes", nom: "Mr Delphin Kagunge", role: "directeur_etudes", email: "etudes@ecole.com" },
-        ];
-        admins.forEach(admin => {
-            batch.push(setDoc(doc(db, "structure_administrateurs", admin.id), admin));
-        });
-
-        // --- Définition des Classes ---
-        const classes = [
-            "7eme EB", "8eme EB",
-            "1ere Scientifique", "2eme Scientifique", "3eme Scientifique", "4eme Scientifique",
-            "1ere Commerciale et Gestion", "2eme Commerciale et Gestion", "3eme Commerciale et Gestion", "4eme Commerciale et Gestion",
-        ];
-
-        classes.forEach((classe, index) => {
-            batch.push(setDoc(doc(db, "structure_classes", `C${index + 1}`), {
-                nom: classe,
-                niveau: classe.split(" ")[0],
-                specialite: classe.split(" ").slice(1).join(" "),
-                liste_eleves: [],
-                titulaire_uid: null
-            }));
-        });
-        
-        try {
-            await Promise.all(batch);
-            showNotification("✅ Base Firestore initialisée (Rôles, Classes, Admins) !", "success");
-        } catch (error) {
-            console.error("Erreur lors de l'initialisation de la base:", error);
-            showNotification("Erreur: Impossible d'initialiser la base de données.", "error");
-        }
-    }
 
 
     // 5. GESTION DES ÉVÉNEMENTS & AUTHENTIFICATION
@@ -448,43 +357,40 @@
     // Événement de déconnexion
     logoutBtn.addEventListener("click", handleLogout);
     
-    // Événement de création d'utilisateur
-    createUserBtn.addEventListener("click", handleCreateUser);
-
+    // Événement de création/édition de rôle
+    createRoleBtn.addEventListener("click", handleCreateRole);
 
     // Gestion de l'état d'authentification
     onAuthStateChanged(auth, user => {
         document.body.classList.add('loaded'); // Afficher le contenu une fois l'état connu
 
         if (!user) {
-            // Pas d'utilisateur connecté ou token invalide
             showNotification("Session expirée ou non autorisée.", "error");
             setTimeout(() => window.location.href = "index.html", 1000);
         } else {
-            // Utilisateur connecté
+            // Utilisateur connecté, vérifier les informations et l'autorisation
             userInfo.textContent = user.email;
             
-            // On peut aussi charger ici les données utilisateur (nom, rôle) à partir de Firestore
             getDoc(doc(db, USER_COLLECTION, user.uid)).then(docSnap => {
                 if (docSnap.exists()) {
                     const data = docSnap.data();
                     const role = data.role.charAt(0).toUpperCase() + data.role.slice(1);
                     userInfo.textContent = `${data.nom || data.email} (${role})`;
                     
-                    // Simple vérification de rôle: Seuls Admin et Préfet doivent voir cette page
+                    // Vérification de rôle: Seuls Admin et Préfet peuvent accéder à cette page
                     if (data.role !== 'admin' && data.role !== 'prefet') {
                         showNotification("Accès non autorisé à cette page.", "error");
-                        setTimeout(() => window.location.href = "dashboard-user.html", 1500); // Redirection vers un dashboard générique
+                        setTimeout(() => window.location.href = "dashboard-user.html", 1500); 
                         return;
                     }
-                    loadUsers(); // Charger la liste si l'utilisateur est autorisé
+                    loadRoles(); // Charger la liste des rôles si l'utilisateur est autorisé
                 } else {
                     console.warn("Document utilisateur manquant dans Firestore. Accès limité.");
-                    loadUsers();
+                    loadRoles();
                 }
             }).catch(err => {
                 console.error("Erreur de récupération du document utilisateur:", err);
-                loadUsers();
+                loadRoles();
             });
         }
     });
