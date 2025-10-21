@@ -1,327 +1,548 @@
 <!DOCTYPE html>
 <html lang="fr">
 <head>
-  <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Validation des Résultats - Institut Saint Charles Lwanga (SIGS)</title>
-  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700;800&display=swap" rel="stylesheet">
-  <style>
-    :root {
-      --bleu-fonce: #1e40af; 
-      --gris-fonce: #1f2937;
-      --orange-notes: #f59e0b; /* Accent Validation */
-      --vert-succes: #10b981; /* Statut OK / Bouton Lancer */
-      --rouge-danger: #ef4444; /* Statut Manquant */
-      --fond-principal: #f4f6f8;
-      --gris-bordure: #d1d5db; 
-      --ombre-legere: rgba(0,0,0,0.08);
-    }
-    body {
-      font-family: 'Inter', sans-serif;
-      background-color: var(--fond-principal);
-      margin: 0;
-      padding: 2rem 1rem;
-      color: var(--gris-fonce);
-    }
-    h1 {
-      text-align: center;
-      font-size: 1.8rem;
-      color: var(--bleu-fonce);
-      margin-bottom: 0.5rem;
-    }
-    h2 {
-      text-align: center;
-      font-size: 1rem;
-      font-weight: normal;
-      color: #6b7280;
-      margin-bottom: 2rem;
-    }
-    .container {
-        max-width: 1000px;
-        margin: auto;
-    }
-
-    /* --- BARRE DE FILTRE ET CONTEXTE --- */
-    .context-bar {
-        background-color: white;
-        padding: 1.5rem;
-        border-radius: 8px;
-        box-shadow: 0 4px 6px var(--ombre-legere);
-        margin-bottom: 2rem;
-        display: flex;
-        gap: 1.5rem;
-        justify-content: space-between;
-        align-items: center;
-        flex-wrap: wrap; /* Réactivité mobile */
-    }
-    .context-bar .input-group {
-        flex: 1 1 200px;
-    }
-    .input-group label {
-        display: block;
-        font-size: 0.85rem;
-        font-weight: 600;
-        color: #6b7280;
-        margin-bottom: 0.4rem;
-    }
-    .input-group select {
-        width: 100%;
-        padding: 0.75rem;
-        border: 1px solid var(--gris-bordure);
-        border-radius: 6px;
-        box-sizing: border-box;
-    }
-    .btn-lancer-calcul {
-        padding: 0.75rem 1.5rem;
-        border: none;
-        border-radius: 6px;
-        font-weight: 700;
-        cursor: pointer;
-        background-color: var(--orange-notes);
-        color: white;
-        transition: background-color 0.2s;
-        margin-top: 1rem; /* Pour l'alignement mobile */
-    }
-    .btn-lancer-calcul:hover { background-color: #d97706; }
-    @media (min-width: 768px) {
-        .btn-lancer-calcul { margin-top: 0; }
-    }
-
-    /* --- TABLEAU DE VÉRIFICATION DES STATUTS --- */
-    #statusCard {
-        background-color: white;
-        border-radius: 8px;
-        box-shadow: 0 4px 10px var(--ombre-legere);
-        overflow-x: auto; 
-    }
-    .status-table {
-        width: 100%;
-        border-collapse: collapse;
-    }
-    .status-table th, .status-table td {
-        padding: 1rem;
-        text-align: left;
-        border-bottom: 1px solid #e5e7eb;
-    }
-    .status-table th {
-        background-color: #f3f4f6;
-        color: var(--gris-fonce);
-        font-weight: 600;
-        text-transform: uppercase;
-        font-size: 0.8rem;
-    }
-    .status-table td:nth-child(2) {
-        font-weight: 600;
-        width: 150px;
-        text-align: center;
-    }
-    .status-ok { color: var(--vert-succes); }
-    .status-manquant { color: var(--rouge-danger); }
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Validation des Bulletins | ISC Lwanga Pédagogie</title>
+    <!-- Chargement de Tailwind CSS -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <!-- Font Awesome pour les icônes -->
+    <script src="https://kit.fontawesome.com/a2e0e6a56b.js" crossorigin="anonymous"></script>
     
-    .btn-detail {
-        background-color: var(--bleu-fonce);
-        color: white;
-        padding: 0.5rem 0.8rem;
-        border: none;
-        border-radius: 4px;
-        cursor: pointer;
-        font-size: 0.8rem;
-    }
-    .btn-detail:hover { background-color: #1e3a8a; }
-
-    /* --- Message et Retour --- */
-    #messageCalcul {
-      text-align: center;
-      padding: 1.5rem;
-      margin-top: 1.5rem;
-      border-radius: 8px;
-      font-weight: 600;
-      background-color: #e0f2f1;
-      color: #0d9488;
-      border: 1px solid #99f6e4;
-      display: none;
-    }
-    .btn-retour {
-        display: block;
-        text-align: center;
-        margin-top: 2rem;
-        color: var(--gris-fonce);
-        text-decoration: none;
-        font-size: 0.9rem;
-        padding: 0.5rem;
-    }
-  </style>
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Inter:wght@100..900&display=swap');
+        body { font-family: 'Inter', sans-serif; background-color: #f0f4f8; } /* bg-blue-50 */
+        body:not(.loaded) { display: none; }
+        
+        #notification-area { position: fixed; top: 20px; right: 20px; z-index: 1000; }
+        .notification { padding: 1rem 1.5rem; border-radius: 0.75rem; color: white; font-weight: 500; box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1); opacity: 0; transform: translateX(100%); transition: opacity 0.3s, transform 0.3s; margin-bottom: 0.5rem; }
+        .notification.show { opacity: 1; transform: translateX(0); }
+        .notification.success { background-color: #0d9488; } /* Teal */
+        .notification.error { background-color: #ef4444; }
+        .notification.info { background-color: #3b82f6; }
+        
+        /* Styles spécifiques pour les mentions */
+        .mention-distinction { background-color: #d1fae5; color: #065f46; font-weight: 600; padding: 0.25rem 0.5rem; border-radius: 0.375rem; } /* Vert */
+        .mention-satisfaction { background-color: #e0f2fe; color: #0b7f8c; font-weight: 600; padding: 0.25rem 0.5rem; border-radius: 0.375rem; } /* Cyan */
+        .mention-echec { background-color: #fee2e2; color: #991b1b; font-weight: 600; padding: 0.25rem 0.5rem; border-radius: 0.375rem; } /* Rouge */
+        .mention-encouragement { background-color: #ffedd5; color: #9a3412; font-weight: 600; padding: 0.25rem 0.5rem; border-radius: 0.375rem; } /* Orange */
+        
+        .sticky-col {
+            position: -webkit-sticky;
+            position: sticky;
+            left: 0;
+            background: #f9fafb;
+            z-index: 10;
+        }
+    </style>
 </head>
 <body>
-  <div class="container">
-    <h1>✅ Validation & Calcul des Bulletins</h1>
-    <h2>Vérifiez la complétude des notes et lancez le calcul des moyennes pour le trimestre.</h2>
+    <div id="notification-area"></div>
+    
+    <div class="container mx-auto p-4 sm:p-8">
+        <!-- HEADER -->
+        <header class="text-center mb-8 p-6 bg-white rounded-xl shadow-lg border-b-4 border-teal-600">
+            <h1 class="text-3xl font-extrabold text-gray-800 flex items-center justify-center gap-3">
+                <i class="fa-solid fa-graduation-cap text-teal-600"></i> Validation des Bulletins Scolaires
+            </h1>
+            <h2 class="text-lg font-medium text-gray-500 mt-1">
+                Revue et publication des résultats pour la consultation par les élèves et parents.
+            </h2>
+            <p id="userInfo" class="text-sm text-teal-600 font-semibold mt-2">Chargement de l'utilisateur...</p>
+        </header>
 
-    <div class="context-bar">
-        <div class="input-group">
-            <label for="anneeScolaire">Année Scolaire</label>
-            <select id="anneeScolaire">
-                <option>2024-2025</option>
-                <option>2023-2024</option>
-            </select>
+        <div class="bg-white p-6 md:p-8 rounded-xl shadow-2xl border-t-4 border-teal-500">
+            <!-- SÉLECTEURS DE FILTRE -->
+            <div class="grid grid-cols-1 md:grid-cols-3 gap-4 mb-8 p-4 bg-gray-50 rounded-lg border">
+                <!-- SÉLECTEUR DE CLASSE -->
+                <div>
+                    <label for="classeSelect" class="block text-sm font-medium text-gray-700 mb-2">Classe :</label>
+                    <select id="classeSelect" class="w-full p-2 border border-gray-300 rounded-lg focus:ring-teal-500 focus:border-teal-500 bg-white shadow-sm">
+                        <option value="">-- Sélectionnez une classe --</option>
+                    </select>
+                </div>
+                
+                <!-- SÉLECTEUR DE PÉRIODE -->
+                <div>
+                    <label for="periodeSelect" class="block text-sm font-medium text-gray-700 mb-2">Période (Trimestre) :</label>
+                    <select id="periodeSelect" class="w-full p-2 border border-gray-300 rounded-lg focus:ring-teal-500 focus:border-teal-500 bg-white shadow-sm" disabled>
+                        <option value="">-- Sélectionnez la période --</option>
+                        <option value="T1">Trimestre 1</option>
+                        <option value="T2">Trimestre 2</option>
+                        <option value="T3">Trimestre 3</option>
+                    </select>
+                </div>
+
+                <!-- STATUT DE PUBLICATION -->
+                 <div class="flex flex-col justify-end">
+                    <p class="text-sm font-medium text-gray-700 mb-2">Statut Actuel :</p>
+                    <p id="publicationStatus" class="font-bold text-lg text-red-500 bg-red-100 p-2 rounded-lg text-center">NON PUBLIÉ</p>
+                </div>
+            </div>
+
+            <!-- RÉSULTATS AGRÉGÉS ET BOUTON DE PUBLICATION -->
+            <div id="resultsArea" class="hidden">
+                <div class="flex flex-col md:flex-row justify-between items-center mb-6 border-b pb-4">
+                    <h3 class="text-xl font-semibold text-gray-800">Résultats Agrégés de la Classe (<span id="countEleves">0</span> élèves)</h3>
+                    
+                    <button id="publishBtn" class="mt-4 md:mt-0 py-3 px-8 bg-teal-600 text-white rounded-lg font-semibold hover:bg-teal-700 transition duration-200 flex items-center gap-2 disabled:opacity-50" disabled>
+                        <i class="fa-solid fa-check-double"></i> Publier les Bulletins
+                    </button>
+                </div>
+
+                <!-- TABLEAU DE SYNTHÈSE DES ÉLÈVES -->
+                <div class="overflow-x-auto rounded-lg border border-gray-200 shadow-inner">
+                    <table class="min-w-full divide-y divide-gray-200">
+                        <thead class="bg-gray-100">
+                            <tr>
+                                <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider sticky-col w-40">Nom de l'Élève</th>
+                                <th id="totalMaximaHeader" class="px-6 py-3 text-center text-xs font-medium text-gray-500 uppercase tracking-wider bg-yellow-100 w-24">Total Maxima (0)</th>
+                                <th class="px-6 py-3 text-center text-xs font-medium text-gray-500 uppercase tracking-wider bg-green-100 w-24">Points Obtenus</th>
+                                <th class="px-6 py-3 text-center text-xs font-medium text-gray-500 uppercase tracking-wider bg-blue-100 w-24">%</th>
+                                <th class="px-6 py-3 text-center text-xs font-medium text-gray-500 uppercase tracking-wider w-32">Mention</th>
+                            </tr>
+                        </thead>
+                        <tbody id="elevesResultatsBody" class="bg-white divide-y divide-gray-200">
+                            <!-- Les lignes de résultats seront insérées ici -->
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+            
+            <p id="initialMessage" class="text-center py-12 text-gray-500">
+                Sélectionnez une **Classe** et une **Période** pour charger les résultats à valider.
+            </p>
+            <p id="loadingMessage" class="text-center py-12 text-teal-500 hidden">
+                <i class="fa-solid fa-sync fa-spin mr-2"></i> Agrégation des notes en cours...
+            </p>
+
         </div>
-        <div class="input-group">
-            <label for="trimestre">Trimestre à Valider</label>
-            <select id="trimestre">
-                <option>1er Trimestre</option>
-                <option>2ème Trimestre</option>
-                <option>3ème Trimestre</option>
-            </select>
-        </div>
-        <div class="input-group">
-            <label for="classe">Classe</label>
-            <select id="classe" onchange="loadStatus()">
-                <option value="6A">6ème Commerciale A</option>
-                <option value="5S">5ème Scientifique</option>
-                <option value="4H">4ème Humanités</option>
-            </select>
-        </div>
-        <button class="btn-lancer-calcul" onclick="lancerCalcul()">Lancer le Calcul des Moyennes</button>
+
+        <button id="logoutBtn" class="mt-8 py-2 px-4 bg-red-600 text-white rounded-lg hover:bg-red-700 font-semibold transition duration-200">
+            <i class="fa-solid fa-sign-out-alt"></i> Déconnexion
+        </button>
     </div>
 
-    <div id="statusCard">
-        <table class="status-table">
-            <thead>
-                <tr>
-                    <th>Matière</th>
-                    <th>Professeur Attribué</th>
-                    <th>Statut de Saisie</th>
-                    <th>Action</th>
-                </tr>
-            </thead>
-            <tbody id="statusBody">
-                </tbody>
-        </table>
-    </div>
+    <!-- LOGIQUE JAVASCRIPT & FIREBASE -->
+    <script type="module">
+    import { initializeApp } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-app.js";
+    import { 
+        getAuth, onAuthStateChanged, signOut,
+        signInWithCustomToken, signInAnonymously
+    } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-auth.js";
+    import { 
+        getFirestore, collection, doc, setDoc, 
+        onSnapshot, getDoc, query, where, getDocs, setLogLevel, writeBatch
+    } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-firestore.js";
+
+    // IMPORTANT: UTILISATION DES VARIABLES GLOBALES FOURNIES PAR LE CONTEXTE
+    const appId = typeof __app_id !== 'undefined' ? __app_id : 'default-app-id';
+    const firebaseConfig = typeof __firebase_config !== 'undefined' ? JSON.parse(__firebase_config) : {};
     
-    <div id="messageCalcul" style="display: none;"></div>
-
-    <a href="bulletins.html" class="btn-retour">← Retour au Menu Notes & Bulletins</a>
-  </div>
-
-  <script>
-    // --- SIMULATION DE DONNÉES ET FONCTIONS ---
+    // 1. INITIALISATION FIREBASE
+    const app = initializeApp(firebaseConfig);
+    const auth = getAuth(app);
+    const db = getFirestore(app);
     
-    // Simule les matières et leur statut de saisie pour une classe donnée
-    const statusData = {
-        '6A': [
-            { matiere: 'Mathématiques', professeur: 'UMBA Gabby', statut: 'Terminé', manquant: 0 },
-            { matiere: 'Français', professeur: 'NDAYA Kabulo', statut: 'Manquant', manquant: 3 },
-            { matiere: 'Géographie', professeur: 'KASONGO E.', statut: 'Terminé', manquant: 0 },
-            { matiere: 'Anglais', professeur: 'MUTOMBO K.', statut: 'Partiel', manquant: 1 },
-            { matiere: 'Éducation Civique', professeur: 'N/A', statut: 'Manquant', manquant: 25 }
-        ],
-        '5S': [
-            // ... données pour la 5S
-        ]
-    };
+    // setLogLevel('Debug'); // Décommenter pour le débogage
 
-    function loadStatus() {
-        const classe = document.getElementById('classe').value;
-        const data = statusData[classe] || statusData['6A']; // Utiliser 6A par défaut
-        const statusBody = document.getElementById('statusBody');
-        statusBody.innerHTML = '';
-        
-        let allCompleted = true;
+    // Chemins de collections
+    const CLASSES_PATH = `/artifacts/${appId}/public/data/classes`;
+    const ELEVES_PATH = `/artifacts/${appId}/public/data/eleves`;
+    const NOTES_PATH = `/artifacts/${appId}/public/data/notes`; // CLASSEID_MATIEREID_PONDERATION
+    const BULLETINS_STATUS_PATH = `/artifacts/${appId}/public/data/bulletinStatus`; // CLASSEID_PERIODE
+    const AUTHORIZED_ROLES = ['admin', 'pedagogue'];
 
-        data.forEach(item => {
-            const row = statusBody.insertRow();
-            
-            // 1. Matière
-            row.insertCell().textContent = item.matiere;
-            
-            // 2. Professeur
-            row.insertCell().textContent = item.professeur;
-            
-            // 3. Statut de Saisie
-            const statutCell = row.insertCell();
-            let statutText = '';
-            let statutClass = '';
+    // 2. ÉLÉMENTS DU DOM
+    const notificationArea = document.getElementById('notification-area');
+    const logoutBtn = document.getElementById('logoutBtn');
+    const userInfo = document.getElementById('userInfo');
+    const classeSelect = document.getElementById('classeSelect');
+    const periodeSelect = document.getElementById('periodeSelect');
+    const publicationStatus = document.getElementById('publicationStatus');
+    const resultsArea = document.getElementById('resultsArea');
+    const initialMessage = document.getElementById('initialMessage');
+    const loadingMessage = document.getElementById('loadingMessage');
+    const publishBtn = document.getElementById('publishBtn');
+    const elevesResultatsBody = document.getElementById('elevesResultatsBody');
+    const totalMaximaHeader = document.getElementById('totalMaximaHeader');
+    const countElevesSpan = document.getElementById('countEleves');
 
-            if (item.statut === 'Terminé') {
-                statutText = '✅ Terminé';
-                statutClass = 'status-ok';
-            } else if (item.statut === 'Manquant') {
-                statutText = `❌ Manquant (${item.manquant} notes)`;
-                statutClass = 'status-manquant';
-                allCompleted = false;
-            } else if (item.statut === 'Partiel') {
-                statutText = `⚠️ Partiel (${item.manquant} notes)`;
-                statutClass = 'status-manquant';
-                allCompleted = false;
+    // 3. CACHE ET DONNÉES GLOBALES
+    let currentUserId = null;
+    let allClasses = [];
+    let currentClasseId = null;
+    let currentPeriode = null;
+    let currentResultsCache = []; // Cache des résultats agrégés (pour la publication)
+    let currentTotalMaxima = 0;
+    let unsubscribeBulletinStatus = null;
+
+    // 4. FONCTIONNALITÉS UTILITAIRES
+    function showNotification(msg, type = "success") {
+        const notif = document.createElement("div");
+        notif.className = `notification ${type}`;
+        notif.textContent = msg;
+        notificationArea.appendChild(notif);
+        setTimeout(() => notif.classList.add('show'), 10);
+        setTimeout(() => {
+            notif.classList.remove('show');
+            setTimeout(() => notificationArea.removeChild(notif), 300);
+        }, 4000);
+    }
+    
+    async function handleLogout() {
+        await signOut(auth);
+        setTimeout(() => window.location.href = "index.html", 800);
+    }
+    
+    // Détermine la mention selon le pourcentage
+    function getMention(percentage) {
+        if (percentage >= 80) return { text: "Grande Distinction", class: "mention-distinction" };
+        if (percentage >= 70) return { text: "Distinction", class: "mention-distinction" };
+        if (percentage >= 60) return { text: "Satisfaction", class: "mention-satisfaction" };
+        if (percentage >= 50) return { text: "Encouragement", class: "mention-encouragement" };
+        return { text: "Échec", class: "mention-echec" };
+    }
+    
+    // 5. CHARGEMENT INITIAL DES CLASSES
+    async function loadClasses() {
+        try {
+            const snapshot = await getDocs(query(collection(db, CLASSES_PATH)));
+            allClasses = [];
+            snapshot.forEach(docSnap => allClasses.push({ id: docSnap.id, ...docSnap.data() }));
+            
+            allClasses.sort((a, b) => a.fullName.localeCompare(b.fullName));
+
+            classeSelect.innerHTML = `<option value="">-- Sélectionnez une classe --</option>`;
+            allClasses.forEach(c => {
+                const option = document.createElement('option');
+                option.value = c.id;
+                option.textContent = c.fullName;
+                classeSelect.appendChild(option);
+            });
+            periodeSelect.disabled = false;
+
+        } catch (err) {
+            console.error("Erreur de chargement des classes:", err);
+            showNotification("Erreur de chargement des classes.", "error");
+        }
+    }
+    
+    // 6. GESTION DES FILTRES
+    [classeSelect, periodeSelect].forEach(select => {
+        select.addEventListener('change', () => {
+            currentClasseId = classeSelect.value;
+            currentPeriode = periodeSelect.value;
+            
+            if (unsubscribeBulletinStatus) {
+                unsubscribeBulletinStatus();
             }
-            statutCell.innerHTML = `<span class="${statutClass}">${statutText}</span>`;
 
-            // 4. Action (pour les matières incomplètes)
-            const actionCell = row.insertCell();
-            if (item.statut !== 'Terminé') {
-                actionCell.innerHTML = `<button class="btn-detail" onclick="showMissingDetails('${item.matiere}')">Voir Détails</button>`;
+            if (currentClasseId && currentPeriode) {
+                // 1. Démarrer l'écoute du statut de publication
+                setupBulletinStatusListener(currentClasseId, currentPeriode);
+                
+                // 2. Lancer le chargement des résultats
+                loadAggregatedResults(currentClasseId, currentPeriode);
             } else {
-                actionCell.textContent = '-';
+                // Réinitialisation de l'UI
+                initialMessage.classList.remove('hidden');
+                resultsArea.classList.add('hidden');
+                loadingMessage.classList.add('hidden');
+                publicationStatus.textContent = 'NON PUBLIÉ';
+                publicationStatus.className = 'font-bold text-lg text-red-500 bg-red-100 p-2 rounded-lg text-center';
+                publishBtn.disabled = true;
             }
         });
-        
-        // Mise à jour de l'état du bouton de calcul
-        const btnCalcul = document.querySelector('.btn-lancer-calcul');
-        if (allCompleted) {
-            btnCalcul.disabled = false;
-            btnCalcul.textContent = "Lancer le Calcul (Prêt)";
-            btnCalcul.style.opacity = 1;
-        } else {
-            btnCalcul.disabled = true;
-            btnCalcul.textContent = "Calcul Bloqué (Notes Manquantes)";
-            btnCalcul.style.opacity = 0.6;
+    });
+
+    // 7. ÉCOUTE DU STATUT DE PUBLICATION
+    function setupBulletinStatusListener(classeId, periode) {
+        const docId = `${classeId}_${periode}`;
+        const docRef = doc(db, BULLETINS_STATUS_PATH, docId);
+
+        unsubscribeBulletinStatus = onSnapshot(docRef, (docSnap) => {
+            const isPublished = docSnap.exists() && docSnap.data().published === true;
+            
+            if (isPublished) {
+                publicationStatus.textContent = 'PUBLIÉ';
+                publicationStatus.className = 'font-bold text-lg text-green-700 bg-green-100 p-2 rounded-lg text-center';
+                publishBtn.disabled = true;
+                publishBtn.innerHTML = '<i class="fa-solid fa-lock"></i> Résultats Publiés';
+                showNotification("Les bulletins sont officiellement publiés pour cette période.", "success");
+            } else {
+                publicationStatus.textContent = 'NON PUBLIÉ';
+                publicationStatus.className = 'font-bold text-lg text-red-500 bg-red-100 p-2 rounded-lg text-center';
+                // Le bouton sera activé uniquement si des résultats sont chargés
+                if (currentResultsCache.length > 0) {
+                     publishBtn.disabled = false;
+                     publishBtn.innerHTML = '<i class="fa-solid fa-check-double"></i> Publier les Bulletins';
+                }
+            }
+        }, (error) => {
+            console.error("Erreur d'écoute du statut de bulletin:", error);
+            showNotification("Erreur de connexion en temps réel au statut.", "error");
+        });
+    }
+
+    // 8. CHARGEMENT ET AGRÉGATION DES RÉSULTATS
+    async function loadAggregatedResults(classeId, periode) {
+        initialMessage.classList.add('hidden');
+        resultsArea.classList.add('hidden');
+        loadingMessage.classList.remove('hidden');
+        publishBtn.disabled = true;
+        elevesResultatsBody.innerHTML = '';
+        currentResultsCache = [];
+
+        try {
+            // Étape 1: Charger la liste des élèves actifs de la classe
+            const elevesQuery = query(collection(db, ELEVES_PATH), where('classeId', '==', classeId), where('statut', '==', 'actif'));
+            const elevesSnapshot = await getDocs(elevesQuery);
+            const elevesMap = {};
+            elevesSnapshot.forEach(docSnap => elevesMap[docSnap.id] = docSnap.data());
+            
+            const eleveIds = Object.keys(elevesMap);
+            countElevesSpan.textContent = eleveIds.length;
+
+            if (eleveIds.length === 0) {
+                loadingMessage.textContent = "Aucun élève actif trouvé dans cette classe.";
+                return;
+            }
+
+            // Étape 2: Charger tous les documents de notes pour cette classe
+            const notesQuery = query(collection(db, NOTES_PATH), where('metadata.classeId', '==', classeId));
+            const notesSnapshot = await getDocs(notesQuery);
+            
+            if (notesSnapshot.empty) {
+                 loadingMessage.textContent = "Aucune note saisie pour cette classe.";
+                 return;
+            }
+
+            // Étape 3: Agrégation des notes par élève pour la période
+            let totalMaxima = 0;
+            const eleveScores = eleveIds.reduce((acc, id) => {
+                acc[id] = { points: 0, eleve: elevesMap[id] };
+                return acc;
+            }, {});
+
+            notesSnapshot.forEach(docSnap => {
+                const data = docSnap.data();
+                const ponderationId = data.metadata.ponderation; // Ex: INT1-30, INT2-30, EXA-40, FIN-100
+
+                // Filtre basé sur la Période sélectionnée (T1, T2, T3)
+                // Hypothèse: La "FIN-100" est la note finale du trimestre pour l'exemple.
+                // Dans un système réel, il faudrait plus de métadonnées de période dans `metadata`.
+                // Pour simplifier ici: nous agrégeons toutes les notes de tous les sujets.
+                
+                // Logique de filtrage simplifiée: on inclut toutes les notes de la classe pour l'exemple.
+                // Dans un VRAI système de bulletins, il faudrait que les documents de notes 
+                // portent une étiquette de Trimestre (ex: metadata.trimestre: 'T1'). 
+                // Comme nous n'avons pas cette étiquette, nous agrégeons toutes les notes disponibles
+                // pour illustrer le mécanisme.
+                
+                const noteMaxima = data.metadata.maxima || 100; // Maxima de l'évaluation
+                const noteWeight = parseFloat(data.metadata.ponderation.split('-')[1]) / 100 || 1; // Poids si on avait une pondération
+                
+                // Pour l'exemple de validation, considérons que chaque document de note est un "résultat agrégé"
+                // qui compte pour la période.
+                
+                // Ajoutons le maxima de cette évaluation au total global de la classe
+                totalMaxima += noteMaxima; 
+
+                // Distribution des points aux élèves
+                const notes = data.notes || {};
+                for (const eleveId of eleveIds) {
+                    const score = notes[eleveId] !== undefined ? notes[eleveId] : 0;
+                    // On additionne la note brute pour la démo
+                    eleveScores[eleveId].points += score; 
+                }
+            });
+            
+            // Correction du Total Maxima: il faut que chaque maxima ne soit compté qu'une fois par matière
+            // Re-calculons le maxima. On suppose que la somme des notes de chaque matière (pour une période) est le total de cette matière.
+            const uniqueMaximas = {};
+            notesSnapshot.forEach(docSnap => {
+                const data = docSnap.data();
+                const matiereId = data.metadata.matiereId;
+                const ponderation = data.metadata.ponderation; 
+                // L'ID unique de l'évaluation (Matière + Ponderation)
+                const key = `${matiereId}_${ponderation}`;
+                
+                // On s'assure de n'ajouter qu'une seule fois le Maxima de cette évaluation
+                if (!uniqueMaximas[key]) {
+                    uniqueMaximas[key] = data.metadata.maxima || 100;
+                }
+            });
+            currentTotalMaxima = Object.values(uniqueMaximas).reduce((sum, max) => sum + max, 0);
+            
+            // Si aucune note n'a été trouvée qui contribue au totalMaxima
+            if (currentTotalMaxima === 0) {
+                 loadingMessage.textContent = "Aucune note pertinente trouvée pour cette classe/période.";
+                 resultsArea.classList.add('hidden');
+                 return;
+            }
+
+            // Étape 4: Calcul des pourcentages et Mentions
+            currentResultsCache = [];
+            
+            const sortedEleves = Object.values(eleveScores).sort((a, b) => 
+                (b.points / currentTotalMaxima) - (a.points / currentTotalMaxima) // Tri par pourcentage descendant
+            );
+
+            sortedEleves.forEach((result, index) => {
+                const percentage = currentTotalMaxima > 0 ? (result.points / currentTotalMaxima) * 100 : 0;
+                const mention = getMention(percentage);
+                
+                currentResultsCache.push({
+                    rank: index + 1,
+                    eleveId: result.eleve.id,
+                    nom: `${result.eleve.nom} ${result.eleve.prenom}`,
+                    pointsObtenus: result.points,
+                    pourcentage: percentage.toFixed(2),
+                    mention: mention.text,
+                    mentionClass: mention.class
+                });
+            });
+
+            // Étape 5: Affichage du Tableau
+            renderResultsTable();
+
+        } catch (error) {
+            console.error("Erreur lors de l'agrégation des résultats:", error);
+            showNotification("Erreur critique lors du traitement des données académiques.", "error");
+        } finally {
+            loadingMessage.classList.add('hidden');
+            if (currentResultsCache.length > 0) {
+                resultsArea.classList.remove('hidden');
+                // Le statut de publication sera mis à jour par l'écouteur `onSnapshot`
+            }
         }
     }
 
-    function showMissingDetails(matiere) {
-        alert(`Détails des notes manquantes pour la matière: ${matiere}.\n\n(En production, cela ouvrirait un rapport détaillé montrant les élèves concernés.)`);
+    function renderResultsTable() {
+        elevesResultatsBody.innerHTML = '';
+        totalMaximaHeader.textContent = `Total Maxima (${currentTotalMaxima})`;
+
+        currentResultsCache.forEach(result => {
+            const row = elevesResultatsBody.insertRow();
+            row.className = 'hover:bg-gray-50';
+
+            // Col 1: Nom (avec Rang)
+            const nomCell = row.insertCell();
+            nomCell.innerHTML = `<span class="font-bold text-gray-800">${result.rank}.</span> ${result.nom}`;
+            nomCell.className = 'px-6 py-4 whitespace-nowrap sticky-col bg-white';
+            
+            // Col 2: Total Maxima
+            const maximaCell = row.insertCell();
+            maximaCell.textContent = currentTotalMaxima;
+            maximaCell.className = 'px-6 py-4 whitespace-nowrap text-center text-xs text-gray-600 bg-yellow-50';
+
+            // Col 3: Points Obtenus
+            const pointsCell = row.insertCell();
+            pointsCell.textContent = result.pointsObtenus.toFixed(2);
+            pointsCell.className = 'px-6 py-4 whitespace-nowrap text-center font-bold text-green-700 bg-green-50';
+
+            // Col 4: Pourcentage
+            const pourcentageCell = row.insertCell();
+            pourcentageCell.textContent = `${result.pourcentage}%`;
+            pourcentageCell.className = 'px-6 py-4 whitespace-nowrap text-center font-bold text-blue-700 bg-blue-50';
+
+            // Col 5: Mention
+            const mentionCell = row.insertCell();
+            mentionCell.innerHTML = `<span class="${result.mentionClass}">${result.mention}</span>`;
+            mentionCell.className = 'px-6 py-4 whitespace-nowrap text-center';
+        });
     }
 
-    function lancerCalcul() {
-        const classe = document.getElementById('classe').options[document.getElementById('classe').selectedIndex].text;
-        const trimestre = document.getElementById('trimestre').value;
-        const messageBox = document.getElementById('messageCalcul');
-        
-        // Vérification finale
-        const btnCalcul = document.querySelector('.btn-lancer-calcul');
-        if (btnCalcul.disabled) {
-            messageBox.style.display = 'block';
-            messageBox.style.backgroundColor = '#fef2f2';
-            messageBox.style.color = 'var(--rouge-danger)';
-            messageBox.style.borderColor = '#fca5a5';
-            messageBox.innerHTML = '🛑 Impossible de lancer le calcul. Veuillez attendre que toutes les matières soient *Terminé*.';
+    // 9. ACTION DE PUBLICATION
+    publishBtn.addEventListener('click', async () => {
+        if (!currentClasseId || !currentPeriode || currentResultsCache.length === 0) {
+            showNotification("Veuillez charger et vérifier les résultats avant de publier.", "error");
             return;
         }
 
-        // Simulation du long processus de calcul
-        btnCalcul.disabled = true;
-        btnCalcul.textContent = 'Calcul en cours... ⏳';
-        messageBox.style.display = 'block';
-        messageBox.style.backgroundColor = '#e0f7fa';
-        messageBox.style.color = '#00bcd4';
-        messageBox.style.borderColor = '#84ffff';
-        messageBox.innerHTML = `Lancement du calcul des moyennes et du classement pour la ${classe} / ${trimestre}. Veuillez patienter...`;
+        const confirmPublish = true; // Remplacer par un modal de confirmation dans une app réelle
 
-        setTimeout(() => {
-            messageBox.style.backgroundColor = '#e6ffed';
-            messageBox.style.color = 'var(--vert-succes)';
-            messageBox.style.borderColor = '#b9f6ca';
-            messageBox.innerHTML = `✅ **Calcul terminé avec succès!** Les moyennes et classements sont prêts pour l'impression des bulletins.`;
-            btnCalcul.textContent = 'Calcul Rélancé';
-            btnCalcul.disabled = false;
-        }, 3000); // 3 secondes de simulation
-    }
+        if (confirmPublish) {
+            publishBtn.disabled = true;
+            publishBtn.innerHTML = '<i class="fa-solid fa-spinner fa-spin"></i> Publication...';
 
-    // Chargement initial
-    document.addEventListener('DOMContentLoaded', () => {
-        loadStatus();
+            const statusDocId = `${currentClasseId}_${currentPeriode}`;
+            const statusDocRef = doc(db, BULLETINS_STATUS_PATH, statusDocId);
+
+            // Créer/Mettre à jour le statut de publication
+            try {
+                await setDoc(statusDocRef, {
+                    classeId: currentClasseId,
+                    periode: currentPeriode,
+                    published: true,
+                    totalMaxima: currentTotalMaxima,
+                    publishedBy: currentUserId,
+                    publishedAt: new Date().toISOString()
+                }, { merge: true });
+
+                showNotification(`🎉 Les bulletins pour la période ${currentPeriode} de la classe sont PUBLIÉS !`, "success");
+                
+                // L'écouteur onSnapshot mettra à jour l'UI du statut et du bouton.
+
+            } catch (error) {
+                console.error("Erreur de publication du bulletin:", error);
+                showNotification("❌ Échec de la publication. Réessayez.", "error");
+                publishBtn.disabled = false;
+                publishBtn.innerHTML = '<i class="fa-solid fa-check-double"></i> Publier les Bulletins';
+            }
+        }
     });
-  </script>
+
+    // 10. GESTION DES ÉVÉNEMENTS & AUTHENTIFICATION
+    logoutBtn.addEventListener("click", handleLogout);
+    
+    onAuthStateChanged(auth, user => {
+        document.body.classList.add('loaded');
+        currentUserId = user?.uid;
+
+        if (!user) {
+            showNotification("Session expirée ou non autorisée.", "error");
+            setTimeout(() => window.location.href = "index.html", 1000);
+        } else {
+            getDoc(doc(db, 'users', currentUserId)).then(docSnap => {
+                if (docSnap.exists()) {
+                    const data = docSnap.data();
+                    const role = data.role.charAt(0).toUpperCase() + data.role.slice(1);
+                    userInfo.textContent = `${data.nom || data.email} (${role})`;
+                    
+                    if (!AUTHORIZED_ROLES.includes(data.role)) {
+                        showNotification(`Accès non autorisé. Réservé aux Administrateurs et Directeurs des Études.`, "error");
+                        setTimeout(() => window.location.href = `dashboard-${data.role}.html`, 1500); 
+                        return;
+                    }
+
+                    loadClasses(); // Charger les données initiales
+
+                } else {
+                    console.error("Document utilisateur manquant.");
+                    showNotification("Erreur utilisateur: Document manquant.", "error");
+                }
+            }).catch(err => {
+                console.error("Erreur de récupération du document utilisateur:", err);
+                showNotification("Erreur serveur lors de l'authentification.", "error");
+            });
+        }
+    });
+
+    // Initialisation de l'authentification
+    function initializeAuth() {
+        const token = typeof __initial_auth_token !== 'undefined' ? __initial_auth_token : null;
+        if (token) {
+            signInWithCustomToken(auth, token).catch(e => {
+                console.error("Custom token sign in failed:", e);
+                signInAnonymously(auth);
+            });
+        } else {
+            signInAnonymously(auth);
+        }
+    }
+    initializeAuth();
+    </script>
 </body>
 </html>
