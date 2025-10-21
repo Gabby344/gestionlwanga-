@@ -1,140 +1,143 @@
 <!DOCTYPE html>
 <html lang="fr">
 <head>
-<meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Dashboard Économe · ISC Lwanga</title>
-<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700&display=swap" rel="stylesheet">
-<style>
-:root {
-  --bleu-fonce:#1e40af; --gris-fonce:#1f2937; --vert:#10b981; --rouge:#ef4444; --fond:#f4f6f8;
-  --ombre-legere:rgba(0,0,0,0.08); --ombre-hover:rgba(0,0,0,0.15);
-}
-body{font-family:'Inter',sans-serif;background:var(--fond);margin:0;color:var(--gris-fonce);}
-.header{background:white;padding:1rem 2rem;box-shadow:0 1px 5px var(--ombre-legere);display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:1rem;}
-.header-left{display:flex;align-items:center;gap:1rem;}
-.header img{height:50px;width:50px;object-fit:contain;}
-.header h1{font-size:1.5rem;color:var(--bleu-fonce);margin:0;font-weight:700;}
-.user-info{font-size:0.95rem;color:#374151;font-weight:500;}
-.btn-logout{background-color:var(--rouge); color:white; padding:0.6rem 1rem; border:none; border-radius:6px; font-weight:600; cursor:pointer; transition:background-color 0.2s;}
-.btn-logout:hover{background-color:#b91c1c;}
-.main-content{max-width:1200px;margin:auto;padding:1rem 1rem 2rem;}
-.section-title{font-size:1.3rem;font-weight:700;color:var(--gris-fonce);margin-bottom:1rem;padding-bottom:0.5rem;border-bottom:1px solid #e5e7eb;}
-.stats-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(220px,1fr));gap:1.5rem;margin-bottom:2rem;}
-.card-stat{background:white;padding:1.5rem;border-radius:12px;box-shadow:0 4px 10px var(--ombre-legere);border-left:5px solid var(--bleu-fonce);transition:transform 0.2s, box-shadow 0.2s;}
-.card-stat:hover{transform:translateY(-3px);box-shadow:0 6px 15px var(--ombre-hover);}
-.card-stat-title{font-size:0.85rem;font-weight:600;color:#6b7280;text-transform:uppercase;margin-bottom:0.5rem;}
-.card-stat-value{font-size:2.5rem;font-weight:800;color:var(--gris-fonce);line-height:1;}
-.menu-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(180px,1fr));gap:1.5rem;}
-.menu-item{background:white;padding:1.5rem;border-radius:10px;box-shadow:0 3px 6px var(--ombre-legere);text-align:center;text-decoration:none;color:var(--gris-fonce);transition:all 0.2s;border:1px solid #e5e7eb;font-weight:600;}
-.menu-item:hover{background-color:var(--bleu-fonce);color:white;border-color:var(--bleu-fonce);transform:scale(1.05);}
-.menu-item .icon{font-size:2.5rem;margin-bottom:0.5rem;}
-#notification-area{position:fixed;top:20px;right:20px;z-index:1000;}
-.notification{padding:1rem 1.5rem;border-radius:8px;margin-bottom:10px;box-shadow:0 4px 6px rgba(0,0,0,0.1);color:white;font-weight:500;opacity:0;transform:translateX(100%);transition:opacity 0.3s, transform 0.3s;}
-.notification.show{opacity:1;transform:translateX(0);}
-.notification.success{background-color:var(--vert);}
-.notification.error{background-color:var(--rouge);}
-@media(max-width:600px){.header-left h1{font-size:1.2rem;}.card-stat-value{font-size:2rem;}.menu-item .icon{font-size:2rem;}}
-</style>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Dashboard Économe | ISC Lwanga</title>
+    <!-- Chargement de Tailwind CSS -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <!-- Font Awesome pour les icônes -->
+    <script src="https://kit.fontawesome.com/a2e0e6a56b.js" crossorigin="anonymous"></script>
+    
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Inter:wght@100..900&display=swap');
+        body { font-family: 'Inter', sans-serif; background-color: #ecfdf5; } /* bg-emerald-50 */
+        body:not(.loaded) { display: none; }
+        .card { transition: transform 0.2s, box-shadow 0.2s; }
+        .card:hover { transform: translateY(-3px); box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1), 0 4px 6px -2px rgba(0, 0, 0, 0.05); }
+    </style>
 </head>
 <body>
-<div id="notification-area"></div>
-<div class="header">
-  <div class="header-left">
-    <img src="IMG_7373.jpeg" alt="Logo ISC Lwanga">
-    <h1 id="dashboardTitle">Dashboard · Économe · ISC Lwanga</h1>
-  </div>
-  <div class="user-info" id="userInfo"></div>
-  <button class="btn-logout" id="logoutBtn">🚪 Déconnexion</button>
-</div>
-<div class="main-content">
-  <h2 class="section-title">Aperçu Financier</h2>
-  <div class="stats-grid"></div>
-  <h2 class="section-title">Modules de Gestion</h2>
-  <div class="menu-grid"></div>
-</div>
+    <div class="container mx-auto p-4 sm:p-8">
+        <!-- HEADER -->
+        <header class="text-center mb-10 p-6 bg-white rounded-xl shadow-2xl border-b-8 border-emerald-500">
+            <h1 class="text-4xl font-extrabold text-gray-900 flex items-center justify-center gap-3">
+                <i class="fa-solid fa-cash-register text-emerald-600"></i> Tableau de Bord Économe
+            </h1>
+            <h2 class="text-xl font-medium text-gray-600 mt-2">
+                Gestion des transactions et suivi financier de l'école.
+            </h2>
+            <p id="userInfo" class="text-sm text-emerald-700 font-semibold mt-3">Chargement de l'utilisateur...</p>
+        </header>
 
-<script type="module">
-import { getAuth, signOut, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-auth.js";
-import { getFirestore, collection, getDocs, doc, getDoc } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore.js";
-import { protectPage } from './authGuard.js';
+        <!-- SECTIONS DU DASHBOARD -->
+        <div class="space-y-12">
+            <!-- 1. GESTION FINANCIÈRE -->
+            <section>
+                <h3 class="text-2xl font-bold text-gray-800 border-b-2 border-emerald-400 pb-2 mb-6 flex items-center gap-2">
+                    <i class="fa-solid fa-sack-dollar text-emerald-500"></i> Fonctions Principales
+                </h3>
+                <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
+                    <!-- Enregistrer Paiement -->
+                    <a href="enregistrer-paiement.html" class="card bg-white p-6 rounded-xl shadow-lg border-l-4 border-emerald-500 flex flex-col items-center text-center">
+                        <i class="fa-solid fa-file-invoice-dollar text-emerald-600 text-3xl mb-3"></i>
+                        <p class="font-bold text-lg text-gray-800">Enregistrer Paiement</p>
+                        <p class="text-sm text-gray-500">Saisie d'une nouvelle transaction de frais scolaires.</p>
+                    </a>
+                    <!-- Historique Paiements -->
+                    <a href="historique-paiements.html" class="card bg-white p-6 rounded-xl shadow-lg border-l-4 border-emerald-500 flex flex-col items-center text-center">
+                        <i class="fa-solid fa-list-check text-emerald-600 text-3xl mb-3"></i>
+                        <p class="font-bold text-lg text-gray-800">Historique des Paiements</p>
+                        <p class="text-sm text-gray-500">Consultation, filtre et totaux des versements.</p>
+                    </a>
+                    <!-- WIP: Suivi des Dettes -->
+                    <div class="card bg-white p-6 rounded-xl shadow-lg border-l-4 border-emerald-500 flex flex-col items-center text-center opacity-70 cursor-not-allowed">
+                        <i class="fa-solid fa-circle-xmark text-emerald-600 text-3xl mb-3"></i>
+                        <p class="font-bold text-lg text-gray-800">Suivi des Dettes</p>
+                        <p class="text-sm text-gray-500">Rapports et listes des impayés (WIP).</p>
+                    </div>
+                </div>
+            </section>
+        </div>
 
-const auth=getAuth();
-const db=getFirestore();
-const dashboardTitle=document.getElementById("dashboardTitle");
-const userInfo=document.getElementById("userInfo");
-const logoutBtn=document.getElementById("logoutBtn");
-const statsGrid=document.querySelector(".stats-grid");
-const menuGrid=document.querySelector(".menu-grid");
-const notificationArea=document.getElementById("notification-area");
+        <button id="logoutBtn" class="mt-12 py-3 px-6 bg-red-600 text-white rounded-lg hover:bg-red-700 font-semibold transition duration-200 shadow-md">
+            <i class="fa-solid fa-sign-out-alt"></i> Déconnexion
+        </button>
+    </div>
 
-function showNotification(msg,type="success"){
-  const notif=document.createElement("div");
-  notif.className=`notification ${type}`;
-  notif.textContent=msg;
-  notificationArea.appendChild(notif);
-  setTimeout(()=>notif.classList.add('show'),10);
-  setTimeout(()=>{notif.classList.remove('show'); setTimeout(()=>notificationArea.removeChild(notif),300);},4000);
-}
+    <!-- LOGIQUE JAVASCRIPT & FIREBASE -->
+    <script type="module">
+    import { initializeApp } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-app.js";
+    import { 
+        getAuth, onAuthStateChanged, signOut,
+        signInWithCustomToken, signInAnonymously
+    } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-auth.js";
+    import { getFirestore, doc, getDoc } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-firestore.js";
 
-const roleModules={
-  econome:["paiements","config-frais","historique-paiements","liste_eleves_finance"]
-};
+    const appId = typeof __app_id !== 'undefined' ? __app_id : 'default-app-id';
+    const firebaseConfig = typeof __firebase_config !== 'undefined' ? JSON.parse(__firebase_config) : {};
+    
+    // 1. INITIALISATION FIREBASE
+    const app = initializeApp(firebaseConfig);
+    const auth = getAuth(app);
+    const db = getFirestore(app);
+    
+    const AUTHORIZED_ROLE = 'econome'; // Rôle unique autorisé pour ce dashboard
+    const userInfo = document.getElementById('userInfo');
+    const logoutBtn = document.getElementById('logoutBtn');
+    
+    // Fonction utilitaire pour la déconnexion
+    async function handleLogout() {
+        await signOut(auth);
+        window.location.href = "index.html";
+    }
+    
+    logoutBtn.addEventListener("click", handleLogout);
 
-const moduleLinks={
-  paiements:{title:"Enregistrer Paiements",icon:"💰",link:"enregistrer-paiement.html"},
-  "config-frais":{title:"Configuration Frais",icon:"⚙️",link:"config-frais.html"},
-  "historique-paiements":{title:"Historique Paiements",icon:"📜",link:"historique-paiements.html"},
-  "liste_eleves_finance":{title:"Liste Élèves",icon:"📋",link:"liste_eleves_finance.html"}
-};
+    // 2. GESTION DE L'AUTHENTIFICATION ET DE L'AUTORISATION
+    onAuthStateChanged(auth, user => {
+        document.body.classList.add('loaded');
+        if (!user) {
+            window.location.href = "index.html";
+            return;
+        }
 
-async function fetchStats(){
-  try{
-    const paiementsSnap=await getDocs(collection(db,"paiements"));
-    const elevesSnap=await getDocs(collection(db,"eleves"));
-    return {paiements:paiementsSnap.size,eleves:elevesSnap.size};
-  }catch(err){console.error(err);return {paiements:0,eleves:0};}
-}
-
-onAuthStateChanged(auth,async(user)=>{
-  if(!user){window.location.href="login.html";return;}
-  try{
-    const snap=await getDoc(doc(db,"users",user.uid));
-    if(!snap.exists())throw new Error("Profil introuvable.");
-    const data=snap.data();
-    if(data.role!=="econome"){await signOut(auth);window.location.href="login.html";}
-    userInfo.textContent=`${data.nom} ${data.postNom} ${data.prenom} (Économe)`;
-
-    const stats=await fetchStats();
-    statsGrid.innerHTML="";
-    Object.entries(stats).forEach(([key,value])=>{
-      const card=document.createElement("div");
-      card.className="card-stat";
-      card.innerHTML=`<p class="card-stat-title">${key.charAt(0).toUpperCase()+key.slice(1)}</p><p class="card-stat-value">${value}</p>`;
-      statsGrid.appendChild(card);
+        getDoc(doc(db, 'users', user.uid)).then(docSnap => {
+            if (docSnap.exists()) {
+                const data = docSnap.data();
+                const userRole = data.role;
+                const roleDisplay = userRole.charAt(0).toUpperCase() + userRole.slice(1);
+                userInfo.textContent = `Connecté en tant que: ${data.nom || data.email} (${roleDisplay})`;
+                
+                if (userRole !== AUTHORIZED_ROLE) {
+                    // Redirection si le rôle n'est pas correct
+                    alert(`Accès non autorisé. Redirection vers le dashboard ${userRole}.`);
+                    window.location.href = `dashboard-${userRole}.html`;
+                }
+            } else {
+                alert("Erreur utilisateur: Document manquant.");
+                signOut(auth);
+            }
+        }).catch(err => {
+            console.error("Erreur de récupération du document utilisateur:", err);
+            alert("Erreur serveur lors de l'authentification.");
+            signOut(auth);
+        });
     });
 
-    menuGrid.innerHTML="";
-    roleModules.econome.forEach(mod=>{
-      const m=moduleLinks[mod];
-      if(m){
-        const item=document.createElement("a");
-        item.href=m.link;
-        item.className="menu-item";
-        item.innerHTML=`<div class="icon">${m.icon}</div><div>${m.title}</div>`;
-        menuGrid.appendChild(item);
-      }
-    });
-  }catch(err){console.error(err);showNotification(err.message,"error");await signOut(auth);window.location.href="login.html";}
-});
-
-logoutBtn.addEventListener("click",async()=>{
-  try{await signOut(auth);showNotification("✅ Déconnexion réussie !");setTimeout(()=>window.location.href="login.html",500);}
-  catch(err){console.error(err);showNotification("Erreur lors de la déconnexion","error");}
-});
-
-// 🔐 Protection
-protectPage(["econome"]);
-</script>
+    // Initialisation de l'authentification dans l'environnement canvas
+    function initializeAuth() {
+        const token = typeof __initial_auth_token !== 'undefined' ? __initial_auth_token : null;
+        if (token) {
+            signInWithCustomToken(auth, token).catch(e => {
+                console.error("Custom token sign in failed (Econome):", e);
+                signInAnonymously(auth);
+            });
+        } else {
+            signInAnonymously(auth);
+        }
+    }
+    initializeAuth();
+    </script>
 </body>
 </html>
