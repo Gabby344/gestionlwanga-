@@ -27,19 +27,20 @@
 </head>
 <body class="bg-gray-50 min-h-screen p-4 sm:p-8">
     
-    <div class="header text-center mb-8 max-w-2xl mx-auto">
+    <div class="header text-center mb-8 max-w-4xl mx-auto">
         <h1 class="text-3xl sm:text-4xl font-extrabold text-primary-blue mb-1">
             ➕ Enregistrer un Nouvel Élève
         </h1>
         <p class="text-gray-600">
-            Remplissez les informations d'inscription pour créer un dossier élève complet et attribuer un matricule unique.
+            Remplissez les informations (Nom, Post-Nom, Prénoms) pour créer un dossier élève complet.
         </p>
     </div>
 
     <div class="container max-w-4xl mx-auto">
         <div class="form-card bg-white p-6 sm:p-8 rounded-xl shadow-2xl border-t-8 border-primary-blue">
             <form id="eleveForm">
-                <div class="grid grid-cols-1 md:grid-cols-2 gap-x-6 gap-y-6">
+                <!-- Grille principale à 3 colonnes pour les grands écrans pour les noms -->
+                <div class="grid grid-cols-1 md:grid-cols-3 gap-x-6 gap-y-6">
                     
                     <!-- Nom de Famille -->
                     <div class="form-group">
@@ -47,12 +48,18 @@
                         <input type="text" id="nom" name="nom" class="w-full p-3 border border-gray-300 rounded-lg focus:border-primary-blue focus:ring-4 focus:ring-primary-blue/20 transition duration-150 bg-gray-50" placeholder="Ex: UMBA" required />
                     </div>
                     
+                    <!-- Post-Nom (Nouveau Champ) -->
+                    <div class="form-group">
+                        <label for="postNom" class="block font-semibold text-gray-700 mb-1">Post-Nom *</label>
+                        <input type="text" id="postNom" name="postNom" class="w-full p-3 border border-gray-300 rounded-lg focus:border-primary-blue focus:ring-4 focus:ring-primary-blue/20 transition duration-150 bg-gray-50" placeholder="Ex: MBO" required />
+                    </div>
+                    
                     <!-- Prénoms -->
                     <div class="form-group">
                         <label for="prenom" class="block font-semibold text-gray-700 mb-1">Prénoms *</label>
                         <input type="text" id="prenom" name="prenom" class="w-full p-3 border border-gray-300 rounded-lg focus:border-primary-blue focus:ring-4 focus:ring-primary-blue/20 transition duration-150 bg-gray-50" placeholder="Ex: Gabby" required />
                     </div>
-                    
+
                     <!-- Date de Naissance -->
                     <div class="form-group">
                         <label for="dateNaissance" class="block font-semibold text-gray-700 mb-1">Date de Naissance *</label>
@@ -68,7 +75,7 @@
                             <option value="F">Féminin</option>
                         </select>
                     </div>
-
+                    
                     <!-- Classe d'Affectation -->
                     <div class="form-group">
                         <label for="classe" class="block font-semibold text-gray-700 mb-1">Classe d'Affectation *</label>
@@ -81,9 +88,9 @@
                             <option value="3B">3ème Bio-Chimie</option>
                         </select>
                     </div>
-
-                    <!-- Statut Initial de Paiement -->
-                    <div class="form-group">
+                    
+                    <!-- Statut Initial de Paiement (Full width on small screens, one column on large) -->
+                    <div class="form-group md:col-span-3">
                         <label for="statutPaiement" class="block font-semibold text-gray-700 mb-1">Statut Initial de Paiement *</label>
                         <select id="statutPaiement" name="statutPaiement" class="w-full p-3 border border-gray-300 rounded-lg focus:border-primary-blue focus:ring-4 focus:ring-primary-blue/20 transition duration-150 bg-gray-50" required>
                             <option value="">-- Statut de paiement --</option>
@@ -115,7 +122,7 @@
     <script type="module">
         import { initializeApp } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-app.js";
         import { getAuth, signInAnonymously, signInWithCustomToken, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-auth.js";
-        import { getFirestore, doc, getDoc, addDoc, setDoc, updateDoc, deleteDoc, onSnapshot, collection, query, where, serverTimestamp, setLogLevel } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-firestore.js";
+        import { getFirestore, addDoc, collection, serverTimestamp, setLogLevel } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-firestore.js";
 
         // -----------------------------------------------------
         // 1. INITIALISATION ET AUTHENTIFICATION (MANDATAIRE)
@@ -215,6 +222,7 @@
             btn.innerHTML = '<span class="animate-spin inline-block w-4 h-4 mr-2 border-2 border-t-transparent border-white rounded-full"></span> Chargement...'; // État de chargement
 
             const nom = form.nom.value.trim().toUpperCase();
+            const postNom = form.postNom.value.trim().toUpperCase(); // Nouveau champ
             const prenom = form.prenom.value.trim();
             const classe = form.classe.value;
             const dateNaissance = form.dateNaissance.value;
@@ -223,12 +231,13 @@
 
             // Logique de génération de Matricule (simple)
             const annee = new Date().getFullYear().toString().slice(-2);
-            // Utiliser un horodatage pour une unicité (moins de chance de collision que Math.random)
+            // Utiliser un horodatage pour une unicité
             const uniquePart = Date.now().toString().slice(-6); 
             const matricule = `STC-${annee}-${classe}/${uniquePart}`;
 
             const newEleve = {
                 nom: nom,
+                postNom: postNom, // Ajout du postNom
                 prenom: prenom,
                 matricule: matricule,
                 classe: classe,
@@ -246,7 +255,7 @@
             try {
                 await fetchWithBackoff(() => addDoc(collection(db, collectionPath), newEleve));
 
-                showMessage(`✅ L'élève **${nom} ${prenom}** a été enregistré avec succès ! Son matricule est : **${matricule}**`, 'success');
+                showMessage(`✅ L'élève **${nom} ${postNom} ${prenom}** a été enregistré avec succès ! Son matricule est : **${matricule}**`, 'success');
                 form.reset();
             } catch (error) {
                 showMessage(`❌ Erreur d'enregistrement : ${error.message}`, 'error');
