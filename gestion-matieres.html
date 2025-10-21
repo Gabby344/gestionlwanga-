@@ -1,287 +1,434 @@
 <!DOCTYPE html>
 <html lang="fr">
 <head>
-  <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Gestion des Matières - Institut Saint Charles Lwanga</title>
-  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700&display=swap" rel="stylesheet">
-  <style>
-    :root {
-      --bleu-fonce: #1e40af;
-      --gris-fonce: #1f2937;
-      --orange: #f59e0b; /* Couleur principale du module Cours */
-      --vert: #10b981; 
-      --rouge: #ef4444; 
-      --fond: #f4f6f8;
-      --ombre-legere: rgba(0,0,0,0.08);
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Gestion des Matières | ISC Lwanga</title>
+    <!-- Chargement de Tailwind CSS pour un style moderne et responsive -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <!-- Font Awesome pour les icônes -->
+    <script src="https://kit.fontawesome.com/a2e0e6a56b.js" crossorigin="anonymous"></script>
+    
+    <style>
+        /* Configuration de la police Inter */
+        @import url('https://fonts.googleapis.com/css2?family=Inter:wght@100..900&display=swap');
+        body {
+            font-family: 'Inter', sans-serif;
+        }
+        /* Style des liens dans la barre latérale */
+        .nav-link {
+            transition: all 0.2s;
+        }
+        .nav-link:hover {
+            background-color: #374151; /* gray-700 */
+        }
+        /* Masque le contenu tant que l'AuthGuard n'a pas validé l'utilisateur */
+        body:not(.loaded) {
+            display: none;
+        }
+        /* Style pour les notifications customisées */
+        #notification-area {
+            position: fixed;
+            top: 20px;
+            right: 20px;
+            z-index: 1000;
+        }
+        .notification {
+            padding: 1rem 1.5rem;
+            border-radius: 0.75rem;
+            color: white;
+            font-weight: 500;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+            opacity: 0;
+            transform: translateX(100%);
+            transition: opacity 0.3s, transform 0.3s;
+            margin-bottom: 0.5rem;
+        }
+        .notification.show {
+            opacity: 1;
+            transform: translateX(0);
+        }
+        .notification.success { background-color: #10b981; }
+        .notification.error { background-color: #ef4444; }
+        .notification.info { background-color: #3b82f6; }
+    </style>
+    
+</head>
+
+<body class="bg-gray-100 text-gray-900 flex min-h-screen">
+
+    <div id="notification-area"></div>
+
+    <!-- SIDEBAR (Navigation Latérale) -->
+    <aside class="w-64 bg-gray-800 text-white flex flex-col shadow-2xl flex-shrink-0">
+        <div class="p-6 text-2xl font-extrabold border-b border-gray-700 bg-gray-900">
+            ISC Lwanga <span class="text-indigo-400">Admin</span>
+        </div>
+        <nav class="flex-1 p-4 space-y-2">
+            
+            <a href="dashboard-admin.html" class="nav-link flex items-center gap-3 p-3 text-gray-200 rounded-lg">
+                <i class="fa-solid fa-gauge-high w-5"></i> Tableau de Bord
+            </a>
+            
+            <div class="pt-4 mt-4 border-t border-gray-700">
+                <p class="text-xs font-semibold uppercase tracking-wider text-gray-400 px-3 pb-2">Gestion Globale</p>
+                <a href="admin.html" class="nav-link flex items-center gap-3 p-3 text-gray-200 rounded-lg">
+                    <i class="fa-solid fa-users-gear w-5"></i> Comptes & Utilisateurs
+                </a>
+                <a href="admin-roles.html" class="nav-link flex items-center gap-3 p-3 text-gray-200 rounded-lg">
+                    <i class="fa-solid fa-shield-alt w-5"></i> Rôles & Permissions
+                </a>
+            </div>
+
+            <div class="pt-4 mt-4 border-t border-gray-700">
+                <p class="text-xs font-semibold uppercase tracking-wider text-gray-400 px-3 pb-2">Académique</p>
+                 <a href="gestion-matieres.html" class="nav-link flex items-center gap-3 p-3 bg-gray-700 rounded-lg font-semibold text-indigo-300">
+                    <i class="fa-solid fa-book w-5"></i> Matières
+                </a>
+                <a href="gestion-classes.html" class="nav-link flex items-center gap-3 p-3 text-gray-200 rounded-lg">
+                    <i class="fa-solid fa-chalkboard-user w-5"></i> Classes & Cours
+                </a>
+                 <a href="inscriptions-eleves.html" class="nav-link flex items-center gap-3 p-3 text-gray-200 rounded-lg">
+                    <i class="fa-solid fa-user-plus w-5"></i> Inscriptions Élèves
+                </a>
+            </div>
+
+            <div class="pt-4 mt-4 border-t border-gray-700">
+                <p class="text-xs font-semibold uppercase tracking-wider text-gray-400 px-3 pb-2">Rapports & Finance</p>
+                <a href="config-frais.html" class="nav-link flex items-center gap-3 p-3 text-gray-200 rounded-lg">
+                    <i class="fa-solid fa-wallet w-5"></i> Gestion Financière
+                </a>
+                <a href="rapport-discipline.html" class="nav-link flex items-center gap-3 p-3 text-gray-200 rounded-lg">
+                    <i class="fa-solid fa-bell w-5"></i> Discipline & Absences
+                </a>
+            </div>
+
+        </nav>
+        <!-- Bouton de Déconnexion -->
+        <button id="logoutBtn" class="m-4 bg-red-600 hover:bg-red-700 p-3 rounded-xl font-semibold shadow-lg transition duration-200 flex items-center justify-center gap-3">
+            <i class="fa-solid fa-right-from-bracket"></i> Déconnexion
+        </button>
+    </aside>
+
+    <!-- CONTENU PRINCIPAL -->
+    <main class="flex-1 p-8 overflow-y-auto">
+        
+        <!-- HEADER / BANNIÈRE -->
+        <header class="mb-8 p-6 bg-white rounded-xl shadow-lg border-l-4 border-indigo-500 flex flex-col sm:flex-row justify-between items-start sm:items-center">
+            <h1 class="text-3xl font-extrabold text-gray-800 mb-2 sm:mb-0">Gestion des Matières</h1>
+            <div class="text-right">
+                <p class="text-sm font-semibold text-indigo-600" id="userInfo">Chargement...</p>
+                <p class="text-xs text-gray-500">Définition du catalogue académique</p>
+            </div>
+        </header>
+
+        <div class="grid grid-cols-1 lg:grid-cols-3 gap-6">
+
+            <!-- Carte de Saisie (Ajouter / Modifier) -->
+            <div class="lg:col-span-1 bg-white p-6 rounded-xl shadow-lg border-t-4 border-indigo-500 h-fit sticky top-8">
+                <h2 class="text-xl font-bold text-gray-800 mb-4 flex items-center gap-2">
+                    <i class="fa-solid fa-plus-circle text-indigo-500"></i> <span id="formTitle">Ajouter une Matière</span>
+                </h2>
+                <form id="subjectForm">
+                    <!-- Champ caché pour l'ID de la matière en mode édition -->
+                    <input type="hidden" id="subjectId"> 
+
+                    <div class="mb-4">
+                        <label for="name" class="block text-sm font-medium text-gray-700 mb-1">Nom Complet</label>
+                        <input type="text" id="name" required placeholder="ex: Mathématiques" class="w-full p-3 border border-gray-300 rounded-lg focus:ring-indigo-500 focus:border-indigo-500">
+                    </div>
+                    
+                    <div class="mb-4">
+                        <label for="code" class="block text-sm font-medium text-gray-700 mb-1">Code Court (3-4 lettres)</label>
+                        <input type="text" id="code" required placeholder="ex: MATH ou FR" maxlength="5" class="w-full p-3 border border-gray-300 rounded-lg focus:ring-indigo-500 focus:border-indigo-500 uppercase">
+                    </div>
+                    
+                    <div class="mb-6">
+                        <label for="coefficient" class="block text-sm font-medium text-gray-700 mb-1">Coefficient</label>
+                        <input type="number" id="coefficient" required min="1" max="10" value="1" class="w-full p-3 border border-gray-300 rounded-lg focus:ring-indigo-500 focus:border-indigo-500">
+                    </div>
+
+                    <div class="flex gap-3">
+                        <button type="submit" id="saveSubjectBtn" class="flex-1 py-3 bg-indigo-600 text-white rounded-lg hover:bg-indigo-700 font-bold transition duration-200">
+                            <i class="fa-solid fa-save mr-2"></i> Enregistrer
+                        </button>
+                        <button type="button" id="cancelEditBtn" class="py-3 px-4 bg-gray-500 text-white rounded-lg hover:bg-gray-600 font-bold transition duration-200 hidden" onclick="resetForm()">
+                            <i class="fa-solid fa-times mr-2"></i> Annuler
+                        </button>
+                    </div>
+                </form>
+            </div>
+
+            <!-- Carte de Liste (Tableau) -->
+            <div class="lg:col-span-2 bg-white p-6 rounded-xl shadow-lg border-t-4 border-teal-500">
+                <h2 class="text-xl font-bold text-gray-800 mb-4 flex items-center gap-2">
+                    <i class="fa-solid fa-list-alt text-teal-600"></i> Liste des Matières Définies
+                </h2>
+
+                <div class="overflow-x-auto">
+                    <table class="min-w-full divide-y divide-gray-200">
+                        <thead class="bg-gray-50">
+                            <tr>
+                                <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Nom</th>
+                                <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Code</th>
+                                <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Coeff.</th>
+                                <th class="px-6 py-3 text-right text-xs font-medium text-gray-500 uppercase tracking-wider">Actions</th>
+                            </tr>
+                        </thead>
+                        <tbody id="subjectsTableBody" class="bg-white divide-y divide-gray-200">
+                            <tr>
+                                <td colspan="4" class="text-center py-4 text-gray-500">Chargement des matières...</td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+    </main>
+
+    <!-- LOGIQUE JAVASCRIPT & FIREBASE -->
+    <script type="module">
+    import { initializeApp } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-app.js";
+    import { 
+        getAuth, onAuthStateChanged, signOut,
+        signInWithCustomToken, signInAnonymously
+    } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-auth.js";
+    import { 
+        getFirestore, collection, doc, setDoc, deleteDoc, 
+        onSnapshot, getDoc, query, setLogLevel
+    } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-firestore.js";
+
+    // IMPORTANT: UTILISATION DES VARIABLES GLOBALES FOURNIES PAR LE CONTEXTE
+    const appId = typeof __app_id !== 'undefined' ? __app_id : 'default-app-id';
+    const firebaseConfig = typeof __firebase_config !== 'undefined' ? JSON.parse(__firebase_config) : {};
+    
+    // 1. INITIALISATION FIREBASE
+    const app = initializeApp(firebaseConfig);
+    const auth = getAuth(app);
+    const db = getFirestore(app);
+    
+    // setLogLevel('Debug'); // Décommenter pour le débogage
+    
+    // Collection des matières: stockée dans la zone publique de l'application car accessible par plusieurs rôles (enseignants, directeurs)
+    const SUBJECTS_COLLECTION_PATH = `/artifacts/${appId}/public/data/subjects`; 
+
+    // 2. ÉLÉMENTS DU DOM
+    const userInfo = document.getElementById('userInfo');
+    const logoutBtn = document.getElementById('logoutBtn');
+    const notificationArea = document.getElementById('notification-area');
+    const subjectsTableBody = document.getElementById('subjectsTableBody');
+    const subjectForm = document.getElementById('subjectForm');
+    const formTitle = document.getElementById('formTitle');
+    const cancelEditBtn = document.getElementById('cancelEditBtn');
+
+    // Champs du formulaire
+    const subjectIdInput = document.getElementById('subjectId');
+    const nameInput = document.getElementById('name');
+    const codeInput = document.getElementById('code');
+    const coefficientInput = document.getElementById('coefficient');
+
+    // 3. FONCTIONNALITÉS UTILITAIRES
+
+    // Notification (remplace alert/confirm)
+    function showNotification(msg, type = "success") {
+        const notif = document.createElement("div");
+        notif.className = `notification ${type}`;
+        notif.textContent = msg;
+        notificationArea.appendChild(notif);
+        setTimeout(() => notif.classList.add('show'), 10);
+        setTimeout(() => {
+            notif.classList.remove('show');
+            setTimeout(() => notificationArea.removeChild(notif), 300);
+        }, 4000);
     }
-    body {
-      font-family: 'Inter', sans-serif;
-      background-color: var(--fond);
-      margin: 0;
-      padding: 2rem 1rem;
-      color: var(--gris-fonce);
-    }
-    h1 {
-      text-align: center;
-      font-size: 1.8rem;
-      color: var(--bleu-fonce);
-      margin-bottom: 0.5rem;
-    }
-    h2 {
-      text-align: center;
-      font-size: 1rem;
-      font-weight: normal;
-      color: #6b7280;
-      margin-bottom: 2rem;
-    }
-    .container {
-        max-width: 900px;
-        margin: auto;
+    
+    // Déconnexion
+    async function handleLogout() {
+        await signOut(auth);
+        setTimeout(() => window.location.href = "index.html", 800);
     }
 
-    /* --- Formulaire d'Ajout --- */
-    #formulaireAjout {
-        background-color: white;
-        padding: 1.5rem;
-        border-radius: 8px;
-        box-shadow: 0 4px 8px var(--ombre-legere);
-        margin-bottom: 2rem;
-    }
-    #formulaireAjout h3 {
-        margin-top: 0;
-        color: var(--orange);
-        border-bottom: 2px solid #fef3c7;
-        padding-bottom: 0.5rem;
-    }
-    .form-grid {
-        display: grid;
-        grid-template-columns: 1fr 1fr 150px; /* Nom, Code, Bouton */
-        gap: 1rem;
-        align-items: end;
-    }
-    @media (max-width: 600px) {
-        .form-grid {
-            grid-template-columns: 1fr;
-            gap: 0.75rem;
+    // Fonction d'authentification initiale
+    async function initializeAuth() {
+        try {
+            if (typeof __initial_auth_token !== 'undefined' && __initial_auth_token) {
+                await signInWithCustomToken(auth, __initial_auth_token);
+            } else {
+                await signInAnonymously(auth);
+            }
+        } catch (error) {
+            console.error("Erreur d'authentification initiale:", error);
+            setTimeout(() => window.location.href = "index.html", 1500);
         }
     }
-    .form-group label {
-        display: block;
-        font-weight: 600;
-        margin-bottom: 0.3rem;
-        font-size: 0.9rem;
-    }
-    input[type="text"], input[type="number"], select {
-      width: 100%;
-      padding: 0.75rem;
-      border: 1px solid #d1d5db;
-      border-radius: 6px;
-      box-sizing: border-box; 
-      font-size: 1rem;
-      background-color: #f9fafb;
-    }
-    .btn-ajouter {
-        background-color: var(--vert);
-        color: white;
-        padding: 0.75rem 1rem;
-        border: none;
-        border-radius: 6px;
-        font-weight: 600;
-        cursor: pointer;
-        transition: background-color 0.2s;
-    }
-    .btn-ajouter:hover { background-color: #059669; }
 
-    /* --- Tableau des Matières --- */
-    #listeMatieres {
-        background-color: white;
-        border-radius: 8px;
-        box-shadow: 0 4px 10px var(--ombre-legere);
-        overflow-x: auto;
-    }
-    .matieres-table {
-        width: 100%;
-        border-collapse: collapse;
-    }
-    th, td {
-        padding: 1rem;
-        text-align: left;
-        border-bottom: 1px solid #e5e7eb;
-    }
-    th {
-        background-color: #f3f4f6;
-        color: var(--gris-fonce);
-        font-weight: 600;
-        text-transform: uppercase;
-        font-size: 0.8rem;
-    }
-    .actions-col {
-        width: 120px;
-        text-align: center;
-    }
+    // Réinitialise le formulaire d'édition
+    window.resetForm = () => {
+        subjectForm.reset();
+        subjectIdInput.value = '';
+        formTitle.textContent = 'Ajouter une Matière';
+        cancelEditBtn.classList.add('hidden');
+        document.getElementById('saveSubjectBtn').innerHTML = '<i class="fa-solid fa-save mr-2"></i> Enregistrer';
+    };
 
-    /* Boutons dans le tableau */
-    .btn-modifier, .btn-supprimer {
-      border: none;
-      padding: 0.5rem 0.8rem;
-      border-radius: 4px;
-      font-size: 0.8rem;
-      cursor: pointer;
-      color: white;
-      margin-left: 0.5rem;
-    }
-    .btn-modifier { background-color: var(--orange); }
-    .btn-modifier:hover { background-color: #d97706; }
-    .btn-supprimer { background-color: var(--rouge); }
-    .btn-supprimer:hover { background-color: #b91c1c; }
-    
-    /* Bouton de retour */
-    .btn-retour {
-        display: block;
-        text-align: center;
-        margin-top: 1.5rem;
-        color: var(--gris-fonce);
-        text-decoration: none;
-        font-size: 0.9rem;
-    }
-  </style>
-</head>
-<body>
-  <div class="container">
-    <h1>📘 Gestion des Matières</h1>
-    <h2>Ajout, modification et consultation des disciplines enseignées.</h2>
+    // 4. LOGIQUE FIREBASE (CRUD Matières)
 
-    <div id="formulaireAjout">
-        <h3>➕ Ajouter ou Modifier une Matière</h3>
-        <form id="matiereForm">
-            <input type="hidden" id="matiereId" value="">
-            <div class="form-grid">
-                <div class="form-group">
-                    <label for="nomMatiere">Nom de la matière *</label>
-                    <input type="text" id="nomMatiere" placeholder="Ex: Mathématiques, Histoire" required>
-                </div>
-                <div class="form-group">
-                    <label for="codeMatiere">Code (Max 5 lettres) *</label>
-                    <input type="text" id="codeMatiere" placeholder="Ex: MATH, HIST" maxlength="5" required>
-                </div>
-                <button type="submit" class="btn-ajouter" id="btnSubmit">💾 Enregistrer</button>
-            </div>
-        </form>
-    </div>
+    // Soumission du formulaire (Créer/Mettre à jour)
+    subjectForm.addEventListener('submit', async (e) => {
+        e.preventDefault();
 
-    <h3>Liste des Matières Enregistrées</h3>
-    <div id="listeMatieres">
-        <table class="matieres-table">
-            <thead>
-                <tr>
-                    <th>Nom de la Matière</th>
-                    <th>Code</th>
-                    <th class="actions-col">Actions</th>
-                </tr>
-            </thead>
-            <tbody id="matieresBody">
-                </tbody>
-        </table>
-        <p id="aucuneMatiere" style="text-align: center; padding: 1rem; display: none;">Aucune matière trouvée.</p>
-    </div>
+        const name = nameInput.value.trim();
+        const code = codeInput.value.trim().toUpperCase();
+        const coefficient = parseInt(coefficientInput.value, 10);
+        const subjectId = subjectIdInput.value;
 
-    <a href="cours.html" class="btn-retour">← Retour au menu Cours & Planning</a>
-  </div>
-
-
-  <script>
-    // SIMULATION DE DONNÉES (Ceci serait le stockage Firebase/Backend)
-    let matieres = [
-        { id: 'M001', nom: 'Mathématiques', code: 'MATH' },
-        { id: 'M002', nom: 'Physique', code: 'PHYS' },
-        { id: 'M003', nom: 'Français', code: 'FRAN' },
-        { id: 'M004', nom: 'Histoire', code: 'HIST' },
-    ];
-
-    const matieresBody = document.getElementById('matieresBody');
-    const matiereForm = document.getElementById('matiereForm');
-    const nomMatiereInput = document.getElementById('nomMatiere');
-    const codeMatiereInput = document.getElementById('codeMatiere');
-    const matiereIdInput = document.getElementById('matiereId');
-    const btnSubmit = document.getElementById('btnSubmit');
-
-    function renderMatieres() {
-        matieresBody.innerHTML = '';
-        if (matieres.length === 0) {
-            document.getElementById('aucuneMatiere').style.display = 'block';
+        if (!name || !code || isNaN(coefficient) || coefficient < 1) {
+            showNotification("Veuillez remplir tous les champs correctement.", "error");
             return;
         }
-        document.getElementById('aucuneMatiere').style.display = 'none';
 
-        matieres.forEach(matiere => {
-            const row = document.createElement('tr');
-            row.innerHTML = `
-                <td>${matiere.nom}</td>
-                <td>${matiere.code}</td>
-                <td class="actions-col">
-                    <button class="btn-modifier" onclick="editerMatiere('${matiere.id}')">✏️</button>
-                    <button class="btn-supprimer" onclick="supprimerMatiere('${matiere.id}')">🗑️</button>
-                </td>
-            `;
-            matieresBody.appendChild(row);
+        try {
+            const subjectData = { name, code, coefficient };
+            let docRef;
+
+            if (subjectId) {
+                // Mode Édition
+                docRef = doc(db, SUBJECTS_COLLECTION_PATH, subjectId);
+                await setDoc(docRef, subjectData, { merge: true });
+                showNotification(`✅ Matière '${name}' mise à jour !`, "success");
+            } else {
+                // Mode Création (ID basé sur le code pour l'unicité, mais on utilise un ID auto-généré ou un code clean)
+                // Pour la simplicité, utilisons l'ID de Firebase, et on s'assure de l'unicité du code dans le code métier si nécessaire.
+                docRef = doc(collection(db, SUBJECTS_COLLECTION_PATH));
+                await setDoc(docRef, subjectData);
+                showNotification(`✅ Matière '${name}' ajoutée !`, "success");
+            }
+
+            resetForm();
+        } catch (err) {
+            console.error("Erreur d'enregistrement de la matière:", err);
+            showNotification("Erreur: Impossible d'enregistrer la matière.", "error");
+        }
+    });
+
+    // Charger les données d'une matière dans le formulaire
+    window.loadSubjectForEdit = (id, name, code, coefficient) => {
+        subjectIdInput.value = id;
+        nameInput.value = name;
+        codeInput.value = code;
+        coefficientInput.value = coefficient;
+
+        formTitle.textContent = `Modifier : ${name}`;
+        cancelEditBtn.classList.remove('hidden');
+        document.getElementById('saveSubjectBtn').innerHTML = '<i class="fa-solid fa-sync-alt mr-2"></i> Mettre à jour';
+
+        window.scrollTo({ top: 0, behavior: 'smooth' }); // Remonter en haut de page pour le formulaire
+    };
+
+    // Supprimer une matière
+    window.deleteSubject = async (id, name) => {
+        if (!confirm(`Voulez-vous vraiment supprimer la matière: ${name} ?`)) return;
+
+        try {
+            await deleteDoc(doc(db, SUBJECTS_COLLECTION_PATH, id));
+            showNotification(`🗑️ Matière '${name}' supprimée.`, "info");
+        } catch (err) {
+            console.error("Erreur de suppression de la matière:", err);
+            showNotification("Erreur: Impossible de supprimer la matière.", "error");
+        }
+    };
+
+    // ✅ Écouteur en temps réel pour charger la liste des matières
+    function setupSubjectsListener() {
+        const q = query(collection(db, SUBJECTS_COLLECTION_PATH));
+
+        onSnapshot(q, (snapshot) => {
+            subjectsTableBody.innerHTML = ''; // Vider le tableau
+            
+            if (snapshot.empty) {
+                subjectsTableBody.innerHTML = `<tr><td colspan="4" class="text-center py-4 text-gray-500 italic">Aucune matière définie pour l'instant.</td></tr>`;
+                return;
+            }
+
+            snapshot.forEach(docSnap => {
+                const data = docSnap.data();
+                const id = docSnap.id;
+
+                const row = subjectsTableBody.insertRow();
+                row.className = 'hover:bg-gray-50';
+                
+                // Nom
+                row.insertCell().textContent = data.name;
+                
+                // Code
+                row.insertCell().textContent = data.code;
+                
+                // Coefficient
+                row.insertCell().textContent = data.coefficient;
+                
+                // Actions
+                const actionsCell = row.insertCell();
+                actionsCell.className = 'px-6 py-3 whitespace-nowrap text-right text-sm font-medium space-x-2';
+                actionsCell.innerHTML = `
+                    <button onclick="window.loadSubjectForEdit('${id}', '${data.name}', '${data.code}', ${data.coefficient})" 
+                            class="text-indigo-600 hover:text-indigo-900 transition duration-150">
+                        <i class="fa-solid fa-edit"></i> Modifier
+                    </button>
+                    <button onclick="window.deleteSubject('${id}', '${data.name}')" 
+                            class="text-red-600 hover:text-red-900 transition duration-150 ml-3">
+                        <i class="fa-solid fa-trash"></i> Supprimer
+                    </button>
+                `;
+            });
+        }, (error) => {
+            console.error("Erreur de l'écouteur Firestore (Matières):", error);
+            subjectsTableBody.innerHTML = `<tr><td colspan="4" class="text-center py-4 text-red-500">Erreur de connexion à la base de données.</td></tr>`;
         });
     }
 
-    function ajouterOuModifierMatiere(event) {
-        event.preventDefault();
+    // 5. GESTION DES ÉVÉNEMENTS & AUTHENTIFICATION
+    
+    // Événement de déconnexion
+    logoutBtn.addEventListener("click", handleLogout);
+    
+    // Gestion de l'état d'authentification
+    onAuthStateChanged(auth, user => {
+        document.body.classList.add('loaded'); // Afficher le contenu une fois l'état connu
+        const userId = user?.uid;
 
-        const nom = nomMatiereInput.value.trim();
-        const code = codeMatiereInput.value.trim().toUpperCase();
-        const id = matiereIdInput.value;
-
-        if (id) {
-            // MODIFICATION
-            const index = matieres.findIndex(m => m.id === id);
-            if (index !== -1) {
-                matieres[index].nom = nom;
-                matieres[index].code = code;
-                alert(`Matière "${nom}" modifiée avec succès!`);
-            }
+        if (!user) {
+            showNotification("Session expirée ou non autorisée.", "error");
+            setTimeout(() => window.location.href = "index.html", 1000);
         } else {
-            // AJOUT
-            const newId = 'M' + String(matieres.length + 1).padStart(3, '0');
-            matieres.push({ id: newId, nom, code });
-            alert(`Matière "${nom}" ajoutée avec le code ${code}.`);
+            // Utilisateur connecté
+            
+            // Récupération des données utilisateur pour l'affichage et la vérification de rôle
+            getDoc(doc(db, 'users', userId)).then(docSnap => {
+                if (docSnap.exists()) {
+                    const data = docSnap.data();
+                    const role = data.role.charAt(0).toUpperCase() + data.role.slice(1);
+                    userInfo.textContent = `${data.nom || data.email} (${role})`;
+                    
+                    // Vérification de rôle : Seuls l'Admin ou le Directeur des Études peuvent gérer les matières
+                    if (data.role !== 'admin' && data.role !== 'directeur_etudes') {
+                        showNotification("Accès non autorisé à cette page.", "error");
+                        setTimeout(() => window.location.href = "dashboard-user.html", 1500); 
+                        return;
+                    }
+                    setupSubjectsListener(); // Charger la liste si l'utilisateur est autorisé
+                } else {
+                    console.warn("Document utilisateur manquant. Accès limité.");
+                    setupSubjectsListener();
+                }
+            }).catch(err => {
+                console.error("Erreur de récupération du document utilisateur:", err);
+                setupSubjectsListener();
+            });
         }
+    });
 
-        // Réinitialiser le formulaire
-        matiereForm.reset();
-        matiereIdInput.value = '';
-        btnSubmit.textContent = '💾 Enregistrer';
-        renderMatieres();
-    }
-
-    function editerMatiere(id) {
-        const matiere = matieres.find(m => m.id === id);
-        if (matiere) {
-            nomMatiereInput.value = matiere.nom;
-            codeMatiereInput.value = matiere.code;
-            matiereIdInput.value = matiere.id;
-            btnSubmit.textContent = '✏️ Modifier la matière';
-            window.scrollTo({ top: 0, behavior: 'smooth' }); // Remonter en haut
-        }
-    }
-
-    function supprimerMatiere(id) {
-        const matiere = matieres.find(m => m.id === id);
-        if (matiere && confirm(`Confirmer la suppression de la matière : ${matiere.nom} (${matiere.code}) ?`)) {
-            matieres = matieres.filter(m => m.id !== id);
-            alert(`Matière "${matiere.nom}" supprimée.`);
-            renderMatieres();
-        }
-    }
-
-    // Événement de soumission du formulaire
-    matiereForm.addEventListener('submit', ajouterOuModifierMatiere);
-
-    // Chargement initial des données
-    document.addEventListener('DOMContentLoaded', renderMatieres);
-  </script>
+    // Lancement de l'authentification au chargement
+    initializeAuth();
+    </script>
 </body>
 </html>
