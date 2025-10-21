@@ -133,7 +133,7 @@
             appId: "1:508302363143:web:35c181528dd84def1a78a2"
         };
         
-        // Mappage des rôles vers les pages de tableau de bord (Mis à jour avec la liste fournie)
+        // Mappage des rôles vers les pages de tableau de bord (Mis à jour pour le secrétaire)
         const ROLE_REDIRECTS = {
             // Direction
             'prefet': 'accueil-prefet.html',
@@ -142,7 +142,7 @@
             'directeur': 'accueil-utilisateur.html', // Redirection par défaut si 'directeur' est un rôle générique
             
             // Administration et Finances
-            'secretaire': 'accueil-secretaire.html',
+            'secretaire': 'gestion-eleves.html', // 🎯 PAGE CORRIGÉE POUR LE SECRÉTAIRE
             'econome': 'accueil-econome.html',
             
             // Pédagogique
@@ -152,7 +152,7 @@
             // Utilisateur final
             'eleve': 'accueil-eleves.html',
             
-            // Administration Système (Redirection vers le tableau de bord central de l'Admin)
+            // Administration Système
             'admin': 'dashboard-admin.html', 
             
             // Redirection par défaut si le rôle n'est pas défini
