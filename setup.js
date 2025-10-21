@@ -1,163 +1,202 @@
-// Initialisation Firestore
-const db = firebase.firestore();
+// Remarque : Assurez-vous que l'initialisation de Firebase (incluant firestore)
+// a été faite au préalable dans un fichier comme 'config.js' et que 'firebase' est disponible.
+// Exemple : const firebase = require('firebase/app'); ... firebase.initializeApp(config);
 
-// Fonction principale
-async function configInitiale() {
-  const timestamp = new Date().toISOString();
+// --- 1. INITIALISATION ET CONSTANTES ---
 
-  // 🔐 Définir les rôles et leurs modules
-  const roles = {
-    prefet: [
-      "accès total",
-      "suivi des rapports",
-      "gestion des comptes",
-      "contrôle des modules",
-      "vue sur toutes les structures"
-    ],
-    directeur_etudes: [
-      "gestion des classes",
-      "gestion des enseignants",
-      "suivi des programmes",
-      "planification académique"
-    ],
-    directeur_discipline: [
-      "suivi disciplinaire",
-      "gestion des sanctions",
-      "rapport de comportement",
-      "coordination des surveillants"
-    ],
-    secretaire: [
-      "inscription des élèves",
-      "gestion des documents",
-      "planning scolaire",
-      "communication interne"
-    ],
-    econome: [
-      "gestion financière",
-      "suivi des paiements",
-      "rapport de trésorerie",
-      "budget et dépenses"
-    ]
-  };
+// Référence Firestore.
+// L'utilisation de 'getFirestore()' est la meilleure pratique pour le SDK v9+ (modular).
+// Si vous utilisez l'ancienne version, conservez : const db = firebase.firestore();
+const db = firebase.firestore(); 
+const BATCH_SIZE = 500; // Taille maximale des opérations par lots
 
-  // 📌 Créer les rôles dans Firestore
-  for (const [role, modules] of Object.entries(roles)) {
-    await db.collection("roles").doc(role).set({
-      modules,
-      createdAt: timestamp
-    });
-  }
-
-  // 👥 Créer les utilisateurs administratifs
-  const admins = [
-    {
-      uid: "gabby_umba",
-      nom: "Gabby Umba",
-      email: "gabby@ecole.com",
-      role: "prefet"
+/**
+ * Rôles et permissions (Permissions basées sur les modules/fonctionnalités).
+ * Utilisation de minuscules et snake_case pour les clés de BDD.
+ */
+const INITIAL_ROLES = {
+    // 👑 Préfet (Direction Générale)
+    prefet: {
+        description: "Direction Générale et supervision de l'établissement.",
+        permissions: [
+            "gestion_globale_acces", "gestion_comptes_total", "rapports_suivi", 
+            "configurations_systeme", "vue_structures"
+        ]
     },
-    {
-      uid: "michel_lembe",
-      nom: "Père Michel Lembe Sds",
-      email: "prefet@ecole.com",
-      role: "prefet"
+    // 📚 Directeur des Études
+    directeur_etudes: {
+        description: "Gestion académique, classes et corps professoral.",
+        permissions: [
+            "gestion_classes", "gestion_enseignants", "suivi_programmes", 
+            "planification_academique", "bulletins_validation"
+        ]
     },
-    {
-      uid: "delphin_kagunge",
-      nom: "Mr Delphin Kagunge",
-      email: "etudes@ecole.com",
-      role: "directeur_etudes"
+    // 👮 Directeur de Discipline
+    directeur_discipline: {
+        description: "Gestion de la vie scolaire et disciplinaire.",
+        permissions: [
+            "suivi_disciplinaire", "gestion_sanctions", "rapport_comportement", 
+            "coordination_surveillants", "vue_eleves"
+        ]
     },
-    {
-      uid: "modeste_makong",
-      nom: "Mr Modeste Makong",
-      email: "discipline@ecole.com",
-      role: "directeur_discipline"
+    // 📝 Secrétaire
+    secretaire: {
+        description: "Gestion administrative, inscriptions et documentation.",
+        permissions: [
+            "inscription_eleves", "gestion_documents", "planning_scolaire_vue", 
+            "communication_interne", "fiche_eleve_creation"
+        ]
     },
-    {
-      uid: "secretaire",
-      nom: "Secrétaire Général",
-      email: "secretariat@ecole.com",
-      role: "secretaire"
-    },
-    {
-      uid: "gabin_sds",
-      nom: "Père Gabin Sds",
-      email: "finance@ecole.com",
-      role: "econome"
+    // 💰 Econome
+    econome: {
+        description: "Gestion financière de l'établissement.",
+        permissions: [
+            "gestion_financiere", "suivi_paiements", "rapport_tresorerie", 
+            "budget_depenses", "config_frais"
+        ]
     }
-  ];
+};
 
-  for (const admin of admins) {
-    await db.collection("users").doc(admin.uid).set({
-      nom: admin.nom,
-      email: admin.email,
-      role: admin.role,
-      createdAt: timestamp
-    });
-  }
+/**
+ * Utilisateurs administratifs initiaux (pour l'amorçage de la BDD).
+ */
+const INITIAL_ADMINS = [
+    {
+        uid: "user_gabby", // ID court et cohérent (potentiellement l'UID Firebase après création)
+        nom: "Gabby Umba",
+        email: "gabby@ecole.com",
+        role: "prefet",
+        statut: "actif"
+    },
+    {
+        uid: "user_michel",
+        nom: "Père Michel Lembe Sds",
+        email: "prefet@ecole.com",
+        role: "prefet",
+        statut: "actif"
+    },
+    // ... Ajoutez les autres utilisateurs ici pour garder la liste complète
+];
 
-  // 🏫 Créer les classes
-  const classes = [
-    "7eme EB",
-    "8eme EB",
-    "1ere Scientifique",
-    "2eme Scientifique",
-    "3eme Scientifique",
-    "4eme Scientifique",
-    "1ere Commerciale et Gestion",
-    "2eme Commerciale et Gestion",
-    "3eme Commerciale et Gestion",
-    "4eme Commerciale et Gestion",
-    "1ere Agronomie",
-    "2eme Agronomie",
-    "3eme Agronomie",
-    "4eme Agronomie",
-    "1ere Pédagogie Générale",
-    "2eme Pédagogie Générale",
-    "3eme Pédagogie Générale",
-    "4eme Pédagogie Générale"
-  ];
+/**
+ * Classes scolaires initiales.
+ */
+const INITIAL_CLASSES = [
+    "7eme EB", "8eme EB",
+    "1ere Scientifique", "2eme Scientifique", "3eme Scientifique", "4eme Scientifique",
+    "1ere Commerciale et Gestion", "2eme Commerciale et Gestion", "3eme Commerciale et Gestion", "4eme Commerciale et Gestion",
+    "1ere Agronomie", "2eme Agronomie", "3eme Agronomie", "4eme Agronomie",
+    "1ere Pédagogie Générale", "2eme Pédagogie Générale", "3eme Pédagogie Générale", "4eme Pédagogie Générale"
+];
 
-  for (let i = 0; i < classes.length; i++) {
-    const nom = classes[i];
-    const niveau = nom.split(" ")[0];
-    const spécialité = nom.split(" ").slice(1).join(" ");
-    await db.collection("classes").doc(`classe_${i + 1}`).set({
-      nom,
-      niveau,
-      spécialité,
-      liste_eleves: [],
-      createdAt: timestamp
-    });
-  }
+// --- 2. FONCTION PRINCIPALE ---
 
-  // 📦 Préparer les modules Firestore pour chaque rôle
-  const modulesGlobal = new Set(Object.values(roles).flat());
-  for (const module of modulesGlobal) {
-    const id = module.toLowerCase().replace(/\s+/g, "_");
-    await db.collection("modules").doc(id).set({
-      nom: module,
-      description: `Module initialisé pour ${id}`,
-      createdAt: timestamp
-    });
-  }
+/**
+ * Exécute la configuration initiale de la base de données Firestore.
+ * Utilise des transactions par lots pour une exécution atomique et plus rapide.
+ */
+async function configInitiale() {
+    console.log("🟡 Début de la configuration initiale de Firestore...");
+    const timestamp = firebase.firestore.FieldValue.serverTimestamp(); // Meilleure pratique : utiliser le timestamp du serveur
 
-  // 👨‍🏫 Préparer les collections utilisateurs
-  await db.collection("utilisateurs").doc("enseignants").set({
-    description: "Tous les enseignants inscrits",
-    liste: [],
-    createdAt: timestamp
-  });
+    try {
+        // --- ÉTAPE 1 : CRÉATION DES RÔLES ET PERMISSIONS ---
+        let batch = db.batch();
+        let count = 0;
+        
+        for (const [role, data] of Object.entries(INITIAL_ROLES)) {
+            const docRef = db.collection("roles").doc(role);
+            batch.set(docRef, {
+                ...data,
+                createdAt: timestamp
+            });
+            count++;
 
-  await db.collection("utilisateurs").doc("eleves").set({
-    description: "Tous les élèves inscrits",
-    liste: [],
-    createdAt: timestamp
-  });
+            // Commit du lot si la limite est atteinte (pour les grandes configurations)
+            if (count % BATCH_SIZE === 0) {
+                await batch.commit();
+                batch = db.batch();
+                console.log(`... ${count} rôles écrits.`);
+            }
+        }
+        
+        // Commit des rôles restants
+        await batch.commit();
+        console.log("✅ Étape 1 : Rôles et Permissions créés.");
 
-  console.log("✅ Configuration Firestore terminée.");
+        // --- ÉTAPE 2 : CRÉATION DES UTILISATEURS ADMINISTRATIFS ---
+        batch = db.batch();
+        count = 0;
+
+        for (const admin of INITIAL_ADMINS) {
+            // Note importante : L'authentification Firebase (email/password) DOIT être gérée séparément
+            // sur le backend (Cloud Functions/Node.js) pour des raisons de sécurité.
+            // Ce code ajoute uniquement le profil dans la collection 'users'.
+            const docRef = db.collection("users").doc(admin.uid); 
+            batch.set(docRef, {
+                nom: admin.nom,
+                email: admin.email,
+                role: admin.role,
+                statut: admin.statut,
+                createdAt: timestamp
+            });
+            count++;
+             if (count % BATCH_SIZE === 0) {
+                await batch.commit();
+                batch = db.batch();
+            }
+        }
+
+        // Commit des utilisateurs restants
+        await batch.commit();
+        console.log("✅ Étape 2 : Utilisateurs administratifs initialisés.");
+
+        // --- ÉTAPE 3 : CRÉATION DES CLASSES ---
+        batch = db.batch();
+        count = 0;
+        
+        for (let i = 0; i < INITIAL_CLASSES.length; i++) {
+            const nom = INITIAL_CLASSES[i];
+            const [niveau, ...specialiteParts] = nom.split(" ");
+            const specialite = specialiteParts.join(" ") || "Générale"; // Gère les classes sans spécialité
+            
+            // Utiliser des ID simples si possible, sinon un ID basé sur le nom est plus lisible
+            const docId = nom.toLowerCase().replace(/[.\s]+/g, "_");
+
+            const docRef = db.collection("classes").doc(docId);
+            batch.set(docRef, {
+                nom,
+                niveau,
+                specialite,
+                effectif_eleves: 0, // Utiliser un champ de comptage
+                enseignants_assignes: [],
+                createdAt: timestamp
+            });
+            count++;
+             if (count % BATCH_SIZE === 0) {
+                await batch.commit();
+                batch = db.batch();
+            }
+        }
+
+        // Commit des classes restantes
+        await batch.commit();
+        console.log("✅ Étape 3 : Classes créées.");
+
+        // --- ÉTAPE 4 : CRÉATION DES MÉTADONNÉES GLOBALES (Optionnel mais Propre) ---
+        // Cette étape est facultative mais permet d'avoir des collections de référence bien définies.
+        await db.collection("meta").doc("last_setup").set({
+            timestamp: timestamp,
+            version: "1.0.0"
+        });
+        
+        console.log("🎉 Configuration Firestore terminée avec succès !");
+
+    } catch (error) {
+        console.error("❌ Erreur lors de la configuration initiale de Firestore:", error);
+        // Vous pouvez ajouter ici une logique pour gérer la tentative de réexécution
+    }
 }
 
-// Appeler la fonction une seule fois
+// Lancement de la fonction d'initialisation
 configInitiale();
