@@ -1,0 +1,462 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Gestion des Classes Scolaires | ISC Lwanga</title>
+    <!-- Chargement de Tailwind CSS pour un style moderne et responsive -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <!-- Font Awesome pour les icônes -->
+    <script src="https://kit.fontawesome.com/a2e0e6a56b.js" crossorigin="anonymous"></script>
+    
+    <style>
+        /* Configuration de la police Inter */
+        @import url('https://fonts.googleapis.com/css2?family=Inter:wght@100..900&display=swap');
+        body {
+            font-family: 'Inter', sans-serif;
+        }
+        /* Style des liens dans la barre latérale */
+        .nav-link {
+            transition: all 0.2s;
+        }
+        .nav-link:hover {
+            background-color: #374151; /* gray-700 */
+        }
+        /* Masque le contenu tant que l'AuthGuard n'a pas validé l'utilisateur */
+        body:not(.loaded) {
+            display: none;
+        }
+        /* Style pour les notifications customisées */
+        #notification-area {
+            position: fixed;
+            top: 20px;
+            right: 20px;
+            z-index: 1000;
+        }
+        .notification {
+            padding: 1rem 1.5rem;
+            border-radius: 0.75rem;
+            color: white;
+            font-weight: 500;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+            opacity: 0;
+            transform: translateX(100%);
+            transition: opacity 0.3s, transform 0.3s;
+            margin-bottom: 0.5rem;
+        }
+        .notification.show {
+            opacity: 1;
+            transform: translateX(0);
+        }
+        .notification.success { background-color: #10b981; }
+        .notification.error { background-color: #ef4444; }
+        .notification.info { background-color: #3b82f6; }
+    </style>
+    
+</head>
+
+<body class="bg-gray-100 text-gray-900 flex min-h-screen">
+
+    <div id="notification-area"></div>
+
+    <!-- SIDEBAR (Navigation Latérale) -->
+    <aside class="w-64 bg-gray-800 text-white flex flex-col shadow-2xl flex-shrink-0">
+        <div class="p-6 text-2xl font-extrabold border-b border-gray-700 bg-gray-900">
+            ISC Lwanga <span class="text-indigo-400">Panel</span>
+        </div>
+        <nav class="flex-1 p-4 space-y-2">
+            
+            <a href="dashboard-admin.html" class="nav-link flex items-center gap-3 p-3 text-gray-200 rounded-lg">
+                <i class="fa-solid fa-gauge-high w-5"></i> Tableau de Bord
+            </a>
+            
+            <div class="pt-4 mt-4 border-t border-gray-700">
+                <p class="text-xs font-semibold uppercase tracking-wider text-gray-400 px-3 pb-2">Gestion Globale</p>
+                <a href="admin.html" class="nav-link flex items-center gap-3 p-3 text-gray-200 rounded-lg">
+                    <i class="fa-solid fa-users-gear w-5"></i> Comptes & Utilisateurs
+                </a>
+                <a href="admin-roles.html" class="nav-link flex items-center gap-3 p-3 text-gray-200 rounded-lg">
+                    <i class="fa-solid fa-shield-alt w-5"></i> Rôles & Permissions
+                </a>
+            </div>
+
+            <div class="pt-4 mt-4 border-t border-gray-700">
+                <p class="text-xs font-semibold uppercase tracking-wider text-gray-400 px-3 pb-2">Scolaire & Pédagogie</p>
+                 <a href="gestion-matieres.html" class="nav-link flex items-center gap-3 p-3 text-gray-200 rounded-lg">
+                    <i class="fa-solid fa-book w-5"></i> Matières
+                </a>
+                <a href="gestion-classes.html" class="nav-link flex items-center gap-3 p-3 bg-gray-700 rounded-lg font-semibold text-indigo-300">
+                    <i class="fa-solid fa-chalkboard-user w-5"></i> Classes & Sections
+                </a>
+                 <a href="inscriptions-eleves.html" class="nav-link flex items-center gap-3 p-3 text-gray-200 rounded-lg">
+                    <i class="fa-solid fa-user-plus w-5"></i> Inscriptions Élèves
+                </a>
+            </div>
+
+            <div class="pt-4 mt-4 border-t border-gray-700">
+                <p class="text-xs font-semibold uppercase tracking-wider text-gray-400 px-3 pb-2">Rapports & Finance</p>
+                <a href="config-frais.html" class="nav-link flex items-center gap-3 p-3 text-gray-200 rounded-lg">
+                    <i class="fa-solid fa-wallet w-5"></i> Gestion Financière
+                </a>
+                <a href="rapport-discipline.html" class="nav-link flex items-center gap-3 p-3 text-gray-200 rounded-lg">
+                    <i class="fa-solid fa-bell w-5"></i> Discipline & Absences
+                </a>
+            </div>
+
+        </nav>
+        <!-- Bouton de Déconnexion -->
+        <button id="logoutBtn" class="m-4 bg-red-600 hover:bg-red-700 p-3 rounded-xl font-semibold shadow-lg transition duration-200 flex items-center justify-center gap-3">
+            <i class="fa-solid fa-right-from-bracket"></i> Déconnexion
+        </button>
+    </aside>
+
+    <!-- CONTENU PRINCIPAL -->
+    <main class="flex-1 p-8 overflow-y-auto">
+        
+        <!-- HEADER / BANNIÈRE -->
+        <header class="mb-8 p-6 bg-white rounded-xl shadow-lg border-l-4 border-indigo-500 flex flex-col sm:flex-row justify-between items-start sm:items-center">
+            <h1 class="text-3xl font-extrabold text-gray-800 mb-2 sm:mb-0">Définition des Classes et Sections</h1>
+            <div class="text-right">
+                <p class="text-sm font-semibold text-indigo-600" id="userInfo">Chargement...</p>
+                <p class="text-xs text-gray-500">Créer le cadre scolaire pour les élèves et les cours</p>
+            </div>
+        </header>
+
+        <div class="grid grid-cols-1 lg:grid-cols-3 gap-6">
+
+            <!-- Carte de Saisie (Ajouter / Modifier) -->
+            <div class="lg:col-span-1 bg-white p-6 rounded-xl shadow-lg border-t-4 border-indigo-500 h-fit sticky top-8">
+                <h2 class="text-xl font-bold text-gray-800 mb-4 flex items-center gap-2">
+                    <i class="fa-solid fa-school text-indigo-500"></i> <span id="formTitle">Ajouter une Nouvelle Classe</span>
+                </h2>
+                <form id="classForm">
+                    <!-- Champ caché pour l'ID de la classe en mode édition -->
+                    <input type="hidden" id="classId"> 
+
+                    <div class="mb-4">
+                        <label for="levelName" class="block text-sm font-medium text-gray-700 mb-1">Niveau (ex: 7ème EB, 1er, 4ème)</label>
+                        <input type="text" id="levelName" required placeholder="ex: 7ème" class="w-full p-3 border border-gray-300 rounded-lg focus:ring-indigo-500 focus:border-indigo-500">
+                    </div>
+                    
+                    <div class="mb-4">
+                        <label for="sectionName" class="block text-sm font-medium text-gray-700 mb-1">Section (ex: EB, Pédagogie Générale, Scientifique)</label>
+                        <input type="text" id="sectionName" required placeholder="ex: Pédagogie Générale" class="w-full p-3 border border-gray-300 rounded-lg focus:ring-indigo-500 focus:border-indigo-500">
+                    </div>
+                    
+                    <div class="mb-6">
+                        <label for="order" class="block text-sm font-medium text-gray-700 mb-1">Ordre de Progression (1, 2, 3...)</label>
+                        <input type="number" id="order" required min="1" value="1" placeholder="Pour l'ordre dans les listes (1 est le plus bas niveau)" class="w-full p-3 border border-gray-300 rounded-lg focus:ring-indigo-500 focus:border-indigo-500">
+                    </div>
+
+                    <div class="flex gap-3">
+                        <button type="submit" id="saveClassBtn" class="flex-1 py-3 bg-indigo-600 text-white rounded-lg hover:bg-indigo-700 font-bold transition duration-200">
+                            <i class="fa-solid fa-save mr-2"></i> Enregistrer la Classe
+                        </button>
+                        <button type="button" id="cancelEditBtn" class="py-3 px-4 bg-gray-500 text-white rounded-lg hover:bg-gray-600 font-bold transition duration-200 hidden" onclick="resetForm()">
+                            <i class="fa-solid fa-times mr-2"></i> Annuler
+                        </button>
+                    </div>
+                </form>
+            </div>
+
+            <!-- Carte de Liste (Tableau) -->
+            <div class="lg:col-span-2 bg-white p-6 rounded-xl shadow-lg border-t-4 border-teal-500">
+                <h2 class="text-xl font-bold text-gray-800 mb-4 flex items-center gap-2">
+                    <i class="fa-solid fa-table text-teal-600"></i> Structure Scolaire Actuelle
+                </h2>
+
+                <div class="overflow-x-auto">
+                    <table class="min-w-full divide-y divide-gray-200">
+                        <thead class="bg-gray-50">
+                            <tr>
+                                <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Nom Complet (ID)</th>
+                                <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Niveau</th>
+                                <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Section</th>
+                                <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Ordre</th>
+                                <th class="px-6 py-3 text-right text-xs font-medium text-gray-500 uppercase tracking-wider">Actions</th>
+                            </tr>
+                        </thead>
+                        <tbody id="classesTableBody" class="bg-white divide-y divide-gray-200">
+                            <tr>
+                                <td colspan="5" class="text-center py-4 text-gray-500">Chargement des classes...</td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+    </main>
+
+    <!-- LOGIQUE JAVASCRIPT & FIREBASE -->
+    <script type="module">
+    import { initializeApp } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-app.js";
+    import { 
+        getAuth, onAuthStateChanged, signOut,
+        signInWithCustomToken, signInAnonymously
+    } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-auth.js";
+    import { 
+        getFirestore, collection, doc, setDoc, deleteDoc, 
+        onSnapshot, getDoc, query, setLogLevel
+    } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-firestore.js";
+
+    // IMPORTANT: UTILISATION DES VARIABLES GLOBALES FOURNIES PAR LE CONTEXTE
+    const appId = typeof __app_id !== 'undefined' ? __app_id : 'default-app-id';
+    const firebaseConfig = typeof __firebase_config !== 'undefined' ? JSON.parse(__firebase_config) : {};
+    
+    // 1. INITIALISATION FIREBASE
+    const app = initializeApp(firebaseConfig);
+    const auth = getAuth(app);
+    const db = getFirestore(app);
+    
+    // setLogLevel('Debug'); // Décommenter pour le débogage
+    
+    // Collection des classes: stockée dans la zone publique de l'application
+    const CLASSES_COLLECTION_PATH = `/artifacts/${appId}/public/data/classes`; 
+
+    // 2. ÉLÉMENTS DU DOM
+    const userInfo = document.getElementById('userInfo');
+    const logoutBtn = document.getElementById('logoutBtn');
+    const notificationArea = document.getElementById('notification-area');
+    const classesTableBody = document.getElementById('classesTableBody');
+    const classForm = document.getElementById('classForm');
+    const formTitle = document.getElementById('formTitle');
+    const cancelEditBtn = document.getElementById('cancelEditBtn');
+
+    // Champs du formulaire
+    const classIdInput = document.getElementById('classId');
+    const levelNameInput = document.getElementById('levelName');
+    const sectionNameInput = document.getElementById('sectionName');
+    const orderInput = document.getElementById('order');
+
+    // 3. FONCTIONNALITÉS UTILITAIRES
+
+    // Notification (remplace alert/confirm)
+    function showNotification(msg, type = "success") {
+        const notif = document.createElement("div");
+        notif.className = `notification ${type}`;
+        notif.textContent = msg;
+        notificationArea.appendChild(notif);
+        setTimeout(() => notif.classList.add('show'), 10);
+        setTimeout(() => {
+            notif.classList.remove('show');
+            setTimeout(() => notificationArea.removeChild(notif), 300);
+        }, 4000);
+    }
+    
+    // Déconnexion
+    async function handleLogout() {
+        await signOut(auth);
+        setTimeout(() => window.location.href = "index.html", 800);
+    }
+
+    // Fonction d'authentification initiale
+    async function initializeAuth() {
+        try {
+            if (typeof __initial_auth_token !== 'undefined' && __initial_auth_token) {
+                await signInWithCustomToken(auth, __initial_auth_token);
+            } else {
+                await signInAnonymously(auth);
+            }
+        } catch (error) {
+            console.error("Erreur d'authentification initiale:", error);
+            setTimeout(() => window.location.href = "index.html", 1500);
+        }
+    }
+
+    // Réinitialise le formulaire d'édition
+    window.resetForm = () => {
+        classForm.reset();
+        classIdInput.value = '';
+        formTitle.textContent = 'Ajouter une Nouvelle Classe';
+        cancelEditBtn.classList.add('hidden');
+        document.getElementById('saveClassBtn').innerHTML = '<i class="fa-solid fa-save mr-2"></i> Enregistrer la Classe';
+    };
+
+    // 4. LOGIQUE FIREBASE (CRUD Classes)
+
+    // Génère un ID unique et lisible basé sur le niveau et la section (ex: 7eme-eb)
+    function generateClassId(level, section) {
+        // Nettoie et met en minuscules : ex. '7ème EB' -> '7eme-eb'
+        const cleanLevel = level.trim().toLowerCase().replace(/\s/g, '').replace('è', 'e');
+        const cleanSection = section.trim().toLowerCase().replace(/\s/g, '').replace('è', 'e');
+        return `${cleanLevel}-${cleanSection}`;
+    }
+
+    // Soumission du formulaire (Créer/Mettre à jour)
+    classForm.addEventListener('submit', async (e) => {
+        e.preventDefault();
+
+        const levelName = levelNameInput.value.trim();
+        const sectionName = sectionNameInput.value.trim();
+        const order = parseInt(orderInput.value, 10);
+        const existingClassId = classIdInput.value;
+
+        if (!levelName || !sectionName || isNaN(order) || order < 1) {
+            showNotification("Veuillez remplir tous les champs correctement.", "error");
+            return;
+        }
+
+        // Déterminer le ClassId pour l'enregistrement
+        const newClassId = existingClassId || generateClassId(levelName, sectionName);
+
+        // Données à enregistrer
+        const classData = { 
+            levelName: levelName,
+            sectionName: sectionName,
+            fullName: `${levelName} ${sectionName}`, // Nom complet pour affichage (ex: 7ème EB)
+            order: order
+        };
+
+        try {
+            const docRef = doc(db, CLASSES_COLLECTION_PATH, newClassId);
+
+            if (existingClassId && existingClassId !== newClassId) {
+                // Si l'ID a changé (cas rare), on supprime l'ancien et crée le nouveau
+                await deleteDoc(doc(db, CLASSES_COLLECTION_PATH, existingClassId));
+            }
+            
+            await setDoc(docRef, classData);
+
+            showNotification(`✅ Classe '${classData.fullName}' enregistrée !`, "success");
+            resetForm();
+        } catch (err) {
+            console.error("Erreur d'enregistrement de la classe:", err);
+            showNotification("Erreur: Impossible d'enregistrer la classe. Vérifiez les données.", "error");
+        }
+    });
+
+    // Charger les données d'une classe dans le formulaire
+    window.loadClassForEdit = (id, levelName, sectionName, order) => {
+        classIdInput.value = id;
+        levelNameInput.value = levelName;
+        sectionNameInput.value = sectionName;
+        orderInput.value = order;
+
+        formTitle.textContent = `Modifier : ${levelName} ${sectionName}`;
+        cancelEditBtn.classList.remove('hidden');
+        document.getElementById('saveClassBtn').innerHTML = '<i class="fa-solid fa-sync-alt mr-2"></i> Mettre à jour';
+
+        window.scrollTo({ top: 0, behavior: 'smooth' }); // Remonter en haut de page pour le formulaire
+    };
+
+    // Supprimer une classe
+    window.deleteClass = async (id, fullName) => {
+        // NOTE: Utiliser un modal UI à la place de confirm() dans une application réelle
+        if (!window.confirm(`Voulez-vous vraiment supprimer la classe: ${fullName} ?\n\nATTENTION : Cette action affectera l'affectation des élèves et des cours.`)) return;
+
+        try {
+            await deleteDoc(doc(db, CLASSES_COLLECTION_PATH, id));
+            showNotification(`🗑️ Classe '${fullName}' supprimée.`, "info");
+            resetForm(); // Au cas où l'utilisateur éditait ce rôle
+        } catch (err) {
+            console.error("Erreur de suppression de la classe:", err);
+            showNotification("Erreur: Impossible de supprimer la classe.", "error");
+        }
+    };
+
+    // ✅ Écouteur en temps réel pour charger la liste des classes
+    function setupClassesListener() {
+        const q = query(collection(db, CLASSES_COLLECTION_PATH));
+
+        onSnapshot(q, (snapshot) => {
+            classesTableBody.innerHTML = ''; // Vider le tableau
+            
+            // Sortir les données et les trier localement par 'order'
+            const classesList = [];
+            snapshot.forEach(docSnap => classesList.push({ id: docSnap.id, ...docSnap.data() }));
+
+            // Tri par 'order' ascendant (pour afficher 7ème, 8ème, 1er, 2ème...)
+            classesList.sort((a, b) => a.order - b.order);
+
+            if (classesList.length === 0) {
+                classesTableBody.innerHTML = `<tr><td colspan="5" class="text-center py-4 text-gray-500 italic">Aucune classe ou section définie.</td></tr>`;
+                return;
+            }
+
+            classesList.forEach(data => {
+                const row = classesTableBody.insertRow();
+                row.className = 'hover:bg-gray-50';
+                
+                // Nom Complet / ID
+                row.insertCell().innerHTML = `<span class="font-semibold text-gray-800">${data.fullName}</span><br><span class="text-xs text-gray-500">${data.id}</span>`;
+                
+                // Niveau
+                row.insertCell().textContent = data.levelName;
+                
+                // Section
+                row.insertCell().textContent = data.sectionName;
+                
+                // Ordre
+                row.insertCell().innerHTML = `<span class="px-3 py-1 bg-teal-100 text-teal-800 rounded-full text-xs font-bold">${data.order}</span>`;
+                
+                // Actions
+                const actionsCell = row.insertCell();
+                actionsCell.className = 'px-6 py-3 whitespace-nowrap text-right text-sm font-medium space-x-2';
+                
+                const editFn = `window.loadClassForEdit('${data.id}', '${data.levelName}', '${data.sectionName}', ${data.order})`;
+                const deleteFn = `window.deleteClass('${data.id}', '${data.fullName}')`;
+
+                actionsCell.innerHTML = `
+                    <button onclick="${editFn}" 
+                            class="text-indigo-600 hover:text-indigo-900 transition duration-150">
+                        <i class="fa-solid fa-edit"></i> Modifier
+                    </button>
+                    <button onclick="${deleteFn}" 
+                            class="text-red-600 hover:text-red-900 transition duration-150 ml-3">
+                        <i class="fa-solid fa-trash"></i> Supprimer
+                    </button>
+                `;
+            });
+        }, (error) => {
+            console.error("Erreur de l'écouteur Firestore (Classes):", error);
+            classesTableBody.innerHTML = `<tr><td colspan="5" class="text-center py-4 text-red-500">Erreur de connexion à la base de données.</td></tr>`;
+        });
+    }
+
+    // 5. GESTION DES ÉVÉNEMENTS & AUTHENTIFICATION
+    
+    // Événement de déconnexion
+    logoutBtn.addEventListener("click", handleLogout);
+    
+    // Gestion de l'état d'authentification
+    onAuthStateChanged(auth, user => {
+        document.body.classList.add('loaded'); // Afficher le contenu une fois l'état connu
+        const userId = user?.uid;
+
+        if (!user) {
+            showNotification("Session expirée ou non autorisée.", "error");
+            setTimeout(() => window.location.href = "index.html", 1000);
+        } else {
+            // Utilisateur connecté
+            
+            // Récupération des données utilisateur pour l'affichage et la vérification de rôle
+            getDoc(doc(db, 'users', userId)).then(docSnap => {
+                if (docSnap.exists()) {
+                    const data = docSnap.data();
+                    const role = data.role.charAt(0).toUpperCase() + data.role.slice(1);
+                    userInfo.textContent = `${data.nom || data.email} (${role})`;
+                    
+                    // NOUVEAU CONTRÔLE DE RÔLE : Admin, Préfet et Directeur des Études uniquement
+                    if (data.role !== 'admin' && data.role !== 'prefet' && data.role !== 'directeur_etudes') {
+                        showNotification("Accès non autorisé à cette page. Seuls l'Admin, le Préfet et le Directeur des Études sont autorisés.", "error");
+                        // Redirection vers le tableau de bord approprié pour leur rôle
+                        setTimeout(() => window.location.href = `dashboard-${data.role}.html`, 1500); 
+                        return;
+                    }
+                    setupClassesListener(); // Charger la liste si l'utilisateur est autorisé
+                } else {
+                    console.warn("Document utilisateur manquant. Accès limité.");
+                    setupClassesListener();
+                }
+            }).catch(err => {
+                console.error("Erreur de récupération du document utilisateur:", err);
+                setupClassesListener();
+            });
+        }
+    });
+
+    // Lancement de l'authentification au chargement
+    initializeAuth();
+    </script>
+</body>
+</html>
