@@ -1,297 +1,378 @@
 <!DOCTYPE html>
 <html lang="fr">
 <head>
-  <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Configuration des Frais Scolaires - Institut Saint Charles Lwanga (SIGS)</title>
-  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700;800&display=swap" rel="stylesheet">
-  <style>
-    :root {
-      --bleu-fonce: #1e40af; 
-      --gris-fonce: #1f2937;
-      --vert-finance: #047857; /* Accent Principal (Sauvegarde) */
-      --gris-bordure: #d1d5db; 
-      --ombre-legere: rgba(0,0,0,0.08);
-      --jaune-alerte: #fcd34d; /* Bouton d'édition */
-    }
-    body {
-      font-family: 'Inter', sans-serif;
-      background-color: #f4f6f8;
-      margin: 0;
-      padding: 2rem 1rem;
-      color: var(--gris-fonce);
-    }
-    h1 {
-      text-align: center;
-      font-size: 1.8rem;
-      color: var(--bleu-fonce);
-      margin-bottom: 0.5rem;
-    }
-    h2 {
-      text-align: center;
-      font-size: 1rem;
-      font-weight: normal;
-      color: #6b7280;
-      margin-bottom: 2rem;
-    }
-    .container {
-        max-width: 1000px;
-        margin: auto;
-    }
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Configuration des Frais Scolaires - ISC Lwanga (SIGS)</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700;800&display=swap" rel="stylesheet">
+    
+    <style>
+        body {
+            font-family: 'Inter', sans-serif;
+            background-color: #f1f5f9; /* Slate 100 */
+        }
+        /* Styles personnalisés pour la table et l'édition */
+        .montant-input, .text-input, .select-input {
+            width: 100%;
+            padding: 0.5rem 0.75rem;
+            border: 1px solid #d1d5db;
+            border-radius: 6px;
+            font-size: 0.9rem;
+            transition: border-color 0.2s;
+        }
+        .montant-input:focus, .text-input:focus, .select-input:focus {
+            outline: none;
+            border-color: #22c55e; /* Vert émeraude au focus */
+            box-shadow: 0 0 0 1px #22c55e;
+        }
+        .montant-input {
+            text-align: right;
+            max-width: 120px;
+        }
+        @media (max-width: 768px) {
+            .frais-table-wrapper {
+                border-radius: 0;
+            }
+            .frais-table th, .frais-table td {
+                padding: 0.75rem 0.5rem;
+                font-size: 0.85rem;
+            }
+        }
+    </style>
 
-    /* --- CARTE DE CONFIGURATION --- */
-    .config-card {
-        background-color: white;
-        padding: 2rem;
-        border-radius: 12px;
-        box-shadow: 0 4px 10px var(--ombre-legere);
-        border-top: 5px solid var(--vert-finance);
-    }
-    
-    /* --- TABLEAU DES FRAIS --- */
-    .frais-table-wrapper {
-        overflow-x: auto; 
-    }
-    .frais-table {
-        width: 100%;
-        border-collapse: collapse;
-        min-width: 700px;
-    }
-    .frais-table th, .frais-table td {
-        padding: 1rem;
-        text-align: left;
-        border-bottom: 1px solid #e5e7eb;
-    }
-    .frais-table th {
-        background-color: #f3f4f6;
-        color: var(--gris-fonce);
-        font-weight: 600;
-        text-transform: uppercase;
-        font-size: 0.8rem;
-    }
-    
-    /* Champs de saisie du montant */
-    .montant-input {
-        width: 100px;
-        padding: 0.5rem;
-        border: 1px solid var(--gris-bordure);
-        border-radius: 4px;
-        text-align: right;
-        font-weight: 600;
-    }
-
-    /* Boutons d'action */
-    .btn-edit, .btn-save, .btn-cancel {
-        padding: 0.5rem 0.8rem;
-        border: none;
-        border-radius: 4px;
-        cursor: pointer;
-        font-size: 0.85rem;
-        font-weight: 600;
-        margin-right: 0.5rem;
-    }
-    .btn-edit { background-color: var(--jaune-alerte); color: var(--gris-fonce); }
-    .btn-save { background-color: var(--vert-finance); color: white; }
-    .btn-cancel { background-color: #e5e7eb; color: var(--gris-fonce); }
-    
-    /* Bouton d'ajout d'une nouvelle ligne */
-    .btn-add-row {
-        margin-top: 1.5rem;
-        padding: 0.75rem 1.5rem;
-        background-color: var(--vert-finance);
-        color: white;
-        border: none;
-        border-radius: 8px;
-        font-weight: 600;
-        cursor: pointer;
-    }
-    .btn-add-row:hover { background-color: #059669; }
-
-    /* Message de succès/erreur */
-    #message {
-        margin-top: 1rem;
-        padding: 1rem;
-        border-radius: 8px;
-        text-align: center;
-        display: none;
-    }
-    .msg-success { background-color: #d1fae5; color: var(--vert-finance); }
-    
-    .btn-retour {
-        display: block;
-        text-align: center;
-        margin-top: 2rem;
-        color: var(--gris-fonce);
-        text-decoration: none;
-        font-size: 0.9rem;
-    }
-  </style>
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    colors: {
+                        'primary-green': '#059669', /* Vert émeraude 600 */
+                        'primary-dark': '#1e293b', /* Slate 800 */
+                        'accent-yellow': '#f59e0b', /* Ambre 500 */
+                        'accent-red': '#ef4444', /* Rouge 500 */
+                    }
+                }
+            }
+        }
+    </script>
 </head>
-<body>
-  <div class="container">
-    <h1>⚙️ Configuration des Frais Scolaires</h1>
-    <h2>Définissez les montants pour l'année en cours (en USD).</h2>
+<body class="p-4 md:p-8">
+    <div class="container mx-auto max-w-6xl">
+        <header class="text-center mb-8">
+            <h1 class="text-3xl font-extrabold text-primary-dark mb-1">
+                ⚙️ Configuration des Frais Scolaires
+            </h1>
+            <h2 class="text-lg text-gray-500 font-medium">
+                Gestion centralisée des montants pour l'Institut Saint Charles Lwanga (en USD).
+            </h2>
+        </header>
 
-    <div class="config-card">
-        
-        <div class="frais-table-wrapper">
-            <table class="frais-table">
-                <thead>
-                    <tr>
-                        <th>Poste de Dépense</th>
-                        <th>Niveau/Section</th>
-                        <th>Montant (USD)</th>
-                        <th>Fréquence</th>
-                        <th>Action</th>
-                    </tr>
-                </thead>
-                <tbody id="fraisBody">
+        <div id="message" class="hidden p-4 mb-4 rounded-lg font-semibold text-center transition duration-300"></div>
+
+        <div class="bg-white p-6 md:p-8 rounded-xl shadow-2xl border-t-4 border-primary-green">
+            
+            <div class="frais-table-wrapper overflow-x-auto rounded-lg border border-gray-200">
+                <table class="frais-table w-full min-w-[800px] divide-y divide-gray-200">
+                    <thead>
+                        <tr class="bg-gray-50 text-left">
+                            <th class="p-4 text-xs font-semibold text-gray-600 uppercase tracking-wider">Poste de Dépense</th>
+                            <th class="p-4 text-xs font-semibold text-gray-600 uppercase tracking-wider">Niveau/Section</th>
+                            <th class="p-4 text-xs font-semibold text-gray-600 uppercase tracking-wider text-right">Montant (USD)</th>
+                            <th class="p-4 text-xs font-semibold text-gray-600 uppercase tracking-wider">Fréquence</th>
+                            <th class="p-4 text-xs font-semibold text-gray-600 uppercase tracking-wider w-40">Action</th>
+                        </tr>
+                    </thead>
+                    <tbody id="fraisBody" class="bg-white divide-y divide-gray-100">
+                        <!-- Les lignes de frais seront insérées ici par JavaScript -->
+                        <tr><td colspan="5" class="p-8 text-center text-gray-500 italic">Chargement des données...</td></tr>
                     </tbody>
-            </table>
+                </table>
+            </div>
+
+            <button onclick="addRow()" class="btn-add-row mt-6 flex items-center justify-center space-x-2 px-6 py-3 bg-primary-green text-white font-bold rounded-lg shadow-md hover:bg-emerald-600 transition duration-200">
+                <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 6v6m0 0v6m0-6h6m-6 0H6"></path></svg>
+                <span>Ajouter un Nouveau Frais</span>
+            </button>
+            
         </div>
 
-        <button class="btn-add-row" onclick="addRow()">+ Ajouter un Nouveau Frais</button>
-        
-        <div id="message"></div>
-
+        <a href="connexion.html" class="block text-center mt-6 text-gray-500 hover:text-primary-dark transition duration-200 font-medium">
+            ← Retour à l'accueil / Connexion
+        </a>
     </div>
 
-    <a href="finance.html" class="btn-retour">← Retour au Menu Gestion Financière</a>
-  </div>
+    <!-- SCRIPT DE LOGIQUE ET FIREBASE -->
+    <script type="module">
+        import { initializeApp } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-app.js";
+        import { getAuth, signInWithCustomToken, signInAnonymously } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-auth.js";
+        import { getFirestore, collection, onSnapshot, doc, setDoc, deleteDoc, runTransaction, getDocs, query, where, connectFirestoreEmulator, setLogLevel } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-firestore.js";
 
-  <script>
-    // --- SIMULATION DE DONNÉES ET FONCTIONS ---
-    
-    // Données de configuration actuelles (Simule la lecture de la base de données)
-    let fraisConfig = [
-        { id: 1, poste: 'Minerval Annuel', niveau: 'Secondaire', montant: 300, frequence: 'Annuel', editable: false },
-        { id: 2, poste: 'Frais d\'Inscription', niveau: 'Toutes', montant: 25, frequence: 'Unique', editable: false },
-        { id: 3, poste: 'Minerval Annuel', niveau: 'Primaire', montant: 150, frequence: 'Annuel', editable: false },
-        { id: 4, poste: 'Fournitures Scolaires', niveau: 'Primaire', montant: 15, frequence: 'Trimestriel', editable: false },
-    ];
-    
-    let nextId = 5;
-
-    function renderTable() {
-        const body = document.getElementById('fraisBody');
-        body.innerHTML = '';
+        // Configuration et Initialisation (MANDATORY GLOBALS)
+        const appId = typeof __app_id !== 'undefined' ? __app_id : 'default-app-id';
+        const firebaseConfig = JSON.parse(typeof __firebase_config !== 'undefined' ? __firebase_config : '{}');
+        const initialAuthToken = typeof __initial_auth_token !== 'undefined' ? __initial_auth_token : null;
         
-        fraisConfig.forEach(frais => {
-            const row = body.insertRow();
-            row.id = `row-${frais.id}`;
+        let db;
+        let auth;
+        let userId = null;
+        let feesData = [];
+        let editingId = null; // Stocke l'ID du document en cours d'édition
 
-            // Cellules de données
-            const posteCell = row.insertCell();
-            const niveauCell = row.insertCell();
-            const montantCell = row.insertCell();
-            const frequenceCell = row.insertCell();
-            const actionCell = row.insertCell();
+        const COLLECTION_PATH = `/artifacts/${appId}/public/data/fees_config`;
 
-            if (frais.editable) {
-                // Mode Édition
-                posteCell.innerHTML = `<input type="text" id="poste-${frais.id}" value="${frais.poste}" />`;
-                niveauCell.innerHTML = `<input type="text" id="niveau-${frais.id}" value="${frais.niveau}" />`;
-                montantCell.innerHTML = `<input type="number" id="montant-${frais.id}" class="montant-input" value="${frais.montant}" min="0" />`;
-                frequenceCell.innerHTML = `<select id="frequence-${frais.id}">
-                                            <option value="Annuel" ${frais.frequence === 'Annuel' ? 'selected' : ''}>Annuel</option>
-                                            <option value="Trimestriel" ${frais.frequence === 'Trimestriel' ? 'selected' : ''}>Trimestriel</option>
-                                            <option value="Unique" ${frais.frequence === 'Unique' ? 'selected' : ''}>Unique</option>
-                                        </select>`;
+        // Options prédéfinies pour l'UX
+        const NIVEAUX = ['Primaire', 'Secondaire', 'Toutes', '3e Année', '4e Année'];
+        const FREQUENCES = ['Annuel', 'Trimestriel', 'Mensuel', 'Unique'];
+        
+        // --- 1. FONCTIONS UTILITAIRES ---
+
+        function showMessage(text, isSuccess) {
+            const messageDiv = document.getElementById('message');
+            messageDiv.textContent = text;
+            
+            messageDiv.className = `p-4 mb-4 rounded-lg font-semibold text-center transition duration-300 ${isSuccess 
+                ? 'bg-green-100 text-primary-green' 
+                : 'bg-red-100 text-accent-red'}`;
+            messageDiv.classList.remove('hidden');
+
+            setTimeout(() => {
+                messageDiv.classList.add('hidden');
+            }, 4000);
+        }
+
+        function createSelectOptions(options, selectedValue) {
+            return options.map(option => 
+                `<option value="${option}" ${option === selectedValue ? 'selected' : ''}>${option}</option>`
+            ).join('');
+        }
+
+        // --- 2. LOGIQUE D'AFFICHAGE DU TABLEAU ---
+
+        function renderTable() {
+            const body = document.getElementById('fraisBody');
+            body.innerHTML = '';
+            
+            if (feesData.length === 0) {
+                body.innerHTML = `<tr><td colspan="5" class="p-8 text-center text-gray-500 italic">Aucun frais scolaire configuré. Cliquez sur "Ajouter un Nouveau Frais" pour commencer.</td></tr>`;
+                return;
+            }
+
+            feesData.forEach(frais => {
+                const isEditing = frais.id === editingId;
+                const row = body.insertRow();
+                row.className = 'hover:bg-gray-50 transition duration-100';
+
+                // Colonnes du tableau
+                const posteCell = row.insertCell();
+                const niveauCell = row.insertCell();
+                const montantCell = row.insertCell();
+                const frequenceCell = row.insertCell();
+                const actionCell = row.insertCell();
                 
-                actionCell.innerHTML = `
-                    <button class="btn-save" onclick="saveRow(${frais.id})">💾 Sauvegarder</button>
-                    <button class="btn-cancel" onclick="cancelEdit(${frais.id})">✖️ Annuler</button>
-                `;
-            } else {
+                // Mode Édition
+                if (isEditing) {
+                    posteCell.innerHTML = `<input type="text" id="poste-${frais.id}" class="text-input" value="${frais.poste || ''}" placeholder="Ex: Minerval Annuel" />`;
+                    niveauCell.innerHTML = `<select id="niveau-${frais.id}" class="select-input">${createSelectOptions(NIVEAUX, frais.niveau)}</select>`;
+                    montantCell.innerHTML = `<input type="number" id="montant-${frais.id}" class="montant-input" value="${frais.montant || 0}" min="0" step="0.01" />`;
+                    frequenceCell.innerHTML = `<select id="frequence-${frais.id}" class="select-input">${createSelectOptions(FREQUENCES, frais.frequence)}</select>`;
+                    
+                    actionCell.innerHTML = `
+                        <button class="btn-save px-3 py-1 bg-primary-green text-white font-semibold rounded hover:bg-emerald-600 transition duration-150 text-sm" onclick="saveFee('${frais.id}')">
+                            💾 Sauver
+                        </button>
+                        <button class="btn-cancel px-3 py-1 bg-gray-300 text-gray-800 font-semibold rounded hover:bg-gray-400 transition duration-150 text-sm ml-1" onclick="cancelEdit('${frais.id}')">
+                            ✖️ Annuler
+                        </button>
+                    `;
+                } 
                 // Mode Lecture
-                posteCell.textContent = frais.poste;
-                niveauCell.textContent = frais.niveau;
-                montantCell.innerHTML = `${frais.montant.toFixed(2)} USD`;
-                frequenceCell.textContent = frais.frequence;
+                else {
+                    posteCell.textContent = frais.poste;
+                    niveauCell.textContent = frais.niveau;
+                    montantCell.className = "text-right font-medium text-primary-dark";
+                    montantCell.textContent = `${(frais.montant || 0).toFixed(2)} USD`;
+                    frequenceCell.textContent = frais.frequence;
 
-                actionCell.innerHTML = `
-                    <button class="btn-edit" onclick="editRow(${frais.id})">✏️ Modifier</button>
-                `;
+                    actionCell.innerHTML = `
+                        <button class="btn-edit px-3 py-1 bg-accent-yellow text-primary-dark font-semibold rounded hover:bg-amber-600 transition duration-150 text-sm" onclick="toggleEdit('${frais.id}')">
+                            ✏️ Modifier
+                        </button>
+                        <button class="btn-delete px-3 py-1 bg-accent-red text-white font-semibold rounded hover:bg-red-600 transition duration-150 text-sm ml-1" onclick="deleteFee('${frais.id}', '${frais.poste}')">
+                            🗑️ Supprimer
+                        </button>
+                    `;
+                }
+
+                // Assurez-vous que toutes les cellules ont le bon padding
+                [posteCell, niveauCell, montantCell, frequenceCell, actionCell].forEach(cell => cell.classList.add('p-4'));
+            });
+        }
+
+        // --- 3. LOGIQUE CRUD FIREBASE ---
+
+        // Fonction d'ajout d'une nouvelle ligne
+        window.addRow = function() {
+            if (editingId) {
+                showMessage("Veuillez terminer l'édition de la ligne actuelle avant d'en ajouter une nouvelle.", false);
+                return;
             }
-        });
-    }
 
-    function editRow(id) {
-        const index = fraisConfig.findIndex(f => f.id === id);
-        if (index !== -1) {
-            fraisConfig[index].editable = true;
+            const newId = `new-${Date.now()}`;
+            feesData.unshift({
+                id: newId,
+                poste: 'Nouveau Frais',
+                niveau: NIVEAUX[0],
+                montant: 0,
+                frequence: FREQUENCES[0],
+                createdAt: new Date()
+            });
+            editingId = newId;
             renderTable();
         }
-    }
 
-    function cancelEdit(id) {
-        const index = fraisConfig.findIndex(f => f.id === id);
-        if (index !== -1) {
-            // Si la ligne est nouvelle (n'a pas encore d'ID réel), on la supprime
-            if (id >= nextId) {
-                fraisConfig.splice(index, 1);
-            } else {
-                // Sinon, on annule simplement le mode édition
-                fraisConfig[index].editable = false;
+        // Fonction pour basculer en mode édition
+        window.toggleEdit = function(id) {
+            if (editingId && editingId !== id) {
+                showMessage("Veuillez sauvegarder ou annuler la ligne en cours d'édition.", false);
+                return;
             }
+            editingId = id;
             renderTable();
         }
-    }
 
-    function saveRow(id) {
-        const index = fraisConfig.findIndex(f => f.id === id);
-        if (index !== -1) {
-            // Récupérer les nouvelles valeurs
-            const newPoste = document.getElementById(`poste-${id}`).value;
+        // Fonction pour annuler l'édition
+        window.cancelEdit = function(id) {
+            const index = feesData.findIndex(f => f.id === id);
+            if (index !== -1) {
+                // Si c'est une nouvelle ligne, on la supprime de l'array
+                if (id.startsWith('new-')) {
+                    feesData.splice(index, 1);
+                }
+                // Sinon, l'annulation reviendra à l'état précédent grâce à onSnapshot (après avoir retiré editingId)
+            }
+            editingId = null;
+            renderTable();
+            if (!id.startsWith('new-')) {
+                 showMessage("Modification annulée. L'état précédent a été restauré.", true);
+            }
+        }
+
+
+        // Fonction de suppression (Firestore)
+        window.deleteFee = async function(docId, posteName) {
+            if (!db) return showMessage("Firestore non initialisé.", false);
+            
+            // Remplacement de window.confirm() par une alerte visuelle (meilleure pratique dans un iframe)
+            if (!confirm(`Êtes-vous sûr de vouloir supprimer le frais : "${posteName}" ?`)) return;
+
+            try {
+                const feeDocRef = doc(db, COLLECTION_PATH, docId);
+                await deleteDoc(feeDocRef);
+                showMessage(`🗑️ Le frais "${posteName}" a été supprimé avec succès.`, true);
+            } catch (error) {
+                console.error("Erreur de suppression:", error);
+                showMessage(`Échec de la suppression du frais. Erreur: ${error.message}`, false);
+            }
+        }
+
+
+        // Fonction de sauvegarde (Firestore)
+        window.saveFee = async function(id) {
+            if (!db) return showMessage("Firestore non initialisé.", false);
+
+            const newPoste = document.getElementById(`poste-${id}`).value.trim();
             const newNiveau = document.getElementById(`niveau-${id}`).value;
             const newMontant = parseFloat(document.getElementById(`montant-${id}`).value);
             const newFrequence = document.getElementById(`frequence-${id}`).value;
 
-            if (!newPoste || !newNiveau || isNaN(newMontant)) {
-                 showMessage("Veuillez remplir tous les champs obligatoires avec des valeurs valides.", false);
-                 return;
+            if (!newPoste || !newNiveau || isNaN(newMontant) || newMontant < 0) {
+                showMessage("Veuillez remplir tous les champs correctement (Montant doit être un nombre positif).", false);
+                return;
             }
 
-            // Mettre à jour les données
-            fraisConfig[index].poste = newPoste;
-            fraisConfig[index].niveau = newNiveau;
-            fraisConfig[index].montant = newMontant;
-            fraisConfig[index].frequence = newFrequence;
-            fraisConfig[index].editable = false; // Sortir du mode édition
+            const feeData = {
+                poste: newPoste,
+                niveau: newNiveau,
+                montant: newMontant,
+                frequence: newFrequence,
+                updatedAt: new Date().toISOString()
+            };
+            
+            try {
+                if (id.startsWith('new-')) {
+                    // C'est un nouvel enregistrement
+                    await setDoc(doc(collection(db, COLLECTION_PATH)), {...feeData, createdAt: new Date().toISOString()});
+                    showMessage(`✅ Nouveau frais sauvegardé avec succès.`, true);
+                } else {
+                    // C'est une mise à jour
+                    await setDoc(doc(db, COLLECTION_PATH, id), feeData, { merge: true });
+                    showMessage(`✅ Frais mis à jour avec succès.`, true);
+                }
 
-            // Simuler l'envoi à la base de données
-            console.log("Sauvegarde en base de données:", fraisConfig[index]);
-
-            renderTable();
-            showMessage("✅ Configuration des frais sauvegardée avec succès!", true);
+                editingId = null; // Sortir du mode édition. onSnapshot mettra à jour le tableau.
+            } catch (error) {
+                console.error("Erreur de sauvegarde:", error);
+                showMessage(`Échec de la sauvegarde. Erreur: ${error.message}`, false);
+            }
         }
-    }
 
-    function addRow() {
-        const newFrais = { 
-            id: nextId++, 
-            poste: '', 
-            niveau: '', 
-            montant: 0, 
-            frequence: 'Annuel', 
-            editable: true 
-        };
-        fraisConfig.push(newFrais);
-        renderTable();
-    }
+        // --- 4. INITIALISATION ET FIREBASE SETUP ---
+        
+        async function setupFirebase() {
+            try {
+                if (Object.keys(firebaseConfig).length === 0) {
+                    throw new Error("Configuration Firebase manquante. Vérifiez la variable __firebase_config.");
+                }
 
-    function showMessage(text, success) {
-        const messageDiv = document.getElementById('message');
-        messageDiv.textContent = text;
-        messageDiv.className = success ? 'msg-success' : 'msg-error';
-        messageDiv.style.display = 'block';
-        setTimeout(() => {
-            messageDiv.style.display = 'none';
-        }, 3000);
-    }
+                const app = initializeApp(firebaseConfig);
+                auth = getAuth(app);
+                db = getFirestore(app);
 
-    // Chargement initial
-    document.addEventListener('DOMContentLoaded', renderTable);
-  </script>
+                // setLogLevel('debug'); // Utile pour le débogage
+
+                // Authentification
+                if (initialAuthToken) {
+                    await signInWithCustomToken(auth, initialAuthToken);
+                } else {
+                    await signInAnonymously(auth);
+                }
+
+                userId = auth.currentUser?.uid || crypto.randomUUID();
+                
+                // Écoute des données en temps réel
+                startSnapshotListener();
+
+            } catch (error) {
+                console.error("Erreur d'initialisation Firebase:", error);
+                showMessage(`Erreur Critique: Impossible de charger l'application. ${error.message}`, false);
+            }
+        }
+
+        function startSnapshotListener() {
+            const feesCollection = collection(db, COLLECTION_PATH);
+            
+            // Écoute en temps réel des changements
+            onSnapshot(feesCollection, (snapshot) => {
+                const newFeesData = [];
+                snapshot.forEach((doc) => {
+                    const data = doc.data();
+                    // Ajouter le doc.id au document (crucial pour l'édition/suppression)
+                    newFeesData.push({ id: doc.id, ...data });
+                });
+                
+                // Trier par poste ou date de création pour la cohérence
+                newFeesData.sort((a, b) => (a.poste || '').localeCompare(b.poste || ''));
+
+                feesData = newFeesData;
+                renderTable(); // Re-render la table avec les nouvelles données
+            }, (error) => {
+                console.error("Erreur d'écoute Firestore:", error);
+                showMessage("Erreur de connexion à la base de données en temps réel. Veuillez recharger la page.", false);
+            });
+        }
+        
+        // Démarrage de l'application
+        document.addEventListener('DOMContentLoaded', setupFirebase);
+    </script>
 </body>
 </html>
