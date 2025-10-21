@@ -1,0 +1,149 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Dashboard Pédagogue | ISC Lwanga</title>
+    <!-- Chargement de Tailwind CSS -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <!-- Font Awesome pour les icônes -->
+    <script src="https://kit.fontawesome.com/a2e0e6a56b.js" crossorigin="anonymous"></script>
+    
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Inter:wght@100..900&display=swap');
+        body { font-family: 'Inter', sans-serif; background-color: #f0fdf4; } /* bg-green-50 */
+        body:not(.loaded) { display: none; }
+        .card { transition: transform 0.2s, box-shadow 0.2s; }
+        .card:hover { transform: translateY(-3px); box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1), 0 4px 6px -2px rgba(0, 0, 0, 0.05); }
+    </style>
+</head>
+<body>
+    <div class="container mx-auto p-4 sm:p-8">
+        <!-- HEADER -->
+        <header class="text-center mb-10 p-6 bg-white rounded-xl shadow-2xl border-b-8 border-green-500">
+            <h1 class="text-4xl font-extrabold text-gray-900 flex items-center justify-center gap-3">
+                <i class="fa-solid fa-graduation-cap text-green-600"></i> Tableau de Bord Pédagogue
+            </h1>
+            <h2 class="text-xl font-medium text-gray-600 mt-2">
+                Gestion académique des notes, des résultats et des bulletins scolaires.
+            </h2>
+            <p id="userInfo" class="text-sm text-green-700 font-semibold mt-3">Chargement de l'utilisateur...</p>
+        </header>
+
+        <!-- SECTIONS DU DASHBOARD -->
+        <div class="space-y-12">
+            <!-- 1. GESTION DES RÉSULTATS -->
+            <section>
+                <h3 class="text-2xl font-bold text-gray-800 border-b-2 border-teal-400 pb-2 mb-6 flex items-center gap-2">
+                    <i class="fa-solid fa-book-open-reader text-teal-500"></i> Suivi Académique
+                </h3>
+                <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
+                    <!-- Saisie des Notes -->
+                    <a href="saisie-notes.html" class="card bg-white p-6 rounded-xl shadow-lg border-l-4 border-teal-500 flex flex-col items-center text-center">
+                        <i class="fa-solid fa-pencil-ruler text-teal-600 text-3xl mb-3"></i>
+                        <p class="font-bold text-lg text-gray-800">Saisie des Notes</p>
+                        <p class="text-sm text-gray-500">Accès pour la saisie et modification des notes.</p>
+                    </a>
+                    <!-- Validation Bulletins -->
+                    <a href="validation-bulletins.html" class="card bg-white p-6 rounded-xl shadow-lg border-l-4 border-teal-500 flex flex-col items-center text-center">
+                        <i class="fa-solid fa-check-to-slot text-teal-600 text-3xl mb-3"></i>
+                        <p class="font-bold text-lg text-gray-800">Validation des Bulletins</p>
+                        <p class="text-sm text-gray-500">Revue finale et publication des résultats.</p>
+                    </a>
+                    <!-- Consulter Bulletins -->
+                    <a href="consultation-bulletin.html" class="card bg-white p-6 rounded-xl shadow-lg border-l-4 border-teal-500 flex flex-col items-center text-center">
+                        <i class="fa-solid fa-clipboard-list text-teal-600 text-3xl mb-3"></i>
+                        <p class="font-bold text-lg text-gray-800">Consultation des Bulletins</p>
+                        <p class="text-sm text-gray-500">Voir les résultats publiés (WIP).</p>
+                    </a>
+                    <!-- WIP: Gestion des Classes (Existant) -->
+                    <a href="gestion-classes.html" class="card bg-white p-6 rounded-xl shadow-lg border-l-4 border-teal-500 flex flex-col items-center text-center opacity-70 cursor-not-allowed">
+                        <i class="fa-solid fa-chalkboard text-teal-600 text-3xl mb-3"></i>
+                        <p class="font-bold text-lg text-gray-800">Gestion des Classes</p>
+                        <p class="text-sm text-gray-500">Ajouter/Modifier les classes (WIP).</p>
+                    </a>
+                </div>
+            </section>
+        </div>
+
+        <button id="logoutBtn" class="mt-12 py-3 px-6 bg-red-600 text-white rounded-lg hover:bg-red-700 font-semibold transition duration-200 shadow-md">
+            <i class="fa-solid fa-sign-out-alt"></i> Déconnexion
+        </button>
+    </div>
+
+    <!-- LOGIQUE JAVASCRIPT & FIREBASE -->
+    <script type="module">
+    import { initializeApp } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-app.js";
+    import { 
+        getAuth, onAuthStateChanged, signOut,
+        signInWithCustomToken, signInAnonymously
+    } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-auth.js";
+    import { getFirestore, doc, getDoc } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-firestore.js";
+
+    const appId = typeof __app_id !== 'undefined' ? __app_id : 'default-app-id';
+    const firebaseConfig = typeof __firebase_config !== 'undefined' ? JSON.parse(__firebase_config) : {};
+    
+    // 1. INITIALISATION FIREBASE
+    const app = initializeApp(firebaseConfig);
+    const auth = getAuth(app);
+    const db = getFirestore(app);
+    
+    const AUTHORIZED_ROLE = 'pedagogue'; // Rôle unique autorisé pour ce dashboard
+    const userInfo = document.getElementById('userInfo');
+    const logoutBtn = document.getElementById('logoutBtn');
+    
+    // Fonction utilitaire pour la déconnexion
+    async function handleLogout() {
+        await signOut(auth);
+        window.location.href = "index.html";
+    }
+    
+    logoutBtn.addEventListener("click", handleLogout);
+
+    // 2. GESTION DE L'AUTHENTIFICATION ET DE L'AUTORISATION
+    onAuthStateChanged(auth, user => {
+        document.body.classList.add('loaded');
+        if (!user) {
+            window.location.href = "index.html";
+            return;
+        }
+
+        getDoc(doc(db, 'users', user.uid)).then(docSnap => {
+            if (docSnap.exists()) {
+                const data = docSnap.data();
+                const userRole = data.role;
+                const roleDisplay = userRole.charAt(0).toUpperCase() + userRole.slice(1);
+                userInfo.textContent = `Connecté en tant que: ${data.nom || data.email} (${roleDisplay})`;
+                
+                if (userRole !== AUTHORIZED_ROLE) {
+                    // Redirection si le rôle n'est pas correct
+                    alert(`Accès non autorisé. Redirection vers le dashboard ${userRole}.`);
+                    window.location.href = `dashboard-${userRole}.html`;
+                }
+            } else {
+                alert("Erreur utilisateur: Document manquant.");
+                signOut(auth);
+            }
+        }).catch(err => {
+            console.error("Erreur de récupération du document utilisateur:", err);
+            alert("Erreur serveur lors de l'authentification.");
+            signOut(auth);
+        });
+    });
+
+    // Initialisation de l'authentification dans l'environnement canvas
+    function initializeAuth() {
+        const token = typeof __initial_auth_token !== 'undefined' ? __initial_auth_token : null;
+        if (token) {
+            signInWithCustomToken(auth, token).catch(e => {
+                console.error("Custom token sign in failed (Pedagogue):", e);
+                signInAnonymously(auth);
+            });
+        } else {
+            signInAnonymously(auth);
+        }
+    }
+    initializeAuth();
+    </script>
+</body>
+</html>
