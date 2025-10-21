@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>Enregistrement de Paiement | ISC Lwanga Finance</title>
+    <title>Saisie des Notes | ISC Lwanga Pédagogie</title>
     <!-- Chargement de Tailwind CSS -->
     <script src="https://cdn.tailwindcss.com"></script>
     <!-- Font Awesome pour les icônes -->
@@ -11,17 +11,29 @@
     
     <style>
         @import url('https://fonts.googleapis.com/css2?family=Inter:wght@100..900&display=swap');
-        body { font-family: 'Inter', sans-serif; background-color: #f3ffec; } /* Léger vert pâle pour la finance */
+        body { font-family: 'Inter', sans-serif; background-color: #f9fafb; } /* bg-gray-50 */
         body:not(.loaded) { display: none; }
         /* Style pour les notifications customisées */
         #notification-area { position: fixed; top: 20px; right: 20px; z-index: 1000; }
         .notification { padding: 1rem 1.5rem; border-radius: 0.75rem; color: white; font-weight: 500; box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1); opacity: 0; transform: translateX(100%); transition: opacity 0.3s, transform 0.3s; margin-bottom: 0.5rem; }
         .notification.show { opacity: 1; transform: translateX(0); }
-        .notification.success { background-color: #059669; } /* Vert foncé */
+        .notification.success { background-color: #10b981; }
         .notification.error { background-color: #ef4444; }
         .notification.info { background-color: #3b82f6; }
         
-        .card-shadow { box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1), 0 4px 6px -2px rgba(0, 0, 0, 0.05); }
+        /* Ajustement pour les champs de notes */
+        .note-input {
+            width: 100%;
+            text-align: center;
+            padding: 0.5rem;
+            border: 1px solid #d1d5db;
+            border-radius: 0.375rem;
+            transition: border-color 0.2s, box-shadow 0.2s;
+        }
+        .note-input:focus {
+            border-color: #4f46e5;
+            box-shadow: 0 0 0 3px rgba(79, 70, 229, 0.1);
+        }
     </style>
 </head>
 <body>
@@ -29,105 +41,82 @@
     
     <div class="container mx-auto p-4 sm:p-8">
         <!-- HEADER -->
-        <header class="text-center mb-8 p-6 bg-white rounded-xl card-shadow border-b-4 border-green-700">
+        <header class="text-center mb-8 p-6 bg-white rounded-xl shadow-lg border-b-4 border-indigo-600">
             <h1 class="text-3xl font-extrabold text-gray-800 flex items-center justify-center gap-3">
-                <i class="fa-solid fa-money-check-dollar text-green-700"></i> Encaissement des Frais Scolaires
+                <i class="fa-solid fa-calculator text-indigo-600"></i> Saisie des Résultats Académiques
             </h1>
             <h2 class="text-lg font-medium text-gray-500 mt-1">
-                Enregistrer un versement pour un élève et visualiser son solde.
+                Enregistrement des notes pour la classe et la matière sélectionnées.
             </h2>
-            <p id="userInfo" class="text-sm text-green-700 font-semibold mt-2">Chargement de l'utilisateur...</p>
+            <p id="userInfo" class="text-sm text-indigo-600 font-semibold mt-2">Chargement de l'utilisateur...</p>
         </header>
 
-        <div class="grid grid-cols-1 lg:grid-cols-3 gap-8">
-            <!-- COLONNE 1: RECHERCHE D'ÉLÈVE ET RAPPEL DU SOLDE -->
-            <div class="lg:col-span-1 bg-white p-6 rounded-xl shadow-2xl border-t-4 border-teal-500 h-fit">
-                <h3 class="text-xl font-bold text-teal-700 mb-6 flex items-center gap-2">
-                    <i class="fa-solid fa-user-check"></i> Informations de l'Élève
-                </h3>
+        <div class="bg-white p-6 md:p-8 rounded-xl shadow-2xl border-t-4 border-indigo-400">
+            <!-- SÉLECTEURS DE FILTRE -->
+            <div class="grid grid-cols-1 md:grid-cols-4 gap-4 mb-8">
+                <!-- SÉLECTEUR DE CLASSE -->
+                <div>
+                    <label for="classeSelect" class="block text-sm font-medium text-gray-700 mb-2">Classe :</label>
+                    <select id="classeSelect" class="w-full p-2 border border-gray-300 rounded-lg focus:ring-indigo-500 focus:border-indigo-500 bg-white shadow-sm">
+                        <option value="">-- Sélectionnez une classe --</option>
+                    </select>
+                </div>
                 
-                <!-- SÉLECTION DE L'ÉLÈVE (Recherche) -->
-                <div class="mb-4">
-                    <label for="searchEleve" class="block text-sm font-medium text-gray-700">Rechercher un Élève (Matricule)</label>
-                    <input type="text" id="searchEleve" placeholder="Entrez le Matricule" class="w-full p-2 border border-gray-300 rounded-lg focus:ring-teal-500 focus:border-teal-500 mt-1" autocomplete="off" required>
-                    <div id="searchResults" class="absolute z-10 w-64 bg-white border border-gray-200 rounded-b-lg shadow-lg">
-                        <!-- Résultats de la recherche ici -->
-                    </div>
-                    <input type="hidden" id="eleveId" required>
+                <!-- SÉLECTEUR DE MATIÈRE -->
+                <div>
+                    <label for="matiereSelect" class="block text-sm font-medium text-gray-700 mb-2">Matière :</label>
+                    <select id="matiereSelect" class="w-full p-2 border border-gray-300 rounded-lg focus:ring-indigo-500 focus:border-indigo-500 bg-white shadow-sm" disabled>
+                        <option value="">-- Sélectionnez une matière --</option>
+                    </select>
+                </div>
+                
+                <!-- SÉLECTEUR DE PONDÉRATION -->
+                <div>
+                    <label for="ponderationSelect" class="block text-sm font-medium text-gray-700 mb-2">Pondération (Période) :</label>
+                    <select id="ponderationSelect" class="w-full p-2 border border-gray-300 rounded-lg focus:ring-indigo-500 focus:border-indigo-500 bg-white shadow-sm" disabled>
+                        <option value="">-- Sélectionnez la pondération --</option>
+                        <option value="INT1-30">Interrogation 1 (30%)</option>
+                        <option value="INT2-30">Interrogation 2 (30%)</option>
+                        <option value="EXA-40">Examen (40%)</option>
+                        <option value="FIN-100">Note Finale (100%)</option>
+                    </select>
                 </div>
 
-                <!-- AFFICHAGE DES INFOS ÉLÈVE/SOLDE -->
-                <div id="eleveInfoCard" class="p-4 border border-gray-200 rounded-lg bg-gray-50 hidden transition-all duration-300">
-                    <p class="text-lg font-bold text-gray-800"><i class="fa-solid fa-user-graduate mr-2"></i><span id="eleveName"></span></p>
-                    <p class="text-sm text-gray-600 mb-2">Classe: <span id="eleveClasse" class="font-medium"></span></p>
-                    
-                    <hr class="my-3 border-gray-300">
-
-                    <p class="text-sm font-medium text-gray-700">Frais Annuels Dûs:</p>
-                    <span id="fraisTotal" class="text-xl font-extrabold text-indigo-600">0.00 USD</span>
-                    
-                    <p class="text-sm font-medium text-gray-700 mt-3">Montant Déjà Payé:</p>
-                    <span id="montantPaye" class="text-xl font-extrabold text-green-600">0.00 USD</span>
-                    
-                    <p class="text-sm font-medium text-gray-700 mt-3">SOLDE RESTANT À PAYER:</p>
-                    <span id="soldeRestant" class="text-2xl font-extrabold" data-solde="0">0.00 USD</span>
+                 <!-- CHAMPS DE MAXIMA -->
+                <div>
+                    <label for="noteMaxima" class="block text-sm font-medium text-gray-700 mb-2">Note Maxima :</label>
+                    <input type="number" id="noteMaxima" value="100" min="1" class="w-full p-2 border border-gray-300 rounded-lg focus:ring-indigo-500 focus:border-indigo-500 mt-1 text-center font-bold bg-indigo-50" readonly>
                 </div>
-                <p id="loadingStatus" class="text-center text-sm text-gray-500 mt-4 hidden">Chargement du solde...</p>
-                
             </div>
 
-            <!-- COLONNES 2 & 3: FORMULAIRE D'ENREGISTREMENT -->
-            <div class="lg:col-span-2 bg-white p-6 md:p-8 rounded-xl shadow-2xl border-t-4 border-green-700">
-                <h3 class="text-xl font-bold text-gray-800 mb-6 flex items-center gap-2">
-                    <i class="fa-solid fa-file-invoice-dollar text-green-700"></i> Détails du Versement
-                </h3>
-                
-                <form id="paiementForm" class="space-y-6">
-                    <!-- MONTANT VERSÉ -->
-                    <div>
-                        <label for="montantVerse" class="block text-sm font-medium text-gray-700">Montant Versé (USD)</label>
-                        <div class="relative mt-1 rounded-md shadow-sm">
-                            <div class="pointer-events-none absolute inset-y-0 left-0 flex items-center pl-3">
-                                <span class="text-gray-500 sm:text-sm">$</span>
-                            </div>
-                            <input type="number" step="any" min="1" id="montantVerse" placeholder="0.00" class="block w-full rounded-lg border-gray-300 pl-7 pr-12 focus:border-green-500 focus:ring-green-500 p-3" required>
-                            <div class="pointer-events-none absolute inset-y-0 right-0 flex items-center pr-3">
-                                <span class="text-gray-500 sm:text-sm" id="price-currency">USD</span>
-                            </div>
-                        </div>
-                    </div>
+            <!-- GRILLE DE SAISIE DES NOTES -->
+            <form id="notesForm">
+                <div class="overflow-x-auto rounded-lg border border-gray-200 shadow-inner">
+                    <table class="min-w-full divide-y divide-gray-200">
+                        <thead class="bg-gray-100">
+                            <tr>
+                                <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider w-16">#</th>
+                                <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider w-1/2">Nom et Prénom</th>
+                                <th class="px-6 py-3 text-center text-xs font-medium text-gray-500 uppercase tracking-wider w-32">Note / <span id="maximaHeader">100</span></th>
+                                <th class="px-6 py-3 text-center text-xs font-medium text-gray-500 uppercase tracking-wider w-32">Ancienne Note</th>
+                            </tr>
+                        </thead>
+                        <tbody id="elevesNotesBody" class="bg-white divide-y divide-gray-200">
+                            <tr>
+                                <td colspan="4" class="text-center py-8 text-gray-500">Sélectionnez la classe, la matière et la pondération pour commencer.</td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
 
-                    <!-- MODE DE PAIEMENT -->
-                    <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
-                        <div>
-                            <label for="modePaiement" class="block text-sm font-medium text-gray-700">Mode de Paiement</label>
-                            <select id="modePaiement" class="w-full p-3 border border-gray-300 rounded-lg focus:ring-green-500 focus:border-green-500 mt-1 bg-white" required>
-                                <option value="">Sélectionner le mode</option>
-                                <option value="Cash">Cash</option>
-                                <option value="Transfert Bancaire">Transfert Bancaire</option>
-                                <option value="Mobile Money">Mobile Money (M-Pesa, Airtel Money, etc.)</option>
-                            </select>
-                        </div>
-
-                        <!-- DATE DU PAIEMENT (par défaut aujourd'hui) -->
-                        <div>
-                            <label for="datePaiement" class="block text-sm font-medium text-gray-700">Date du Versement</label>
-                            <input type="date" id="datePaiement" class="w-full p-3 border border-gray-300 rounded-lg focus:ring-green-500 focus:border-green-500 mt-1" required>
-                        </div>
-                    </div>
-
-                    <!-- RÉFÉRENCE / NOTES -->
-                    <div>
-                        <label for="reference" class="block text-sm font-medium text-gray-700">Référence (Facultatif, ex: N° bordereau ou note)</label>
-                        <input type="text" id="reference" placeholder="Référence de la transaction ou note" class="w-full p-3 border border-gray-300 rounded-lg focus:ring-green-500 focus:border-green-500 mt-1">
-                    </div>
-
-                    <button type="submit" id="submitBtn" class="w-full py-3 bg-green-600 text-white rounded-lg font-semibold hover:bg-green-700 transition duration-200 flex items-center justify-center gap-2 disabled:opacity-50" disabled>
-                        <i class="fa-solid fa-upload"></i> Valider et Enregistrer le Paiement
+                <!-- BOUTON DE SAUVEGARDE -->
+                <div class="mt-8 text-center">
+                    <button type="submit" id="saveNotesBtn" class="py-3 px-8 bg-indigo-600 text-white rounded-lg font-semibold hover:bg-indigo-700 transition duration-200 flex items-center justify-center gap-2 mx-auto disabled:opacity-50" disabled>
+                        <i class="fa-solid fa-save"></i> Enregistrer Toutes les Notes (Mise à Jour)
                     </button>
-                    <p id="validationMessage" class="text-sm text-center text-red-500 mt-2 hidden">Veuillez d'abord sélectionner un élève.</p>
-                </form>
-            </div>
+                    <p id="saveStatus" class="mt-2 text-sm text-red-500 hidden">Veuillez remplir tous les filtres.</p>
+                </div>
+            </form>
         </div>
 
         <button id="logoutBtn" class="mt-8 py-2 px-4 bg-red-600 text-white rounded-lg hover:bg-red-700 font-semibold transition duration-200">
@@ -143,8 +132,8 @@
         signInWithCustomToken, signInAnonymously
     } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-auth.js";
     import { 
-        getFirestore, collection, doc, addDoc, 
-        onSnapshot, getDoc, query, where, setLogLevel, getDocs
+        getFirestore, collection, doc, setDoc, 
+        onSnapshot, getDoc, query, where, setLogLevel, getDocs, runTransaction
     } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-firestore.js";
 
     // IMPORTANT: UTILISATION DES VARIABLES GLOBALES FOURNIES PAR LE CONTEXTE
@@ -160,34 +149,32 @@
 
     // Chemins de collections
     const ELEVES_PATH = `/artifacts/${appId}/public/data/eleves`;
-    const PAIEMENTS_PATH = `/artifacts/${appId}/public/data/paiements`;
-    const FRAIS_CONFIG_PATH = `/artifacts/${appId}/public/data/configFrais`;
+    const NOTES_PATH = `/artifacts/${appId}/public/data/notes`; // Collection pour stocker les notes
+    const ASSIGNATION_PATH = `/artifacts/${appId}/public/data/assignationCours`;
     const CLASSES_PATH = `/artifacts/${appId}/public/data/classes`;
+    const MATIERES_PATH = `/artifacts/${appId}/public/data/matieres`;
 
     // 2. ÉLÉMENTS DU DOM
     const notificationArea = document.getElementById('notification-area');
     const logoutBtn = document.getElementById('logoutBtn');
-    const searchEleveInput = document.getElementById('searchEleve');
-    const eleveIdInput = document.getElementById('eleveId');
-    const searchResultsDiv = document.getElementById('searchResults');
-    const eleveInfoCard = document.getElementById('eleveInfoCard');
-    const paiementForm = document.getElementById('paiementForm');
-    const submitBtn = document.getElementById('submitBtn');
-    const validationMessage = document.getElementById('validationMessage');
+    const userInfo = document.getElementById('userInfo');
     
-    // Affichage des données
-    const eleveNameSpan = document.getElementById('eleveName');
-    const eleveClasseSpan = document.getElementById('eleveClasse');
-    const fraisTotalSpan = document.getElementById('fraisTotal');
-    const montantPayeSpan = document.getElementById('montantPaye');
-    const soldeRestantSpan = document.getElementById('soldeRestant');
+    const classeSelect = document.getElementById('classeSelect');
+    const matiereSelect = document.getElementById('matiereSelect');
+    const ponderationSelect = document.getElementById('ponderationSelect');
+    const noteMaximaInput = document.getElementById('noteMaxima');
+    const maximaHeader = document.getElementById('maximaHeader');
+    const elevesNotesBody = document.getElementById('elevesNotesBody');
+    const notesForm = document.getElementById('notesForm');
+    const saveNotesBtn = document.getElementById('saveNotesBtn');
+    const saveStatus = document.getElementById('saveStatus');
     
     // 3. CACHE ET DONNÉES GLOBALES
     let currentUserId = null;
-    let userRole = null;
-    let eleveDataCache = null;
-    let fraisConfigCache = null; // Stocke la configuration des frais par niveau
-    const AUTHORIZED_ROLES = ['admin', 'econome'];
+    let classesTaught = []; // Cache des classes enseignées
+    let matieresTaught = {}; // {classeId: [{id, name}]}
+    let currentEleves = []; // Liste des élèves de la classe sélectionnée
+    const AUTHORIZED_ROLES = ['enseignant'];
 
     // 4. FONCTIONNALITÉS UTILITAIRES
     function showNotification(msg, type = "success") {
@@ -207,181 +194,292 @@
         setTimeout(() => window.location.href = "index.html", 800);
     }
     
-    function formatCurrency(amount) {
-        return new Intl.NumberFormat('fr-FR', { style: 'currency', currency: 'USD' }).format(amount);
-    }
-    
-    // 5. CHARGEMENT DE LA CONFIGURATION DES FRAIS (Une seule fois)
-    async function loadFraisConfig() {
-        try {
-            const docRef = doc(db, FRAIS_CONFIG_PATH, 'currentConfig');
-            const docSnap = await getDoc(docRef);
-            if (docSnap.exists()) {
-                fraisConfigCache = docSnap.data().fraisParNiveau || {};
-            } else {
-                fraisConfigCache = {};
-                showNotification("Attention: La configuration des frais est manquante.", "error");
-            }
-        } catch (err) {
-            console.error("Erreur de chargement de la config des frais:", err);
-            showNotification("Erreur critique: Échec du chargement des frais.", "error");
-        }
-    }
-
-    // 6. CALCUL DU SOLDE ET MISE À JOUR DE L'AFFICHAGE
-    async function updateSolde(eleve) {
-        if (!fraisConfigCache) {
-            await loadFraisConfig();
-        }
-
-        const classeDoc = await getDoc(doc(db, CLASSES_PATH, eleve.classeId));
-        const niveau = classeDoc.exists() ? classeDoc.data().levelName : null;
-
-        if (!niveau) {
-            eleveClasseSpan.textContent = eleve.classeNom || 'N/A';
-            fraisTotalSpan.textContent = 'N/A';
-            montantPayeSpan.textContent = 'N/A';
-            soldeRestantSpan.textContent = 'N/A';
-            soldeRestantSpan.classList.remove('text-green-600', 'text-red-600');
-            showNotification("Impossible de trouver le niveau de l'élève pour calculer les frais.", "error");
-            return;
-        }
-
-        const fraisTotal = fraisConfigCache[niveau] || 0;
+    function updateControlsState() {
+        const classeSelected = !!classeSelect.value;
+        const matiereSelected = !!matiereSelect.value;
+        const ponderationSelected = !!ponderationSelect.value;
         
-        // 1. Récupérer tous les paiements pour cet élève (query)
-        const paiementsQuery = query(
-            collection(db, PAIEMENTS_PATH),
-            where('eleveId', '==', eleve.id)
-        );
-        const paiementsSnapshot = await getDocs(paiementsQuery);
-        
-        let montantPaye = 0;
-        paiementsSnapshot.forEach(docSnap => {
-            montantPaye += docSnap.data().montantVerse;
-        });
-        
-        const soldeRestant = fraisTotal - montantPaye;
+        matiereSelect.disabled = !classeSelected;
+        ponderationSelect.disabled = !matiereSelected;
+        saveNotesBtn.disabled = !(classeSelected && matiereSelected && ponderationSelected);
 
-        // Mise à jour de l'affichage
-        eleveClasseSpan.textContent = classeDoc.data().fullName || 'N/A';
-        fraisTotalSpan.textContent = formatCurrency(fraisTotal);
-        montantPayeSpan.textContent = formatCurrency(montantPaye);
-        soldeRestantSpan.textContent = formatCurrency(Math.abs(soldeRestant));
-        soldeRestantSpan.dataset.solde = soldeRestant; // Stocker la valeur numérique
-        
-        soldeRestantSpan.classList.remove('text-green-600', 'text-red-600', 'text-gray-800');
-        if (soldeRestant > 0) {
-            soldeRestantSpan.classList.add('text-red-600');
-            soldeRestantSpan.parentElement.lastChild.textContent = 'SOLDE RESTANT À PAYER:';
-        } else if (soldeRestant <= 0) {
-            soldeRestantSpan.classList.add('text-green-600');
-            soldeRestantSpan.parentElement.lastChild.textContent = 'CRÉDIT / SOLDÉ:';
+        if (saveNotesBtn.disabled) {
+            saveStatus.classList.remove('hidden');
         } else {
-            soldeRestantSpan.classList.add('text-gray-800');
-            soldeRestantSpan.parentElement.lastChild.textContent = 'SOLDE RESTANT À PAYER:';
+            saveStatus.classList.add('hidden');
         }
-        
-        eleveInfoCard.classList.remove('hidden');
-        submitBtn.disabled = false;
-        validationMessage.classList.add('hidden');
     }
 
-    // 7. RECHERCHE D'ÉLÈVE
-    let searchTimeout = null;
-
-    searchEleveInput.addEventListener('input', () => {
-        clearTimeout(searchTimeout);
-        const searchTerm = searchEleveInput.value.trim().toUpperCase();
-        searchResultsDiv.innerHTML = '';
+    // 5. CHARGEMENT DES CLASSES ET MATIÈRES DE L'ENSEIGNANT
+    async function loadTeacherAssignments(teacherId) {
+        classeSelect.innerHTML = `<option value="">-- Chargement... --</option>`;
         
-        eleveInfoCard.classList.add('hidden');
-        eleveIdInput.value = '';
-        submitBtn.disabled = true;
-        validationMessage.classList.remove('hidden');
-
-        if (searchTerm.length < 3) return;
-
-        searchTimeout = setTimeout(async () => {
-            try {
-                // Recherche stricte sur le matricule
-                const q = query(
-                    collection(db, ELEVES_PATH),
-                    where('matricule', '==', searchTerm) 
-                );
-                
-                const querySnapshot = await getDocs(q);
-                
-                if (querySnapshot.empty) {
-                    searchResultsDiv.innerHTML = '<div class="p-2 text-sm text-gray-500">Aucun élève trouvé avec ce matricule.</div>';
-                    return;
-                }
-
-                querySnapshot.forEach(docSnap => {
-                    const data = docSnap.data();
-                    // Sélectionne l'élève trouvé directement
-                    eleveDataCache = { id: docSnap.id, ...data };
-                    eleveIdInput.value = docSnap.id;
-                    eleveNameSpan.textContent = `${data.nom} ${data.postNom} ${data.prenom}`;
-                    
-                    updateSolde(eleveDataCache);
-                    searchResultsDiv.innerHTML = '';
-                });
-
-            } catch (error) {
-                console.error("Erreur de recherche d'élève:", error);
-                showNotification("Erreur lors de la recherche.", "error");
+        try {
+            // Étape 1: Récupérer les assignations de cours pour cet enseignant
+            const q = query(collection(db, ASSIGNATION_PATH), where('teacherId', '==', teacherId));
+            const snapshot = await getDocs(q);
+            
+            if (snapshot.empty) {
+                classeSelect.innerHTML = `<option value="">-- Aucune assignation trouvée --</option>`;
+                showNotification("Vous n'avez pas de cours assignés.", "info");
+                return;
             }
-        }, 500);
+
+            // Étape 2: Collecter les IDs de classes et matières
+            const classeIds = new Set();
+            const matiereIds = new Set();
+            const assignments = [];
+
+            snapshot.forEach(docSnap => {
+                const data = docSnap.data();
+                assignments.push(data);
+                classeIds.add(data.classeId);
+                matiereIds.add(data.matiereId);
+            });
+
+            // Étape 3: Récupérer les noms complets des Classes et Matières
+            const [classesSnapshot, matieresSnapshot] = await Promise.all([
+                getDocs(query(collection(db, CLASSES_PATH), where('__name__', 'in', Array.from(classeIds)))),
+                getDocs(query(collection(db, MATIERES_PATH), where('__name__', 'in', Array.from(matiereIds))))
+            ]);
+
+            const classesMap = {};
+            classesSnapshot.forEach(docSnap => classesMap[docSnap.id] = docSnap.data().fullName);
+            const matieresMap = {};
+            matieresSnapshot.forEach(docSnap => matieresMap[docSnap.id] = docSnap.data().nom);
+
+            // Étape 4: Structurer les données dans le cache global (matieresTaught)
+            matieresTaught = {};
+            assignments.forEach(assign => {
+                if (classesMap[assign.classeId] && matieresMap[assign.matiereId]) {
+                    if (!matieresTaught[assign.classeId]) {
+                        matieresTaught[assign.classeId] = [];
+                    }
+                    matieresTaught[assign.classeId].push({
+                        id: assign.matiereId,
+                        name: matieresMap[assign.matiereId]
+                    });
+                }
+            });
+
+            // Étape 5: Remplir le sélecteur de Classe
+            classesTaught = Array.from(classeIds).map(id => ({
+                id: id,
+                name: classesMap[id]
+            })).sort((a, b) => a.name.localeCompare(b.name));
+            
+            classeSelect.innerHTML = `<option value="">-- Sélectionnez une classe --</option>`;
+            classesTaught.forEach(c => {
+                const option = document.createElement('option');
+                option.value = c.id;
+                option.textContent = c.name;
+                classeSelect.appendChild(option);
+            });
+            
+            matiereSelect.innerHTML = `<option value="">-- Sélectionnez une matière --</option>`;
+
+        } catch (err) {
+            console.error("Erreur de chargement des assignations:", err);
+            classeSelect.innerHTML = `<option value="">-- Erreur de chargement --</option>`;
+            showNotification("Erreur de chargement des données. Rechargez la page.", "error");
+        }
+    }
+
+    // 6. GESTION DES FILTRES
+    
+    // Événement de sélection de classe
+    classeSelect.addEventListener('change', () => {
+        const classeId = classeSelect.value;
+        
+        // 1. Réinitialiser la matière
+        matiereSelect.innerHTML = `<option value="">-- Sélectionnez une matière --</option>`;
+        
+        // 2. Remplir les matières correspondantes
+        if (classeId && matieresTaught[classeId]) {
+            matieresTaught[classeId].sort((a, b) => a.name.localeCompare(b.name)).forEach(m => {
+                const option = document.createElement('option');
+                option.value = m.id;
+                option.textContent = m.name;
+                matiereSelect.appendChild(option);
+            });
+        }
+        
+        // 3. Réinitialiser le tableau et le formulaire
+        elevesNotesBody.innerHTML = `<tr><td colspan="4" class="text-center py-8 text-gray-500">Sélectionnez une matière et la pondération.</td></tr>`;
+        currentEleves = [];
+        
+        updateControlsState();
     });
 
-    // 8. SOUMISSION DU FORMULAIRE DE PAIEMENT
-    paiementForm.addEventListener('submit', async (e) => {
+    // Événement de sélection de matière/pondération (charge le tableau des élèves et les notes existantes)
+    [matiereSelect, ponderationSelect].forEach(select => {
+        select.addEventListener('change', () => {
+            const classeId = classeSelect.value;
+            const matiereId = matiereSelect.value;
+            const ponderation = ponderationSelect.value;
+            
+            updateControlsState();
+            
+            if (classeId && matiereId && ponderation) {
+                loadElevesAndNotes(classeId, matiereId, ponderation);
+            } else {
+                elevesNotesBody.innerHTML = `<tr><td colspan="4" class="text-center py-8 text-gray-500">Sélectionnez la matière et la pondération.</td></tr>`;
+            }
+        });
+    });
+    
+    // 7. CHARGEMENT DES ÉLÈVES ET DES NOTES EXISTANTES
+    async function loadElevesAndNotes(classeId, matiereId, ponderation) {
+        elevesNotesBody.innerHTML = `<tr><td colspan="4" class="text-center py-4 text-indigo-500"><i class="fa-solid fa-spinner fa-spin mr-2"></i> Chargement des élèves et des notes...</td></tr>`;
+
+        try {
+            // Étape 1: Charger la liste des élèves actifs de la classe
+            const elevesQuery = query(collection(db, ELEVES_PATH), where('classeId', '==', classeId), where('statut', '==', 'actif'));
+            const elevesSnapshot = await getDocs(elevesQuery);
+            
+            currentEleves = [];
+            elevesSnapshot.forEach(docSnap => {
+                currentEleves.push({ id: docSnap.id, ...docSnap.data() });
+            });
+            
+            // Tri par nom
+            currentEleves.sort((a, b) => a.nom.localeCompare(b.nom));
+
+            if (currentEleves.length === 0) {
+                elevesNotesBody.innerHTML = `<tr><td colspan="4" class="text-center py-8 text-gray-500">Aucun élève actif trouvé dans cette classe.</td></tr>`;
+                return;
+            }
+
+            // Étape 2: Charger les notes existantes pour cette combinaison (classe/matière/pondération)
+            // L'ID du document Note sera: CLASSEID_MATIEREID_PONDERATION
+            const noteDocId = `${classeId}_${matiereId}_${ponderation}`;
+            const noteDocRef = doc(db, NOTES_PATH, noteDocId);
+            const noteDocSnap = await getDoc(noteDocRef);
+            const existingNotes = noteDocSnap.exists() ? noteDocSnap.data().notes || {} : {};
+
+            // Étape 3: Remplir la grille de saisie
+            elevesNotesBody.innerHTML = '';
+            
+            currentEleves.forEach((eleve, index) => {
+                const row = elevesNotesBody.insertRow();
+                const eleveFullName = `${eleve.nom} ${eleve.postNom} ${eleve.prenom}`;
+                const noteExistante = existingNotes[eleve.id] !== undefined ? existingNotes[eleve.id] : '';
+
+                // Col 1: #
+                row.insertCell().textContent = index + 1;
+                
+                // Col 2: Nom et Prénom
+                row.insertCell().innerHTML = `<span class="font-medium text-gray-800">${eleveFullName}</span><br><span class="text-xs text-gray-500">${eleve.matricule}</span>`;
+
+                // Col 3: Champ de saisie de la Note
+                row.insertCell().innerHTML = `
+                    <input type="number" 
+                        data-eleve-id="${eleve.id}" 
+                        value="${noteExistante}" 
+                        min="0" 
+                        max="${noteMaximaInput.value}" 
+                        step="0.1"
+                        class="note-input focus:border-indigo-600 focus:ring-indigo-600">
+                `;
+                row.cells[2].className = 'px-6 py-3 whitespace-nowrap';
+
+                // Col 4: Ancienne Note (pour comparaison)
+                row.insertCell().innerHTML = noteExistante !== '' ? `<span class="font-semibold text-sm text-green-600">${noteExistante}</span>` : `<span class="text-xs text-gray-400">N/A</span>`;
+                row.cells[3].className = 'px-6 py-3 whitespace-nowrap text-center';
+            });
+
+        } catch (error) {
+            console.error("Erreur de chargement des élèves ou des notes:", error);
+            showNotification("Erreur lors du chargement des données. Vérifiez les consoles.", "error");
+        }
+    }
+
+    // 8. SOUMISSION DU FORMULAIRE (ENREGISTREMENT DES NOTES)
+    notesForm.addEventListener('submit', async (e) => {
         e.preventDefault();
 
-        const eleveId = eleveIdInput.value;
-        const montantVerse = parseFloat(paiementForm.montantVerse.value);
-        const modePaiement = paiementForm.modePaiement.value;
-        const datePaiement = paiementForm.datePaiement.value;
-        const reference = paiementForm.reference.value.trim();
-
-        if (!eleveId || !eleveDataCache || montantVerse <= 0) {
-            showNotification("Veuillez remplir tous les champs et sélectionner un élève valide.", "error");
+        if (saveNotesBtn.disabled) {
+            showNotification("Veuillez sélectionner tous les filtres (Classe, Matière, Pondération).", "error");
             return;
         }
 
-        const record = {
-            eleveId: eleveId,
-            eleveNomComplet: eleveNameSpan.textContent, 
-            classeId: eleveDataCache.classeId,
-            classeNom: eleveClasseSpan.textContent,
-            montantVerse: montantVerse,
-            modePaiement: modePaiement,
-            datePaiement: datePaiement,
-            dateEnregistrement: new Date().toISOString(),
-            reference: reference,
-            economeId: currentUserId,
-            economeRole: userRole
-        };
+        const classeId = classeSelect.value;
+        const matiereId = matiereSelect.value;
+        const matiereName = matiereSelect.options[matiereSelect.selectedIndex].text;
+        const ponderation = ponderationSelect.value;
+        const noteMaxima = parseInt(noteMaximaInput.value);
+
+        if (!classeId || !matiereId || !ponderation) return;
+
+        const inputs = Array.from(elevesNotesBody.querySelectorAll('input[type="number"]'));
+        const notesToSave = {};
+        let notesValides = true;
+
+        inputs.forEach(input => {
+            const noteValue = input.value.trim();
+            const eleveId = input.dataset.eleveId;
+
+            if (noteValue !== "") {
+                const note = parseFloat(noteValue);
+                if (isNaN(note) || note < 0 || note > noteMaxima) {
+                    showNotification(`La note de l'élève ${eleveId} doit être entre 0 et ${noteMaxima}.`, "error");
+                    input.focus();
+                    notesValides = false;
+                }
+                notesToSave[eleveId] = note;
+            }
+        });
+
+        if (!notesValides) return;
+
+        // Document ID: CLASSEID_MATIEREID_PONDERATION
+        const noteDocId = `${classeId}_${matiereId}_${ponderation}`;
+        const noteDocRef = doc(db, NOTES_PATH, noteDocId);
 
         try {
-            const newPaymentRef = await addDoc(collection(db, PAIEMENTS_PATH), record);
+            saveNotesBtn.disabled = true;
+            saveNotesBtn.innerHTML = '<i class="fa-solid fa-spinner fa-spin"></i> Enregistrement en cours...';
+
+            await runTransaction(db, async (transaction) => {
+                const docSnap = await transaction.get(noteDocRef);
+                const existingData = docSnap.exists() ? docSnap.data().notes || {} : {};
+                
+                // Fusionner les notes existantes avec les nouvelles saisies
+                const newNotes = { ...existingData, ...notesToSave };
+                
+                const newData = {
+                    notes: newNotes,
+                    metadata: {
+                        classeId: classeId,
+                        matiereId: matiereId,
+                        matiereName: matiereName,
+                        ponderation: ponderation,
+                        maxima: noteMaxima,
+                        lastModifiedBy: currentUserId,
+                        lastModifiedAt: new Date().toISOString()
+                    }
+                };
+
+                // Utiliser setDoc avec merge: true pour créer ou mettre à jour
+                transaction.set(noteDocRef, newData, { merge: true });
+            });
+
+            showNotification(`✅ ${Object.keys(notesToSave).length} notes enregistrées/mises à jour pour ${matiereName} (${ponderationSelect.options[ponderationSelect.selectedIndex].text}).`, "success");
             
-            showNotification(`✅ Paiement de ${formatCurrency(montantVerse)} enregistré (ID: ${newPaymentRef.id.slice(0, 6)}).`, "success");
-            
-            // Mise à jour de la carte solde et réinitialisation du formulaire
-            updateSolde(eleveDataCache); 
-            paiementForm.reset();
-            paiementForm.datePaiement.valueAsDate = new Date(); // Remettre la date du jour
-        } catch (err) {
-            console.error("Erreur lors de l'enregistrement du paiement:", err);
-            showNotification("❌ Erreur lors de l'enregistrement du paiement.", "error");
+            // Recharger le tableau pour afficher les nouvelles notes comme "Ancienne Note"
+            loadElevesAndNotes(classeId, matiereId, ponderation);
+
+        } catch (error) {
+            console.error("Erreur de transaction lors de l'enregistrement des notes:", error);
+            showNotification("❌ Échec de l'enregistrement des notes. Réessayez.", "error");
+        } finally {
+            saveNotesBtn.disabled = false;
+            saveNotesBtn.innerHTML = '<i class="fa-solid fa-save"></i> Enregistrer Toutes les Notes (Mise à Jour)';
         }
     });
 
     // 9. GESTION DES ÉVÉNEMENTS & AUTHENTIFICATION
     logoutBtn.addEventListener("click", handleLogout);
-    paiementForm.datePaiement.valueAsDate = new Date(); // Date du jour par défaut
     
     onAuthStateChanged(auth, user => {
         document.body.classList.add('loaded');
@@ -395,16 +493,16 @@
                 if (docSnap.exists()) {
                     const data = docSnap.data();
                     const role = data.role.charAt(0).toUpperCase() + data.role.slice(1);
-                    document.getElementById('userInfo').textContent = `${data.nom || data.email} (${role})`;
-                    userRole = data.role;
+                    userInfo.textContent = `${data.nom || data.email} (${role})`;
                     
-                    if (!AUTHORIZED_ROLES.includes(userRole)) {
-                        showNotification(`Accès non autorisé. Seuls les Économes et Admins peuvent enregistrer les paiements.`, "error");
-                        setTimeout(() => window.location.href = `dashboard-${userRole}.html`, 1500); 
+                    if (!AUTHORIZED_ROLES.includes(data.role)) {
+                        showNotification(`Accès non autorisé. Seuls les Enseignants peuvent saisir les notes.`, "error");
+                        setTimeout(() => window.location.href = `dashboard-${data.role}.html`, 1500); 
                         return;
                     }
-                    
-                    loadFraisConfig();
+
+                    // Charger les données de l'enseignant
+                    loadTeacherAssignments(currentUserId);
 
                 } else {
                     console.error("Document utilisateur manquant.");
