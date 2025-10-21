@@ -4,7 +4,6 @@
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>Connexion Sécurisée · Institut Saint Charles Lwanga - SIGS</title>
-    <!-- Chargement de Tailwind CSS et de la police Inter -->
     <script src="https://cdn.tailwindcss.com"></script>
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700;800&display=swap" rel="stylesheet">
     <style>
@@ -74,9 +73,7 @@
 <body>
     <div class="login-card bg-slate-900/80 p-8 sm:p-10 rounded-2xl shadow-2xl max-w-md w-full text-center">
         
-        <!-- Logo et Titre (Mis à jour selon la demande) -->
         <div class="mb-8">
-            <!-- Remplacement de l'icône par votre logo -->
             <img src="IMG_7373.jpeg" alt="Logo Institut Saint Charles Lwanga" class="mx-auto h-20 w-auto rounded-full shadow-lg border-2 border-accent-amber/50">
             
             <h1 class="text-3xl font-extrabold text-white mt-4 tracking-tight">
@@ -86,16 +83,13 @@
         </div>
 
         <form id="loginForm" class="flex flex-col gap-5">
-            <!-- Champ Email -->
             <div class="relative group">
-                <!-- L'attribut placeholder est un espace pour permettre l'animation de l'étiquette (label) -->
                 <input type="email" id="email" placeholder=" " class="peer w-full p-4 pt-6 bg-slate-800 text-white border-b border-slate-700 rounded-t-lg focus:outline-none focus:border-accent-amber transition duration-200" required>
                 <label for="email" class="absolute left-4 top-1 text-sm text-slate-400 peer-placeholder-shown:text-base peer-placeholder-shown:top-4 peer-focus:top-1 peer-focus:text-sm peer-focus:text-accent-amber transition-all duration-200 pointer-events-none">
                     Adresse e-mail
                 </label>
             </div>
             
-            <!-- Champ Mot de passe -->
             <div class="relative group">
                 <input type="password" id="password" placeholder=" " class="peer w-full p-4 pt-6 bg-slate-800 text-white border-b border-slate-700 rounded-t-lg focus:outline-none focus:border-accent-amber transition duration-200" required>
                 <label for="password" class="absolute left-4 top-1 text-sm text-slate-400 peer-placeholder-shown:text-base peer-placeholder-shown:top-4 peer-focus:top-1 peer-focus:text-sm peer-focus:text-accent-amber transition-all duration-200 pointer-events-none">
@@ -103,24 +97,21 @@
                 </label>
             </div>
             
-            <!-- Bouton de Soumission -->
             <button type="submit" class="btn-submit w-full py-4 mt-3 bg-primary-indigo text-white font-extrabold rounded-lg text-lg hover:bg-indigo-700 transition duration-300 shadow-xl shadow-primary-indigo/30 hover:shadow-primary-indigo/50 flex items-center justify-center disabled:opacity-50 disabled:cursor-not-allowed">
                 <span>CONNEXION SÉCURISÉE</span>
             </button>
         </form>
 
-        <!-- Messages d'état -->
         <div id="messageContainer" class="mt-6 min-h-[3rem]">
-            <!-- Les messages d'erreur et de succès apparaîtront ici -->
-        </div>
+            </div>
 
         <a href="#" onclick="alert('La fonction de réinitialisation de mot de passe n\'est pas implémentée dans cette démo.'); return false;" class="link block mt-4 text-sm text-slate-500 hover:text-accent-amber font-medium transition duration-200">
             Mot de passe oublié ? Contacter l'administrateur
         </a>
     </div>
 
-    <!-- SCRIPTS FIREBASE ET LOGIQUE APPLICATIVE -->
     <script type="module">
+        // 🚨 CONNEXION FIREBASE : Importation des modules nécessaires
         import { initializeApp } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-app.js";
         import { getAuth, signInWithEmailAndPassword, signInWithCustomToken, signInAnonymously } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-auth.js";
         import { getFirestore, doc, getDoc, setLogLevel } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-firestore.js";
@@ -129,6 +120,7 @@
         // 1. CONFIGURATION ET REDIRECTIONS (MANDATAIRE)
         // -----------------------------------------------------
 
+        // 🎯 LECTURE DE LA CONFIGURATION FIREBASE
         const firebaseConfig = JSON.parse(typeof __firebase_config !== 'undefined' ? __firebase_config : '{}');
 
         // Mappage des rôles vers les pages de tableau de bord
@@ -145,9 +137,8 @@
         const btn = document.querySelector(".btn-submit");
         const originalText = btn.innerHTML;
         
-        // setLogLevel('Debug'); // Décommenter pour le débogage Firebase
+        // ... Fonction showMessage ...
 
-        // Fonction pour afficher les messages
         function showMessage(text, type) {
             let colorClass = '';
             let icon = '';
@@ -169,16 +160,18 @@
             `;
         }
 
+
         // -----------------------------------------------------
         // 2. INITIALISATION FIREBASE
         // -----------------------------------------------------
 
         if (Object.keys(firebaseConfig).length > 0) {
+            // 🚀 INITIALISATION DE L'APPLICATION
             const app = initializeApp(firebaseConfig);
             auth = getAuth(app);
             db = getFirestore(app);
 
-            // Tenter une connexion initiale (nécessaire pour les règles de sécurité Firestore)
+            // Tenter une connexion anonyme (pour l'accès non authentifié si besoin)
             const initialToken = typeof __initial_auth_token !== 'undefined' ? __initial_auth_token : null;
             if (initialToken) {
                 signInWithCustomToken(auth, initialToken).catch(() => {
@@ -197,7 +190,7 @@
         // 3. LOGIQUE DE CONNEXION PRINCIPALE
         // -----------------------------------------------------
         
-        // Utilitaire pour le backoff exponentiel lors des appels API
+        // ... Utilitaire fetchWithBackoff ...
         async function fetchWithBackoff(func, maxRetries = 5) {
             for (let i = 0; i < maxRetries; i++) {
                 try {
@@ -206,14 +199,13 @@
                     if (i === maxRetries - 1) throw error;
                     const delay = Math.pow(2, i) * 1000;
                     await new Promise(resolve => setTimeout(resolve, delay));
-                    // console.warn(`Retry ${i + 1}/${maxRetries} after ${delay}ms.`); // Commenté pour un affichage pro
                 }
             }
         }
 
         document.getElementById("loginForm").addEventListener("submit", async (e) => {
             e.preventDefault();
-            showMessage('', 'info'); // Effacer les messages précédents
+            showMessage('', 'info'); 
 
             if (!auth || !db) {
                 showMessage('Service de connexion non initialisé.', 'error');
@@ -228,14 +220,13 @@
             btn.innerHTML = `<div class="loading-icon mr-3"></div> Authentification...`;
 
             try {
-                // 1. Authentification par Email/Mot de passe
+                // 🔐 AUTHENTIFICATION PAR EMAIL/MOT DE PASSE
                 const userCredential = await fetchWithBackoff(() => 
                     signInWithEmailAndPassword(auth, email, password)
                 );
                 const user = userCredential.user;
 
-                // 2. Récupération du rôle utilisateur depuis Firestore
-                // NOTE: Assurez-vous que la collection 'users' existe et est accessible
+                // 🌐 RÉCUPÉRATION DU RÔLE DE L'UTILISATEUR (Firestore)
                 const userDocRef = doc(db, "users", user.uid);
                 const snap = await fetchWithBackoff(() => getDoc(userDocRef));
 
@@ -248,13 +239,9 @@
                 const role = (data.role || "default").toLowerCase().trim();
                 const redirectUrl = ROLE_REDIRECTS[role] || ROLE_REDIRECTS['default'];
 
-                if (role === 'default' && !ROLE_REDIRECTS[role]) {
-                    showMessage(`Rôle non reconnu (${data.role}). Redirection par défaut.`, 'warning');
-                }
-
                 showMessage(`Connexion réussie ! Bienvenue ${data.nom || email}. Redirection...`, 'success');
                 
-                // 3. Redirection après un court délai
+                // REDIRECTION
                 setTimeout(() => {
                     window.location.href = redirectUrl;
                 }, 700);
@@ -263,7 +250,7 @@
                 console.error("Erreur de connexion:", err);
                 let messageErreur = "Erreur de connexion. Veuillez réessayer.";
                 
-                // Mappage des erreurs Firebase communes
+                // GESTION DES ERREURS FIREBASE
                 if (err.code === 'auth/invalid-email' || err.code === 'auth/user-not-found' || err.code === 'auth/wrong-password') {
                     messageErreur = "Identifiants invalides. Vérifiez l'e-mail ou le mot de passe.";
                 } else if (err.code === 'auth/too-many-requests') {
