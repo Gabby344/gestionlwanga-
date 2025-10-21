@@ -1,0 +1,391 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Gestion de la Discipline | ISC Lwanga</title>
+    <!-- Chargement de Tailwind CSS -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <!-- Font Awesome pour les icônes -->
+    <script src="https://kit.fontawesome.com/a2e0e6a56b.js" crossorigin="anonymous"></script>
+    
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Inter:wght@100..900&display=swap');
+        body { font-family: 'Inter', sans-serif; background-color: #f3f4f6; }
+        body:not(.loaded) { display: none; }
+        #notification-area { position: fixed; top: 20px; right: 20px; z-index: 1000; }
+        .notification { padding: 1rem 1.5rem; border-radius: 0.75rem; color: white; font-weight: 500; box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1); opacity: 0; transform: translateX(100%); transition: opacity 0.3s, transform 0.3s; margin-bottom: 0.5rem; }
+        .notification.show { opacity: 1; transform: translateX(0); }
+        .notification.success { background-color: #10b981; }
+        .notification.error { background-color: #ef4444; }
+        .notification.info { background-color: #3b82f6; }
+    </style>
+</head>
+<body>
+    <div id="notification-area"></div>
+    
+    <div class="container mx-auto p-4 sm:p-8">
+        <!-- HEADER -->
+        <header class="text-center mb-8 p-6 bg-white rounded-xl shadow-lg border-b-4 border-red-600">
+            <h1 class="text-3xl font-extrabold text-gray-800 flex items-center justify-center gap-3">
+                <i class="fa-solid fa-gavel text-red-600"></i> Journal de Discipline
+            </h1>
+            <h2 class="text-lg font-medium text-gray-500 mt-1">
+                Enregistrement des fautes et suivi des sanctions.
+            </h2>
+            <p id="userInfo" class="text-sm text-red-600 font-semibold mt-2">Chargement de l'utilisateur...</p>
+        </header>
+
+        <div class="grid grid-cols-1 lg:grid-cols-3 gap-8">
+            <!-- COLONNE 1: ENREGISTRER UNE FAUTE -->
+            <div class="lg:col-span-1 bg-white p-6 rounded-xl shadow-2xl border-t-4 border-red-500 h-fit">
+                <h3 class="text-xl font-bold text-red-700 mb-6 flex items-center gap-2">
+                    <i class="fa-solid fa-plus-circle"></i> Enregistrer une nouvelle faute
+                </h3>
+                
+                <form id="disciplineForm" class="space-y-4">
+                    <!-- SÉLECTION DE L'ÉLÈVE (Recherche) -->
+                    <div>
+                        <label for="searchEleve" class="block text-sm font-medium text-gray-700">Rechercher un Élève (Matricule ou Nom)</label>
+                        <input type="text" id="searchEleve" placeholder="Matricule de l'élève" class="w-full p-2 border border-gray-300 rounded-lg focus:ring-red-500 focus:border-red-500 mt-1" autocomplete="off" required>
+                        <div id="searchResults" class="absolute z-10 w-64 bg-white border border-gray-200 rounded-b-lg shadow-lg">
+                            <!-- Résultats de la recherche ici -->
+                        </div>
+                        <input type="hidden" id="eleveId" required>
+                    </div>
+
+                    <p id="selectedEleveDisplay" class="text-sm font-semibold text-gray-800 p-2 bg-red-50 rounded hidden">
+                        Élève sélectionné: <span id="eleveName"></span>
+                    </p>
+
+                    <!-- TYPE DE FAUTE -->
+                    <div>
+                        <label for="typeFaute" class="block text-sm font-medium text-gray-700">Type de Faute</label>
+                        <select id="typeFaute" class="w-full p-2 border border-gray-300 rounded-lg focus:ring-red-500 focus:border-red-500 mt-1" required>
+                            <option value="">Sélectionner</option>
+                            <option value="Absence non justifiée">Absence non justifiée</option>
+                            <option value="Retard">Retard</option>
+                            <option value="Tenue incorrecte">Tenue incorrecte</option>
+                            <option value="Trouble en classe">Trouble en classe</option>
+                            <option value="Insulte/Insubordination">Insulte/Insubordination</option>
+                            <option value="Fraude/Triche">Fraude/Triche</option>
+                            <option value="Autre faute grave">Autre faute grave</option>
+                        </select>
+                    </div>
+
+                    <!-- SANCTION ATTRIBUÉE -->
+                    <div>
+                        <label for="sanction" class="block text-sm font-medium text-gray-700">Sanction Attribuée</label>
+                        <select id="sanction" class="w-full p-2 border border-gray-300 rounded-lg focus:ring-red-500 focus:border-red-500 mt-1" required>
+                            <option value="">Sélectionner</option>
+                            <option value="Avertissement Oral">Avertissement Oral</option>
+                            <option value="Avertissement Écrit">Avertissement Écrit</option>
+                            <option value="Retenue/Travail supplémentaire">Retenue/Travail supplémentaire</option>
+                            <option value="Exclusion Temporaire (1 jour)">Exclusion Temporaire (1 jour)</option>
+                            <option value="Conseil de Discipline">Conseil de Discipline</option>
+                        </select>
+                    </div>
+
+                    <!-- DESCRIPTION -->
+                    <div>
+                        <label for="description" class="block text-sm font-medium text-gray-700">Description Détaillée</label>
+                        <textarea id="description" rows="3" placeholder="Description courte et précise des faits..." class="w-full p-2 border border-gray-300 rounded-lg focus:ring-red-500 focus:border-red-500 mt-1" required></textarea>
+                    </div>
+
+                    <button type="submit" class="w-full py-3 bg-red-600 text-white rounded-lg font-semibold hover:bg-red-700 transition duration-200 flex items-center justify-center gap-2">
+                        <i class="fa-solid fa-bookmark"></i> Enregistrer la Sanction
+                    </button>
+                </form>
+            </div>
+
+            <!-- COLONNES 2 & 3: HISTORIQUE DES SANCTIONS -->
+            <div class="lg:col-span-2 bg-white p-6 md:p-8 rounded-xl shadow-2xl border-t-4 border-indigo-600">
+                <h3 class="text-xl font-bold text-gray-800 mb-6 flex items-center gap-2">
+                    <i class="fa-solid fa-list text-indigo-600"></i> Historique Récent des Sanctions
+                </h3>
+                
+                <div class="overflow-x-auto rounded-lg border border-gray-200 shadow-inner">
+                    <table class="min-w-full divide-y divide-gray-200">
+                        <thead class="bg-gray-50">
+                            <tr>
+                                <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Date</th>
+                                <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Élève (Matricule)</th>
+                                <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Faute</th>
+                                <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Sanction</th>
+                                <th class="px-6 py-3 text-center text-xs font-medium text-gray-500 uppercase tracking-wider w-20">Auteur</th>
+                            </tr>
+                        </thead>
+                        <tbody id="historiqueBody" class="bg-white divide-y divide-gray-200">
+                            <tr>
+                                <td colspan="5" class="text-center py-8 text-gray-500">Chargement de l'historique...</td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+        
+        <button id="logoutBtn" class="mt-8 py-2 px-4 bg-red-600 text-white rounded-lg hover:bg-red-700 font-semibold transition duration-200">
+            <i class="fa-solid fa-sign-out-alt"></i> Déconnexion
+        </button>
+    </div>
+
+    <!-- LOGIQUE JAVASCRIPT & FIREBASE -->
+    <script type="module">
+    import { initializeApp } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-app.js";
+    import { 
+        getAuth, onAuthStateChanged, signOut,
+        signInWithCustomToken, signInAnonymously
+    } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-auth.js";
+    import { 
+        getFirestore, collection, doc, addDoc, 
+        onSnapshot, getDoc, query, where, setLogLevel, limit, getDocs
+    } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-firestore.js";
+
+    // IMPORTANT: UTILISATION DES VARIABLES GLOBALES FOURNIES PAR LE CONTEXTE
+    const appId = typeof __app_id !== 'undefined' ? __app_id : 'default-app-id';
+    const firebaseConfig = typeof __firebase_config !== 'undefined' ? JSON.parse(__firebase_config) : {};
+    
+    // 1. INITIALISATION FIREBASE
+    const app = initializeApp(firebaseConfig);
+    const auth = getAuth(app);
+    const db = getFirestore(app);
+    
+    // setLogLevel('Debug'); // Décommenter pour le débogage
+
+    // Chemins de collections
+    const DISCIPLINE_PATH = `/artifacts/${appId}/public/data/disciplines`;
+    const ELEVES_PATH = `/artifacts/${appId}/public/data/eleves`;
+
+    // 2. ÉLÉMENTS DU DOM
+    const userInfo = document.getElementById('userInfo');
+    const notificationArea = document.getElementById('notification-area');
+    const logoutBtn = document.getElementById('logoutBtn');
+    const disciplineForm = document.getElementById('disciplineForm');
+    const searchEleveInput = document.getElementById('searchEleve');
+    const eleveIdInput = document.getElementById('eleveId');
+    const selectedEleveDisplay = document.getElementById('selectedEleveDisplay');
+    const eleveNameSpan = document.getElementById('eleveName');
+    const historiqueBody = document.getElementById('historiqueBody');
+    const searchResultsDiv = document.getElementById('searchResults');
+    
+    // 3. CACHE ET DONNÉES GLOBALES
+    let currentUserId = null;
+    let userRole = null;
+    const AUTHORIZED_ROLES = ['admin', 'prefet', 'directeur_discipline'];
+
+    // 4. FONCTIONNALITÉS UTILITAIRES
+    function showNotification(msg, type = "success") {
+        const notif = document.createElement("div");
+        notif.className = `notification ${type}`;
+        notif.textContent = msg;
+        notificationArea.appendChild(notif);
+        setTimeout(() => notif.classList.add('show'), 10);
+        setTimeout(() => {
+            notif.classList.remove('show');
+            setTimeout(() => notificationArea.removeChild(notif), 300);
+        }, 4000);
+    }
+    
+    async function handleLogout() {
+        await signOut(auth);
+        setTimeout(() => window.location.href = "index.html", 800);
+    }
+
+    async function initializeAuth() {
+        try {
+            if (typeof __initial_auth_token !== 'undefined' && __initial_auth_token) {
+                await signInWithCustomToken(auth, __initial_auth_token);
+            } else {
+                await signInAnonymously(auth);
+            }
+        } catch (error) {
+            console.error("Erreur d'authentification initiale:", error);
+            showNotification("Erreur d'authentification.", "error");
+            setTimeout(() => window.location.href = "index.html", 1500);
+        }
+    }
+    
+    // 5. RECHERCHE D'ÉLÈVE EN TEMPS RÉEL
+    let searchTimeout = null;
+
+    searchEleveInput.addEventListener('input', () => {
+        clearTimeout(searchTimeout);
+        const searchTerm = searchEleveInput.value.trim();
+        searchResultsDiv.innerHTML = '';
+        
+        // Cacher l'affichage de l'élève sélectionné et réinitialiser l'ID
+        selectedEleveDisplay.classList.add('hidden');
+        eleveIdInput.value = '';
+
+        if (searchTerm.length < 3) return;
+
+        searchTimeout = setTimeout(async () => {
+            try {
+                // Requête simple filtrant par matricule (ou nom/postNom) pour éviter les requêtes trop coûteuses
+                const q = query(
+                    collection(db, ELEVES_PATH),
+                    where('matricule', '>=', searchTerm.toUpperCase()),
+                    limit(10)
+                );
+                // On pourrait aussi faire une requête textuelle via le nom/postNom, mais cela nécessite souvent des index complexes ou des solutions de recherche tierces. On se concentre sur le Matricule.
+                
+                const querySnapshot = await getDocs(q);
+                
+                if (querySnapshot.empty) {
+                    searchResultsDiv.innerHTML = '<div class="p-2 text-sm text-gray-500">Aucun élève trouvé.</div>';
+                    return;
+                }
+
+                querySnapshot.forEach(docSnap => {
+                    const data = docSnap.data();
+                    const item = document.createElement('div');
+                    item.className = 'p-2 cursor-pointer hover:bg-gray-100 text-sm border-b border-gray-100';
+                    item.textContent = `${data.matricule} - ${data.nom} ${data.postNom} ${data.prenom}`;
+                    
+                    item.onclick = () => {
+                        eleveIdInput.value = docSnap.id;
+                        eleveNameSpan.textContent = `${data.nom} ${data.postNom} ${data.prenom} (${data.matricule})`;
+                        selectedEleveDisplay.classList.remove('hidden');
+                        searchEleveInput.value = data.matricule;
+                        searchResultsDiv.innerHTML = ''; // Cacher les résultats
+                    };
+                    searchResultsDiv.appendChild(item);
+                });
+
+            } catch (error) {
+                console.error("Erreur de recherche d'élève:", error);
+                showNotification("Erreur lors de la recherche.", "error");
+            }
+        }, 500);
+    });
+
+    // 6. SOUMISSION DU FORMULAIRE DE DISCIPLINE
+    disciplineForm.addEventListener('submit', async (e) => {
+        e.preventDefault();
+
+        const eleveId = eleveIdInput.value;
+        const typeFaute = disciplineForm.typeFaute.value;
+        const sanction = disciplineForm.sanction.value;
+        const description = disciplineForm.description.value.trim();
+        const eleveName = eleveNameSpan.textContent;
+
+        if (!eleveId) {
+            showNotification("Veuillez sélectionner un élève valide.", "error");
+            return;
+        }
+
+        const record = {
+            eleveId: eleveId,
+            eleveNom: eleveName, // Stocker le nom pour un affichage rapide
+            typeFaute: typeFaute,
+            sanction: sanction,
+            description: description,
+            dateEnregistrement: new Date().toISOString(),
+            auteurId: currentUserId,
+            auteurRole: userRole,
+            statut: 'actif'
+        };
+
+        try {
+            await addDoc(collection(db, DISCIPLINE_PATH), record);
+            showNotification(`✅ Sanction enregistrée pour ${eleveName}.`, "success");
+            disciplineForm.reset();
+            selectedEleveDisplay.classList.add('hidden');
+            eleveIdInput.value = '';
+            searchEleveInput.value = '';
+        } catch (err) {
+            console.error("Erreur lors de l'enregistrement de la discipline:", err);
+            showNotification("❌ Erreur lors de l'enregistrement de la sanction.", "error");
+        }
+    });
+
+    // 7. ÉCOUTEUR DE L'HISTORIQUE RÉCENT
+    function setupHistoriqueListener() {
+        // Afficher les 10 dernières sanctions par date décroissante
+        const q = query(
+            collection(db, DISCIPLINE_PATH),
+            limit(10)
+        );
+
+        onSnapshot(q, (snapshot) => {
+            historiqueBody.innerHTML = '';
+            if (snapshot.empty) {
+                historiqueBody.innerHTML = `<tr><td colspan="5" class="text-center py-4 text-gray-500">Aucune sanction enregistrée récemment.</td></tr>`;
+                return;
+            }
+
+            snapshot.forEach(docSnap => {
+                const item = docSnap.data();
+                const row = historiqueBody.insertRow();
+                row.className = 'hover:bg-red-50 transition duration-150';
+                
+                const date = new Date(item.dateEnregistrement).toLocaleDateString('fr-FR');
+                
+                // Date
+                row.insertCell().innerHTML = `<span class="text-sm text-gray-700">${date}</span>`;
+                
+                // Élève
+                row.insertCell().innerHTML = `
+                    <span class="font-semibold text-gray-800">${item.eleveNom.split(' (')[0]}</span><br>
+                    <span class="text-xs text-red-600">${item.eleveNom.split('(')[1].replace(')','')}</span>
+                `;
+                
+                // Faute
+                const fauteColor = item.typeFaute.includes('grave') ? 'text-red-700' : 'text-yellow-700';
+                row.insertCell().innerHTML = `<span class="text-sm ${fauteColor}">${item.typeFaute}</span>`;
+
+                // Sanction
+                const sanctionColor = item.sanction.includes('Exclusion') || item.sanction.includes('Conseil') ? 'bg-red-100 text-red-800' : 'bg-yellow-100 text-yellow-800';
+                row.insertCell().innerHTML = `<span class="px-2 inline-flex text-xs leading-5 font-semibold rounded-full ${sanctionColor}">${item.sanction}</span>`;
+                
+                // Auteur
+                row.insertCell().innerHTML = `<span class="text-xs text-gray-500">${item.auteurRole}</span>`;
+            });
+
+        }, (err) => console.error("Erreur chargement Historique Discipline:", err));
+    }
+
+
+    // 8. GESTION DES ÉVÉNEMENTS & AUTHENTIFICATION
+    logoutBtn.addEventListener("click", handleLogout);
+    
+    onAuthStateChanged(auth, user => {
+        document.body.classList.add('loaded');
+        currentUserId = user?.uid;
+
+        if (!user) {
+            showNotification("Session expirée ou non autorisée.", "error");
+            setTimeout(() => window.location.href = "index.html", 1000);
+        } else {
+            getDoc(doc(db, 'users', currentUserId)).then(docSnap => {
+                if (docSnap.exists()) {
+                    const data = docSnap.data();
+                    const role = data.role.charAt(0).toUpperCase() + data.role.slice(1);
+                    userInfo.textContent = `${data.nom || data.email} (${role})`;
+                    userRole = data.role;
+                    
+                    if (!AUTHORIZED_ROLES.includes(userRole)) {
+                        showNotification(`Accès non autorisé. Votre rôle (${role}) n'est pas autorisé à gérer la discipline.`, "error");
+                        setTimeout(() => window.location.href = `dashboard-${userRole}.html`, 1500); 
+                        return;
+                    }
+
+                    // Lancer l'écouteur de l'historique
+                    setupHistoriqueListener(); 
+
+                } else {
+                    console.error("Document utilisateur manquant.");
+                    showNotification("Erreur utilisateur: Document manquant.", "error");
+                }
+            }).catch(err => {
+                console.error("Erreur de récupération du document utilisateur:", err);
+                showNotification("Erreur serveur lors de l'authentification.", "error");
+            });
+        }
+    });
+
+    initializeAuth();
+    </script>
+</body>
+</html>
