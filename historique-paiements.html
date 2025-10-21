@@ -1,307 +1,375 @@
 <!DOCTYPE html>
 <html lang="fr">
 <head>
-  <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Historique des Paiements - Institut Saint Charles Lwanga (SIGS)</title>
-  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700;800&display=swap" rel="stylesheet">
-  <style>
-    :root {
-      --bleu-fonce: #1e40af; 
-      --gris-fonce: #1f2937;
-      --vert-finance: #047857; /* Accent Principal */
-      --gris-bordure: #d1d5db; 
-      --ombre-legere: rgba(0,0,0,0.08);
-      --jaune-alerte: #f59e0b; /* Statut Partiel */
-      --vert-succes: #10b981; /* Statut Payé */
-    }
-    body {
-      font-family: 'Inter', sans-serif;
-      background-color: #f4f6f8;
-      margin: 0;
-      padding: 2rem 1rem;
-      color: var(--gris-fonce);
-    }
-    h1 {
-      text-align: center;
-      font-size: 1.8rem;
-      color: var(--bleu-fonce);
-      margin-bottom: 0.5rem;
-    }
-    h2 {
-      text-align: center;
-      font-size: 1rem;
-      font-weight: normal;
-      color: #6b7280;
-      margin-bottom: 2rem;
-    }
-    .container {
-        max-width: 1300px;
-        margin: auto;
-    }
-
-    /* --- BARRE DE FILTRE ET CONTRÔLES --- */
-    .controls-bar {
-        background-color: white;
-        padding: 1.5rem;
-        border-radius: 8px;
-        box-shadow: 0 2px 4px var(--ombre-legere);
-        margin-bottom: 1.5rem;
-        display: grid;
-        gap: 1rem;
-        grid-template-columns: 1fr;
-    }
-    @media (min-width: 768px) {
-        .controls-bar {
-            grid-template-columns: 2fr 1fr 1fr 1fr; /* Mise en page desktop */
-            align-items: center;
-        }
-    }
-    .input-group label {
-        display: block;
-        font-size: 0.8rem;
-        font-weight: 600;
-        color: #6b7280;
-        margin-bottom: 0.2rem;
-    }
-    .input-group select, .input-group input[type="text"] {
-        width: 100%;
-        padding: 0.7rem;
-        border: 1px solid var(--gris-bordure);
-        border-radius: 4px;
-        box-sizing: border-box;
-    }
-    .btn-rechercher {
-        padding: 0.75rem 1rem;
-        border: none;
-        border-radius: 4px;
-        font-weight: 600;
-        cursor: pointer;
-        background-color: var(--vert-finance);
-        color: white;
-        text-decoration: none;
-        align-self: flex-end;
-    }
-    .btn-rechercher:hover { background-color: #059669; }
-
-    /* --- TABLEAU DE RÉSULTATS --- */
-    #paiementsContainer {
-        background-color: white;
-        border-radius: 8px;
-        box-shadow: 0 4px 10px var(--ombre-legere);
-        overflow-x: auto; 
-    }
-
-    .paiements-table {
-        width: 100%;
-        border-collapse: collapse;
-        min-width: 1000px;
-    }
-    .paiements-table th, .paiements-table td {
-        padding: 0.75rem 1rem;
-        text-align: left;
-        border-bottom: 1px solid #e5e7eb;
-    }
-    .paiements-table th {
-        background-color: #f3f4f6;
-        color: var(--gris-fonce);
-        font-weight: 600;
-        text-transform: uppercase;
-        font-size: 0.75rem;
-    }
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Historique des Paiements | ISC Lwanga Finance</title>
+    <!-- Chargement de Tailwind CSS -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <!-- Font Awesome pour les icônes -->
+    <script src="https://kit.fontawesome.com/a2e0e6a56b.js" crossorigin="anonymous"></script>
     
-    /* Statuts de paiement et solde */
-    td.statut-paye { color: var(--vert-succes); font-weight: 600; }
-    td.statut-partiel { color: var(--jaune-alerte); font-weight: 600; }
-    td.statut-du { color: var(--rouge-danger); font-weight: 600; }
-    
-    .btn-recu {
-        background-color: var(--bleu-fonce);
-        color: white;
-        padding: 0.5rem 0.8rem;
-        border: none;
-        border-radius: 4px;
-        cursor: pointer;
-        font-size: 0.8rem;
-    }
-    .btn-recu:hover { background-color: #1f3a8a; }
-
-    /* Bouton de retour */
-    .btn-retour {
-        display: block;
-        text-align: center;
-        margin-top: 1.5rem;
-        color: var(--gris-fonce);
-        text-decoration: none;
-        font-size: 0.9rem;
-    }
-  </style>
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Inter:wght@100..900&display=swap');
+        body { font-family: 'Inter', sans-serif; background-color: #f3ffec; } /* Léger vert pâle pour la finance */
+        body:not(.loaded) { display: none; }
+        /* Style pour les notifications customisées */
+        #notification-area { position: fixed; top: 20px; right: 20px; z-index: 1000; }
+        .notification { padding: 1rem 1.5rem; border-radius: 0.75rem; color: white; font-weight: 500; box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1); opacity: 0; transform: translateX(100%); transition: opacity 0.3s, transform 0.3s; margin-bottom: 0.5rem; }
+        .notification.show { opacity: 1; transform: translateX(0); }
+        .notification.success { background-color: #059669; } 
+        .notification.error { background-color: #ef4444; }
+        .notification.info { background-color: #3b82f6; }
+        
+        .card-shadow { box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1), 0 4px 6px -2px rgba(0, 0, 0, 0.05); }
+    </style>
 </head>
 <body>
-  <div class="container">
-    <h1>📜 Historique des Paiements et Relevés</h1>
-    <h2>Recherche, vérification des transactions et édition des reçus.</h2>
+    <div id="notification-area"></div>
+    
+    <div class="container mx-auto p-4 sm:p-8">
+        <!-- HEADER -->
+        <header class="text-center mb-8 p-6 bg-white rounded-xl card-shadow border-b-4 border-teal-600">
+            <h1 class="text-3xl font-extrabold text-gray-800 flex items-center justify-center gap-3">
+                <i class="fa-solid fa-list-check text-teal-600"></i> Historique et Suivi des Paiements
+            </h1>
+            <h2 class="text-lg font-medium text-gray-500 mt-1">
+                Visualisation en temps réel de tous les versements enregistrés.
+            </h2>
+            <p id="userInfo" class="text-sm text-teal-700 font-semibold mt-2">Chargement de l'utilisateur...</p>
+        </header>
 
-    <div class="controls-bar">
-        <div class="input-group">
-            <label for="searchInput">Recherche Élève/Transaction</label>
-            <input type="text" id="searchInput" placeholder="Nom, Matricule, ou Référence de Reçu..." oninput="filterPaiements()" />
-        </div>
-        <div class="input-group">
-            <label for="filtreClasse">Filtrer par Classe</label>
-            <select id="filtreClasse" onchange="filterPaiements()">
-                <option value="">Toutes les Classes</option>
-                <option value="6A">6ème Commerciale A</option>
-                <option value="5S">5ème Scientifique</option>
-            </select>
-        </div>
-        <div class="input-group">
-            <label for="filtreMotif">Filtrer par Motif</label>
-            <select id="filtreMotif" onchange="filterPaiements()">
-                <option value="">Tous les Motifs</option>
-                <option value="Minerval">Minerval</option>
-                <option value="Inscription">Inscription</option>
-                <option value="Divers">Divers</option>
-            </select>
-        </div>
-        
-        <button class="btn-rechercher" onclick="filterPaiements()">Appliquer les Filtres</button>
+        <div class="bg-white p-6 md:p-8 rounded-xl shadow-2xl border-t-4 border-teal-500">
+            
+            <!-- STATISTIQUES AGRÉGÉES -->
+            <div class="mb-8 grid grid-cols-1 md:grid-cols-3 gap-6">
+                <div class="bg-green-50 p-4 rounded-xl border border-green-200 flex items-center justify-between">
+                    <div class="text-left">
+                        <p class="text-sm font-medium text-green-700">Total Encaissé Filtré</p>
+                        <p id="totalEncaisse" class="text-2xl font-extrabold text-green-800 mt-1">0.00 USD</p>
+                    </div>
+                    <i class="fa-solid fa-sack-dollar text-green-500 text-3xl"></i>
+                </div>
+                <div class="bg-blue-50 p-4 rounded-xl border border-blue-200 flex items-center justify-between">
+                    <div class="text-left">
+                        <p class="text-sm font-medium text-blue-700">Nombre de Transactions</p>
+                        <p id="transactionCount" class="text-2xl font-extrabold text-blue-800 mt-1">0</p>
+                    </div>
+                    <i class="fa-solid fa-receipt text-blue-500 text-3xl"></i>
+                </div>
+                 <div class="bg-indigo-50 p-4 rounded-xl border border-indigo-200 flex items-center justify-between">
+                    <div class="text-left">
+                        <p class="text-sm font-medium text-indigo-700">Mode le Plus Utilisé</p>
+                        <p id="popularMode" class="text-xl font-extrabold text-indigo-800 mt-1">N/A</p>
+                    </div>
+                    <i class="fa-solid fa-coins text-indigo-500 text-3xl"></i>
+                </div>
+            </div>
 
-        <p id="compteur" style="grid-column: 1 / -1; font-weight: 700; font-size: 0.9rem; color: var(--vert-finance); padding-top: 0.5rem;">Chargement des données...</p>
+            <!-- FILTRES -->
+            <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 mb-8 p-4 bg-gray-50 rounded-lg border">
+                <div>
+                    <label for="filterEleve" class="block text-sm font-medium text-gray-700">Rechercher Élève (Nom/Matricule)</label>
+                    <input type="text" id="filterEleve" placeholder="Ex: Jean Paul ou Matricule" class="w-full p-2 border border-gray-300 rounded-lg mt-1 focus:ring-teal-500 focus:border-teal-500">
+                </div>
+                <div>
+                    <label for="filterMode" class="block text-sm font-medium text-gray-700">Mode de Paiement</label>
+                    <select id="filterMode" class="w-full p-2 border border-gray-300 rounded-lg mt-1 focus:ring-teal-500 focus:border-teal-500 bg-white">
+                        <option value="">Tous les modes</option>
+                        <option value="Cash">Cash</option>
+                        <option value="Transfert Bancaire">Transfert Bancaire</option>
+                        <option value="Mobile Money">Mobile Money</option>
+                    </select>
+                </div>
+                 <div>
+                    <label for="filterDateStart" class="block text-sm font-medium text-gray-700">Du (Date Début)</label>
+                    <input type="date" id="filterDateStart" class="w-full p-2 border border-gray-300 rounded-lg mt-1 focus:ring-teal-500 focus:border-teal-500">
+                </div>
+                <div>
+                    <label for="filterDateEnd" class="block text-sm font-medium text-gray-700">Au (Date Fin)</label>
+                    <input type="date" id="filterDateEnd" class="w-full p-2 border border-gray-300 rounded-lg mt-1 focus:ring-teal-500 focus:border-teal-500">
+                </div>
+            </div>
+
+            <!-- TABLEAU DES PAIEMENTS -->
+            <div class="overflow-x-auto rounded-lg border border-gray-200 shadow-inner">
+                <table class="min-w-full divide-y divide-gray-200">
+                    <thead class="bg-gray-100">
+                        <tr>
+                            <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Date Versement</th>
+                            <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Élève (Classe)</th>
+                            <th class="px-6 py-3 text-right text-xs font-medium text-gray-500 uppercase tracking-wider">Montant Versé</th>
+                            <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Mode</th>
+                            <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Référence / Econome</th>
+                        </tr>
+                    </thead>
+                    <tbody id="paiementsTableBody" class="bg-white divide-y divide-gray-200">
+                        <tr>
+                            <td colspan="5" class="text-center py-8 text-gray-500"><i class="fa-solid fa-spinner fa-spin mr-2"></i> Chargement des données...</td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+            
+            <div id="noDataMessage" class="text-center py-8 text-gray-500 hidden">
+                Aucun paiement trouvé pour les filtres sélectionnés.
+            </div>
+        </div>
+
+        <button id="logoutBtn" class="mt-8 py-2 px-4 bg-red-600 text-white rounded-lg hover:bg-red-700 font-semibold transition duration-200">
+            <i class="fa-solid fa-sign-out-alt"></i> Déconnexion
+        </button>
     </div>
 
-    <div id="paiementsContainer">
-        </div>
+    <!-- LOGIQUE JAVASCRIPT & FIREBASE -->
+    <script type="module">
+    import { initializeApp } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-app.js";
+    import { 
+        getAuth, onAuthStateChanged, signOut,
+        signInWithCustomToken, signInAnonymously
+    } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-auth.js";
+    import { 
+        getFirestore, collection, doc, onSnapshot, query, setLogLevel
+    } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-firestore.js";
 
-    <a href="finance.html" class="btn-retour">← Retour au Menu Gestion Financière</a>
-  </div>
-
-
-  <script>
-    // --- SIMULATION DE DONNÉES (Ceci proviendrait de Firebase/Backend) ---
-    const initialData = [
-        { 
-            id: 'T001', 
-            date: '2024-09-01', 
-            eleve: 'UMBA Gabby', 
-            classe: '6A', 
-            montant: 100.00, 
-            motif: 'Minerval', 
-            soldeRestant: 200.00, 
-            statut: 'Partiel' 
-        },
-        { 
-            id: 'T002', 
-            date: '2024-09-05', 
-            eleve: 'KABULO Ndaya', 
-            classe: '5S', 
-            montant: 25.00, 
-            motif: 'Inscription', 
-            soldeRestant: 0.00, 
-            statut: 'Payé' 
-        },
-        { 
-            id: 'T003', 
-            date: '2024-10-15', 
-            eleve: 'MUTOMBO Kalubi', 
-            classe: '6A', 
-            montant: 50.00, 
-            motif: 'Minerval', 
-            soldeRestant: 250.00, 
-            statut: 'Partiel' 
-        },
-        { 
-            id: 'T004', 
-            date: '2024-10-20', 
-            eleve: 'KABULO Ndaya', 
-            classe: '5S', 
-            montant: 150.00, 
-            motif: 'Minerval', 
-            soldeRestant: 0.00, 
-            statut: 'Payé' 
-        }
-    ];
+    // IMPORTANT: UTILISATION DES VARIABLES GLOBALES FOURNIES PAR LE CONTEXTE
+    const appId = typeof __app_id !== 'undefined' ? __app_id : 'default-app-id';
+    const firebaseConfig = typeof __firebase_config !== 'undefined' ? JSON.parse(__firebase_config) : {};
     
-    function getStatutClass(statut) {
-        if (statut === 'Payé') return 'statut-paye';
-        if (statut === 'Partiel') return 'statut-partiel';
-        return 'statut-du';
+    // 1. INITIALISATION FIREBASE
+    const app = initializeApp(firebaseConfig);
+    const auth = getAuth(app);
+    const db = getFirestore(app);
+    
+    // setLogLevel('Debug'); // Décommenter pour le débogage
+
+    // Chemins de collections
+    const PAIEMENTS_PATH = `/artifacts/${appId}/public/data/paiements`;
+
+    // 2. ÉLÉMENTS DU DOM
+    const notificationArea = document.getElementById('notification-area');
+    const logoutBtn = document.getElementById('logoutBtn');
+    const paiementsTableBody = document.getElementById('paiementsTableBody');
+    const noDataMessage = document.getElementById('noDataMessage');
+
+    // Stats
+    const totalEncaisseSpan = document.getElementById('totalEncaisse');
+    const transactionCountSpan = document.getElementById('transactionCount');
+    const popularModeSpan = document.getElementById('popularMode');
+
+    // Filtres
+    const filterEleveInput = document.getElementById('filterEleve');
+    const filterModeSelect = document.getElementById('filterMode');
+    const filterDateStartInput = document.getElementById('filterDateStart');
+    const filterDateEndInput = document.getElementById('filterDateEnd');
+    
+    // 3. CACHE ET DONNÉES GLOBALES
+    let currentUserId = null;
+    let allPaymentsCache = []; // Stocke tous les paiements bruts
+    const AUTHORIZED_ROLES = ['admin', 'econome'];
+
+    // 4. FONCTIONNALITÉS UTILITAIRES
+    function showNotification(msg, type = "success") {
+        const notif = document.createElement("div");
+        notif.className = `notification ${type}`;
+        notif.textContent = msg;
+        notificationArea.appendChild(notif);
+        setTimeout(() => notif.classList.add('show'), 10);
+        setTimeout(() => {
+            notif.classList.remove('show');
+            setTimeout(() => notificationArea.removeChild(notif), 300);
+        }, 4000);
+    }
+    
+    async function handleLogout() {
+        await signOut(auth);
+        setTimeout(() => window.location.href = "index.html", 800);
+    }
+    
+    function formatCurrency(amount) {
+        return new Intl.NumberFormat('fr-FR', { style: 'currency', currency: 'USD' }).format(amount);
     }
 
-    function filterPaiements() {
-      const container = document.getElementById('paiementsContainer');
-      const recherche = document.getElementById('searchInput').value.toLowerCase();
-      const classeFiltre = document.getElementById('filtreClasse').value;
-      const motifFiltre = document.getElementById('filtreMotif').value;
-      
-      const filteredPaiements = initialData.filter(t => {
-          const eleveMatch = t.eleve.toLowerCase().includes(recherche) || t.id.toLowerCase().includes(recherche);
-          const classeMatch = !classeFiltre || t.classe === classeFiltre;
-          const motifMatch = !motifFiltre || t.motif === motifFiltre;
-
-          return eleveMatch && classeMatch && motifMatch;
-      });
-
-      renderPaiements(filteredPaiements);
-      
-      document.getElementById('compteur').textContent = `📊 ${filteredPaiements.length} transactions affichées sur ${initialData.length} au total.`;
+    function formatDate(isoString) {
+        if (!isoString) return 'N/A';
+        const date = new Date(isoString);
+        if (isNaN(date)) return isoString;
+        return date.toLocaleDateString('fr-FR', { year: 'numeric', month: 'short', day: 'numeric' });
     }
+    
+    // 5. LOGIQUE DE FILTRAGE ET MISE À JOUR DU TABLEAU
+    function applyFiltersAndRender() {
+        const searchText = filterEleveInput.value.toLowerCase().trim();
+        const mode = filterModeSelect.value;
+        const startDate = filterDateStartInput.value ? new Date(filterDateStartInput.value) : null;
+        const endDate = filterDateEndInput.value ? new Date(filterDateEndInput.value) : null;
+        
+        let totalCollected = 0;
+        const modeCounts = {};
 
-    function renderPaiements(data) {
-        if (data.length === 0) {
-            document.getElementById('paiementsContainer').innerHTML = "<p style='text-align: center; padding: 3rem;'>Aucune transaction trouvée selon les critères de filtre.</p>";
+        const filteredPayments = allPaymentsCache.filter(payment => {
+            // 1. Filtrage par Nom/Matricule
+            const eleveMatch = !searchText || (
+                payment.eleveNomComplet.toLowerCase().includes(searchText) ||
+                payment.eleveId.toLowerCase().includes(searchText)
+            );
+
+            // 2. Filtrage par Mode de Paiement
+            const modeMatch = !mode || payment.modePaiement === mode;
+
+            // 3. Filtrage par Date (datePaiement est stocké comme 'YYYY-MM-DD')
+            let dateMatch = true;
+            if (payment.datePaiement) {
+                const paymentDate = new Date(payment.datePaiement);
+                if (startDate && paymentDate < startDate) {
+                    dateMatch = false;
+                }
+                if (endDate) {
+                    // Pour inclure le jour de fin, on compare avec la date du jour suivant
+                    const endDayInclusive = new Date(endDate);
+                    endDayInclusive.setDate(endDayInclusive.getDate() + 1); 
+                    if (paymentDate >= endDayInclusive) {
+                        dateMatch = false;
+                    }
+                }
+            }
+
+            return eleveMatch && modeMatch && dateMatch;
+        });
+
+        // Mise à jour des Statistiques et tri
+        filteredPayments.forEach(payment => {
+            totalCollected += payment.montantVerse;
+            modeCounts[payment.modePaiement] = (modeCounts[payment.modePaiement] || 0) + 1;
+        });
+
+        // Tri (du plus récent au plus ancien, le tri Firestore par défaut n'est pas utilisé)
+        filteredPayments.sort((a, b) => new Date(b.datePaiement) - new Date(a.datePaiement));
+
+        // Affichage des statistiques
+        totalEncaisseSpan.textContent = formatCurrency(totalCollected);
+        transactionCountSpan.textContent = filteredPayments.length;
+        
+        let popularMode = 'N/A';
+        let maxCount = 0;
+        for (const [modeName, count] of Object.entries(modeCounts)) {
+            if (count > maxCount) {
+                maxCount = count;
+                popularMode = modeName;
+            }
+        }
+        popularModeSpan.textContent = popularMode;
+
+
+        // Remplissage du tableau
+        paiementsTableBody.innerHTML = '';
+        if (filteredPayments.length === 0) {
+            noDataMessage.classList.remove('hidden');
             return;
         }
 
-        let tableHTML = `<table class="paiements-table">
-                            <thead>
-                                <tr>
-                                    <th>Référence (ID)</th>
-                                    <th>Date</th>
-                                    <th>Élève (Classe)</th>
-                                    <th>Montant Payé (USD)</th>
-                                    <th>Motif</th>
-                                    <th>Solde Restant</th>
-                                    <th>Statut</th>
-                                    <th>Action</th>
-                                </tr>
-                            </thead>
-                            <tbody>`;
+        noDataMessage.classList.add('hidden');
+        filteredPayments.forEach(payment => {
+            const row = paiementsTableBody.insertRow();
+            row.className = 'hover:bg-gray-50';
 
-        data.forEach(t => {
-            const statutClass = getStatutClass(t.statut);
-            const soldeRestantClass = t.soldeRestant > 0 ? 'statut-du' : 'statut-paye';
+            // Date Versement
+            row.insertCell().textContent = formatDate(payment.datePaiement);
 
-            tableHTML += `
-                <tr>
-                    <td>${t.id}</td>
-                    <td>${t.date}</td>
-                    <td>${t.eleve} (${t.classe})</td>
-                    <td><strong>$${t.montant.toFixed(2)}</strong></td>
-                    <td>${t.motif}</td>
-                    <td class="${soldeRestantClass}">$${t.soldeRestant.toFixed(2)}</td>
-                    <td class="${statutClass}">${t.statut}</td>
-                    <td>
-                        <button class="btn-recu" onclick="printRecu('${t.id}')">🖨️ Reçu</button>
-                    </td>
-                </tr>
+            // Élève (Classe)
+            row.insertCell().innerHTML = `
+                <span class="font-semibold text-gray-800">${payment.eleveNomComplet}</span><br>
+                <span class="text-xs text-gray-500">${payment.classeNom}</span>
+            `;
+
+            // Montant Versé
+            const montantCell = row.insertCell();
+            montantCell.textContent = formatCurrency(payment.montantVerse);
+            montantCell.className = 'px-6 py-4 whitespace-nowrap text-right font-bold text-green-700';
+
+            // Mode
+            row.insertCell().textContent = payment.modePaiement;
+
+            // Référence / Econome
+            row.insertCell().innerHTML = `
+                <span class="text-sm text-gray-700">${payment.reference || 'Aucune référence'}</span><br>
+                <span class="text-xs text-teal-600">Enregistré par: ${payment.economeRole || 'N/A'}</span>
             `;
         });
-        
-        tableHTML += `</tbody></table>`;
-        document.getElementById('paiementsContainer').innerHTML = tableHTML;
     }
 
-    function printRecu(id) {
-        alert(`Génération et impression du reçu de transaction ID: ${id}`);
-        // En vrai: window.open(`recu-pdf.html?id=${id}`, '_blank');
-    }
-    
-    // Chargement initial au démarrage
-    document.addEventListener('DOMContentLoaded', () => {
-        filterPaiements();
+    // Attacher les écouteurs d'événements aux filtres
+    [filterEleveInput, filterModeSelect, filterDateStartInput, filterDateEndInput].forEach(input => {
+        input.addEventListener('input', applyFiltersAndRender);
+        input.addEventListener('change', applyFiltersAndRender);
     });
 
-  </script>
+    // 6. ÉCOUTE EN TEMPS RÉEL DES PAIEMENTS
+    function setupPaymentListener() {
+        // Nous utilisons onSnapshot sur toute la collection car le filtrage côté client est plus performant
+        // que de créer des index Firestore complexes pour chaque combinaison de filtres potentiels.
+        const paymentsQuery = collection(db, PAIEMENTS_PATH);
+        
+        onSnapshot(paymentsQuery, (snapshot) => {
+            allPaymentsCache = [];
+            snapshot.forEach(doc => {
+                allPaymentsCache.push({ id: doc.id, ...doc.data() });
+            });
+            
+            showNotification(`Mise à jour: ${allPaymentsCache.length} paiements chargés.`, "info");
+            applyFiltersAndRender(); // Re-appliquer les filtres et rafraîchir le tableau
+            
+        }, (error) => {
+            console.error("Erreur de chargement des paiements:", error);
+            showNotification("Erreur de connexion en temps réel aux données financières.", "error");
+            paiementsTableBody.innerHTML = `<tr><td colspan="5" class="text-center py-8 text-red-500">Erreur de chargement.</td></tr>`;
+        });
+    }
+
+    // 7. GESTION DES ÉVÉNEMENTS & AUTHENTIFICATION
+    logoutBtn.addEventListener("click", handleLogout);
+    
+    onAuthStateChanged(auth, user => {
+        document.body.classList.add('loaded');
+        currentUserId = user?.uid;
+
+        if (!user) {
+            showNotification("Session expirée ou non autorisée.", "error");
+            setTimeout(() => window.location.href = "index.html", 1000);
+        } else {
+            // Récupérer le rôle de l'utilisateur pour l'autorisation
+            fetch(`/users/${currentUserId}`).then(res => res.json()).then(data => {
+                const userRole = data.role;
+                const roleDisplay = userRole.charAt(0).toUpperCase() + userRole.slice(1);
+                document.getElementById('userInfo').textContent = `${data.nom || data.email} (${roleDisplay})`;
+                
+                if (!AUTHORIZED_ROLES.includes(userRole)) {
+                    showNotification(`Accès non autorisé. Seuls les Économes et Admins peuvent voir l'historique financier.`, "error");
+                    setTimeout(() => window.location.href = `dashboard-${userRole}.html`, 1500); 
+                    return;
+                }
+                
+                setupPaymentListener(); // Démarrer l'écoute des paiements après l'autorisation
+
+            }).catch(err => {
+                console.error("Erreur de récupération du document utilisateur:", err);
+                showNotification("Erreur serveur lors de l'authentification.", "error");
+            });
+        }
+    });
+
+    // Petite fonction utilitaire pour simuler l'initialisation de l'authentification dans l'environnement canvas
+    function initializeAuth() {
+        if (typeof __initial_auth_token !== 'undefined') {
+             signInWithCustomToken(auth, __initial_auth_token).catch(e => {
+                console.error("Custom token sign in failed:", e);
+                signInAnonymously(auth);
+            });
+        } else {
+            signInAnonymously(auth);
+        }
+    }
+    initializeAuth();
+    </script>
 </body>
 </html>
