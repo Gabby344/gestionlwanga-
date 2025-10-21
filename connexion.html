@@ -123,7 +123,7 @@
         import { getAuth, signInWithEmailAndPassword } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-auth.js";
         import { getFirestore, doc, getDoc, setLogLevel } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-firestore.js";
         
-        // Configuration Firebase (intégrée directement pour la robustesse)
+        // Configuration Firebase (intégrée directement)
         const firebaseConfig = {
             apiKey: "AIzaSyCQdZppl-UsPCXF8iFmXQpcGAFjHEMt838",
             authDomain: "gestion-saint-charles-lwanga.firebaseapp.com",
@@ -133,19 +133,30 @@
             appId: "1:508302363143:web:35c181528dd84def1a78a2"
         };
         
-        // Mappage des rôles vers les pages de tableau de bord (Mis à jour avec tous les rôles)
+        // Mappage des rôles vers les pages de tableau de bord (Mis à jour avec la liste fournie)
         const ROLE_REDIRECTS = {
-            'prefet': 'dashboard-prefet-general.html',
-            'directeur-etudes': 'dashboard-directeur-etudes.html',
-            'directeur-discipline': 'dashboard-discipline.html',
-            'directeur': 'dashboard-directeur.html', 
-            'secretaire': 'gestion-eleves.html',
-            'econome': 'gestion-financiere.html',
-            'enseignant': 'dashboard-professeur.html',
-            'professeur': 'dashboard-professeur.html', // Alias pour 'enseignant'
-            'eleve': 'portail-eleve.html',
-            'admin': 'super-admin-dashboard.html',
-            'default': 'tableau-de-bord.html'
+            // Direction
+            'prefet': 'accueil-prefet.html',
+            'directeur-etudes': 'accueil-directeur-etudes.html',
+            'directeur-discipline': 'accueil-directeur-discipline.html',
+            'directeur': 'accueil-utilisateur.html', // Redirection par défaut si 'directeur' est un rôle générique
+            
+            // Administration et Finances
+            'secretaire': 'accueil-secretaire.html',
+            'econome': 'accueil-econome.html',
+            
+            // Pédagogique
+            'enseignant': 'accueil-enseignant.html',
+            'professeur': 'accueil-enseignant.html', // Alias
+            
+            // Utilisateur final
+            'eleve': 'accueil-eleves.html',
+            
+            // Administration Système (Redirection vers le tableau de bord central de l'Admin)
+            'admin': 'dashboard-admin.html', 
+            
+            // Redirection par défaut si le rôle n'est pas défini
+            'default': 'accueil-utilisateur.html'
         };
 
         // setLogLevel('Debug'); // Décommenter pour les logs détaillés de Firebase
@@ -247,7 +258,7 @@
                 }
 
                 const data = snap.data();
-                // Assurez-vous que le champ 'role' est en minuscules dans Firestore
+                // Assurez-vous que le champ 'role' dans Firestore est en minuscules
                 const role = (data.role || "default").toLowerCase().trim(); 
                 const redirectUrl = ROLE_REDIRECTS[role] || ROLE_REDIRECTS['default'];
 
