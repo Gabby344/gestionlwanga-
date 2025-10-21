@@ -4,8 +4,13 @@
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>Connexion Sécurisée · Institut Saint Charles Lwanga - SIGS</title>
+    
+    <!-- Chargement de Tailwind CSS -->
     <script src="https://cdn.tailwindcss.com"></script>
+    
+    <!-- Import de la police Inter -->
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700;800&display=swap" rel="stylesheet">
+    
     <style>
         /* Configuration des couleurs et du dégradé de fond */
         :root {
@@ -74,7 +79,8 @@
     <div class="login-card bg-slate-900/80 p-8 sm:p-10 rounded-2xl shadow-2xl max-w-md w-full text-center">
         
         <div class="mb-8">
-            <img src="IMG_7373.jpeg" alt="Logo Institut Saint Charles Lwanga" class="mx-auto h-20 w-auto rounded-full shadow-lg border-2 border-accent-amber/50">
+            <!-- VOTRE LOGO EST CONSERVÉ -->
+            <img src="IMG_7373.jpeg" alt="Logo Institut Saint Charles Lwanga" class="mx-auto h-20 w-auto rounded-full shadow-lg border-2 border-accent-amber/50 object-cover">
             
             <h1 class="text-3xl font-extrabold text-white mt-4 tracking-tight">
                 Institut Saint Charles Lwanga
@@ -83,6 +89,7 @@
         </div>
 
         <form id="loginForm" class="flex flex-col gap-5">
+            <!-- Champ Email -->
             <div class="relative group">
                 <input type="email" id="email" placeholder=" " class="peer w-full p-4 pt-6 bg-slate-800 text-white border-b border-slate-700 rounded-t-lg focus:outline-none focus:border-accent-amber transition duration-200" required>
                 <label for="email" class="absolute left-4 top-1 text-sm text-slate-400 peer-placeholder-shown:text-base peer-placeholder-shown:top-4 peer-focus:top-1 peer-focus:text-sm peer-focus:text-accent-amber transition-all duration-200 pointer-events-none">
@@ -90,6 +97,7 @@
                 </label>
             </div>
             
+            <!-- Champ Mot de passe -->
             <div class="relative group">
                 <input type="password" id="password" placeholder=" " class="peer w-full p-4 pt-6 bg-slate-800 text-white border-b border-slate-700 rounded-t-lg focus:outline-none focus:border-accent-amber transition duration-200" required>
                 <label for="password" class="absolute left-4 top-1 text-sm text-slate-400 peer-placeholder-shown:text-base peer-placeholder-shown:top-4 peer-focus:top-1 peer-focus:text-sm peer-focus:text-accent-amber transition-all duration-200 pointer-events-none">
@@ -97,15 +105,18 @@
                 </label>
             </div>
             
+            <!-- Bouton de Soumission -->
             <button type="submit" class="btn-submit w-full py-4 mt-3 bg-primary-indigo text-white font-extrabold rounded-lg text-lg hover:bg-indigo-700 transition duration-300 shadow-xl shadow-primary-indigo/30 hover:shadow-primary-indigo/50 flex items-center justify-center disabled:opacity-50 disabled:cursor-not-allowed">
                 <span>CONNEXION SÉCURISÉE</span>
             </button>
         </form>
 
+        <!-- Conteneur de Messages -->
         <div id="messageContainer" class="mt-6 min-h-[3rem]">
-            </div>
+        </div>
 
-        <a href="#" onclick="alert('La fonction de réinitialisation de mot de passe n\'est pas implémentée dans cette démo.'); return false;" class="link block mt-4 text-sm text-slate-500 hover:text-accent-amber font-medium transition duration-200">
+        <!-- Lien Mot de passe oublié (mis à jour pour utiliser showMessage) -->
+        <a href="#" id="forgotPasswordLink" class="link block mt-4 text-sm text-slate-500 hover:text-accent-amber font-medium transition duration-200">
             Mot de passe oublié ? Contacter l'administrateur
         </a>
     </div>
@@ -115,19 +126,22 @@
         import { initializeApp } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-app.js";
         import { getAuth, signInWithEmailAndPassword, signInWithCustomToken, signInAnonymously } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-auth.js";
         import { getFirestore, doc, getDoc, setLogLevel } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-firestore.js";
+        
+        // Activation du mode débogage pour voir les logs Firestore
+        setLogLevel('Debug');
 
         // -----------------------------------------------------
-        // 1. CONFIGURATION ET REDIRECTIONS (MANDATAIRE)
+        // 1. CONFIGURATION ET REDIRECTIONS
         // -----------------------------------------------------
 
-        // 🎯 LECTURE DE LA CONFIGURATION FIREBASE
+        // 🎯 LECTURE SÉCURISÉE DE LA CONFIGURATION FOURNIE PAR L'ENVIRONNEMENT
         const firebaseConfig = JSON.parse(typeof __firebase_config !== 'undefined' ? __firebase_config : '{}');
 
         // Mappage des rôles vers les pages de tableau de bord
         const ROLE_REDIRECTS = {
             'directeur': 'dashboard-directeur.html',
             'professeur': 'dashboard-professeur.html',
-            'secretaire': 'gestion-eleves.html', 
+            'secretaire': 'gestion-eleves.html',
             'admin': 'super-admin-dashboard.html',
             'default': 'tableau-de-bord.html'
         };
@@ -137,7 +151,9 @@
         const btn = document.querySelector(".btn-submit");
         const originalText = btn.innerHTML;
         
-        // ... Fonction showMessage ...
+        // -----------------------------------------------------
+        // 2. FONCTION UTILITAIRE : Affichage des messages
+        // -----------------------------------------------------
 
         function showMessage(text, type) {
             let colorClass = '';
@@ -148,21 +164,20 @@
             } else if (type === 'error') {
                 colorClass = 'bg-red-700 text-white border-red-500';
                 icon = '❌';
-            } else {
+            } else { // 'info' or default
                 colorClass = 'bg-yellow-700 text-white border-yellow-500';
                 icon = '⚠️';
             }
             
             messageContainer.innerHTML = `
-                <div role="alert" class="p-3 rounded-lg border-l-4 font-semibold ${colorClass}">
+                <div role="alert" class="p-3 rounded-lg border-l-4 font-semibold ${colorClass} text-left">
                     ${icon} ${text}
                 </div>
             `;
         }
 
-
         // -----------------------------------------------------
-        // 2. INITIALISATION FIREBASE
+        // 3. INITIALISATION FIREBASE & AUTHENTIFICATION ANONYME
         // -----------------------------------------------------
 
         if (Object.keys(firebaseConfig).length > 0) {
@@ -171,26 +186,26 @@
             auth = getAuth(app);
             db = getFirestore(app);
 
-            // Tenter une connexion anonyme (pour l'accès non authentifié si besoin)
+            // Tenter une connexion anonyme ou par token fourni par l'environnement
             const initialToken = typeof __initial_auth_token !== 'undefined' ? __initial_auth_token : null;
             if (initialToken) {
-                signInWithCustomToken(auth, initialToken).catch(() => {
-                    signInAnonymously(auth).catch(err => console.error("Échec de la connexion anonyme.", err));
-                });
+                signInWithCustomToken(auth, initialToken)
+                    .catch(err => {
+                        console.error("Échec de la connexion par token custom. Tentative anonyme.", err);
+                        signInAnonymously(auth).catch(err => console.error("Échec de la connexion anonyme.", err));
+                    });
             } else {
                 signInAnonymously(auth).catch(err => console.error("Échec de la connexion anonyme.", err));
             }
         } else {
-            showMessage('Configuration Firebase manquante. La connexion ne fonctionnera pas.', 'error');
+            showMessage('Configuration Firebase manquante. Le service de connexion est indisponible.', 'error');
             console.error("Firebase configuration is missing.");
         }
 
 
         // -----------------------------------------------------
-        // 3. LOGIQUE DE CONNEXION PRINCIPALE
+        // 4. UTILITAIRE : Gestion des requêtes avec Backoff
         // -----------------------------------------------------
-        
-        // ... Utilitaire fetchWithBackoff ...
         async function fetchWithBackoff(func, maxRetries = 5) {
             for (let i = 0; i < maxRetries; i++) {
                 try {
@@ -203,9 +218,13 @@
             }
         }
 
+        // -----------------------------------------------------
+        // 5. LOGIQUE DE CONNEXION PRINCIPALE
+        // -----------------------------------------------------
+        
         document.getElementById("loginForm").addEventListener("submit", async (e) => {
             e.preventDefault();
-            showMessage('', 'info'); 
+            showMessage('', 'info'); // Nettoyer les messages précédents
 
             if (!auth || !db) {
                 showMessage('Service de connexion non initialisé.', 'error');
@@ -226,12 +245,15 @@
                 );
                 const user = userCredential.user;
 
-                // 🌐 RÉCUPÉRATION DU RÔLE DE L'UTILISATEUR (Firestore)
+                // 🌐 RÉCUPÉRATION DU RÔLE DE L'UTILISATEUR (Collection 'users')
                 const userDocRef = doc(db, "users", user.uid);
                 const snap = await fetchWithBackoff(() => getDoc(userDocRef));
 
                 if (!snap.exists()) {
+                    // L'utilisateur est authentifié mais n'a pas de profil Firestore (sécurité)
                     showMessage("Profil utilisateur introuvable. Accès refusé.", 'error');
+                    // Déconnexion de l'utilisateur
+                    auth.signOut();
                     return;
                 }
 
@@ -239,7 +261,7 @@
                 const role = (data.role || "default").toLowerCase().trim();
                 const redirectUrl = ROLE_REDIRECTS[role] || ROLE_REDIRECTS['default'];
 
-                showMessage(`Connexion réussie ! Bienvenue ${data.nom || email}. Redirection...`, 'success');
+                showMessage(`Connexion réussie ! Bienvenue ${data.nom || email}. Redirection vers ${role.toUpperCase()}...`, 'success');
                 
                 // REDIRECTION
                 setTimeout(() => {
@@ -251,7 +273,7 @@
                 let messageErreur = "Erreur de connexion. Veuillez réessayer.";
                 
                 // GESTION DES ERREURS FIREBASE
-                if (err.code === 'auth/invalid-email' || err.code === 'auth/user-not-found' || err.code === 'auth/wrong-password') {
+                if (err.code === 'auth/invalid-email' || err.code === 'auth/user-not-found' || err.code === 'auth/wrong-password' || err.code === 'auth/invalid-credential') {
                     messageErreur = "Identifiants invalides. Vérifiez l'e-mail ou le mot de passe.";
                 } else if (err.code === 'auth/too-many-requests') {
                     messageErreur = "Trop de tentatives. Veuillez réessayer dans quelques minutes.";
@@ -265,6 +287,16 @@
                 btn.innerHTML = originalText;
             }
         });
+
+        // -----------------------------------------------------
+        // 6. GESTION DU MOT DE PASSE OUBLIÉ (SANS ALERT())
+        // -----------------------------------------------------
+
+        document.getElementById("forgotPasswordLink").addEventListener("click", (e) => {
+            e.preventDefault();
+            showMessage("La fonction de réinitialisation de mot de passe n'est pas implémentée dans cette démo. Veuillez contacter l'administration de l'ISC Lwanga.", 'info');
+        });
+
     </script>
 </body>
 </html>
