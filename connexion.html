@@ -1,205 +1,283 @@
 <!DOCTYPE html>
 <html lang="fr">
 <head>
-  <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Connexion · ISC Lwanga</title>
-  <link rel="icon" type="image/jpeg" href="logo.jpeg">
-  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700&display=swap" rel="stylesheet">
-  <style>
-    :root {
-      --bleu-principal: #1e40af;
-      --bleu-clair: #3b82f6;
-      --fond-gradient: linear-gradient(135deg, var(--bleu-principal), var(--bleu-clair));
-      --ombre: rgba(0,0,0,0.15);
-      --blanc: #ffffff;
-      --rouge: #ef4444;
-      --vert: #10b981;
-    }
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Connexion Sécurisée · Institut Saint Charles Lwanga - SIGS</title>
+    <!-- Chargement de Tailwind CSS et de la police Inter -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700;800&display=swap" rel="stylesheet">
+    <style>
+        /* Configuration des couleurs et du dégradé de fond */
+        :root {
+            --dark-blue-bg: #0f172a; /* Slate 900 */
+            --primary-indigo: #4f46e5; /* Indigo 600 */
+            --accent-amber: #f59e0b; /* Amber 500 (Or) */
+        }
 
-    * { margin:0; padding:0; box-sizing:border-box; }
+        body {
+            font-family: 'Inter', sans-serif;
+            background-color: var(--dark-blue-bg);
+            /* Ajout d'une texture subtile pour un effet professionnel */
+            background-image: radial-gradient(circle at center, #1e293b 1px, transparent 1px),
+                              radial-gradient(circle at center, #1e293b 1px, transparent 1px);
+            background-size: 20px 20px;
+            background-position: 0 0, 10px 10px;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            min-height: 100vh;
+            padding: 1rem;
+        }
+        
+        /* Animation de fondu et d'élévation pour la carte */
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(30px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
 
-    body {
-      font-family: 'Inter', sans-serif;
-      background: var(--fond-gradient);
-      display: flex;
-      justify-content: center;
-      align-items: center;
-      min-height: 100vh;
-    }
+        .login-card {
+            animation: fadeIn 0.8s cubic-bezier(0.25, 0.46, 0.45, 0.94);
+            border: 1px solid rgba(255, 255, 255, 0.08); /* Bordure subtile */
+            backdrop-filter: blur(5px); /* Effet verre très léger */
+        }
 
-    .container {
-      background: var(--blanc);
-      padding: 50px 35px;
-      border-radius: 16px;
-      box-shadow: 0 10px 30px var(--ombre);
-      max-width: 400px;
-      width: 100%;
-      text-align: center;
-      animation: fadeIn 0.8s ease-in-out;
-    }
-
-    .container img {
-      width: 90px;
-      margin-bottom: 20px;
-    }
-
-    h1 {
-      font-size: 1.5rem;
-      color: var(--bleu-principal);
-      margin-bottom: 25px;
-      font-weight: 700;
-    }
-
-    form {
-      display: flex;
-      flex-direction: column;
-      gap: 15px;
-      margin-bottom: 15px;
-    }
-
-    input {
-      padding: 12px;
-      border-radius: 8px;
-      border: 1px solid #d1d5db;
-      font-size: 1rem;
-      transition: all 0.3s ease;
-    }
-
-    input:focus {
-      outline: none;
-      border-color: var(--bleu-principal);
-      box-shadow: 0 0 0 2px #dbeafe;
-    }
-
-    button {
-      padding: 12px;
-      background: var(--bleu-principal);
-      color: var(--blanc);
-      border: none;
-      border-radius: 8px;
-      font-weight: 600;
-      cursor: pointer;
-      font-size: 1rem;
-      transition: all 0.3s ease;
-    }
-
-    button:hover {
-      background: #0f2f79;
-      transform: scale(1.02);
-    }
-
-    #errorMessage, #successMessage {
-      font-size: 0.9rem;
-      min-height: 18px;
-    }
-
-    #errorMessage { color: var(--rouge); margin-bottom: 10px; }
-    #successMessage { color: var(--vert); margin-bottom: 10px; }
-
-    .link {
-      color: var(--bleu-principal);
-      text-decoration: none;
-      font-size: 0.9rem;
-    }
-
-    .link:hover { text-decoration: underline; }
-
-    footer {
-      margin-top: 20px;
-      font-size: 0.8rem;
-      color: #6b7280;
-    }
-
-    @keyframes fadeIn {
-      from { opacity:0; transform: translateY(15px); }
-      to { opacity:1; transform: translateY(0); }
-    }
-
-    @media(max-width:480px){
-      .container { padding: 35px 20px; }
-      h1 { font-size: 1.3rem; }
-    }
-  </style>
+        /* Style pour l'indicateur de chargement */
+        .loading-icon {
+            border: 3px solid rgba(255, 255, 255, 0.3);
+            border-top: 3px solid #fff;
+            border-radius: 50%;
+            width: 20px;
+            height: 20px;
+            animation: spin 1s linear infinite;
+        }
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+    </style>
+    <script>
+        // Configuration Tailwind pour les couleurs personnalisées
+        tailwind.config = {
+            theme: {
+                extend: {
+                    colors: {
+                        'primary-indigo': 'var(--primary-indigo)',
+                        'accent-amber': 'var(--accent-amber)',
+                        'dark-bg': 'var(--dark-blue-bg)',
+                    }
+                }
+            }
+        }
+    </script>
 </head>
 <body>
-  <div class="container">
-    <img src="IMG_7373.jpeg" alt="Logo ISC Lwanga">
-    <h1>Connexion · Institut Saint Charles Lwanga</h1>
+    <div class="login-card bg-slate-900/80 p-8 sm:p-10 rounded-2xl shadow-2xl max-w-md w-full text-center">
+        
+        <!-- Logo et Titre (Mis à jour selon la demande) -->
+        <div class="mb-8">
+            <!-- Remplacement de l'icône par votre logo -->
+            <img src="IMG_7373.jpeg" alt="Logo Institut Saint Charles Lwanga" class="mx-auto h-20 w-auto rounded-full shadow-lg border-2 border-accent-amber/50">
+            
+            <h1 class="text-3xl font-extrabold text-white mt-4 tracking-tight">
+                Institut Saint Charles Lwanga
+            </h1>
+            <p class="text-slate-400 mt-2 text-sm">Système Intégré de Gestion Scolaire (SIGS)</p>
+        </div>
 
-    <form id="loginForm">
-      <input type="email" id="email" placeholder="Adresse e-mail" required>
-      <input type="password" id="password" placeholder="Mot de passe" required>
-      <button type="submit">Se connecter</button>
-    </form>
+        <form id="loginForm" class="flex flex-col gap-5">
+            <!-- Champ Email -->
+            <div class="relative group">
+                <!-- L'attribut placeholder est un espace pour permettre l'animation de l'étiquette (label) -->
+                <input type="email" id="email" placeholder=" " class="peer w-full p-4 pt-6 bg-slate-800 text-white border-b border-slate-700 rounded-t-lg focus:outline-none focus:border-accent-amber transition duration-200" required>
+                <label for="email" class="absolute left-4 top-1 text-sm text-slate-400 peer-placeholder-shown:text-base peer-placeholder-shown:top-4 peer-focus:top-1 peer-focus:text-sm peer-focus:text-accent-amber transition-all duration-200 pointer-events-none">
+                    Adresse e-mail
+                </label>
+            </div>
+            
+            <!-- Champ Mot de passe -->
+            <div class="relative group">
+                <input type="password" id="password" placeholder=" " class="peer w-full p-4 pt-6 bg-slate-800 text-white border-b border-slate-700 rounded-t-lg focus:outline-none focus:border-accent-amber transition duration-200" required>
+                <label for="password" class="absolute left-4 top-1 text-sm text-slate-400 peer-placeholder-shown:text-base peer-placeholder-shown:top-4 peer-focus:top-1 peer-focus:text-sm peer-focus:text-accent-amber transition-all duration-200 pointer-events-none">
+                    Mot de passe
+                </label>
+            </div>
+            
+            <!-- Bouton de Soumission -->
+            <button type="submit" class="btn-submit w-full py-4 mt-3 bg-primary-indigo text-white font-extrabold rounded-lg text-lg hover:bg-indigo-700 transition duration-300 shadow-xl shadow-primary-indigo/30 hover:shadow-primary-indigo/50 flex items-center justify-center disabled:opacity-50 disabled:cursor-not-allowed">
+                <span>CONNEXION SÉCURISÉE</span>
+            </button>
+        </form>
 
-    <p id="errorMessage"></p>
-    <p id="successMessage"></p>
+        <!-- Messages d'état -->
+        <div id="messageContainer" class="mt-6 min-h-[3rem]">
+            <!-- Les messages d'erreur et de succès apparaîtront ici -->
+        </div>
 
-    <a href="index.html" class="link">← Retour à l’accueil</a>
-    <footer>&copy; 2025 Institut Saint Charles Lwanga · Tous droits réservés</footer>
-  </div>
+        <a href="#" onclick="alert('La fonction de réinitialisation de mot de passe n\'est pas implémentée dans cette démo.'); return false;" class="link block mt-4 text-sm text-slate-500 hover:text-accent-amber font-medium transition duration-200">
+            Mot de passe oublié ? Contacter l'administrateur
+        </a>
+    </div>
 
-  <script type="module">
-    import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-app.js";
-    import { getAuth, signInWithEmailAndPassword } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-auth.js";
-    import { getFirestore, doc, getDoc } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore.js";
-    import { roleRedirects } from './roles.js'; // ✅ Assure-toi que roles.js est bien présent
+    <!-- SCRIPTS FIREBASE ET LOGIQUE APPLICATIVE -->
+    <script type="module">
+        import { initializeApp } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-app.js";
+        import { getAuth, signInWithEmailAndPassword, signInWithCustomToken, signInAnonymously } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-auth.js";
+        import { getFirestore, doc, getDoc, setLogLevel } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-firestore.js";
 
-    const firebaseConfig = {
-      apiKey: "AIzaSyAgv4TDYnR60TXnns-LISqbZTgcdLT31cc",
-      authDomain: "gestionlwanga.firebaseapp.com",
-      projectId: "gestionlwanga"
-    };
+        // -----------------------------------------------------
+        // 1. CONFIGURATION ET REDIRECTIONS (MANDATAIRE)
+        // -----------------------------------------------------
 
-    const app = initializeApp(firebaseConfig);
-    const auth = getAuth(app);
-    const db = getFirestore(app);
+        const firebaseConfig = JSON.parse(typeof __firebase_config !== 'undefined' ? __firebase_config : '{}');
 
-    const loginForm = document.getElementById("loginForm");
-    const errorMessage = document.getElementById("errorMessage");
-    const successMessage = document.getElementById("successMessage");
+        // Mappage des rôles vers les pages de tableau de bord
+        const ROLE_REDIRECTS = {
+            'directeur': 'dashboard-directeur.html',
+            'professeur': 'dashboard-professeur.html',
+            'secretaire': 'gestion-eleves.html', 
+            'admin': 'super-admin-dashboard.html',
+            'default': 'tableau-de-bord.html'
+        };
 
-    loginForm.addEventListener("submit", async (e) => {
-      e.preventDefault();
-      errorMessage.textContent = "";
-      successMessage.textContent = "";
+        let db, auth;
+        const messageContainer = document.getElementById("messageContainer");
+        const btn = document.querySelector(".btn-submit");
+        const originalText = btn.innerHTML;
+        
+        // setLogLevel('Debug'); // Décommenter pour le débogage Firebase
 
-      const email = document.getElementById("email").value.trim();
-      const password = document.getElementById("password").value;
-
-      try {
-        const userCredential = await signInWithEmailAndPassword(auth, email, password);
-        const user = userCredential.user;
-
-        const snap = await getDoc(doc(db, "users", user.uid));
-        if (!snap.exists()) {
-          errorMessage.textContent = "❌ Profil utilisateur introuvable.";
-          return;
+        // Fonction pour afficher les messages
+        function showMessage(text, type) {
+            let colorClass = '';
+            let icon = '';
+            if (type === 'success') {
+                colorClass = 'bg-green-700 text-white border-green-500';
+                icon = '✅';
+            } else if (type === 'error') {
+                colorClass = 'bg-red-700 text-white border-red-500';
+                icon = '❌';
+            } else {
+                colorClass = 'bg-yellow-700 text-white border-yellow-500';
+                icon = '⚠️';
+            }
+            
+            messageContainer.innerHTML = `
+                <div role="alert" class="p-3 rounded-lg border-l-4 font-semibold ${colorClass}">
+                    ${icon} ${text}
+                </div>
+            `;
         }
 
-        const data = snap.data();
-        const role = (data.role || "inconnu").toLowerCase().trim();
-        const redirectUrl = roleRedirects[role];
+        // -----------------------------------------------------
+        // 2. INITIALISATION FIREBASE
+        // -----------------------------------------------------
 
-        if (!redirectUrl) {
-          errorMessage.textContent = `❌ Rôle non reconnu : ${role}`;
-          console.warn("Rôle non reconnu :", role);
-          return;
+        if (Object.keys(firebaseConfig).length > 0) {
+            const app = initializeApp(firebaseConfig);
+            auth = getAuth(app);
+            db = getFirestore(app);
+
+            // Tenter une connexion initiale (nécessaire pour les règles de sécurité Firestore)
+            const initialToken = typeof __initial_auth_token !== 'undefined' ? __initial_auth_token : null;
+            if (initialToken) {
+                signInWithCustomToken(auth, initialToken).catch(() => {
+                    signInAnonymously(auth).catch(err => console.error("Échec de la connexion anonyme.", err));
+                });
+            } else {
+                signInAnonymously(auth).catch(err => console.error("Échec de la connexion anonyme.", err));
+            }
+        } else {
+            showMessage('Configuration Firebase manquante. La connexion ne fonctionnera pas.', 'error');
+            console.error("Firebase configuration is missing.");
         }
 
-        successMessage.textContent = `✅ Connexion réussie ! Bienvenue ${data.nom || user.email}`;
-        console.log("✅ UID :", user.uid);
-        console.log("✅ Rôle :", role);
-        console.log("✅ Redirection vers :", redirectUrl);
 
-        setTimeout(() => window.location.href = redirectUrl, 700);
+        // -----------------------------------------------------
+        // 3. LOGIQUE DE CONNEXION PRINCIPALE
+        // -----------------------------------------------------
+        
+        // Utilitaire pour le backoff exponentiel lors des appels API
+        async function fetchWithBackoff(func, maxRetries = 5) {
+            for (let i = 0; i < maxRetries; i++) {
+                try {
+                    return await func();
+                } catch (error) {
+                    if (i === maxRetries - 1) throw error;
+                    const delay = Math.pow(2, i) * 1000;
+                    await new Promise(resolve => setTimeout(resolve, delay));
+                    // console.warn(`Retry ${i + 1}/${maxRetries} after ${delay}ms.`); // Commenté pour un affichage pro
+                }
+            }
+        }
 
-      } catch (err) {
-        console.error(err);
-        errorMessage.textContent = `❌ ${err.message}`;
-      }
-    });
-  </script>
+        document.getElementById("loginForm").addEventListener("submit", async (e) => {
+            e.preventDefault();
+            showMessage('', 'info'); // Effacer les messages précédents
+
+            if (!auth || !db) {
+                showMessage('Service de connexion non initialisé.', 'error');
+                return;
+            }
+
+            const email = document.getElementById("email").value.trim();
+            const password = document.getElementById("password").value;
+
+            // Afficher l'état de chargement
+            btn.disabled = true;
+            btn.innerHTML = `<div class="loading-icon mr-3"></div> Authentification...`;
+
+            try {
+                // 1. Authentification par Email/Mot de passe
+                const userCredential = await fetchWithBackoff(() => 
+                    signInWithEmailAndPassword(auth, email, password)
+                );
+                const user = userCredential.user;
+
+                // 2. Récupération du rôle utilisateur depuis Firestore
+                // NOTE: Assurez-vous que la collection 'users' existe et est accessible
+                const userDocRef = doc(db, "users", user.uid);
+                const snap = await fetchWithBackoff(() => getDoc(userDocRef));
+
+                if (!snap.exists()) {
+                    showMessage("Profil utilisateur introuvable. Accès refusé.", 'error');
+                    return;
+                }
+
+                const data = snap.data();
+                const role = (data.role || "default").toLowerCase().trim();
+                const redirectUrl = ROLE_REDIRECTS[role] || ROLE_REDIRECTS['default'];
+
+                if (role === 'default' && !ROLE_REDIRECTS[role]) {
+                    showMessage(`Rôle non reconnu (${data.role}). Redirection par défaut.`, 'warning');
+                }
+
+                showMessage(`Connexion réussie ! Bienvenue ${data.nom || email}. Redirection...`, 'success');
+                
+                // 3. Redirection après un court délai
+                setTimeout(() => {
+                    window.location.href = redirectUrl;
+                }, 700);
+
+            } catch (err) {
+                console.error("Erreur de connexion:", err);
+                let messageErreur = "Erreur de connexion. Veuillez réessayer.";
+                
+                // Mappage des erreurs Firebase communes
+                if (err.code === 'auth/invalid-email' || err.code === 'auth/user-not-found' || err.code === 'auth/wrong-password') {
+                    messageErreur = "Identifiants invalides. Vérifiez l'e-mail ou le mot de passe.";
+                } else if (err.code === 'auth/too-many-requests') {
+                    messageErreur = "Trop de tentatives. Veuillez réessayer dans quelques minutes.";
+                }
+
+                showMessage(`Échec: ${messageErreur}`, 'error');
+
+            } finally {
+                // Rétablir le bouton
+                btn.disabled = false;
+                btn.innerHTML = originalText;
+            }
+        });
+    </script>
 </body>
 </html>
