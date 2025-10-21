@@ -1,212 +1,459 @@
 <!DOCTYPE html>
 <html lang="fr">
 <head>
-<meta charset="UTF-8" />
-<meta name="viewport" content="width=device-width, initial-scale=1.0" />
-<title>Gestion Pro des Assignations · ISC Lwanga</title>
-<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
-<style>
-:root {
-  --bleu-principal: #1f3a8a;
-  --gris-fonce: #1f2937;
-  --orange: #f59e0b;
-  --vert-succes: #10b981;
-  --rouge-erreur: #ef4444;
-  --fond: #f8fafc;
-  --bordure-legere: #e5e7eb;
-  --ombre-pro: rgba(0,0,0,0.05);
-}
-body {
-  font-family: 'Inter', sans-serif;
-  background-color: var(--fond);
-  margin:0; padding:2rem 1rem;
-  color: var(--gris-fonce);
-}
-.container { max-width:1000px; margin:auto; }
-h1 { text-align:center; font-size:2rem; color:var(--bleu-principal); margin-bottom:0.5rem; }
-h2 { text-align:center; font-size:1.1rem; font-weight:500; color:#6b7280; margin-bottom:2.5rem; }
-
-/* FORMULAIRE ASSIGNATION */
-#formulaireAssignation { background:white; padding:2rem; border-radius:12px; border:1px solid var(--bordure-legere); box-shadow:0 10px 15px -3px var(--ombre-pro); margin-bottom:2rem; }
-#formulaireAssignation h3 { margin-top:0; color:var(--orange); border-bottom:2px solid var(--bordure-legere); padding-bottom:0.75rem; margin-bottom:1.5rem; font-weight:600; font-size:1.25rem; }
-.form-grid { display:grid; grid-template-columns:repeat(auto-fit, minmax(220px,1fr)); gap:1.5rem; align-items:end; }
-.form-group label { display:block; font-weight:600; margin-bottom:0.5rem; font-size:0.9rem; color:var(--gris-fonce);}
-select { width:100%; padding:0.9rem 0.75rem; border:1px solid #d1d5db; border-radius:8px; font-size:1rem; background:white; transition:border-color 0.2s, box-shadow 0.2s;}
-select:focus { border-color:var(--bleu-principal); box-shadow:0 0 0 3px rgba(31,58,138,0.2); outline:none; }
-.btn-assigner { background-color:var(--bleu-principal); color:white; padding:0.9rem 1.5rem; border:none; border-radius:8px; font-weight:600; cursor:pointer; transition:background-color 0.2s; box-shadow:0 4px 6px -1px rgba(0,0,0,0.1); }
-.btn-assigner:hover { background-color:#1e40af; }
-
-/* TABLEAU & FILTRE */
-.table-header-controls { display:flex; justify-content:space-between; align-items:center; margin-bottom:1rem; flex-wrap:wrap; gap:0.5rem;}
-.table-header-controls input[type="search"] { padding:0.6rem 1rem; border:1px solid var(--bordure-legere); border-radius:6px; width:300px;}
-h3.list-title { margin-top:3rem; color:var(--gris-fonce); font-size:1.25rem; }
-#listeAssignations { background:white; border-radius:12px; box-shadow:0 4px 10px var(--ombre-pro); overflow:hidden; border:1px solid var(--bordure-legere); }
-.assignations-table { width:100%; border-collapse:collapse; }
-th, td { padding:1rem 1.25rem; text-align:left; }
-th { background:#f3f4f6; color:var(--gris-fonce); font-weight:600; text-transform:uppercase; font-size:0.8rem; letter-spacing:0.05em;}
-.assignations-table tbody tr:nth-child(even){ background:#f9fafb; }
-.assignations-table tbody tr:hover{ background:#eff6ff; }
-.actions-col { width:100px; text-align:center;}
-.btn-supprimer { border:none; padding:0.6rem 0.6rem; border-radius:6px; font-size:1rem; cursor:pointer; color:white; background:var(--rouge-erreur); transition:0.2s; }
-.btn-supprimer:hover { background:#b91c1c; transform:translateY(-1px); }
-
-/* NOTIFICATIONS */
-#notification-area { position:fixed; top:20px; right:20px; z-index:1000; }
-.notification { padding:1rem 1.5rem; border-radius:8px; margin-bottom:10px; box-shadow:0 4px 6px rgba(0,0,0,0.1); color:white; font-weight:500; opacity:0; transform:translateX(100%); transition:0.3s; }
-.notification.show { opacity:1; transform:translateX(0); }
-.notification.success{ background:var(--vert-succes);}
-.notification.error{ background:var(--rouge-erreur);}
-.notification.warning{ background:var(--orange);}
-
-/* BOUTON RETOUR */
-.btn-retour { display:inline-flex; align-items:center; margin-top:2.5rem; padding:0.5rem 1rem; color:var(--gris-fonce); text-decoration:none; font-size:0.95rem; font-weight:500; border:1px solid var(--bordure-legere); border-radius:6px; background:white; transition:0.2s;}
-.btn-retour:hover{ background:#f0f4f8; }
-</style>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Assignation des Cours | ISC Lwanga</title>
+    <!-- Chargement de Tailwind CSS pour un style moderne et responsive -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <!-- Font Awesome pour les icônes -->
+    <script src="https://kit.fontawesome.com/a2e0e6a56b.js" crossorigin="anonymous"></script>
+    
+    <style>
+        /* Configuration de la police Inter */
+        @import url('https://fonts.googleapis.com/css2?family=Inter:wght@100..900&display=swap');
+        body {
+            font-family: 'Inter', sans-serif;
+            background-color: #f3f4f6; /* bg-gray-100 */
+        }
+        /* Masque le contenu tant que l'AuthGuard n'a pas validé l'utilisateur */
+        body:not(.loaded) {
+            display: none;
+        }
+        /* Style pour les notifications customisées */
+        #notification-area {
+            position: fixed;
+            top: 20px;
+            right: 20px;
+            z-index: 1000;
+        }
+        .notification {
+            padding: 1rem 1.5rem;
+            border-radius: 0.75rem;
+            color: white;
+            font-weight: 500;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+            opacity: 0;
+            transform: translateX(100%);
+            transition: opacity 0.3s, transform 0.3s;
+            margin-bottom: 0.5rem;
+        }
+        .notification.show {
+            opacity: 1;
+            transform: translateX(0);
+        }
+    </style>
 </head>
-<body>
-<div id="notification-area"></div>
-<div class="container">
-<h1>🧑‍🏫 Gestion Pro des Assignations</h1>
-<h2>Institut Saint Charles Lwanga : Liaison Enseignants, Matières et Classes</h2>
+<body class="min-h-screen">
+    <div id="notification-area"></div>
+    
+    <div class="container mx-auto p-4 sm:p-8">
+        <!-- HEADER -->
+        <header class="text-center mb-8 p-6 bg-white rounded-xl shadow-lg border-b-4 border-indigo-500">
+            <h1 class="text-3xl font-extrabold text-gray-800 flex items-center justify-center gap-3">
+                <i class="fa-solid fa-link text-indigo-500"></i> Gestion Pro des Assignations
+            </h1>
+            <h2 class="text-lg font-medium text-gray-500 mt-1">
+                Liaison Enseignants, Matières et Classes Scolaires
+            </h2>
+            <p id="userInfo" class="text-sm text-indigo-600 font-semibold mt-2">Chargement de l'utilisateur...</p>
+        </header>
 
-<div id="formulaireAssignation">
-<h3>Nouvelle Assignation</h3>
-<form id="assignationForm">
-<div class="form-grid">
-<div class="form-group">
-<label for="selectClasse">Classe *</label>
-<select id="selectClasse" required>
-<option value="">-- Choisir une classe --</option>
-<option value="7EB" data-nom="7ème EB">7ème EB</option>
-<option value="8EB" data-nom="8ème EB">8ème EB</option>
-<option value="1S" data-nom="1ère Scientifique">1ère Scientifique</option>
-<option value="1A" data-nom="1ère Agriculture">1ère Agriculture</option>
-<option value="1C" data-nom="1ère Commerciale">1ère Commerciale</option>
-<option value="1G" data-nom="1ère Gestion">1ère Gestion</option>
-<option value="1P" data-nom="1ère Pédagogie Générale">1ère Pédagogie Générale</option>
-<!-- Ajouter toutes les classes jusqu'à 4ème -->
-</select>
-</div>
+        <!-- FORMULAIRE ASSIGNATION -->
+        <div class="bg-white p-6 md:p-8 rounded-xl shadow-2xl border-t-4 border-indigo-600 mb-8">
+            <h3 class="text-xl font-bold text-gray-800 mb-6 border-b pb-3 flex items-center gap-2">
+                <i class="fa-solid fa-pencil-alt text-indigo-600"></i> Nouvelle Assignation de Cours
+            </h3>
+            <form id="assignationForm">
+                <div class="grid grid-cols-1 md:grid-cols-4 gap-4 md:gap-6 items-end">
+                    
+                    <div class="form-group">
+                        <label for="selectClasse" class="block text-sm font-medium text-gray-700 mb-1">Classe *</label>
+                        <select id="selectClasse" required class="w-full p-3 border border-gray-300 rounded-lg focus:ring-indigo-500 focus:border-indigo-500 bg-white">
+                            <option value="">-- Chargement des classes --</option>
+                        </select>
+                    </div>
 
-<div class="form-group">
-<label for="selectMatiere">Matière *</label>
-<select id="selectMatiere" required>
-<option value="">-- Choisir une matière --</option>
-<option value="MATH" data-nom="Mathématiques">Mathématiques (MATH)</option>
-<option value="FRAN" data-nom="Français">Français (FRAN)</option>
-<option value="PHYS" data-nom="Physique">Physique (PHYS)</option>
-<option value="HIST" data-nom="Histoire">Histoire (HIST)</option>
-<option value="BIO" data-nom="Biologie">Biologie (BIO)</option>
-</select>
-</div>
+                    <div class="form-group">
+                        <label for="selectMatiere" class="block text-sm font-medium text-gray-700 mb-1">Matière *</label>
+                        <select id="selectMatiere" required class="w-full p-3 border border-gray-300 rounded-lg focus:ring-indigo-500 focus:border-indigo-500 bg-white">
+                            <option value="">-- Chargement des matières --</option>
+                        </select>
+                    </div>
 
-<div class="form-group">
-<label for="selectEnseignant">Enseignant *</label>
-<select id="selectEnseignant" required>
-<option value="">-- Choisir un enseignant --</option>
-<option value="E001" data-nom="M. Gabby Umba">M. Gabby Umba</option>
-<option value="E002" data-nom="Mme Ndaya Kabulo">Mme Ndaya Kabulo</option>
-<option value="E003" data-nom="M. Kalubi Mutombo">M. Kalubi Mutombo</option>
-</select>
-</div>
+                    <div class="form-group">
+                        <label for="selectEnseignant" class="block text-sm font-medium text-gray-700 mb-1">Enseignant *</label>
+                        <select id="selectEnseignant" required class="w-full p-3 border border-gray-300 rounded-lg focus:ring-indigo-500 focus:border-indigo-500 bg-white">
+                            <option value="">-- Chargement des enseignants --</option>
+                        </select>
+                    </div>
 
-<button type="submit" class="btn-assigner">🔗 Assigner le Cours</button>
-</div>
-</form>
-</div>
+                    <button type="submit" id="submitBtn" class="w-full py-3 bg-indigo-600 text-white rounded-lg hover:bg-indigo-700 font-bold transition duration-200 shadow-md">
+                        <i class="fa-solid fa-link mr-2"></i> Assigner le Cours
+                    </button>
+                </div>
+            </form>
+        </div>
 
-<div class="table-header-controls">
-<h3 class="list-title">Liste des Assignations Actuelles</h3>
-<input type="search" id="searchAssignations" placeholder="Rechercher par classe, matière ou enseignant..." onkeyup="filterAssignations()">
-</div>
+        <!-- LISTE DES ASSIGNATIONS -->
+        <div class="bg-white p-6 md:p-8 rounded-xl shadow-2xl border-t-4 border-teal-600">
+            <div class="flex flex-col sm:flex-row justify-between items-start sm:items-center mb-4 gap-4">
+                <h3 class="text-xl font-bold text-gray-800 flex items-center gap-2">
+                    <i class="fa-solid fa-table text-teal-600"></i> Liste des Assignations Actuelles
+                </h3>
+                <input type="search" id="searchAssignations" placeholder="Rechercher par classe, matière ou enseignant..." class="p-2 border border-gray-300 rounded-lg w-full sm:w-80 focus:ring-teal-500 focus:border-teal-500" onkeyup="filterAssignations()">
+            </div>
 
-<div id="listeAssignations">
-<table class="assignations-table">
-<thead>
-<tr><th>Classe</th><th>Matière</th><th>Code Matière</th><th>Enseignant Assigné</th><th class="actions-col">Action</th></tr>
-</thead>
-<tbody id="assignationsBody"></tbody>
-</table>
-<p id="aucuneAssignation" style="text-align:center;padding:1.5rem;color:#6b7280;display:none;">Aucune assignation trouvée.</p>
-</div>
+            <div class="overflow-x-auto rounded-lg border border-gray-200">
+                <table class="min-w-full divide-y divide-gray-200">
+                    <thead class="bg-gray-50">
+                        <tr>
+                            <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Classe</th>
+                            <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Matière</th>
+                            <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Enseignant Assigné</th>
+                            <th class="px-6 py-3 text-center text-xs font-medium text-gray-500 uppercase tracking-wider">Action</th>
+                        </tr>
+                    </thead>
+                    <tbody id="assignationsBody" class="bg-white divide-y divide-gray-200">
+                        <tr>
+                            <td colspan="4" class="text-center py-4 text-gray-500">Chargement des assignations...</td>
+                        </tr>
+                    </tbody>
+                </table>
+                <p id="aucuneAssignation" class="text-center p-4 text-gray-500 italic hidden">Aucune assignation trouvée.</p>
+            </div>
+        </div>
 
-<a href="cours.html" class="btn-retour">← Retour à l'administration des Cours</a>
-</div>
+        <button id="logoutBtn" class="mt-8 py-2 px-4 bg-red-600 text-white rounded-lg hover:bg-red-700 font-semibold transition duration-200">
+            <i class="fa-solid fa-sign-out-alt"></i> Déconnexion
+        </button>
+    </div>
 
-<script>
-// DONNÉES SIMULÉES
-let assignations = [
-{ id: 1, classeNom:'7ème EB', classeId:'7EB', matiereNom:'Mathématiques', matiereId:'MATH', enseignantNom:'M. Gabby Umba', enseignantId:'E001' }
-];
+    <!-- LOGIQUE JAVASCRIPT & FIREBASE -->
+    <script type="module">
+    import { initializeApp } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-app.js";
+    import { 
+        getAuth, onAuthStateChanged, signOut,
+        signInWithCustomToken, signInAnonymously
+    } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-auth.js";
+    import { 
+        getFirestore, collection, doc, setDoc, deleteDoc, 
+        onSnapshot, getDoc, query, where, orderBy, setLogLevel
+    } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-firestore.js";
 
-const assignationsBody = document.getElementById('assignationsBody');
-const assignationForm = document.getElementById('assignationForm');
+    // IMPORTANT: UTILISATION DES VARIABLES GLOBALES FOURNIES PAR LE CONTEXTE
+    const appId = typeof __app_id !== 'undefined' ? __app_id : 'default-app-id';
+    const firebaseConfig = typeof __firebase_config !== 'undefined' ? JSON.parse(__firebase_config) : {};
+    
+    // 1. INITIALISATION FIREBASE
+    const app = initializeApp(firebaseConfig);
+    const auth = getAuth(app);
+    const db = getFirestore(app);
+    
+    // setLogLevel('Debug'); // Décommenter pour le débogage
 
-function showNotification(msg,type='success'){
-const area = document.getElementById('notification-area');
-const notif=document.createElement('div');
-notif.className=`notification ${type}`;
-notif.textContent=msg;
-area.appendChild(notif);
-setTimeout(()=>notif.classList.add('show'),10);
-setTimeout(()=>{ notif.classList.remove('show'); setTimeout(()=>area.removeChild(notif),300); },4000);
-}
+    // Chemins de collections
+    const CLASSES_PATH = `/artifacts/${appId}/public/data/classes`;
+    const MATIERES_PATH = `/artifacts/${appId}/public/data/matieres`;
+    const ENSEIGNANTS_PATH = `users`; // Collection users est globale
+    const ASSIGNATIONS_PATH = `/artifacts/${appId}/public/data/assignations`;
+    
+    // 2. ÉLÉMENTS DU DOM
+    const userInfo = document.getElementById('userInfo');
+    const logoutBtn = document.getElementById('logoutBtn');
+    const notificationArea = document.getElementById('notification-area');
+    const assignationsBody = document.getElementById('assignationsBody');
+    const assignationForm = document.getElementById('assignationForm');
+    const selectClasse = document.getElementById('selectClasse');
+    const selectMatiere = document.getElementById('selectMatiere');
+    const selectEnseignant = document.getElementById('selectEnseignant');
+    const aucuneAssignation = document.getElementById('aucuneAssignation');
 
-function renderAssignations(data=assignations){
-assignationsBody.innerHTML='';
-const aucuneAssignation = document.getElementById('aucuneAssignation');
-if(data.length===0){aucuneAssignation.style.display='block'; return;} 
-aucuneAssignation.style.display='none';
-data.forEach(item=>{
-const row=document.createElement('tr');
-row.innerHTML=`<td>${item.classeNom}</td><td>${item.matiereNom}</td><td><span style="font-weight:700;color:var(--bleu-principal)">${item.matiereId}</span></td><td>${item.enseignantNom}</td><td class="actions-col"><button class="btn-supprimer" title="Supprimer" onclick="supprimerAssignation(${item.id})">🗑️</button></td>`;
-assignationsBody.appendChild(row);
-});
-}
+    // 3. CACHE ET DONNÉES GLOBALES
+    let currentAssignations = [];
+    let classesCache = {}; // { classId: { fullName, ... } }
+    let matieresCache = {}; // { matiereId: { nom, code } }
+    let enseignantsCache = {}; // { userId: { nom, ... } }
 
-function filterAssignations(){
-const searchTerm=document.getElementById('searchAssignations').value.toLowerCase();
-renderAssignations(assignations.filter(item=>
-item.classeNom.toLowerCase().includes(searchTerm)||
-item.matiereNom.toLowerCase().includes(searchTerm)||
-item.matiereId.toLowerCase().includes(searchTerm)||
-item.enseignantNom.toLowerCase().includes(searchTerm)
-));
-}
+    // 4. FONCTIONNALITÉS UTILITAIRES
+    function showNotification(msg, type = "success") {
+        const notif = document.createElement("div");
+        notif.className = `notification ${type}`;
+        notif.textContent = msg;
+        notificationArea.appendChild(notif);
+        setTimeout(() => notif.classList.add('show'), 10);
+        setTimeout(() => {
+            notif.classList.remove('show');
+            setTimeout(() => notificationArea.removeChild(notif), 300);
+        }, 4000);
+    }
+    
+    async function handleLogout() {
+        await signOut(auth);
+        setTimeout(() => window.location.href = "index.html", 800);
+    }
 
-function ajouterAssignation(e){
-e.preventDefault();
-const cS=document.getElementById('selectClasse');
-const mS=document.getElementById('selectMatiere');
-const eS=document.getElementById('selectEnseignant');
-const classeNom=cS.options[cS.selectedIndex].getAttribute('data-nom'); const classeId=cS.value;
-const matiereNom=mS.options[mS.selectedIndex].getAttribute('data-nom'); const matiereId=mS.value;
-const enseignantNom=eS.options[eS.selectedIndex].getAttribute('data-nom'); const enseignantId=eS.value;
+    // Fonction d'authentification initiale
+    async function initializeAuth() {
+        try {
+            if (typeof __initial_auth_token !== 'undefined' && __initial_auth_token) {
+                await signInWithCustomToken(auth, __initial_auth_token);
+            } else {
+                await signInAnonymously(auth);
+            }
+        } catch (error) {
+            console.error("Erreur d'authentification initiale:", error);
+            showNotification("Erreur d'authentification.", "error");
+            setTimeout(() => window.location.href = "index.html", 1500);
+        }
+    }
 
-if(!classeId||!matiereId||!enseignantId){ showNotification("Veuillez remplir tous les champs obligatoires.",'error'); return; }
+    // 5. CHARGEMENT DES OPTIONS (Classes, Matières, Enseignants)
 
-const isDuplicate=assignations.some(a=>a.classeId===classeId && a.matiereId===matiereId);
-if(isDuplicate){ showNotification(`L'assignation pour ${matiereNom} en ${classeNom} existe déjà.`,'warning'); return; }
+    function loadSelectOptions(selectElement, data, defaultMsg) {
+        selectElement.innerHTML = `<option value="">-- ${defaultMsg} --</option>`;
+        
+        // Tri par nom/fullName avant l'ajout
+        const sortedData = Object.values(data).sort((a, b) => {
+            const nameA = a.fullName || a.nom || a.email;
+            const nameB = b.fullName || b.nom || b.email;
+            return nameA.localeCompare(nameB);
+        });
 
-const newId=assignations.length>0?Math.max(...assignations.map(a=>a.id))+1:1;
-assignations.push({ id:newId, classeNom,classeId, matiereNom,matiereId, enseignantNom,enseignantId });
-showNotification(`Assignation réussie : ${enseignantNom} enseignera ${matiereNom} en ${classeNom}.`,'success');
-assignationForm.reset();
-renderAssignations();
-}
+        sortedData.forEach(item => {
+            const option = document.createElement('option');
+            option.value = item.id;
+            option.textContent = item.fullName || item.nom || item.email; // Utiliser le nom complet, le nom ou l'email
+            option.setAttribute('data-full-name', option.textContent);
+            selectElement.appendChild(option);
+        });
+        // Si le chargement est terminé, on retire l'état "disabled" si les éléments étaient chargés avec un tel état
+        selectElement.disabled = false;
+    }
 
-function supprimerAssignation(id){
-const item=assignations.find(a=>a.id===id);
-if(!item){ showNotification("Erreur : Assignation non trouvée.",'error'); return; }
-if(confirm(`Confirmer la suppression de ${item.matiereNom} pour ${item.classeNom} par ${item.enseignantNom} ?`)){
-assignations=assignations.filter(a=>a.id!==id);
-showNotification("Assignation supprimée avec succès.",'success');
-renderAssignations();
-}
-}
+    // Écouteur des classes
+    function setupClassesListener() {
+        onSnapshot(query(collection(db, CLASSES_PATH)), (snapshot) => {
+            classesCache = {};
+            snapshot.forEach(docSnap => {
+                const data = docSnap.data();
+                classesCache[docSnap.id] = { id: docSnap.id, fullName: data.fullName, ...data };
+            });
+            loadSelectOptions(selectClasse, classesCache, "Choisir une classe");
+        }, (err) => console.error("Erreur chargement Classes:", err));
+    }
 
-assignationForm.addEventListener('submit',ajouterAssignation);
-document.addEventListener('DOMContentLoaded',()=>renderAssignations());
-</script>
+    // Écouteur des matières
+    function setupMatieresListener() {
+        onSnapshot(query(collection(db, MATIERES_PATH)), (snapshot) => {
+            matieresCache = {};
+            snapshot.forEach(docSnap => {
+                const data = docSnap.data();
+                matieresCache[docSnap.id] = { id: docSnap.id, fullName: `${data.nom} (${data.code})`, ...data };
+            });
+            loadSelectOptions(selectMatiere, matieresCache, "Choisir une matière");
+        }, (err) => console.error("Erreur chargement Matières:", err));
+    }
+
+    // Écouteur des enseignants (rôle: enseignant)
+    function setupEnseignantsListener() {
+        const enseignantsQuery = query(collection(db, ENSEIGNANTS_PATH), where("role", "==", "enseignant"));
+        onSnapshot(enseignantsQuery, (snapshot) => {
+            enseignantsCache = {};
+            snapshot.forEach(docSnap => {
+                const data = docSnap.data();
+                const fullName = data.nom ? `${data.nom} (${data.email})` : data.email;
+                enseignantsCache[docSnap.id] = { id: docSnap.id, nom: data.nom, email: data.email, fullName: fullName };
+            });
+            loadSelectOptions(selectEnseignant, enseignantsCache, "Choisir un enseignant");
+        }, (err) => console.error("Erreur chargement Enseignants:", err));
+    }
+
+    // 6. LOGIQUE DE TABLEAU ET FILTRE
+
+    function renderAssignations(data = currentAssignations) {
+        assignationsBody.innerHTML = '';
+        if (data.length === 0) {
+            aucuneAssignation.classList.remove('hidden');
+            return;
+        }
+        aucuneAssignation.classList.add('hidden');
+
+        data.forEach(item => {
+            const row = assignationsBody.insertRow();
+            row.className = 'hover:bg-gray-50 transition duration-150';
+            
+            // Classe
+            row.insertCell().innerHTML = `<span class="font-semibold text-gray-800">${item.classeNom}</span><br><span class="text-xs text-gray-500">${item.classeId}</span>`;
+            
+            // Matière
+            row.insertCell().innerHTML = `<span class="font-semibold text-indigo-700">${item.matiereNom}</span><br><span class="text-xs text-indigo-500">${item.matiereCode}</span>`;
+            
+            // Enseignant
+            row.insertCell().innerHTML = `<span>${item.enseignantNom}</span><br><span class="text-xs text-gray-500">${item.enseignantId}</span>`;
+
+            // Action
+            const actionsCell = row.insertCell();
+            actionsCell.className = 'px-6 py-3 whitespace-nowrap text-center';
+            const deleteFn = `window.deleteAssignation('${item.id}', '${item.classeNom}', '${item.matiereNom}', '${item.enseignantNom}')`;
+            
+            actionsCell.innerHTML = `
+                <button onclick="${deleteFn}" 
+                        class="p-2 bg-red-500 text-white rounded-full hover:bg-red-600 transition duration-150" title="Supprimer l'assignation">
+                    <i class="fa-solid fa-trash-alt text-sm"></i>
+                </button>
+            `;
+        });
+    }
+
+    window.filterAssignations = () => {
+        const searchTerm = document.getElementById('searchAssignations').value.toLowerCase();
+        const filtered = currentAssignations.filter(item =>
+            item.classeNom.toLowerCase().includes(searchTerm) ||
+            item.matiereNom.toLowerCase().includes(searchTerm) ||
+            item.enseignantNom.toLowerCase().includes(searchTerm) ||
+            item.classeId.toLowerCase().includes(searchTerm) ||
+            item.matiereCode.toLowerCase().includes(searchTerm)
+        );
+        renderAssignations(filtered);
+    };
+
+    // 7. LOGIQUE FIREBASE (CRUD Assignations)
+
+    // Écouteur des assignations
+    function setupAssignationsListener() {
+        onSnapshot(query(collection(db, ASSIGNATIONS_PATH)), (snapshot) => {
+            currentAssignations = [];
+            snapshot.forEach(docSnap => {
+                const data = docSnap.data();
+                // Assurer que les caches ont les données
+                const classe = classesCache[data.classeId] || {};
+                const matiere = matieresCache[data.matiereId] || {};
+                const enseignant = enseignantsCache[data.enseignantId] || {};
+
+                currentAssignations.push({
+                    id: docSnap.id,
+                    classeId: data.classeId,
+                    matiereId: data.matiereId,
+                    enseignantId: data.enseignantId,
+                    
+                    classeNom: classe.fullName || 'INCONNUE',
+                    matiereNom: matiere.nom || 'INCONNUE',
+                    matiereCode: matiere.code || 'N/A',
+                    enseignantNom: enseignant.fullName || 'INCONNU'
+                });
+            });
+            renderAssignations();
+        }, (err) => console.error("Erreur chargement Assignations:", err));
+    }
+
+    assignationForm.addEventListener('submit', async (e) => {
+        e.preventDefault();
+
+        const classeId = selectClasse.value;
+        const matiereId = selectMatiere.value;
+        const enseignantId = selectEnseignant.value;
+
+        if (!classeId || !matiereId || !enseignantId) {
+            showNotification("Veuillez choisir une classe, une matière et un enseignant.", 'error');
+            return;
+        }
+
+        const assignId = `${classeId}_${matiereId}`;
+
+        // Vérification de doublon local (avant l'enregistrement)
+        const isDuplicate = currentAssignations.some(a => a.classeId === classeId && a.matiereId === matiereId);
+        if (isDuplicate) {
+            showNotification(`L'assignation pour ${matieresCache[matiereId]?.nom} en ${classesCache[classeId]?.fullName} existe déjà. Veuillez la supprimer avant de la recréer ou de la modifier.`, 'warning');
+            return;
+        }
+
+        try {
+            const docRef = doc(db, ASSIGNATIONS_PATH, assignId);
+            
+            const classe = classesCache[classeId];
+            const matiere = matieresCache[matiereId];
+            const enseignant = enseignantsCache[enseignantId];
+
+            const dataToSave = {
+                classeId: classeId,
+                matiereId: matiereId,
+                enseignantId: enseignantId,
+                // Stocker les noms pour faciliter la lecture des règles de sécurité si besoin
+                classeNom: classe.fullName, 
+                matiereNom: matiere.nom,
+                enseignantNom: enseignant.fullName
+            };
+            
+            await setDoc(docRef, dataToSave);
+            showNotification(`✅ Assignation réussie : ${enseignant.fullName} enseignera ${matiere.nom} en ${classe.fullName}.`, 'success');
+            assignationForm.reset();
+        } catch (err) {
+            console.error("Erreur lors de l'assignation:", err);
+            showNotification("Erreur: Impossible d'enregistrer l'assignation.", 'error');
+        }
+    });
+
+    window.deleteAssignation = async (id, classeNom, matiereNom, enseignantNom) => {
+        // Utilisation d'un modal UI simple (prompt)
+        const confirmation = prompt(`Tapez 'SUPPRIMER' pour confirmer la suppression de l'assignation de ${matiereNom} en ${classeNom} par ${enseignantNom}.`);
+        if (confirmation !== 'SUPPRIMER') {
+            showNotification("Suppression annulée.", 'info');
+            return;
+        }
+
+        try {
+            await deleteDoc(doc(db, ASSIGNATIONS_PATH, id));
+            showNotification("🗑️ Assignation supprimée avec succès.", 'success');
+        } catch (err) {
+            console.error("Erreur de suppression de l'assignation:", err);
+            showNotification("Erreur: Impossible de supprimer l'assignation.", 'error');
+        }
+    };
+
+    // 8. GESTION DES ÉVÉNEMENTS & AUTHENTIFICATION
+    
+    logoutBtn.addEventListener("click", handleLogout);
+    
+    // AuthGuard et chargement des données
+    onAuthStateChanged(auth, user => {
+        document.body.classList.add('loaded'); // Afficher le contenu une fois l'état connu
+        const userId = user?.uid;
+
+        if (!user) {
+            showNotification("Session expirée ou non autorisée.", "error");
+            setTimeout(() => window.location.href = "index.html", 1000);
+        } else {
+            getDoc(doc(db, 'users', userId)).then(docSnap => {
+                if (docSnap.exists()) {
+                    const data = docSnap.data();
+                    const role = data.role.charAt(0).toUpperCase() + data.role.slice(1);
+                    userInfo.textContent = `${data.nom || data.email} (${role})`;
+                    
+                    // CONTRÔLE DE RÔLE : Admin, Préfet et Directeur des Études uniquement
+                    const authorizedRoles = ['admin', 'prefet', 'directeur_etudes'];
+                    if (!authorizedRoles.includes(data.role)) {
+                        showNotification(`Accès non autorisé. Votre rôle (${role}) ne permet pas de gérer les assignations.`, "error");
+                        setTimeout(() => window.location.href = `dashboard-${data.role}.html`, 1500); 
+                        return;
+                    }
+
+                    // Lancer les écouteurs de données pour les listes déroulantes et le tableau
+                    setupClassesListener();
+                    setupMatieresListener();
+                    setupEnseignantsListener();
+                    setupAssignationsListener(); 
+
+                } else {
+                    console.warn("Document utilisateur manquant. Accès limité.");
+                }
+            }).catch(err => {
+                console.error("Erreur de récupération du document utilisateur:", err);
+            });
+        }
+    });
+
+    initializeAuth();
+    </script>
 </body>
 </html>
