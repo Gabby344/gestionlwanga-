@@ -1,193 +1,444 @@
 <!DOCTYPE html>
 <html lang="fr">
 <head>
-  <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Gestion des rôles · Admin</title>
-  <link rel="icon" href="favicon.ico" />
-  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600&display=swap" rel="stylesheet" />
-  <style>
-    body {
-      font-family: 'Inter', sans-serif;
-      background-color: #f9fafb;
-      color: #374151;
-      padding: 2rem;
-    }
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Gestion des Rôles et Permissions | ISC Lwanga</title>
+    <!-- Chargement de Tailwind CSS pour un style moderne et responsive -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <!-- Font Awesome pour les icônes -->
+    <script src="https://kit.fontawesome.com/a2e0e6a56b.js" crossorigin="anonymous"></script>
+    
+    <style>
+        /* Configuration de la police Inter */
+        @import url('https://fonts.googleapis.com/css2?family=Inter:wght@100..900&display=swap');
+        body {
+            font-family: 'Inter', sans-serif;
+        }
+        /* Style des liens dans la barre latérale */
+        .nav-link {
+            transition: all 0.2s;
+        }
+        .nav-link:hover {
+            background-color: #374151; /* gray-700 */
+        }
+        /* Masque le contenu tant que l'AuthGuard n'a pas validé l'utilisateur */
+        body:not(.loaded) {
+            display: none;
+        }
+        /* Style pour les notifications customisées */
+        #notification-area {
+            position: fixed;
+            top: 20px;
+            right: 20px;
+            z-index: 1000;
+        }
+        .notification {
+            padding: 1rem 1.5rem;
+            border-radius: 0.75rem;
+            color: white;
+            font-weight: 500;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+            opacity: 0;
+            transform: translateX(100%);
+            transition: opacity 0.3s, transform 0.3s;
+            margin-bottom: 0.5rem;
+        }
+        .notification.show {
+            opacity: 1;
+            transform: translateX(0);
+        }
+        .notification.success { background-color: #10b981; }
+        .notification.error { background-color: #ef4444; }
+        .notification.info { background-color: #3b82f6; }
 
-    h1 {
-      text-align: center;
-      color: #1e3a8a;
-      margin-bottom: 1rem;
-    }
-
-    .section {
-      max-width: 800px;
-      margin: auto;
-      background: white;
-      padding: 2rem;
-      border-radius: 12px;
-      box-shadow: 0 4px 10px rgba(0,0,0,0.05);
-      margin-bottom: 2rem;
-    }
-
-    .section h2 {
-      color: #1e3a8a;
-      margin-bottom: 1rem;
-    }
-
-    input, select, textarea {
-      width: 100%;
-      padding: 0.75rem;
-      margin-bottom: 1rem;
-      border: 1px solid #d1d5db;
-      border-radius: 8px;
-      font-size: 1rem;
-    }
-
-    button {
-      padding: 0.75rem 1rem;
-      background-color: #1e3a8a;
-      color: white;
-      border: none;
-      border-radius: 8px;
-      font-weight: 600;
-      cursor: pointer;
-    }
-
-    .role-card {
-      background-color: #f1f5f9;
-      padding: 1rem;
-      border-radius: 8px;
-      margin-bottom: 1rem;
-    }
-
-    .role-card h3 {
-      margin: 0;
-      color: #1e3a8a;
-    }
-
-    .role-card ul {
-      margin-top: 0.5rem;
-      padding-left: 1.2rem;
-    }
-
-    #notification-area {
-      position: fixed;
-      top: 20px;
-      right: 20px;
-      z-index: 9999;
-      font-weight: 600;
-      padding: 0.75rem 1rem;
-      border-radius: 8px;
-      background-color: #1e3a8a;
-      color: white;
-      display: none;
-    }
-  </style>
+    </style>
+    
 </head>
-<body>
-  <h1>🔐 Gestion des rôles et utilisateurs</h1>
 
-  <div class="section">
-    <h2>👤 Ajouter un utilisateur</h2>
-    <input type="text" id="userNom" placeholder="Nom complet" />
-    <input type="email" id="userEmail" placeholder="Email" />
-    <select id="userRole">
-      <option value="">Sélectionner un rôle</option>
-      <option value="prefet">Prefet</option>
-      <option value="directeur_etudes">Directeur des études</option>
-      <option value="directeur_discipline">Directeur de discipline</option>
-      <option value="secretaire">Secrétaire</option>
-      <option value="econome">Économe</option>
-    </select>
-    <button onclick="ajouterUtilisateur()">➕ Ajouter</button>
-  </div>
+<body class="bg-gray-100 text-gray-900 flex min-h-screen">
 
-  <div class="section">
-    <h2>📋 Rôles et modules</h2>
-    <div id="rolesContainer">Chargement...</div>
-  </div>
+    <div id="notification-area"></div>
 
-  <div id="notification-area"></div>
+    <!-- SIDEBAR (Navigation Latérale) - Identique aux autres pages admin -->
+    <aside class="w-64 bg-gray-800 text-white flex flex-col shadow-2xl flex-shrink-0">
+        <div class="p-6 text-2xl font-extrabold border-b border-gray-700 bg-gray-900">
+            ISC Lwanga <span class="text-indigo-400">Admin</span>
+        </div>
+        <nav class="flex-1 p-4 space-y-2">
+            
+            <a href="dashboard-admin.html" class="nav-link flex items-center gap-3 p-3 text-gray-200 rounded-lg">
+                <i class="fa-solid fa-gauge-high w-5"></i> Tableau de Bord
+            </a>
+            
+            <div class="pt-4 mt-4 border-t border-gray-700">
+                <p class="text-xs font-semibold uppercase tracking-wider text-gray-400 px-3 pb-2">Gestion Globale</p>
+                <a href="admin.html" class="nav-link flex items-center gap-3 p-3 text-gray-200 rounded-lg">
+                    <i class="fa-solid fa-users-gear w-5"></i> Comptes & Utilisateurs
+                </a>
+                <a href="admin-roles.html" class="nav-link flex items-center gap-3 p-3 bg-gray-700 rounded-lg font-semibold text-indigo-300">
+                    <i class="fa-solid fa-shield-alt w-5"></i> Rôles & Permissions
+                </a>
+                <a href="gestion-classes.html" class="nav-link flex items-center gap-3 p-3 text-gray-200 rounded-lg">
+                    <i class="fa-solid fa-chalkboard w-5"></i> Classes & Matières
+                </a>
+            </div>
 
-  <script type="module">
-    import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-app.js";
-    import { getAuth, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-auth.js";
-    import { getFirestore, collection, doc, setDoc, getDocs } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore.js";
+            <div class="pt-4 mt-4 border-t border-gray-700">
+                <p class="text-xs font-semibold uppercase tracking-wider text-gray-400 px-3 pb-2">Rapports & Finance</p>
+                <a href="config-frais.html" class="nav-link flex items-center gap-3 p-3 text-gray-200 rounded-lg">
+                    <i class="fa-solid fa-wallet w-5"></i> Gestion Financière
+                </a>
+                <a href="rapport-discipline.html" class="nav-link flex items-center gap-3 p-3 text-gray-200 rounded-lg">
+                    <i class="fa-solid fa-bell w-5"></i> Discipline & Absences
+                </a>
+            </div>
 
-    const firebaseConfig = {
-      apiKey: "AIzaSyAgv4TDYnR60TXnns-LISqbZTgcdLT31cc",
-      authDomain: "gestionlwanga.firebaseapp.com",
-      projectId: "gestionlwanga"
-    };
+        </nav>
+        <!-- Bouton de Déconnexion -->
+        <button id="logoutBtn" class="m-4 bg-red-600 hover:bg-red-700 p-3 rounded-xl font-semibold shadow-lg transition duration-200 flex items-center justify-center gap-3">
+            <i class="fa-solid fa-right-from-bracket"></i> Déconnexion
+        </button>
+    </aside>
 
+    <!-- CONTENU PRINCIPAL -->
+    <main class="flex-1 p-8 overflow-y-auto">
+        
+        <!-- HEADER / BANNIÈRE -->
+        <header class="mb-8 p-6 bg-white rounded-xl shadow-lg border-l-4 border-indigo-500 flex flex-col sm:flex-row justify-between items-start sm:items-center">
+            <h1 class="text-3xl font-extrabold text-gray-800 mb-2 sm:mb-0">Gestion des Rôles et Permissions</h1>
+            <div class="text-right">
+                <p class="text-sm font-semibold text-indigo-600" id="userInfo">Chargement...</p>
+                <p class="text-xs text-gray-500">Définition des accès au système</p>
+            </div>
+        </header>
+
+        <!-- CRÉATION ET MODIFICATION DE RÔLES -->
+        <section class="grid grid-cols-1 lg:grid-cols-2 gap-6 mb-8">
+            
+            <!-- Carte 1: Créer/Modifier un Rôle -->
+            <div class="bg-white p-6 rounded-xl shadow-lg border-t-4 border-indigo-500">
+                <h2 class="text-xl font-bold text-gray-800 mb-4 flex items-center gap-2">
+                    <i class="fa-solid fa-plus-circle text-indigo-500"></i> Créer/Éditer un Rôle
+                </h2>
+                <div class="mb-4">
+                    <label for="roleName" class="block text-sm font-medium text-gray-700 mb-1">Nom du Rôle (minuscules, sans espace: ex: prefet, enseignant)</label>
+                    <input type="text" id="roleName" placeholder="ex: prefet ou econome" class="w-full p-3 border border-gray-300 rounded-lg focus:ring-indigo-500 focus:border-indigo-500">
+                </div>
+                
+                <div class="mb-4">
+                    <label for="roleDescription" class="block text-sm font-medium text-gray-700 mb-1">Description du Rôle</label>
+                    <textarea id="roleDescription" rows="2" placeholder="Accès aux données financières et aux paiements." class="w-full p-3 border border-gray-300 rounded-lg focus:ring-indigo-500 focus:border-indigo-500"></textarea>
+                </div>
+                
+                <div class="mb-4">
+                    <label class="block text-sm font-medium text-gray-700 mb-2">Modules/Permissions (Saisir et Ajouter)</label>
+                    <div class="flex gap-2 mb-2">
+                        <input type="text" id="permissionInput" placeholder="ex: gestion_finance" class="flex-1 p-3 border border-gray-300 rounded-lg">
+                        <button onclick="addPermissionToEditor()" class="bg-blue-500 hover:bg-blue-600 text-white px-4 py-2 rounded-lg font-semibold transition duration-200">
+                            Ajouter
+                        </button>
+                    </div>
+                    <div id="currentPermissions" class="flex flex-wrap gap-2 p-2 bg-gray-50 border border-gray-200 rounded-lg min-h-[40px]">
+                        <!-- Les permissions ajoutées s'afficheront ici -->
+                        <span class="text-gray-400 text-sm italic">Aucune permission ajoutée.</span>
+                    </div>
+                </div>
+
+                <button id="saveRoleBtn" class="w-full py-3 bg-indigo-600 text-white rounded-lg hover:bg-indigo-700 font-bold transition duration-200">
+                    <i class="fa-solid fa-save mr-2"></i> Enregistrer le Rôle
+                </button>
+            </div>
+
+            <!-- Carte 2: Rôles prédéfinis (Aide) -->
+            <div class="bg-white p-6 rounded-xl shadow-lg border-t-4 border-gray-400">
+                <h2 class="text-xl font-bold text-gray-800 mb-4 flex items-center gap-2">
+                    <i class="fa-solid fa-info-circle text-gray-500"></i> Liste des Permissions Potentielles
+                </h2>
+                <ul class="list-disc list-inside space-y-2 text-gray-600 text-sm">
+                    <li><span class="font-semibold text-blue-700">gestion_comptes:</span> Créer/éditer les utilisateurs.</li>
+                    <li><span class="font-semibold text-blue-700">gestion_classes:</span> Ajouter/modifier les classes et matières.</li>
+                    <li><span class="font-semibold text-blue-700">gestion_finance:</span> Accès aux frais et paiements.</li>
+                    <li><span class="font-semibold text-blue-700">suivi_notes:</span> Supervision des notes et bulletins.</li>
+                    <li><span class="font-semibold text-blue-700">gestion_discipline:</span> Gestion des absences et sanctions.</li>
+                    <li><span class="font-semibold text-blue-700">saisie_notes:</span> Permission d'entrer les notes (Enseignant).</li>
+                    <li><span class="font-semibold text-blue-700">supervision_generale:</span> Rôles de haut niveau (Préfet/Admin).</li>
+                </ul>
+                <p class="mt-4 text-xs text-gray-500 italic">Cliquez sur un rôle existant ci-dessous pour le charger dans l'éditeur.</p>
+            </div>
+        </section>
+
+        <!-- LISTE DES RÔLES EXISTANTS -->
+        <section>
+            <div class="bg-white p-6 rounded-xl shadow-lg border-t-4 border-teal-500">
+                <h2 class="text-xl font-bold text-gray-800 mb-4 flex items-center gap-2">
+                    <i class="fa-solid fa-table text-teal-600"></i> Rôles Actuels du Système (<span id="roleCount">0</span>)
+                </h2>
+                <div id="rolesContainer" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+                    <div class="text-center py-4 text-gray-500 col-span-full">Chargement des rôles...</div>
+                    <!-- Les cartes des rôles seront injectées ici -->
+                </div>
+            </div>
+        </section>
+
+    </main>
+
+    <!-- LOGIQUE JAVASCRIPT & FIREBASE -->
+    <script type="module">
+    import { initializeApp } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-app.js";
+    import { 
+        getAuth, onAuthStateChanged, signOut,
+        signInWithCustomToken, signInAnonymously
+    } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-auth.js";
+    import { 
+        getFirestore, collection, doc, setDoc, getDocs, deleteDoc, getDoc,
+        setLogLevel
+    } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-firestore.js";
+
+    // IMPORTANT: UTILISATION DES VARIABLES GLOBALES FOURNIES PAR LE CONTEXTE
+    const appId = typeof __app_id !== 'undefined' ? __app_id : 'default-app-id';
+    const firebaseConfig = typeof __firebase_config !== 'undefined' ? JSON.parse(__firebase_config) : {};
+    
+    // 1. INITIALISATION FIREBASE
     const app = initializeApp(firebaseConfig);
     const auth = getAuth(app);
     const db = getFirestore(app);
+    
+    // setLogLevel('Debug'); // Décommenter pour le débogage
+    const ROLES_COLLECTION = 'structure_roles'; // Collection des rôles
 
-    const notify = document.getElementById("notification-area");
-    const rolesContainer = document.getElementById("rolesContainer");
+    // 2. ÉLÉMENTS DU DOM
+    const userInfo = document.getElementById('userInfo');
+    const logoutBtn = document.getElementById('logoutBtn');
+    const notificationArea = document.getElementById('notification-area');
+    const rolesContainer = document.getElementById('rolesContainer');
+    const currentPermissions = document.getElementById('currentPermissions');
+    const saveRoleBtn = document.getElementById('saveRoleBtn');
 
-    function showNotification(message, type = "success") {
-      notify.textContent = message;
-      notify.style.backgroundColor = type === "error" ? "#dc2626" : "#1e3a8a";
-      notify.style.display = "block";
-      setTimeout(() => notify.style.display = "none", 3000);
+    let currentRolePermissions = new Set(); // État local des permissions dans l'éditeur
+    
+    // 3. FONCTIONNALITÉS UTILITAIRES
+
+    // Notification (remplace alert/confirm)
+    function showNotification(msg, type = "success") {
+        const notif = document.createElement("div");
+        notif.className = `notification ${type}`;
+        notif.textContent = msg;
+        notificationArea.appendChild(notif);
+        setTimeout(() => notif.classList.add('show'), 10);
+        setTimeout(() => {
+            notif.classList.remove('show');
+            setTimeout(() => notificationArea.removeChild(notif), 300);
+        }, 4000);
+    }
+    
+    // Déconnexion
+    async function handleLogout() {
+        await signOut(auth);
+        setTimeout(() => window.location.href = "index.html", 800);
     }
 
-    async function ajouterUtilisateur() {
-      const nom = document.getElementById("userNom").value.trim();
-      const email = document.getElementById("userEmail").value.trim();
-      const role = document.getElementById("userRole").value;
-
-      if (!nom || !email || !role) {
-        showNotification("⛔ Tous les champs sont requis", "error");
-        return;
-      }
-
-      const uid = email.split("@")[0].replace(/\./g, "_");
-
-      try {
-        await setDoc(doc(db, "users", uid), {
-          nom,
-          email,
-          role,
-          createdAt: new Date().toISOString()
-        });
-        showNotification("✅ Utilisateur ajouté !");
-      } catch (err) {
-        console.error(err);
-        showNotification("❌ Erreur lors de l’ajout", "error");
-      }
+    // Fonction d'authentification initiale
+    async function initializeAuth() {
+        try {
+            if (typeof __initial_auth_token !== 'undefined' && __initial_auth_token) {
+                await signInWithCustomToken(auth, __initial_auth_token);
+            } else {
+                await signInAnonymously(auth);
+            }
+        } catch (error) {
+            console.error("Erreur d'authentification initiale:", error);
+            setTimeout(() => window.location.href = "index.html", 1500);
+        }
+    }
+    
+    // 4. LOGIQUE DES PERMISSIONS DANS L'ÉDITEUR
+    
+    // Ajoute une permission à l'éditeur local (Set)
+    window.addPermissionToEditor = () => {
+        const input = document.getElementById('permissionInput');
+        const permission = input.value.trim().toLowerCase().replace(/[^a-z0-9_]/g, ''); // Nettoyage de l'input
+        if (permission && !currentRolePermissions.has(permission)) {
+            currentRolePermissions.add(permission);
+            updatePermissionsDisplay();
+            input.value = ''; // Vider l'input
+        }
+    };
+    
+    // Retire une permission de l'éditeur local (Set)
+    function removePermission(permission) {
+        currentRolePermissions.delete(permission);
+        updatePermissionsDisplay();
     }
 
-    async function chargerRoles() {
-      try {
-        const snap = await getDocs(collection(db, "roles"));
-        rolesContainer.innerHTML = "";
-        snap.forEach(docSnap => {
-          const data = docSnap.data();
-          const div = document.createElement("div");
-          div.className = "role-card";
-          div.innerHTML = `
-            <h3>${docSnap.id}</h3>
-            <ul>${data.modules.map(m => `<li>${m}</li>`).join("")}</ul>
-          `;
-          rolesContainer.appendChild(div);
-        });
-      } catch (err) {
-        console.error(err);
-        showNotification("❌ Erreur de chargement des rôles", "error");
-      }
-    }
+    // Met à jour l'affichage des jetons de permission
+    function updatePermissionsDisplay() {
+        if (currentRolePermissions.size === 0) {
+            currentPermissions.innerHTML = '<span class="text-gray-400 text-sm italic">Aucune permission ajoutée.</span>';
+            return;
+        }
 
-    onAuthStateChanged(auth, (user) => {
-      if (!user) {
-        window.location.href = "login.html";
-        return;
-      }
-      chargerRoles();
+        currentPermissions.innerHTML = Array.from(currentRolePermissions).map(permission => `
+            <span class="inline-flex items-center px-3 py-1 bg-indigo-100 text-indigo-700 text-sm font-medium rounded-full cursor-pointer hover:bg-red-200 transition duration-150" 
+                  onclick="removePermission('${permission}')" title="Cliquer pour supprimer">
+                ${permission}
+                <i class="fa-solid fa-times ml-2 text-xs"></i>
+            </span>
+        `).join('');
+    }
+    
+    // Charge les données d'un rôle existant dans l'éditeur pour modification
+    window.loadRoleForEdit = (roleName, description, permissions) => {
+        document.getElementById('roleName').value = roleName;
+        document.getElementById('roleDescription').value = description;
+        currentRolePermissions = new Set(permissions);
+        updatePermissionsDisplay();
+        showNotification(`Rôle '${roleName}' chargé pour modification.`, "info");
+    };
+
+    // 5. LOGIQUE FIREBASE (CRUD Rôles)
+
+    // ✅ Enregistrer (Créer/Mettre à jour) le Rôle
+    saveRoleBtn.addEventListener('click', async () => {
+        const roleName = document.getElementById('roleName').value.trim().toLowerCase();
+        const description = document.getElementById('roleDescription').value.trim();
+        const permissions = Array.from(currentRolePermissions);
+
+        if (!roleName || permissions.length === 0) {
+            showNotification("Le nom du rôle et au moins une permission sont requis.", "error");
+            return;
+        }
+
+        try {
+            await setDoc(doc(db, ROLES_COLLECTION, roleName), {
+                description: description || `Rôle personnalisé pour ${roleName}.`,
+                permissions: permissions, // Utilisation de 'permissions' pour être plus clair que 'accès'
+                lastModified: new Date().toISOString()
+            });
+
+            showNotification(`✅ Rôle '${roleName}' enregistré avec succès !`, "success");
+            loadRoles(); // Recharger la liste
+            // Réinitialiser l'éditeur
+            document.getElementById('roleName').value = '';
+            document.getElementById('roleDescription').value = '';
+            currentRolePermissions.clear();
+            updatePermissionsDisplay();
+
+        } catch (err) {
+            console.error("Erreur d'enregistrement du rôle:", err);
+            showNotification("Erreur: Impossible d'enregistrer le rôle.", "error");
+        }
     });
-  </script>
+    
+    // ✅ Supprimer un Rôle (fonction globale)
+    window.deleteRole = async (roleName) => {
+        if (!confirm(`Êtes-vous sûr de vouloir supprimer le rôle : ${roleName} ? Tous les utilisateurs assignés à ce rôle pourraient perdre l'accès.`)) return;
+        
+        try {
+            await deleteDoc(doc(db, ROLES_COLLECTION, roleName));
+            showNotification(`🗑️ Rôle '${roleName}' supprimé.`, "info");
+            loadRoles();
+        } catch (err) {
+            console.error("Erreur de suppression du rôle:", err);
+            showNotification("Erreur: Impossible de supprimer le rôle.", "error");
+        }
+    };
+
+    // ✅ Charger les Rôles (depuis Firestore)
+    async function loadRoles() {
+        rolesContainer.innerHTML = '<div class="text-center py-4 text-gray-500 col-span-full">Chargement...</div>';
+        
+        try {
+            const snapshot = await getDocs(collection(db, ROLES_COLLECTION));
+            
+            if (snapshot.empty) {
+                rolesContainer.innerHTML = '<div class="text-center py-4 text-gray-500 col-span-full">Aucun rôle défini.</div>';
+                document.getElementById('roleCount').textContent = 0;
+                return;
+            }
+
+            rolesContainer.innerHTML = ""; // Vider le contenu
+            document.getElementById('roleCount').textContent = snapshot.size;
+
+            snapshot.forEach(docSnap => {
+                const name = docSnap.id;
+                const data = docSnap.data();
+                const permissions = data.permissions || data.accès || []; // Supporte 'permissions' ou 'accès'
+
+                const roleCard = document.createElement("div");
+                roleCard.className = "p-4 bg-gray-50 border border-gray-200 rounded-xl shadow-md flex flex-col justify-between";
+                
+                roleCard.innerHTML = `
+                    <h3 class="font-extrabold text-lg text-teal-800 mb-1">${name.charAt(0).toUpperCase() + name.slice(1)}</h3>
+                    <p class="text-xs text-gray-600 mb-3">${data.description || 'Pas de description.'}</p>
+                    
+                    <div class="flex flex-wrap gap-1 mb-3">
+                        ${permissions.map(p => `<span class="px-2 py-0.5 text-xs bg-teal-100 text-teal-800 rounded-full">${p}</span>`).join('')}
+                    </div>
+                    
+                    <div class="flex justify-end gap-2 mt-auto pt-2 border-t border-gray-100">
+                        <button onclick="window.loadRoleForEdit('${name}', '${data.description.replace(/'/g, "\\'")}', [${permissions.map(p => `'${p}'`).join(', ')}])" 
+                                class="text-sm px-3 py-1 bg-blue-500 text-white rounded-lg hover:bg-blue-600 transition duration-150">
+                            <i class="fa-solid fa-edit mr-1"></i> Modifier
+                        </button>
+                        <button onclick="window.deleteRole('${name}')" 
+                                class="text-sm px-3 py-1 bg-red-500 text-white rounded-lg hover:bg-red-600 transition duration-150">
+                            <i class="fa-solid fa-trash mr-1"></i> Supprimer
+                        </button>
+                    </div>
+                `;
+                rolesContainer.appendChild(roleCard);
+            });
+        } catch (err) {
+            console.error("Erreur de chargement des rôles:", err);
+            rolesContainer.innerHTML = '<div class="text-center py-4 text-red-500 col-span-full">Erreur lors du chargement des rôles.</div>';
+        }
+    }
+
+    // 6. GESTION DES ÉVÉNEMENTS & AUTHENTIFICATION
+    
+    // Événement de déconnexion
+    logoutBtn.addEventListener("click", handleLogout);
+    
+    // Gestion de l'état d'authentification
+    onAuthStateChanged(auth, user => {
+        document.body.classList.add('loaded'); // Afficher le contenu une fois l'état connu
+
+        if (!user) {
+            showNotification("Session expirée ou non autorisée.", "error");
+            setTimeout(() => window.location.href = "index.html", 1000);
+        } else {
+            // Utilisateur connecté
+            userInfo.textContent = user.email;
+            
+            // Récupération des données utilisateur pour l'affichage et la vérification de rôle
+            getDoc(doc(db, 'users', user.uid)).then(docSnap => {
+                if (docSnap.exists()) {
+                    const data = docSnap.data();
+                    const role = data.role.charAt(0).toUpperCase() + data.role.slice(1);
+                    userInfo.textContent = `${data.nom || data.email} (${role})`;
+                    
+                    // Vérification de rôle : Admin ou Préfet
+                    if (data.role !== 'admin' && data.role !== 'prefet') {
+                        showNotification("Accès non autorisé à cette page.", "error");
+                        // Remplacer par la page de redirection appropriée
+                        setTimeout(() => window.location.href = "dashboard-user.html", 1500); 
+                        return;
+                    }
+                    loadRoles(); // Charger la liste si l'utilisateur est autorisé
+                } else {
+                    console.warn("Document utilisateur manquant. Accès limité.");
+                    loadRoles();
+                }
+            }).catch(err => {
+                console.error("Erreur de récupération du document utilisateur:", err);
+                loadRoles();
+            });
+        }
+    });
+
+    // Lancement de l'authentification au chargement
+    initializeAuth();
+    </script>
 </body>
 </html>
