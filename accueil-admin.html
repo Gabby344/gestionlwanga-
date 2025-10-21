@@ -1,102 +1,237 @@
 <!DOCTYPE html>
 <html lang="fr">
 <head>
-  <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Accueil · Institut Saint Charles Lwanga</title>
-  <script src="https://cdn.tailwindcss.com"></script>
-  <script src="https://kit.fontawesome.com/a2e0e6a56b.js" crossorigin="anonymous"></script>
-  <script type="module" src="authGuard.js"></script>
-  <script type="module" src="header.js"></script>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Accueil Admin | ISC Lwanga</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script src="https://kit.fontawesome.com/a2e0e6a56b.js" crossorigin="anonymous"></script>
+    <style>
+        /* Configuration de la police Inter et masquage initial pour éviter le flash de contenu non stylisé (FOUC) */
+        @import url('https://fonts.googleapis.com/css2?family=Inter:wght@100..900&display=swap');
+        body { font-family: 'Inter', sans-serif; }
+        .sidebar {
+            transition: transform 0.3s ease-in-out;
+        }
+        /* Masquer la sidebar sur mobile par défaut, la montrer au breakpoint md */
+        @media (max-width: 767px) {
+            .sidebar {
+                transform: translateX(-100%);
+                position: fixed;
+                z-index: 50;
+                height: 100%;
+            }
+            .sidebar.active {
+                transform: translateX(0);
+            }
+        }
+        .loading-overlay {
+            position: fixed; top: 0; left: 0; width: 100%; height: 100%;
+            background-color: rgba(255, 255, 255, 0.8);
+            display: flex; justify-content: center; align-items: center;
+            z-index: 100;
+        }
+    </style>
 </head>
-<body class="bg-gray-50 text-gray-900 flex h-screen">
-
-  <!-- Sidebar -->
-  <aside class="w-64 bg-blue-900 text-white flex flex-col">
-    <div class="p-6 text-2xl font-bold border-b border-blue-800">
-      👑 Admin
+<body class="bg-gray-50 text-gray-900 flex min-h-screen">
+    
+    <!-- Loading Overlay (Senior UX Improvement) -->
+    <div id="loadingOverlay" class="loading-overlay">
+        <div class="flex flex-col items-center">
+            <i class="fa-solid fa-spinner fa-spin-pulse fa-3x text-blue-800 mb-4"></i>
+            <p class="text-lg text-gray-700 font-semibold">Chargement de l'espace administrateur...</p>
+        </div>
     </div>
-    <nav class="flex-1 p-4 space-y-3">
-      <a href="dashboard-admin.html" class="flex items-center gap-3 p-3 hover:bg-blue-800 rounded-lg transition"><i class="fa-solid fa-chart-line"></i> Tableau de bord</a>
-      <a href="liste-utilisateurs.html" class="flex items-center gap-3 p-3 hover:bg-blue-800 rounded-lg transition"><i class="fa-solid fa-users"></i> Utilisateurs</a>
-      <a href="cours.html" class="flex items-center gap-3 p-3 hover:bg-blue-800 rounded-lg transition"><i class="fa-solid fa-book"></i> Cours</a>
-      <a href="bulletins.html" class="flex items-center gap-3 p-3 hover:bg-blue-800 rounded-lg transition"><i class="fa-solid fa-file-lines"></i> Bulletins</a>
-      <a href="paiements.eleves.html" class="flex items-center gap-3 p-3 hover:bg-blue-800 rounded-lg transition"><i class="fa-solid fa-money-bill-wave"></i> Paiements</a>
-      <a href="admin.html" class="flex items-center gap-3 p-3 hover:bg-blue-800 rounded-lg transition"><i class="fa-solid fa-gear"></i> Paramètres</a>
-    </nav>
-    <button id="logoutBtn" class="m-4 bg-red-600 hover:bg-red-700 p-2 rounded-lg flex items-center justify-center gap-2"><i class="fa-solid fa-right-from-bracket"></i> Déconnexion</button>
-  </aside>
 
-  <!-- Main content -->
-  <main class="flex-1 p-8 overflow-y-auto">
-    <header class="mb-6" id="mainHeader"></header>
+    <!-- Mobile Menu Button -->
+    <button id="menuToggle" class="fixed top-4 left-4 z-50 p-2 bg-blue-900 text-white rounded-lg shadow-xl md:hidden">
+        <i class="fa-solid fa-bars"></i>
+    </button>
 
-    <div class="text-center mb-8 text-lg font-medium" id="welcomeMsg">Chargement du profil...</div>
+    <!-- Sidebar -->
+    <aside id="sidebar" class="sidebar w-64 bg-blue-900 text-white flex flex-col shadow-2xl md:translate-x-0">
+        <div class="p-6 text-3xl font-extrabold border-b border-blue-800 flex items-center gap-2">
+            <i class="fa-solid fa-crown text-yellow-400"></i> Admin
+        </div>
+        <nav class="flex-1 p-4 space-y-2">
+            <!-- Navigation Links (Primary Modules) -->
+            <a href="dashboard-admin.html" class="flex items-center gap-3 p-3 bg-blue-800 rounded-lg transition font-semibold shadow-md border-l-4 border-sky-400">
+                <i class="fa-solid fa-chart-line w-5 text-center"></i> Tableau de bord
+            </a>
+            <a href="liste-utilisateurs.html" class="flex items-center gap-3 p-3 hover:bg-blue-800 rounded-lg transition">
+                <i class="fa-solid fa-users w-5 text-center"></i> Utilisateurs
+            </a>
+            <a href="cours.html" class="flex items-center gap-3 p-3 hover:bg-blue-800 rounded-lg transition">
+                <i class="fa-solid fa-book w-5 text-center"></i> Cours
+            </a>
+            <a href="bulletins.html" class="flex items-center gap-3 p-3 hover:bg-blue-800 rounded-lg transition">
+                <i class="fa-solid fa-file-lines w-5 text-center"></i> Bulletins
+            </a>
+            <a href="paiements.eleves.html" class="flex items-center gap-3 p-3 hover:bg-blue-800 rounded-lg transition">
+                <i class="fa-solid fa-money-bill-wave w-5 text-center"></i> Paiements
+            </a>
+            <a href="admin.html" class="flex items-center gap-3 p-3 hover:bg-blue-800 rounded-lg transition">
+                <i class="fa-solid fa-gear w-5 text-center"></i> Paramètres Système
+            </a>
+        </nav>
+        <button id="logoutBtn" class="m-4 py-3 bg-red-600 hover:bg-red-700 rounded-xl flex items-center justify-center gap-2 font-semibold transition duration-200 shadow-lg">
+            <i class="fa-solid fa-right-from-bracket"></i> Déconnexion
+        </button>
+    </aside>
 
-    <section class="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-6" id="moduleList">
-      <!-- Modules générés dynamiquement -->
-    </section>
-  </main>
+    <!-- Main content -->
+    <main class="flex-1 p-4 md:p-8 overflow-y-auto">
+        <div class="max-w-7xl mx-auto">
+            <h1 class="text-3xl md:text-4xl font-extrabold text-blue-900 mb-2">Espace Administration</h1>
+            <p id="welcomeMsg" class="text-lg text-gray-600 mb-8">
+                Chargement du profil utilisateur...
+            </p>
 
-  <script type="module">
-    import { auth, db } from './config.js';
-    import { onAuthStateChanged, signOut } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-auth.js";
-    import { doc, getDoc } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore.js";
+            <!-- Dashboard Modules / Quick Access -->
+            <section>
+                <h2 class="text-2xl font-bold text-gray-800 border-b-2 border-blue-400 pb-2 mb-6 flex items-center gap-2">
+                    <i class="fa-solid fa-cubes text-blue-600"></i> Accès Rapide aux Modules
+                </h2>
+                <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6" id="moduleList">
+                    <!-- Les modules seront générés ici pour un accès rapide -->
+                    <div class="bg-white p-6 rounded-xl shadow-lg border-l-4 border-gray-300 animate-pulse h-28"></div>
+                    <div class="bg-white p-6 rounded-xl shadow-lg border-l-4 border-gray-300 animate-pulse h-28"></div>
+                    <div class="bg-white p-6 rounded-xl shadow-lg border-l-4 border-gray-300 animate-pulse h-28"></div>
+                </div>
+            </section>
+        </div>
+    </main>
+    
+    <!-- Firebase/JS Core Logic (Unified) -->
+    <script type="module">
+        import { initializeApp } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-app.js";
+        import { 
+            getAuth, onAuthStateChanged, signOut,
+            signInWithCustomToken, signInAnonymously 
+        } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-auth.js";
+        import { getFirestore, doc, getDoc } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-firestore.js";
+        
+        // --- Configuration Globale & Initialisation ---
+        const appId = typeof __app_id !== 'undefined' ? __app_id : 'default-app-id';
+        const firebaseConfig = typeof __firebase_config !== 'undefined' ? JSON.parse(__firebase_config) : {};
+        const app = initializeApp(firebaseConfig);
+        const auth = getAuth(app);
+        const db = getFirestore(app);
+        
+        // --- Éléments du DOM ---
+        const welcomeMsg = document.getElementById("welcomeMsg");
+        const moduleList = document.getElementById("moduleList");
+        const logoutBtn = document.getElementById("logoutBtn");
+        const loadingOverlay = document.getElementById("loadingOverlay");
+        const sidebar = document.getElementById("sidebar");
+        const menuToggle = document.getElementById("menuToggle");
+        
+        const AUTHORIZED_ROLE = 'admin'; // Le rôle attendu pour cette page
 
-    const welcomeMsg = document.getElementById("welcomeMsg");
-    const moduleList = document.getElementById("moduleList");
-    const logoutBtn = document.getElementById("logoutBtn");
+        // --- Fonctions UX (Remplacement de alert()) ---
+        function displayMessage(message, isError = false) {
+            console.error(message);
+            welcomeMsg.innerHTML = isError 
+                ? `<span class="text-red-600 font-bold"><i class="fa-solid fa-circle-exclamation mr-2"></i> Erreur: ${message}</span>`
+                : `<span class="text-gray-600 font-medium">${message}</span>`;
+            loadingOverlay.style.display = 'none';
+        }
 
-    logoutBtn.addEventListener("click", async () => {
-      await signOut(auth);
-      window.location.href = "login.html";
-    });
+        // --- Logique d'Authentification et de Redirection ---
+        
+        logoutBtn.addEventListener("click", async () => {
+            try {
+                await signOut(auth);
+                window.location.href = "login.html";
+            } catch (error) {
+                displayMessage("Erreur lors de la déconnexion.", true);
+            }
+        });
+        
+        menuToggle.addEventListener('click', () => {
+            sidebar.classList.toggle('active');
+        });
+        
+        // Données des modules pour la section "Accès Rapide"
+        const modulesData = [
+            { icon: "fa-users", label: "Gérer les Utilisateurs", url: "liste-utilisateurs.html", color: "blue" },
+            { icon: "fa-book-open", label: "Voir les Cours et Classes", url: "cours.html", color: "green" },
+            { icon: "fa-file-signature", label: "Valider les Bulletins", url: "bulletins.html", color: "yellow" },
+            { icon: "fa-sack-dollar", label: "Suivi des Paiements", url: "paiements.eleves.html", color: "teal" },
+            { icon: "fa-square-poll-vertical", label: "Gestion des Sondages", url: "gestion-sondages.html", color: "indigo" },
+            { icon: "fa-cogs", label: "Configuration Système", url: "admin.html", color: "purple" }
+        ];
 
-    const modulesParRole = {
-      admin: [
-        { icon: "fa-chart-line", label: "Tableau de bord", url: "dashboard-admin.html" },
-        { icon: "fa-users", label: "Utilisateurs", url: "liste-utilisateurs.html" },
-        { icon: "fa-book", label: "Cours", url: "cours.html" },
-        { icon: "fa-file-lines", label: "Bulletins", url: "bulletins.html" },
-        { icon: "fa-money-bill-wave", label: "Paiements", url: "paiements.eleves.html" },
-        { icon: "fa-gear", label: "Paramètres", url: "admin.html" }
-      ]
-    };
+        function renderModules(modules) {
+            moduleList.innerHTML = ''; // Nettoyer les placeholders
+            modules.forEach(mod => {
+                const link = document.createElement("a");
+                link.href = mod.url;
+                link.className = `bg-white shadow-xl rounded-xl p-6 transition flex items-center justify-between hover:shadow-2xl hover:translate-y-[-2px] duration-300 border-l-8 border-${mod.color}-500`;
+                
+                link.innerHTML = `
+                    <div>
+                        <p class="text-lg font-bold text-gray-800">${mod.label}</p>
+                        <p class="text-sm text-gray-500 mt-1">Accéder au module ${mod.label.toLowerCase().split(' ').pop()}.</p>
+                    </div>
+                    <i class="fa-solid ${mod.icon} text-3xl text-${mod.color}-600"></i>
+                `;
+                moduleList.appendChild(link);
+            });
+        }
 
-    onAuthStateChanged(auth, async (user) => {
-      if (!user) {
-        window.location.href = "login.html";
-        return;
-      }
+        onAuthStateChanged(auth, async (user) => {
+            if (!user) {
+                window.location.href = "login.html";
+                return;
+            }
 
-      const docRef = doc(db, "users", user.uid);
-      const docSnap = await getDoc(docRef);
+            try {
+                const docRef = doc(db, "users", user.uid);
+                const docSnap = await getDoc(docRef);
 
-      if (!docSnap.exists()) {
-        welcomeMsg.textContent = "⛔ Profil introuvable.";
-        return;
-      }
+                if (!docSnap.exists()) {
+                    displayMessage("Profil utilisateur introuvable. Déconnexion automatique.", true);
+                    await signOut(auth);
+                    return;
+                }
 
-      const data = docSnap.data();
-      const nomComplet = [data.nom, data.postNom, data.prenom].filter(Boolean).join(" ") || "Utilisateur";
-      const role = data.role?.toLowerCase().trim() || "inconnu";
+                const data = docSnap.data();
+                const nomComplet = [data.prenom, data.nom].filter(Boolean).join(" ") || "Admin";
+                const role = data.role?.toLowerCase().trim() || "inconnu";
+                
+                // Vérification du rôle
+                if (role !== AUTHORIZED_ROLE) {
+                    displayMessage(`Accès non autorisé pour le rôle "${role}". Redirection.`, true);
+                    // Rediriger vers la page d'accueil appropriée (si elle existe)
+                    window.location.href = `accueil-${role}.html`;
+                    return;
+                }
 
-      welcomeMsg.textContent = `Bienvenue ${nomComplet} · Rôle : ${role}`;
+                // Affichage du contenu après validation
+                welcomeMsg.textContent = `Bienvenue, ${nomComplet} (Rôle: Administrateur)`;
+                renderModules(modulesData);
+                loadingOverlay.style.display = 'none';
 
-      const modules = modulesParRole[role] || [];
-      if (!modules.length) {
-        moduleList.innerHTML = "<p class='text-center col-span-full'>⛔ Aucun module disponible pour ce rôle.</p>";
-        return;
-      }
-
-      modules.forEach(mod => {
-        const link = document.createElement("a");
-        link.href = mod.url;
-        link.className = "bg-white shadow rounded-xl p-6 hover:shadow-lg transition flex flex-col items-center gap-2 text-blue-900 font-semibold";
-        link.innerHTML = `<i class="fa-solid ${mod.icon} text-3xl"></i><span>${mod.label}</span>`;
-        moduleList.appendChild(link);
-      });
-    });
-  </script>
+            } catch (error) {
+                console.error("Erreur critique d'authentification ou de base de données:", error);
+                displayMessage("Impossible de charger les données du profil. Veuillez vérifier la connexion ou contacter le support.", true);
+            }
+        });
+        
+        // --- Initialisation de l'Authentification via Token ---
+        function initializeAuth() {
+            const token = typeof __initial_auth_token !== 'undefined' ? __initial_auth_token : null;
+            if (token) {
+                signInWithCustomToken(auth, token).catch(e => {
+                    console.warn("Custom token sign-in failed. Attempting anonymous sign-in.", e);
+                    signInAnonymously(auth);
+                });
+            } else {
+                signInAnonymously(auth);
+            }
+        }
+        initializeAuth();
+    </script>
 </body>
 </html>
