@@ -6,14 +6,28 @@
     <title>Accueil Admin | ISC Lwanga</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <script src="https://kit.fontawesome.com/a2e0e6a56b.js" crossorigin="anonymous"></script>
+    
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    colors: {
+                        'blue-600': '#2563eb', 'green-600': '#10b981', 'yellow-600': '#f59e0b',
+                        'teal-600': '#0d9488', 'indigo-600': '#4f46e5', 'purple-600': '#9333ea',
+                        // Ajoutez les 500 et 800 pour toutes les couleurs si vous les utilisez pour border/bg
+                    }
+                }
+            }
+        }
+    </script>
+
     <style>
-        /* Configuration de la police Inter et masquage initial pour éviter le flash de contenu non stylisé (FOUC) */
+        /* Configuration de la police Inter */
         @import url('https://fonts.googleapis.com/css2?family=Inter:wght@100..900&display=swap');
         body { font-family: 'Inter', sans-serif; }
-        .sidebar {
-            transition: transform 0.3s ease-in-out;
-        }
-        /* Masquer la sidebar sur mobile par défaut, la montrer au breakpoint md */
+        
+        .sidebar { transition: transform 0.3s ease-in-out; }
+
         @media (max-width: 767px) {
             .sidebar {
                 transform: translateX(-100%);
@@ -21,13 +35,13 @@
                 z-index: 50;
                 height: 100%;
             }
-            .sidebar.active {
-                transform: translateX(0);
-            }
+            .sidebar.active { transform: translateX(0); }
         }
-        .loading-overlay {
+        
+        /* Loading Overlay : Initialement affiché */
+        #loadingOverlay {
             position: fixed; top: 0; left: 0; width: 100%; height: 100%;
-            background-color: rgba(255, 255, 255, 0.8);
+            background-color: #f9fafb; /* bg-gray-50 */
             display: flex; justify-content: center; align-items: center;
             z-index: 100;
         }
@@ -35,26 +49,22 @@
 </head>
 <body class="bg-gray-50 text-gray-900 flex min-h-screen">
     
-    <!-- Loading Overlay (Senior UX Improvement) -->
-    <div id="loadingOverlay" class="loading-overlay">
+    <div id="loadingOverlay" class="fixed inset-0 bg-gray-50 z-[999] flex items-center justify-center">
         <div class="flex flex-col items-center">
             <i class="fa-solid fa-spinner fa-spin-pulse fa-3x text-blue-800 mb-4"></i>
             <p class="text-lg text-gray-700 font-semibold">Chargement de l'espace administrateur...</p>
         </div>
     </div>
 
-    <!-- Mobile Menu Button -->
     <button id="menuToggle" class="fixed top-4 left-4 z-50 p-2 bg-blue-900 text-white rounded-lg shadow-xl md:hidden">
         <i class="fa-solid fa-bars"></i>
     </button>
 
-    <!-- Sidebar -->
-    <aside id="sidebar" class="sidebar w-64 bg-blue-900 text-white flex flex-col shadow-2xl md:translate-x-0">
+    <aside id="sidebar" class="sidebar w-64 bg-blue-900 text-white flex flex-col shadow-2xl md:translate-x-0 flex-shrink-0">
         <div class="p-6 text-3xl font-extrabold border-b border-blue-800 flex items-center gap-2">
             <i class="fa-solid fa-crown text-yellow-400"></i> Admin
         </div>
         <nav class="flex-1 p-4 space-y-2">
-            <!-- Navigation Links (Primary Modules) -->
             <a href="dashboard-admin.html" class="flex items-center gap-3 p-3 bg-blue-800 rounded-lg transition font-semibold shadow-md border-l-4 border-sky-400">
                 <i class="fa-solid fa-chart-line w-5 text-center"></i> Tableau de bord
             </a>
@@ -79,81 +89,76 @@
         </button>
     </aside>
 
-    <!-- Main content -->
-    <main class="flex-1 p-4 md:p-8 overflow-y-auto">
+    <main id="mainContent" class="flex-1 p-4 md:p-8 overflow-y-auto hidden">
         <div class="max-w-7xl mx-auto">
             <h1 class="text-3xl md:text-4xl font-extrabold text-blue-900 mb-2">Espace Administration</h1>
             <p id="welcomeMsg" class="text-lg text-gray-600 mb-8">
-                Chargement du profil utilisateur...
+                Bienvenue dans votre tableau de bord.
             </p>
 
-            <!-- Dashboard Modules / Quick Access -->
             <section>
                 <h2 class="text-2xl font-bold text-gray-800 border-b-2 border-blue-400 pb-2 mb-6 flex items-center gap-2">
                     <i class="fa-solid fa-cubes text-blue-600"></i> Accès Rapide aux Modules
                 </h2>
                 <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6" id="moduleList">
-                    <!-- Les modules seront générés ici pour un accès rapide -->
-                    <div class="bg-white p-6 rounded-xl shadow-lg border-l-4 border-gray-300 animate-pulse h-28"></div>
-                    <div class="bg-white p-6 rounded-xl shadow-lg border-l-4 border-gray-300 animate-pulse h-28"></div>
-                    <div class="bg-white p-6 rounded-xl shadow-lg border-l-4 border-gray-300 animate-pulse h-28"></div>
-                </div>
+                    </div>
             </section>
         </div>
     </main>
     
-    <!-- Firebase/JS Core Logic (Unified) -->
     <script type="module">
         import { initializeApp } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-app.js";
-        import { 
-            getAuth, onAuthStateChanged, signOut,
-            signInWithCustomToken, signInAnonymously 
-        } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-auth.js";
+        import { getAuth, onAuthStateChanged, signOut } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-auth.js";
         import { getFirestore, doc, getDoc } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-firestore.js";
         
-        // --- Configuration Globale & Initialisation ---
-        const appId = typeof __app_id !== 'undefined' ? __app_id : 'default-app-id';
-        const firebaseConfig = typeof __firebase_config !== 'undefined' ? JSON.parse(__firebase_config) : {};
-        const app = initializeApp(firebaseConfig);
-        const auth = getAuth(app);
-        const db = getFirestore(app);
+        // --- Configuration Firebase (À REMPLACER) ---
+        // Utiliser la même config que votre page de connexion
+        const firebaseConfig = {
+            apiKey: "AIzaSyCQdZppl-UsPCXF8iFmXQpcGAFjHEMt838", 
+            authDomain: "gestion-saint-charles-lwanga.firebaseapp.com",
+            projectId: "gestion-saint-charles-lwanga",
+            storageBucket: "gestion-saint-charles-lwanga.firebasestorage.app",
+            messagingSenderId: "508302363143",
+            appId: "1:508302363143:web:35c181528dd84def1a78a2"
+        };
+        
+        let app, auth, db;
+        try {
+            app = initializeApp(firebaseConfig);
+            auth = getAuth(app);
+            db = getFirestore(app);
+        } catch (error) {
+            console.error("Erreur d'initialisation Firebase:", error);
+            // Si Firebase échoue, l'écran de chargement reste et affiche une erreur
+        }
         
         // --- Éléments du DOM ---
         const welcomeMsg = document.getElementById("welcomeMsg");
         const moduleList = document.getElementById("moduleList");
         const logoutBtn = document.getElementById("logoutBtn");
         const loadingOverlay = document.getElementById("loadingOverlay");
+        const mainContent = document.getElementById("mainContent"); // Nouveau
         const sidebar = document.getElementById("sidebar");
         const menuToggle = document.getElementById("menuToggle");
         
-        const AUTHORIZED_ROLE = 'admin'; // Le rôle attendu pour cette page
+        const AUTHORIZED_ROLE = 'admin';
 
-        // --- Fonctions UX (Remplacement de alert()) ---
+        // --- Fonctions UX ---
         function displayMessage(message, isError = false) {
             console.error(message);
             welcomeMsg.innerHTML = isError 
                 ? `<span class="text-red-600 font-bold"><i class="fa-solid fa-circle-exclamation mr-2"></i> Erreur: ${message}</span>`
                 : `<span class="text-gray-600 font-medium">${message}</span>`;
+            
+            // Masquer le chargement
             loadingOverlay.style.display = 'none';
+            // Afficher le contenu principal pour que l'utilisateur puisse voir le message d'erreur
+            mainContent.classList.remove('hidden');
         }
 
-        // --- Logique d'Authentification et de Redirection ---
-        
-        logoutBtn.addEventListener("click", async () => {
-            try {
-                await signOut(auth);
-                window.location.href = "login.html";
-            } catch (error) {
-                displayMessage("Erreur lors de la déconnexion.", true);
-            }
-        });
-        
-        menuToggle.addEventListener('click', () => {
-            sidebar.classList.toggle('active');
-        });
-        
-        // Données des modules pour la section "Accès Rapide"
+        // --- Logique d'Affichage des Modules ---
         const modulesData = [
+            // J'ai mis les couleurs en dur pour éviter le bug de génération Tailwind
             { icon: "fa-users", label: "Gérer les Utilisateurs", url: "liste-utilisateurs.html", color: "blue" },
             { icon: "fa-book-open", label: "Voir les Cours et Classes", url: "cours.html", color: "green" },
             { icon: "fa-file-signature", label: "Valider les Bulletins", url: "bulletins.html", color: "yellow" },
@@ -163,30 +168,38 @@
         ];
 
         function renderModules(modules) {
-            moduleList.innerHTML = ''; // Nettoyer les placeholders
+            moduleList.innerHTML = '';
             modules.forEach(mod => {
                 const link = document.createElement("a");
                 link.href = mod.url;
-                link.className = `bg-white shadow-xl rounded-xl p-6 transition flex items-center justify-between hover:shadow-2xl hover:translate-y-[-2px] duration-300 border-l-8 border-${mod.color}-500`;
+                
+                // Utilisation de classes Tailwind prédéfinies pour les couleurs de bordure et d'icône
+                const borderClass = `border-${mod.color}-500`;
+                const iconClass = `text-${mod.color}-600`;
+
+                link.className = `bg-white shadow-xl rounded-xl p-6 transition flex items-center justify-between hover:shadow-2xl hover:translate-y-[-2px] duration-300 border-l-8 ${borderClass}`;
                 
                 link.innerHTML = `
                     <div>
                         <p class="text-lg font-bold text-gray-800">${mod.label}</p>
-                        <p class="text-sm text-gray-500 mt-1">Accéder au module ${mod.label.toLowerCase().split(' ').pop()}.</p>
+                        <p class="text-sm text-gray-500 mt-1">Accéder au module.</p>
                     </div>
-                    <i class="fa-solid ${mod.icon} text-3xl text-${mod.color}-600"></i>
+                    <i class="fa-solid ${mod.icon} text-3xl ${iconClass}"></i>
                 `;
                 moduleList.appendChild(link);
             });
         }
 
+        // --- Gestion de l'Authentification (Point d'Entrée) ---
         onAuthStateChanged(auth, async (user) => {
             if (!user) {
-                window.location.href = "login.html";
+                // Utilisateur déconnecté: redirection vers la page de connexion
+                window.location.href = "connexion.html"; // J'ai corrigé 'login.html' à 'connexion.html'
                 return;
             }
 
             try {
+                // 1. Récupérer les données de l'utilisateur (Rôle et Nom)
                 const docRef = doc(db, "users", user.uid);
                 const docSnap = await getDoc(docRef);
 
@@ -197,41 +210,46 @@
                 }
 
                 const data = docSnap.data();
-                const nomComplet = [data.prenom, data.nom].filter(Boolean).join(" ") || "Admin";
+                const nomComplet = [data.prenom, data.nom].filter(Boolean).join(" ") || "Administrateur";
                 const role = data.role?.toLowerCase().trim() || "inconnu";
                 
-                // Vérification du rôle
+                // 2. Vérification du rôle pour cette page
                 if (role !== AUTHORIZED_ROLE) {
                     displayMessage(`Accès non autorisé pour le rôle "${role}". Redirection.`, true);
-                    // Rediriger vers la page d'accueil appropriée (si elle existe)
-                    window.location.href = `accueil-${role}.html`;
+                    // Rediriger vers la page d'accueil appropriée
+                    // Note: Il vaut mieux laisser la page de connexion gérer les redirections
+                    await signOut(auth); // Déconnexion pour forcer la reconnexion au bon endroit
+                    setTimeout(() => { window.location.href = "connexion.html"; }, 1000); 
                     return;
                 }
 
-                // Affichage du contenu après validation
+                // 3. Succès: Affichage du contenu
                 welcomeMsg.textContent = `Bienvenue, ${nomComplet} (Rôle: Administrateur)`;
                 renderModules(modulesData);
+                
+                // MASKER L'ÉCRAN DE CHARGEMENT et afficher le contenu
                 loadingOverlay.style.display = 'none';
+                mainContent.classList.remove('hidden');
 
             } catch (error) {
                 console.error("Erreur critique d'authentification ou de base de données:", error);
-                displayMessage("Impossible de charger les données du profil. Veuillez vérifier la connexion ou contacter le support.", true);
+                displayMessage("Impossible de charger les données du profil. Vérifiez la connexion Firebase/Firestore.", true);
             }
         });
         
-        // --- Initialisation de l'Authentification via Token ---
-        function initializeAuth() {
-            const token = typeof __initial_auth_token !== 'undefined' ? __initial_auth_token : null;
-            if (token) {
-                signInWithCustomToken(auth, token).catch(e => {
-                    console.warn("Custom token sign-in failed. Attempting anonymous sign-in.", e);
-                    signInAnonymously(auth);
-                });
-            } else {
-                signInAnonymously(auth);
+        // --- Gestion Mobile ---
+        menuToggle.addEventListener('click', () => {
+            sidebar.classList.toggle('active');
+        });
+
+        logoutBtn.addEventListener("click", async () => {
+            try {
+                await signOut(auth);
+                window.location.href = "connexion.html";
+            } catch (error) {
+                displayMessage("Erreur lors de la déconnexion.", true);
             }
-        }
-        initializeAuth();
+        });
     </script>
 </body>
 </html>
