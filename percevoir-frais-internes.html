@@ -1,0 +1,392 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Perception Frais Divers | St. Charles Lwanga</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script src="https://kit.fontawesome.com/a2e0e6a56b.js" crossorigin="anonymous"></script>
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Inter:wght@100..900&display=swap');
+        body { font-family: 'Inter', sans-serif; }
+        .sidebar { transition: transform 0.3s ease-in-out; }
+        @media (max-width: 767px) { .sidebar { transform: translateX(-100%); position: fixed; z-index: 50; height: 100%; } .sidebar.active { transform: translateX(0); box-shadow: 6px 0 15px rgba(0, 0, 0, 0.2); } }
+        .modal { background-color: rgba(0, 0, 0, 0.6); }
+    </style>
+    <!-- Tailwind Configuration pour les couleurs du Secrétaire -->
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    colors: {
+                        'teal-800': '#0e7490', 'teal-700': '#0f766e', 'teal-900': '#134e4a',
+                        'sky-400': '#38bdf8', 'sky-500': '#0ea5e9',
+                        'green-600': '#16a34a', 'red-600': '#dc2626',
+                        'yellow-500': '#eab308',
+                    }
+                }
+            }
+        }
+    </script>
+</head>
+
+<body class="bg-gray-50 text-gray-900 flex min-h-screen">
+
+    <!-- Sidebar -->
+    <aside id="sidebar" class="sidebar w-64 bg-teal-800 text-white flex flex-col shadow-2xl md:translate-x-0 flex-shrink-0">
+        <div class="p-6 text-3xl font-extrabold border-b border-teal-700 flex items-center gap-2">
+            <i class="fa-solid fa-user-tie text-yellow-300"></i> Service Académique
+        </div>
+        <nav class="flex-1 p-4 space-y-2">
+            <a href="accueil-secretaire.html" class="flex items-center gap-3 p-3 hover:bg-teal-700 rounded-lg transition font-semibold">
+                <i class="fa-solid fa-desktop w-5 text-center"></i> Tableau de Bord
+            </a>
+            <a href="inscrire-eleve.html" class="flex items-center gap-3 p-3 hover:bg-teal-700 rounded-lg transition">
+                <i class="fa-solid fa-user-plus w-5 text-center"></i> Inscription Nouvel Élève
+            </a>
+            <a href="gestion-dossiers-eleves.html" class="flex items-center gap-3 p-3 hover:bg-teal-700 rounded-lg transition">
+                <i class="fa-solid fa-folder-open w-5 text-center"></i> Gestion des Dossiers Élèves
+            </a>
+            <a href="percevoir-frais-internes.html" class="flex items-center gap-3 p-3 bg-teal-700 rounded-lg transition font-semibold shadow-md border-l-4 border-sky-400">
+                <i class="fa-solid fa-cash-register w-5 text-center"></i> Perception Frais Divers
+            </a>
+            <a href="edition-bulletins.html" class="flex items-center gap-3 p-3 hover:bg-teal-700 rounded-lg transition">
+                <i class="fa-solid fa-print w-5 text-center"></i> Impression des Bulletins
+            </a>
+            <a href="gestion-courrier.html" class="flex items-center gap-3 p-3 hover:bg-teal-700 rounded-lg transition">
+                <i class="fa-solid fa-bullhorn w-5 text-center"></i> Communication
+            </a>
+            <a href="profil-utilisateur.html" class="flex items-center gap-3 p-3 hover:bg-teal-700 rounded-lg transition">
+                <i class="fa-solid fa-user w-5 text-center"></i> Mon Profil
+            </a>
+        </nav>
+        <button id="logoutBtn" class="m-4 py-3 bg-red-600 hover:bg-red-700 rounded-xl flex items-center justify-center gap-2 font-semibold transition duration-200 shadow-lg">
+            <i class="fa-solid fa-right-from-bracket"></i> Déconnexion
+        </button>
+    </aside>
+
+    <!-- Mobile Menu Button -->
+    <button id="menuToggle" class="fixed top-4 left-4 z-50 p-2 bg-teal-800 text-white rounded-lg shadow-xl md:hidden">
+        <i class="fa-solid fa-bars"></i>
+    </button>
+
+    <!-- Main content -->
+    <main id="mainContent" class="flex-1 p-4 md:p-8 overflow-y-auto hidden">
+        <div class="max-w-4xl mx-auto">
+            <header class="mb-8 border-b pb-4">
+                <h1 class="text-3xl font-extrabold text-teal-900"><i class="fa-solid fa-cash-register mr-2 text-green-600"></i> Enregistrement des Frais Divers</h1>
+                <p class="text-gray-600 mt-1">Enregistrez les paiements de frais internes, certificats ou autres contributions non-scolaires principales.</p>
+            </header>
+
+            <div class="bg-white p-6 md:p-8 rounded-xl shadow-2xl space-y-6">
+
+                <!-- Étape 1: Recherche de l'Élève -->
+                <fieldset class="border border-gray-200 p-6 rounded-lg space-y-4">
+                    <legend class="text-xl font-semibold text-teal-700 px-2">1. Rechercher l'Élève</legend>
+                    
+                    <div class="flex flex-col sm:flex-row gap-3">
+                        <input type="text" id="eleveSearch" placeholder="Entrer Nom, Prénom ou ID Élève..."
+                            class="flex-1 px-4 py-2 border border-gray-300 rounded-lg focus:ring-sky-500 focus:border-sky-500">
+                        <button id="searchBtn" 
+                            class="px-6 py-2 bg-sky-500 text-white font-semibold rounded-lg hover:bg-sky-600 transition shadow-md disabled:bg-gray-400">
+                            <i class="fa-solid fa-search mr-1"></i> Rechercher
+                        </button>
+                    </div>
+
+                    <div id="eleveInfoDisplay" class="p-3 bg-gray-100 rounded-lg hidden">
+                        <p class="font-bold text-gray-800" id="eleveName"></p>
+                        <p class="text-sm text-gray-600" id="eleveClasse"></p>
+                        <input type="hidden" id="selectedEleveId">
+                    </div>
+                    
+                    <div id="searchMessage" class="text-sm text-red-600 hidden"></div>
+                </fieldset>
+
+                <!-- Étape 2: Enregistrement de la Transaction -->
+                <fieldset id="transactionSection" class="border border-gray-200 p-6 rounded-lg space-y-4 hidden">
+                    <legend class="text-xl font-semibold text-teal-700 px-2">2. Détails de la Transaction</legend>
+                    
+                    <div>
+                        <label for="motif" class="block text-sm font-medium text-gray-700 mb-1">Motif du Paiement</label>
+                        <select id="motif" required
+                            class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-sky-500 focus:border-sky-500">
+                            <option value="">Sélectionner un motif</option>
+                            <option value="Certificat de scolarité">Certificat de scolarité</option>
+                            <option value="Photocopies & Documents">Photocopies & Documents</option>
+                            <option value="Frais de Retard">Frais de Retard (Amende)</option>
+                            <option value="Cotisation Sportive">Cotisation Sportive</option>
+                            <option value="Autre Frais Divers">Autre Frais Divers (Préciser ci-dessous)</option>
+                        </select>
+                    </div>
+
+                    <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                        <div>
+                            <label for="montant" class="block text-sm font-medium text-gray-700 mb-1">Montant Payé (USD)</label>
+                            <input type="number" id="montant" required min="1" step="0.01" placeholder="Ex: 5.00"
+                                class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-sky-500 focus:border-sky-500">
+                        </div>
+                        <div>
+                            <label for="datePaiement" class="block text-sm font-medium text-gray-700 mb-1">Date du Paiement</label>
+                            <input type="date" id="datePaiement" required 
+                                class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-sky-500 focus:border-sky-500">
+                        </div>
+                    </div>
+                    
+                    <div>
+                        <label for="commentaire" class="block text-sm font-medium text-gray-700 mb-1">Commentaire / Détails Supplémentaires</label>
+                        <textarea id="commentaire" rows="2" placeholder="Ex: Paiement de 5 certificats pour l'année passée."
+                            class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-sky-500 focus:border-sky-500"></textarea>
+                    </div>
+                </fieldset>
+
+                <!-- Bouton de Soumission -->
+                <button type="button" id="submitTransactionBtn"
+                    class="w-full flex items-center justify-center gap-2 px-6 py-3 bg-green-600 text-white font-bold rounded-xl hover:bg-green-700 focus:outline-none focus:ring-4 focus:ring-green-500 focus:ring-opacity-50 transition duration-200 shadow-md hidden disabled:bg-gray-400">
+                    <i class="fa-solid fa-receipt"></i>
+                    <span id="btnText">Enregistrer la Réception des Fonds</span>
+                </button>
+            </div>
+        </div>
+    </main>
+    
+    <!-- Modal de Confirmation de Transaction -->
+    <div id="confirmationModal" class="fixed inset-0 modal flex items-center justify-center z-50 hidden">
+        <div class="bg-white p-8 rounded-xl shadow-2xl max-w-sm w-full text-center transform transition-transform duration-300 scale-100">
+            <i class="fa-solid fa-check-circle text-6xl text-green-600 mb-4"></i>
+            <h3 class="text-2xl font-bold text-gray-800 mb-3">Paiement Enregistré !</h3>
+            <p id="modalMessage" class="text-gray-600 mb-6"></p>
+            <button id="closeModalBtn" class="w-full px-4 py-2 bg-sky-500 text-white font-semibold rounded-lg hover:bg-sky-600 transition">Nouvelle Transaction</button>
+        </div>
+    </div>
+
+
+    <script type="module">
+        import { initializeApp } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-app.js";
+        import { getAuth, onAuthStateChanged, signOut, signInWithCustomToken, signInAnonymously } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-auth.js";
+        import { getFirestore, doc, getDoc, collection, query, where, getDocs, addDoc, serverTimestamp } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-firestore.js";
+        
+        // --- Variables Globales d'Environnement (MANDATORY) ---
+        const appId = typeof __app_id !== 'undefined' ? __app_id : 'default-app-id';
+        const firebaseConfig = typeof __firebase_config !== 'undefined' ? JSON.parse(__firebase_config) : null;
+        const initialAuthToken = typeof __initial_auth_token !== 'undefined' ? __initial_auth_token : null;
+
+        let app, auth, db;
+        const AUTHORIZED_ROLE = 'secretaire';
+        const REDIRECT_URL = 'connexion.html';
+        const ELEVES_COLLECTION_PATH = `artifacts/${appId}/public/data/eleves`;
+        const TRANSACTIONS_COLLECTION_PATH = `artifacts/${appId}/public/data/transactions_diverses`;
+
+        // --- Éléments du DOM et Statut ---
+        const mainContent = document.getElementById("mainContent");
+        const eleveSearch = document.getElementById("eleveSearch");
+        const searchBtn = document.getElementById("searchBtn");
+        const eleveInfoDisplay = document.getElementById("eleveInfoDisplay");
+        const eleveName = document.getElementById("eleveName");
+        const eleveClasse = document.getElementById("eleveClasse");
+        const selectedEleveId = document.getElementById("selectedEleveId");
+        const searchMessage = document.getElementById("searchMessage");
+        const transactionSection = document.getElementById("transactionSection");
+        const submitTransactionBtn = document.getElementById("submitTransactionBtn");
+        const modalMessage = document.getElementById("modalMessage");
+        const confirmationModal = document.getElementById("confirmationModal");
+        const closeModalBtn = document.getElementById("closeModalBtn");
+        
+        // Champs du formulaire de transaction
+        const motifInput = document.getElementById("motif");
+        const montantInput = document.getElementById("montant");
+        const datePaiementInput = document.getElementById("datePaiement");
+        const commentaireInput = document.getElementById("commentaire");
+
+        // --- Fonctions d'Utilité ---
+        function showMessage(element, message, isError = false) {
+            element.textContent = message;
+            element.classList.remove('hidden', 'text-red-600', 'text-green-600');
+            element.classList.add(isError ? 'text-red-600' : 'text-green-600');
+        }
+        
+        function resetForm() {
+            eleveSearch.value = '';
+            eleveInfoDisplay.classList.add('hidden');
+            transactionSection.classList.add('hidden');
+            submitTransactionBtn.classList.add('hidden');
+            searchMessage.classList.add('hidden');
+            
+            motifInput.value = '';
+            montantInput.value = '';
+            datePaiementInput.value = new Date().toISOString().split('T')[0];
+            commentaireInput.value = '';
+        }
+        
+        // --- Logique de Recherche Élève ---
+        searchBtn.addEventListener('click', async () => {
+            const searchTerm = eleveSearch.value.trim();
+            if (searchTerm.length < 3) {
+                showMessage(searchMessage, "Veuillez entrer au moins 3 caractères pour la recherche.", true);
+                return;
+            }
+            
+            searchBtn.disabled = true;
+            showMessage(searchMessage, `<i class="fa-solid fa-spinner fa-spin mr-1"></i> Recherche en cours...`, false);
+            
+            // Masquer les sections précédentes
+            eleveInfoDisplay.classList.add('hidden');
+            transactionSection.classList.add('hidden');
+            submitTransactionBtn.classList.add('hidden');
+
+            try {
+                // Tenter une recherche par ID (si la saisie ressemble à un ID)
+                let q = null;
+                let docs = [];
+
+                if (searchTerm.length === 20) { // Exemple: Longueur d'un ID Firestore
+                    // Si la recherche est par ID, utiliser getDoc directement (plus rapide)
+                    const docSnap = await getDoc(doc(db, ELEVES_COLLECTION_PATH, searchTerm));
+                    if (docSnap.exists()) {
+                        docs.push(docSnap);
+                    }
+                } else {
+                    // Recherche par nom/prénom
+                    // Attention: Firestore ne permet pas de recherche "contains" simple. On utilise "startsWith"
+                    // On ne peut pas combiner deux 'where' pour le même champ sans index complexe
+                    q = query(
+                        collection(db, ELEVES_COLLECTION_PATH),
+                        where('nom', '>=', searchTerm.toUpperCase()),
+                        where('nom', '<=', searchTerm.toUpperCase() + '\uf8ff')
+                        // Limitation: recherche uniquement par NOM pour éviter de créer des index trop complexes ici
+                    );
+                    const querySnapshot = await getDocs(q);
+                    docs = querySnapshot.docs;
+                }
+
+
+                if (docs.length === 1) {
+                    const data = docs[0].data();
+                    const eleveId = docs[0].id;
+                    
+                    eleveName.textContent = `${data.nom} ${data.prenom} (${data.genre})`;
+                    eleveClasse.textContent = `Classe: ${data.classeDemandee} | ID: ${eleveId.substring(0, 8)}...`;
+                    selectedEleveId.value = eleveId;
+                    
+                    eleveInfoDisplay.classList.remove('hidden');
+                    transactionSection.classList.remove('hidden');
+                    submitTransactionBtn.classList.remove('hidden');
+                    searchMessage.classList.add('hidden'); // Masquer le message de recherche
+                    
+                } else {
+                    showMessage(searchMessage, "Aucun élève trouvé avec ce critère. Vérifiez le nom ou l'ID.", true);
+                }
+
+            } catch (error) {
+                console.error("Erreur de recherche élève:", error);
+                showMessage(searchMessage, "Une erreur s'est produite lors de la recherche.", true);
+            } finally {
+                searchBtn.disabled = false;
+            }
+        });
+        
+        // --- Logique de Soumission de Transaction ---
+        submitTransactionBtn.addEventListener('click', async () => {
+            const eleveId = selectedEleveId.value;
+            const montant = parseFloat(montantInput.value);
+            
+            // Validation simple
+            if (!eleveId || !motifInput.value || montant <= 0 || !datePaiementInput.value) {
+                showMessage(searchMessage, "Veuillez sélectionner un élève et remplir tous les champs de transaction valides.", true);
+                return;
+            }
+            
+            submitTransactionBtn.disabled = true;
+            submitTransactionBtn.querySelector('span').textContent = "Enregistrement...";
+            submitTransactionBtn.classList.add('bg-gray-400');
+
+            try {
+                const transactionData = {
+                    eleveId: eleveId,
+                    motif: motifInput.value,
+                    montant: montant,
+                    datePaiement: datePaiementInput.value,
+                    commentaire: commentaireInput.value,
+                    enregistreParUid: auth.currentUser?.uid,
+                    dateEnregistrement: serverTimestamp(),
+                    type: 'DIVERS', // Pour distinguer des frais scolaires principaux
+                };
+
+                const docRef = await addDoc(collection(db, TRANSACTIONS_COLLECTION_PATH), transactionData);
+                
+                // Succès: Afficher la modal
+                modalMessage.textContent = `Paiement de ${montant.toFixed(2)} USD enregistré pour l'élève ID ${eleveId.substring(0, 8)}... Motif: ${motifInput.value}.`;
+                confirmationModal.classList.remove('hidden');
+
+            } catch (error) {
+                console.error("Erreur lors de l'enregistrement de la transaction:", error);
+                showMessage(searchMessage, "Échec de l'enregistrement de la transaction. Erreur Firestore.", true);
+            } finally {
+                submitTransactionBtn.disabled = false;
+                submitTransactionBtn.querySelector('span').textContent = "Enregistrer la Réception des Fonds";
+                submitTransactionBtn.classList.remove('bg-gray-400');
+            }
+        });
+
+        // --- Gestion de la Modal ---
+        closeModalBtn.addEventListener('click', () => {
+            confirmationModal.classList.add('hidden');
+            resetForm(); // Réinitialiser le formulaire pour une nouvelle transaction
+        });
+        
+        // --- Contrôle d'Authentification et de Rôle (Identique) ---
+        async function initializeAppAndAuth() {
+            if (!firebaseConfig) { return; }
+
+            try {
+                app = initializeApp(firebaseConfig);
+                auth = getAuth(app);
+                db = getFirestore(app);
+                
+                if (initialAuthToken) { await signInWithCustomToken(auth, initialAuthToken); } else { await signInAnonymously(auth); }
+            } catch (error) {
+                window.location.href = REDIRECT_URL;
+                return;
+            }
+            
+            onAuthStateChanged(auth, async (user) => {
+                if (!user || user.isAnonymous) {
+                    window.location.href = REDIRECT_URL;
+                    return;
+                }
+
+                try {
+                    const docSnap = await getDoc(doc(db, "users", user.uid));
+                    if (!docSnap.exists() || docSnap.data().role?.toLowerCase().trim() !== AUTHORIZED_ROLE) {
+                        await signOut(auth);
+                        window.location.href = REDIRECT_URL;
+                        return;
+                    }
+                    
+                    // Autorisation réussie
+                    mainContent.classList.remove('hidden');
+                    resetForm(); // Initialiser la date du jour
+                    
+                } catch (error) {
+                    await signOut(auth);
+                    window.location.href = REDIRECT_URL;
+                }
+            });
+        }
+        
+        document.getElementById("menuToggle").addEventListener('click', () => {
+            document.getElementById("sidebar").classList.toggle('active');
+        });
+        
+        document.getElementById("logoutBtn").addEventListener("click", async () => {
+            try {
+                await signOut(auth);
+                window.location.href = REDIRECT_URL;
+            } catch (error) {
+                console.error("Erreur de déconnexion:", error);
+            }
+        });
+
+        initializeAppAndAuth();
+    </script>
+</body>
+</html>
