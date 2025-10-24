@@ -134,9 +134,12 @@
             <!-- Les messages de succès/erreur apparaîtront ici -->
         </div>
 
-        <a href="#" onclick="alert('La page de gestion du personnel n\'est pas implémentée dans ce fichier unique.'); return false;" class="btn-retour block text-center mt-6 text-gray-600 hover:text-primary-indigo font-medium transition duration-200">
+        <a href="#" onclick="showMessage('La page de gestion du personnel n\'est pas implémentée dans ce fichier unique.', 'info'); return false;" class="btn-retour block text-center mt-6 text-gray-600 hover:text-primary-indigo font-medium transition duration-200">
             ← Retour au Menu du Personnel
         </a>
+        <p id="auth-status" class="text-xs text-center mt-2 text-gray-400">
+            Statut : Initialisation...
+        </p>
     </div>
 
     <!-- SCRIPTS FIREBASE ET LOGIQUE APPLICATIVE -->
@@ -173,6 +176,12 @@
                     ${text}
                 </div>
             `;
+            // Vider le message après 8 secondes pour ne pas surcharger l'interface
+            setTimeout(() => {
+                if (messageEl.querySelector('div')) {
+                    messageEl.innerHTML = '';
+                }
+            }, 8000);
         }
 
         // Utilitaire pour le backoff exponentiel lors des appels API
@@ -198,10 +207,12 @@
 
             // Écouteur d'état d'authentification
             onAuthStateChanged(auth, async (user) => {
+                const authStatusEl = document.getElementById('auth-status');
                 if (user) {
                     userId = user.uid;
                     isAuthReady = true;
                     console.log("Firebase Auth prêt. User ID:", userId);
+                    authStatusEl.textContent = `Statut : Authentifié (ID: ${userId})`;
                     showMessage('Prêt à enregistrer le membre du personnel.', 'info');
                 } else {
                     const token = typeof __initial_auth_token !== 'undefined' ? __initial_auth_token : null;
@@ -214,6 +225,7 @@
                         // L'écouteur onAuthStateChanged se déclenchera à nouveau avec l'utilisateur
                     } catch (error) {
                         console.error("Firebase authentication failed:", error);
+                        authStatusEl.textContent = 'Statut : Erreur d\'authentification';
                         showMessage('❌ Erreur d\'authentification Firebase. Veuillez rafraîchir.', 'error');
                     }
                 }
@@ -221,6 +233,7 @@
         } else {
             showMessage('❌ Configuration Firebase manquante. Enregistrement non fonctionnel.', 'error');
             console.error("Firebase configuration is missing.");
+            document.getElementById('auth-status').textContent = 'Statut : Configuration manquante';
         }
 
         // -----------------------------------------------------
@@ -255,7 +268,9 @@
 
             // Logique de génération de Matricule Personnel (STCP: St-Charles Personnel)
             const annee = new Date().getFullYear().toString().slice(-2);
-            const prefix = (titre === 'Professeur') ? 'PR' : 'AD';
+            // PR pour Professeur, AD pour Administratif/Autre
+            const prefix = (titre === 'Professeur') ? 'PR' : 'AD'; 
+            // Utilise les 6 derniers chiffres du timestamp pour l'unicité
             const uniquePart = Date.now().toString().slice(-6); 
             const matriculePersonnel = `STCP-${prefix}-${annee}/${uniquePart}`;
 
