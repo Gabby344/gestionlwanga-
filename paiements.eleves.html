@@ -5,74 +5,169 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0" />
 <title>Suivi des Paiements · Économe · Institut Saint Charles Lwanga</title>
 <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700&display=swap" rel="stylesheet">
+<script src="https://cdn.tailwindcss.com"></script>
 <style>
-:root{--bleu-fonce:#1e40af;--gris-fonce:#1f2937;--vert:#10b981;--fond:#f4f6f8;--ombre-legere:rgba(0,0,0,0.08);}
-body{font-family:'Inter',sans-serif;background-color:var(--fond);margin:0;padding:2rem;color:var(--gris-fonce);}
-h1,h2{text-align:center;} h1{color:var(--bleu-fonce);} h2{font-weight:400;color:#6b7280;}
-.container{max-width:900px;margin:auto;}
-.table{width:100%;border-collapse:collapse;margin-top:1rem;background:white;box-shadow:0 4px 10px var(--ombre-legere);border-radius:12px;}
-.table th, .table td{padding:0.8rem;text-align:left;border-bottom:1px solid #e5e7eb;}
-.table th{background:#eef2ff;font-weight:600;}
+/* CSS personnalisé pour un look plus moderne et responsive */
+:root {--bleu-fonce:#1e40af;--gris-fonce:#1f2937;--vert:#10b981;--fond:#f4f6f8;--ombre-legere:rgba(0,0,0,0.15);}
+body {font-family:'Inter',sans-serif;background-color:var(--fond);margin:0;padding:1rem;color:var(--gris-fonce);}
+.container {max-width:900px;margin:auto;padding:1rem;}
+h1 {color:var(--bleu-fonce);font-weight:700;font-size:2rem;}
+h2 {font-weight:400;color:#6b7280;font-size:1.2rem;margin-bottom:1rem;}
+.table {width:100%;border-collapse:separate;border-spacing:0;margin-top:1.5rem;background:white;box-shadow:0 10px 20px var(--ombre-legere);border-radius:16px;overflow:hidden;}
+.table th, .table td {padding:1rem;text-align:left;}
+.table th {background:#eef2ff;font-weight:600;color:var(--bleu-fonce);border-bottom:2px solid #c7d2fe;}
+.table tr:last-child td {border-bottom:none;}
+.table tbody tr:hover {background-color:#f8f9ff;}
+.data-display {font-weight:600;}
+.header-info {
+    padding: 0.5rem 1rem;
+    background: #e0f2f1;
+    color: #065f46;
+    border-radius: 8px;
+    margin-top: 1rem;
+    text-align: center;
+    font-size: 0.875rem;
+}
+
+/* Responsiveness for small screens */
+@media (max-width: 600px) {
+    .table thead {display: none;}
+    .table, .table tbody, .table tr, .table td {display: block; width: 100%;}
+    .table tr {margin-bottom: 0.75rem; border: 1px solid #e5e7eb; border-radius: 8px;}
+    .table td {text-align: right; padding-left: 50%; position: relative; border-bottom: 1px dashed #e5e7eb;}
+    .table td:before {
+        content: attr(data-label);
+        position: absolute;
+        left: 0;
+        width: 50%;
+        padding-left: 1rem;
+        font-weight: 600;
+        text-align: left;
+        color: var(--bleu-fonce);
+    }
+    .table td:last-child {border-bottom: 0;}
+}
 </style>
 </head>
 <body>
 <div class="container">
-<h1>Suivi des Paiements</h1>
-<h2>Économe · Institut Saint Charles Lwanga</h2>
+    <h1 class="text-center">Suivi des Paiements en Temps Réel</h1>
+    <h2 class="text-center">Institut Saint Charles Lwanga</h2>
 
-<table class="table">
-<thead>
-<tr>
-  <th>Nom Complet</th>
-  <th>Classe</th>
-  <th>Montant Restant ($)</th>
-  <th>Montant Payé ($)</th>
-</tr>
-</thead>
-<tbody id="tbody-paiements"></tbody>
-</table>
+    <div class="header-info">
+        ID Utilisateur Connecté: <span id="user-id-display" class="font-mono text-sm">Chargement...</span>
+    </div>
+
+    <table class="table">
+    <thead>
+    <tr>
+      <th>Nom Complet</th>
+      <th>Classe</th>
+      <th>Montant Payé ($)</th>
+      <th>Montant Restant ($)</th>
+    </tr>
+    </thead>
+    <tbody id="tbody-paiements">
+        <tr><td colspan="4" class="text-center text-gray-500 py-4">Authentification en cours et chargement des données...</td></tr>
+    </tbody>
+    </table>
 </div>
 
 <script type="module">
-import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-app.js";
-import { getFirestore, collection, getDocs } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore.js";
-import { getAuth, onAuthStateChanged, signOut } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-auth.js";
+import { initializeApp } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-app.js";
+import { getFirestore, collection, query, onSnapshot, setLogLevel } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-firestore.js";
+import { getAuth, signInAnonymously, signInWithCustomToken, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-auth.js";
 
-const firebaseConfig = {apiKey:"AIzaSyAgv4TDYnR60TXnns-LISqbZTgcdLT31cc",authDomain:"gestionlwanga.firebaseapp.com",projectId:"gestionlwanga",storageBucket:"gestionlwanga.firebasestorage.app",messagingSenderId:"622604298611",appId:"1:622604298611:web:4ab4314ed3eec6826c3d06"};
+// --- CONFIGURATION ET INITIALISATION MANDATAIRES ---
+// Utilisation des variables globales fournies par l'environnement
+const appId = typeof __app_id !== 'undefined' ? __app_id : 'default-app-id';
+const firebaseConfig = JSON.parse(typeof __firebase_config !== 'undefined' ? __firebase_config : '{}');
+
 const app = initializeApp(firebaseConfig);
 const db = getFirestore(app);
 const auth = getAuth(app);
+setLogLevel('debug'); // Activation du log de débug pour Firestore
 
 const tbody = document.getElementById("tbody-paiements");
-let elevesData = [];
+const userIdDisplay = document.getElementById("user-id-display");
+let currentUserId = null;
 
-onAuthStateChanged(auth, user=>{
-  if(!user){ window.location.href="login.html"; return; }
-  getUserRole(user.uid).then(role=>{
-    if(role!=="econome" && role!=="admin" && role!=="prefet"){signOut(auth); window.location.href="login.html";}
-  });
-  chargerPaiements();
-});
-
-async function getUserRole(uid){
-  const snap = await import("https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore.js").then(m=>m.getDoc(m.doc(db,"users",uid)));
-  return snap.data().role?.toLowerCase()??"";
+// Fonction utilitaire pour l'authentification
+async function authenticateUser() {
+    try {
+        if (typeof __initial_auth_token !== 'undefined') {
+            await signInWithCustomToken(auth, __initial_auth_token);
+        } else {
+            await signInAnonymously(auth);
+        }
+    } catch (error) {
+        console.error("Erreur lors de l'authentification Firebase. Tentative de connexion anonyme de secours.", error);
+        try {
+            await signInAnonymously(auth);
+        } catch (anonError) {
+            console.error("Échec de la connexion anonyme.", anonError);
+        }
+    }
 }
 
-async function chargerPaiements(){
-  tbody.innerHTML="";
-  const snap = await getDocs(collection(db,"eleves"));
-  snap.forEach(doc=>{
-    const e = doc.data();
-    const tr = document.createElement("tr");
-    tr.innerHTML = `
-      <td>${e.nom} ${e.postNom} ${e.prenom}</td>
-      <td>${e.classe}</td>
-      <td>${e.fraisRestants??0}</td>
-      <td>${e.montantPaye??0}</td>
-    `;
-    tbody.appendChild(tr);
-  });
+// Démarrer l'authentification
+authenticateUser();
+
+// Écouteur d'état d'authentification
+onAuthStateChanged(auth, (user) => {
+    // Si l'utilisateur est authentifié, stocke son ID et affiche-le.
+    if (user) {
+        currentUserId = user.uid;
+        userIdDisplay.textContent = currentUserId;
+        setupRealtimeListener(currentUserId);
+    } else {
+        // En cas d'échec ou de déconnexion inattendue
+        userIdDisplay.textContent = 'Non Authentifié (Anon)';
+        tbody.innerHTML = '<tr><td colspan="4" class="text-center text-red-500 py-4">Erreur d\'authentification ou non connecté.</td></tr>';
+    }
+});
+
+/**
+ * Configure un écouteur en temps réel pour la collection 'eleves'
+ * dans le chemin sécurisé de l'utilisateur.
+ * @param {string} userId L'ID unique de l'utilisateur.
+ */
+function setupRealtimeListener(userId) {
+    // Chemin de collection privé et sécurisé MANDATAIRE:
+    const collectionPath = `/artifacts/${appId}/users/${userId}/eleves`;
+    const elevesCollection = collection(db, collectionPath);
+    const q = query(elevesCollection);
+
+    // Démarrer l'écouteur en temps réel
+    onSnapshot(q, (snapshot) => {
+        // Mettre à jour le tableau avec les nouvelles données
+        tbody.innerHTML = "";
+        if (snapshot.empty) {
+            tbody.innerHTML = '<tr><td colspan="4" class="text-center text-gray-500 py-4">Aucune donnée d\'élève trouvée.</td></tr>';
+            return;
+        }
+
+        snapshot.forEach(doc => {
+            const e = doc.data();
+            const nomComplet = `${e.nom || ''} ${e.postNom || ''} ${e.prenom || ''}`.trim() || 'Nom Inconnu';
+            const fraisRestants = parseFloat(e.fraisRestants) || 0;
+            const montantPaye = parseFloat(e.montantPaye) || 0;
+            const resteACouleur = fraisRestants > 0 ? 'text-red-600 font-bold' : 'text-green-600';
+
+            const tr = document.createElement("tr");
+            tr.innerHTML = `
+                <td data-label="Nom Complet">${nomComplet}</td>
+                <td data-label="Classe">${e.classe || 'N/A'}</td>
+                <td data-label="Montant Payé ($)" class="text-green-600 data-display">$${montantPaye.toFixed(2)}</td>
+                <td data-label="Montant Restant ($)" class="${resteACouleur} data-display">$${fraisRestants.toFixed(2)}</td>
+            `;
+            tbody.appendChild(tr);
+        });
+
+    }, (error) => {
+        console.error("Erreur lors de la récupération en temps réel des élèves:", error);
+        tbody.innerHTML = `<tr><td colspan="4" class="text-center text-red-500 py-4">Erreur de connexion à la base de données: ${error.message}</td></tr>`;
+    });
 }
 </script>
 </body>
