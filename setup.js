@@ -1,202 +1,457 @@
-// Remarque : Assurez-vous que l'initialisation de Firebase (incluant firestore)
-// a été faite au préalable dans un fichier comme 'config.js' et que 'firebase' est disponible.
-// Exemple : const firebase = require('firebase/app'); ... firebase.initializeApp(config);
-
-// --- 1. INITIALISATION ET CONSTANTES ---
-
-// Référence Firestore.
-// L'utilisation de 'getFirestore()' est la meilleure pratique pour le SDK v9+ (modular).
-// Si vous utilisez l'ancienne version, conservez : const db = firebase.firestore();
-const db = firebase.firestore(); 
-const BATCH_SIZE = 500; // Taille maximale des opérations par lots
-
-/**
- * Rôles et permissions (Permissions basées sur les modules/fonctionnalités).
- * Utilisation de minuscules et snake_case pour les clés de BDD.
- */
-const INITIAL_ROLES = {
-    // 👑 Préfet (Direction Générale)
-    prefet: {
-        description: "Direction Générale et supervision de l'établissement.",
-        permissions: [
-            "gestion_globale_acces", "gestion_comptes_total", "rapports_suivi", 
-            "configurations_systeme", "vue_structures"
-        ]
-    },
-    // 📚 Directeur des Études
-    directeur_etudes: {
-        description: "Gestion académique, classes et corps professoral.",
-        permissions: [
-            "gestion_classes", "gestion_enseignants", "suivi_programmes", 
-            "planification_academique", "bulletins_validation"
-        ]
-    },
-    // 👮 Directeur de Discipline
-    directeur_discipline: {
-        description: "Gestion de la vie scolaire et disciplinaire.",
-        permissions: [
-            "suivi_disciplinaire", "gestion_sanctions", "rapport_comportement", 
-            "coordination_surveillants", "vue_eleves"
-        ]
-    },
-    // 📝 Secrétaire
-    secretaire: {
-        description: "Gestion administrative, inscriptions et documentation.",
-        permissions: [
-            "inscription_eleves", "gestion_documents", "planning_scolaire_vue", 
-            "communication_interne", "fiche_eleve_creation"
-        ]
-    },
-    // 💰 Econome
-    econome: {
-        description: "Gestion financière de l'établissement.",
-        permissions: [
-            "gestion_financiere", "suivi_paiements", "rapport_tresorerie", 
-            "budget_depenses", "config_frais"
-        ]
-    }
-};
-
-/**
- * Utilisateurs administratifs initiaux (pour l'amorçage de la BDD).
- */
-const INITIAL_ADMINS = [
-    {
-        uid: "user_gabby", // ID court et cohérent (potentiellement l'UID Firebase après création)
-        nom: "Gabby Umba",
-        email: "gabby@ecole.com",
-        role: "prefet",
-        statut: "actif"
-    },
-    {
-        uid: "user_michel",
-        nom: "Père Michel Lembe Sds",
-        email: "prefet@ecole.com",
-        role: "prefet",
-        statut: "actif"
-    },
-    // ... Ajoutez les autres utilisateurs ici pour garder la liste complète
-];
-
-/**
- * Classes scolaires initiales.
- */
-const INITIAL_CLASSES = [
-    "7eme EB", "8eme EB",
-    "1ere Scientifique", "2eme Scientifique", "3eme Scientifique", "4eme Scientifique",
-    "1ere Commerciale et Gestion", "2eme Commerciale et Gestion", "3eme Commerciale et Gestion", "4eme Commerciale et Gestion",
-    "1ere Agronomie", "2eme Agronomie", "3eme Agronomie", "4eme Agronomie",
-    "1ere Pédagogie Générale", "2eme Pédagogie Générale", "3eme Pédagogie Générale", "4eme Pédagogie Générale"
-];
-
-// --- 2. FONCTION PRINCIPALE ---
-
-/**
- * Exécute la configuration initiale de la base de données Firestore.
- * Utilise des transactions par lots pour une exécution atomique et plus rapide.
- */
-async function configInitiale() {
-    console.log("🟡 Début de la configuration initiale de Firestore...");
-    const timestamp = firebase.firestore.FieldValue.serverTimestamp(); // Meilleure pratique : utiliser le timestamp du serveur
-
-    try {
-        // --- ÉTAPE 1 : CRÉATION DES RÔLES ET PERMISSIONS ---
-        let batch = db.batch();
-        let count = 0;
-        
-        for (const [role, data] of Object.entries(INITIAL_ROLES)) {
-            const docRef = db.collection("roles").doc(role);
-            batch.set(docRef, {
-                ...data,
-                createdAt: timestamp
-            });
-            count++;
-
-            // Commit du lot si la limite est atteinte (pour les grandes configurations)
-            if (count % BATCH_SIZE === 0) {
-                await batch.commit();
-                batch = db.batch();
-                console.log(`... ${count} rôles écrits.`);
-            }
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>SNG - Setup et Tableau de Bord Principal</title>
+    <!-- Chargement de Tailwind CSS pour un design responsive et moderne -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700&display=swap" rel="stylesheet">
+    <style>
+        body {
+            font-family: 'Inter', sans-serif;
+            background-color: #f0f4f8;
         }
-        
-        // Commit des rôles restants
-        await batch.commit();
-        console.log("✅ Étape 1 : Rôles et Permissions créés.");
-
-        // --- ÉTAPE 2 : CRÉATION DES UTILISATEURS ADMINISTRATIFS ---
-        batch = db.batch();
-        count = 0;
-
-        for (const admin of INITIAL_ADMINS) {
-            // Note importante : L'authentification Firebase (email/password) DOIT être gérée séparément
-            // sur le backend (Cloud Functions/Node.js) pour des raisons de sécurité.
-            // Ce code ajoute uniquement le profil dans la collection 'users'.
-            const docRef = db.collection("users").doc(admin.uid); 
-            batch.set(docRef, {
-                nom: admin.nom,
-                email: admin.email,
-                role: admin.role,
-                statut: admin.statut,
-                createdAt: timestamp
-            });
-            count++;
-             if (count % BATCH_SIZE === 0) {
-                await batch.commit();
-                batch = db.batch();
-            }
+        .card {
+            box-shadow: 0 5px 15px -3px rgba(0, 0, 0, 0.1), 0 4px 6px -2px rgba(0, 0, 0, 0.05);
+            border-radius: 0.75rem;
+            transition: transform 0.3s ease;
         }
+        .card:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 10px 20px -5px rgba(0, 0, 0, 0.15);
+        }
+        .setup-card {
+            border: 2px solid #ef4444; /* red-500 */
+        }
+    </style>
+</head>
+<body class="p-4 md:p-10">
 
-        // Commit des utilisateurs restants
-        await batch.commit();
-        console.log("✅ Étape 2 : Utilisateurs administratifs initialisés.");
+    <div id="app" class="max-w-7xl mx-auto">
+        <header class="mb-10">
+            <h1 class="text-4xl md:text-5xl font-extrabold text-gray-900 mb-2">
+                <span id="welcome-user">Système de Gestion Scolaire (SNG)</span>
+            </h1>
+            <p id="user-role-display" class="text-xl text-gray-600">Initialisation du Tableau de Bord Administratif...</p>
+        </header>
 
-        // --- ÉTAPE 3 : CRÉATION DES CLASSES ---
-        batch = db.batch();
-        count = 0;
+        <!-- Section de configuration initiale (Setup) -->
+        <section id="setup-section" class="mb-12 p-8 bg-white card setup-card">
+            <h2 class="text-2xl font-bold text-red-700 mb-4">Initialisation de la Base de Données (Setup 8 Collections)</h2>
+            <p class="text-gray-700 mb-6">
+                Le script va amorcer les collections essentielles basées sur la structure de votre projet (Rôles, Utilisateurs, Enseignants, Élèves, Classes, Matières, Années & Frais).
+            </p>
+            <button id="run-setup-btn" 
+                    class="bg-red-600 hover:bg-red-700 text-white font-bold py-3 px-6 rounded-xl shadow-lg transition duration-150 ease-in-out disabled:opacity-50 text-lg"
+                    disabled>
+                Lancer le Setup Complet de la BDD
+            </button>
+            <p id="setup-status" class="mt-4 text-sm font-medium text-gray-500"></p>
+        </section>
+
+        <!-- Tableau de Bord (Dashboard) -->
+        <section>
+            <h2 class="text-3xl font-bold text-gray-800 mb-6">Statistiques du Système SNG (Temps Réel)</h2>
+            <div id="dashboard-stats" class="grid grid-cols-2 lg:grid-cols-4 gap-6">
+                
+                <!-- Stat Card: Utilisateurs Admins -->
+                <div class="bg-purple-600 text-white p-6 card">
+                    <div class="text-sm font-medium opacity-90">Comptes Administratifs</div>
+                    <div id="users-count" class="text-4xl font-extrabold mt-1">0</div>
+                    <div class="text-xs opacity-80 mt-1">Personnel de Direction/Admin</div>
+                </div>
+
+                <!-- Stat Card: Enseignants -->
+                <div class="bg-pink-600 text-white p-6 card">
+                    <div class="text-sm font-medium opacity-90">Corps Enseignant</div>
+                    <div id="teachers-count" class="text-4xl font-extrabold mt-1">0</div>
+                    <div class="text-xs opacity-80 mt-1">Fiches enregistrées</div>
+                </div>
+
+                <!-- Stat Card: Élèves -->
+                <div class="bg-indigo-600 text-white p-6 card">
+                    <div class="text-sm font-medium opacity-90">Effectif Élèves</div>
+                    <div id="students-count" class="text-4xl font-extrabold mt-1">0</div>
+                    <div class="text-xs opacity-80 mt-1">Inscriptions totales (Seed)</div>
+                </div>
+
+                <!-- Stat Card: Classes -->
+                <div class="bg-blue-600 text-white p-6 card">
+                    <div class="text-sm font-medium opacity-90">Classes Offertes</div>
+                    <div id="classes-count" class="text-4xl font-extrabold mt-1">0</div>
+                    <div class="text-xs opacity-80 mt-1">Niveaux et Filières</div>
+                </div>
+
+                <!-- Stat Card: Matières -->
+                <div class="bg-green-600 text-white p-6 card">
+                    <div class="text-sm font-medium opacity-90">Matières (Cours)</div>
+                    <div id="subjects-count" class="text-4xl font-extrabold mt-1">0</div>
+                    <div class="text-xs opacity-80 mt-1">Catalogue académique</div>
+                </div>
+
+                <!-- Stat Card: Rôles -->
+                <div class="bg-yellow-600 text-white p-6 card">
+                    <div class="text-sm font-medium opacity-90">Rôles Système</div>
+                    <div id="roles-count" class="text-4xl font-extrabold mt-1">0</div>
+                    <div class="text-xs opacity-80 mt-1">Permissions définies</div>
+                </div>
+                
+                <!-- Stat Card: Frais Config -->
+                <div class="bg-orange-600 text-white p-6 card">
+                    <div class="text-sm font-medium opacity-90">Config. Frais</div>
+                    <div id="fees-config-status" class="text-2xl font-extrabold mt-2">N/A</div>
+                    <div class="text-xs opacity-80 mt-1">Structure des frais (par défaut)</div>
+                </div>
+
+                <!-- Stat Card: Année Académique -->
+                <div class="bg-teal-600 text-white p-6 card">
+                    <div class="text-sm font-medium opacity-90">Année Académique</div>
+                    <div id="current-year" class="text-2xl font-extrabold mt-2">N/A</div>
+                    <div class="text-xs opacity-80 mt-1">Année en cours</div>
+                </div>
+            </div>
+        </section>
         
-        for (let i = 0; i < INITIAL_CLASSES.length; i++) {
-            const nom = INITIAL_CLASSES[i];
-            const [niveau, ...specialiteParts] = nom.split(" ");
-            const specialite = specialiteParts.join(" ") || "Générale"; // Gère les classes sans spécialité
+        <!-- Aperçu des Classes -->
+        <section class="mt-12 p-8 bg-white card">
+            <h2 class="text-2xl font-semibold text-gray-800 mb-4">Aperçu des Classes & Filières</h2>
+            <div class="overflow-x-auto">
+                <table class="min-w-full divide-y divide-gray-200">
+                    <thead class="bg-gray-50">
+                        <tr>
+                            <th class="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">ID BDD</th>
+                            <th class="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Nom de la Classe</th>
+                            <th class="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Spécialité</th>
+                            <th class="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Effectif Élèves</th>
+                        </tr>
+                    </thead>
+                    <tbody id="classes-list" class="bg-white divide-y divide-gray-200">
+                        <!-- Les données des classes seront injectées ici -->
+                        <tr><td colspan="4" class="px-4 py-4 text-center text-gray-500">Chargement des données...</td></tr>
+                    </tbody>
+                </table>
+            </div>
+        </section>
+
+    </div>
+
+    <script type="module">
+        // Importations du SDK Firebase v9 (Modular)
+        import { initializeApp } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-app.js";
+        import { getAuth, signInWithCustomToken, signInAnonymously } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-auth.js";
+        import { getFirestore, doc, collection, setDoc, writeBatch, serverTimestamp, onSnapshot, query, getDoc } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-firestore.js";
+
+        // --- 1. INITIALISATION DES VARIABLES GLOBALES ET DE SÉCURITÉ ---
+        const appId = typeof __app_id !== 'undefined' ? __app_id : 'default-app-id';
+        const firebaseConfig = typeof __firebase_config !== 'undefined' ? JSON.parse(__firebase_config) : {};
+        const initialAuthToken = typeof __initial_auth_token !== 'undefined' ? __initial_auth_token : null;
+        
+        // Constantes et état
+        const BATCH_SIZE = 500;
+        let db;
+        let auth;
+        let currentUserId = null;
+        let currentUserName = "Utilisateur SNG";
+        let currentUserRole = "Anonyme";
+
+        // --- 2. DÉFINITIONS DES DONNÉES INITIALES (RÉFLÉCHISSANT LES MODULES DU PROJET) ---
+
+        const INITIAL_ROLES = {
+            prefet: { description: "Direction Générale", permissions: ["gestion_globale", "rapports_finance"] },
+            directeur_etudes: { description: "Gestion Académique", permissions: ["gestion_classes", "gestion_bulletins", "planification_cours"] },
+            directeur_discipline: { description: "Gestion de la Discipline", permissions: ["suivi_disciplinaire", "gestion_sanctions"] },
+            econome: { description: "Gestion Financière", permissions: ["gestion_paiements", "config_frais_gestion", "rapports_tresorerie"] },
+            secretaire: { description: "Gestion Administrative", permissions: ["inscription_eleves_crud", "gestion_dossiers"] },
+            pedagogue: { description: "Pédagogie et Orientation", permissions: ["suivi_eleve_individuel", "gestion_sondages"] },
+            enseignant: { description: "Enseignant", permissions: ["saisie_notes_acces", "vue_classes_assignees"] },
             
-            // Utiliser des ID simples si possible, sinon un ID basé sur le nom est plus lisible
-            const docId = nom.toLowerCase().replace(/[.\s]+/g, "_");
+        };
 
-            const docRef = db.collection("classes").doc(docId);
-            batch.set(docRef, {
-                nom,
-                niveau,
-                specialite,
-                effectif_eleves: 0, // Utiliser un champ de comptage
-                enseignants_assignes: [],
-                createdAt: timestamp
-            });
-            count++;
-             if (count % BATCH_SIZE === 0) {
+        const INITIAL_ADMINS = [
+            { uid: "admin_prefet", nom: "Gabby Umba (Préfet)", email: "prefet@sng.com", role: "prefet", statut: "actif" },
+            { uid: "admin_etudes", nom: "Directeur Académique", email: "etudes@sng.com", role: "directeur_etudes", statut: "actif" },
+            { uid: "admin_econome", nom: "Econome Principal", email: "econome@sng.com", role: "econome", statut: "actif" },
+            { uid: "admin_secretaire", nom: "Secrétaire Principale", email: "secretaire@sng.com", role: "secretaire", statut: "actif" },
+        ];
+
+        const INITIAL_CLASSES = [
+            "7eme EB", "8eme EB", "1ere Scientifique", "2eme Scientifique", 
+            "3eme Commerciale et Gestion", "4eme Pédagogie Générale",
+        ];
+
+        const INITIAL_TEACHERS = [
+            { uid: "TCH001", nom: "Mme. Marie Dubois", email: "m.dubois@sng.com", specialite: "Mathématiques", statut: "actif", classes: ["7eme_eb", "1ere_scientifique"] },
+            { uid: "TCH002", nom: "Mr. Jean Dupont", email: "j.dupont@sng.com", specialite: "Français", statut: "actif", classes: ["7eme_eb"] },
+            { uid: "TCH003", nom: "Mlle. Sylvie Kasa", email: "s.kasa@sng.com", specialite: "Sciences", statut: "actif", classes: ["2eme_scientifique"] },
+        ];
+
+        const INITIAL_SUBJECTS = [
+            { id: "MATH", nom: "Mathématiques", coef: 4, niveau_min: "7eme EB", filiere: "Générale" },
+            { id: "FRAN", nom: "Français", coef: 3, niveau_min: "7eme EB", filiere: "Générale" },
+            { id: "PHY", nom: "Physique", coef: 3, niveau_min: "1ere Scientifique", filiere: "Scientifique" },
+            { id: "COM", nom: "Comptabilité", coef: 5, niveau_min: "3eme Commerciale", filiere: "Commerciale et Gestion" },
+        ];
+
+        const INITIAL_STUDENTS = [
+            { nom: "Kambale John", date_naissance: "2008-01-15", classe_id: "7eme_eb", statut: "Inscrit", matricule: "SNG001" },
+            { nom: "Mwamba Sarah", date_naissance: "2007-09-20", classe_id: "7eme_eb", statut: "Inscrit", matricule: "SNG002" },
+            { nom: "Ilunga Pascal", date_naissance: "2006-03-01", classe_id: "1ere_scientifique", statut: "Inscrit", matricule: "SNG003" },
+            { nom: "Kabulo Grâce", date_naissance: "2007-11-11", classe_id: "7eme_eb", statut: "Inscrit", matricule: "SNG004" },
+            { nom: "Mutombo Fiston", date_naissance: "2006-05-25", classe_id: "2eme_scientifique", statut: "Inscrit", matricule: "SNG005" },
+        ];
+        
+        const INITIAL_ACADEMIC_YEARS = [
+            { id: "2024_2025", nom: "2024-2025", start_date: "2024-09-01", end_date: "2025-06-30", is_current: true, statut: "Ouvert" },
+        ];
+
+        const DEFAULT_FEES_CONFIG = {
+            id: "config_2024_2025",
+            annee_academique: "2024-2025",
+            frais_scolaires: 200, // Montant en devise locale (ex: USD)
+            frais_inscription: 50,
+            par_classes: {
+                "7eme_eb": { total: 250, details: "Base" },
+                "1ere_scientifique": { total: 300, details: "Sci." }
+            },
+            statut: "actif"
+        };
+
+
+        // --- 3. FONCTIONS UTILITAIRES ET D'INITIALISATION ---
+
+        /** Met à jour l'interface utilisateur pour l'utilisateur actuellement authentifié. */
+        function updateUI(roleDescription) {
+            document.getElementById('welcome-user').textContent = `SNG: Connecté en tant que ${currentUserName}`;
+            document.getElementById('user-role-display').textContent = `Rôle: ${roleDescription.toUpperCase()}`;
+        }
+
+        /** Fonction d'aide pour commiter les lots de Firestore. */
+        async function commitBatch(currentBatch, count, collectionName, statusEl) {
+            await currentBatch.commit();
+            statusEl.textContent = `... ${count} documents (${collectionName}) écrits.`;
+            return writeBatch(db); // Créer un nouveau lot
+        }
+
+        /** Exécute l'amorçage complet de la base de données. */
+        async function configInitiale() {
+            const btn = document.getElementById('run-setup-btn');
+            const statusEl = document.getElementById('setup-status');
+            
+            btn.disabled = true;
+            statusEl.textContent = "🟡 Début du Setup Complet de Firestore (8 collections)...";
+
+            if (!db) { statusEl.textContent = "❌ Erreur: Firestore non initialisé."; btn.disabled = false; return; }
+
+            const timestamp = serverTimestamp(); 
+            const basePath = ['artifacts', appId, 'public', 'data'];
+            let batch = writeBatch(db);
+            let count = 0;
+
+            try {
+                // --- 1. RÔLES ET PERMISSIONS ---
+                for (const [role, data] of Object.entries(INITIAL_ROLES)) {
+                    batch.set(doc(db, ...basePath, 'roles', role), { ...data, createdAt: timestamp });
+                    count++;
+                }
+                batch = await commitBatch(batch, count, "rôles", statusEl);
+                count = 0;
+
+                // --- 2. UTILISATEURS ADMINISTRATIFS (USERS) ---
+                for (const admin of INITIAL_ADMINS) {
+                    batch.set(doc(db, ...basePath, 'users', admin.uid), { ...admin, createdAt: timestamp });
+                    count++;
+                }
+                batch = await commitBatch(batch, count, "utilisateurs admin", statusEl);
+                count = 0;
+                
+                // --- 3. ENSEIGNANTS (TEACHERS) ---
+                for (const teacher of INITIAL_TEACHERS) {
+                    batch.set(doc(db, ...basePath, 'teachers', teacher.uid), { ...teacher, createdAt: timestamp });
+                    count++;
+                }
+                batch = await commitBatch(batch, count, "enseignants", statusEl);
+                count = 0;
+
+                // --- 4. MATIÈRES (SUBJECTS/COURS) ---
+                for (const subject of INITIAL_SUBJECTS) {
+                    batch.set(doc(db, ...basePath, 'subjects', subject.id), { ...subject, createdAt: timestamp });
+                    count++;
+                }
+                batch = await commitBatch(batch, count, "matières (cours)", statusEl);
+                count = 0;
+                
+                // --- 5. CLASSES ---
+                const classUpdates = {};
+                for (const nom of INITIAL_CLASSES) {
+                    const [niveau, ...specialiteParts] = nom.split(" ");
+                    const specialite = specialiteParts.join(" ") || "Générale";
+                    const docId = nom.toLowerCase().replace(/[.\s]+/g, "_");
+                    classUpdates[docId] = 0; // Initialize counter
+                    
+                    batch.set(doc(db, ...basePath, 'classes', docId), {
+                        nom, niveau, specialite, docId,
+                        effectif_eleves: 0,
+                        enseignants_assignes: [],
+                        createdAt: timestamp
+                    });
+                    count++;
+                }
+                batch = await commitBatch(batch, count, "classes", statusEl);
+                
+                // --- 6. ÉLÈVES (STUDENTS) ---
+                count = 0;
+                for (let i = 0; i < INITIAL_STUDENTS.length; i++) {
+                    const student = INITIAL_STUDENTS[i];
+                    const studentId = student.matricule;
+                    batch.set(doc(db, ...basePath, 'students', studentId), { ...student, createdAt: timestamp });
+                    count++;
+
+                    // Compter les élèves par classe pour la mise à jour
+                    classUpdates[student.classe_id] = (classUpdates[student.classe_id] || 0) + 1;
+                }
+                batch = await commitBatch(batch, count, "élèves", statusEl);
+                
+                // --- 7. ANNÉES ACADÉMIQUES (ACADEMIC_YEARS) ---
+                count = 0;
+                for (const year of INITIAL_ACADEMIC_YEARS) {
+                    batch.set(doc(db, ...basePath, 'academic_years', year.id), { ...year, createdAt: timestamp });
+                    count++;
+                }
+                batch = await commitBatch(batch, count, "années académiques", statusEl);
+
+                // --- 8. CONFIGURATION DES FRAIS (FEES_CONFIG) ---
+                count = 0;
+                batch.set(doc(db, ...basePath, 'fees_config', DEFAULT_FEES_CONFIG.id), { ...DEFAULT_FEES_CONFIG, createdAt: timestamp });
+                count++;
+                batch = await commitBatch(batch, count, "config des frais", statusEl);
+
+
+                // --- 9. MISE À JOUR DES COMPTEURS D'ÉLÈVES DANS LES CLASSES ---
+                batch = writeBatch(db);
+                for (const classId in classUpdates) {
+                    const classRef = doc(db, ...basePath, 'classes', classId);
+                    batch.update(classRef, { effectif_eleves: classUpdates[classId] });
+                }
                 await batch.commit();
-                batch = db.batch();
+
+                statusEl.textContent = "🎉 Setup SNG terminé ! 8 collections amorcées avec succès. Le tableau de bord se met à jour en temps réel.";
+                btn.disabled = true;
+
+            } catch (error) {
+                console.error("❌ Erreur critique lors de la configuration:", error);
+                statusEl.textContent = `❌ Erreur lors de la configuration: ${error.message}`;
+                btn.disabled = false;
             }
         }
 
-        // Commit des classes restantes
-        await batch.commit();
-        console.log("✅ Étape 3 : Classes créées.");
+        /** Écoute en temps réel les collections et met à jour les statistiques. */
+        function listenToData() {
+            if (!db) return;
+            
+            const basePath = ['artifacts', appId, 'public', 'data'];
+            
+            // Écoute des Collections Clés (Mise à jour des cartes de statistiques)
+            const collections = {
+                'roles': 'roles-count', 'users': 'users-count', 'teachers': 'teachers-count', 
+                'subjects': 'subjects-count', 'students': 'students-count', 'classes': 'classes-count'
+            };
 
-        // --- ÉTAPE 4 : CRÉATION DES MÉTADONNÉES GLOBALES (Optionnel mais Propre) ---
-        // Cette étape est facultative mais permet d'avoir des collections de référence bien définies.
-        await db.collection("meta").doc("last_setup").set({
-            timestamp: timestamp,
-            version: "1.0.0"
-        });
-        
-        console.log("🎉 Configuration Firestore terminée avec succès !");
+            for (const coll in collections) {
+                onSnapshot(query(collection(db, ...basePath, coll)), (snapshot) => {
+                    document.getElementById(collections[coll]).textContent = snapshot.size;
+                });
+            }
 
-    } catch (error) {
-        console.error("❌ Erreur lors de la configuration initiale de Firestore:", error);
-        // Vous pouvez ajouter ici une logique pour gérer la tentative de réexécution
-    }
-}
+            // Écoute spécifique de l'Année Académique
+            onSnapshot(query(collection(db, ...basePath, 'academic_years')), (snapshot) => {
+                const currentYearDoc = snapshot.docs.find(doc => doc.data().is_current);
+                document.getElementById('current-year').textContent = currentYearDoc ? currentYearDoc.data().nom : 'N/A';
+            });
 
-// Lancement de la fonction d'initialisation
-configInitiale();
+            // Écoute spécifique de la Configuration des Frais
+            const feesDocRef = doc(db, ...basePath, 'fees_config', DEFAULT_FEES_CONFIG.id);
+            onSnapshot(feesDocRef, (docSnap) => {
+                document.getElementById('fees-config-status').textContent = docSnap.exists() ? 'Config. OK' : 'Manquante';
+            }, (error) => {
+                document.getElementById('fees-config-status').textContent = 'Erreur';
+            });
+
+
+            // Écoute des Classes (avec affichage détaillé en bas)
+            const classesCollectionRef = collection(db, ...basePath, 'classes');
+            onSnapshot(query(classesCollectionRef), (snapshot) => {
+                const classesListEl = document.getElementById('classes-list');
+                classesListEl.innerHTML = '';
+
+                if (snapshot.empty) {
+                    classesListEl.innerHTML = '<tr><td colspan="4" class="px-4 py-4 text-center text-gray-500">Aucune classe configurée. Exécutez le Setup.</td></tr>';
+                    return;
+                }
+
+                snapshot.forEach(doc => {
+                    const data = doc.data();
+                    const row = `
+                        <tr class="hover:bg-gray-50">
+                            <td class="px-4 py-3 whitespace-nowrap text-xs font-mono text-gray-500">${data.docId}</td>
+                            <td class="px-4 py-3 whitespace-nowrap text-sm font-medium text-gray-900">${data.nom}</td>
+                            <td class="px-4 py-3 whitespace-nowrap text-sm text-gray-700">${data.specialite}</td>
+                            <td class="px-4 py-3 whitespace-nowrap text-sm text-gray-700 font-semibold">${data.effectif_eleves}</td>
+                        </tr>
+                    `;
+                    classesListEl.innerHTML += row;
+                });
+            });
+        }
+
+
+        // --- 4. INITIALISATION GLOBALE DE L'APPLICATION ---
+
+        window.onload = async function() {
+            try {
+                // Initialisation de Firebase
+                const app = initializeApp(firebaseConfig);
+                db = getFirestore(app);
+                auth = getAuth(app);
+                
+                // 1. Authentification et détermination de l'utilisateur
+                let roleDescription = "Anonyme";
+                if (initialAuthToken) {
+                    const userCredential = await signInWithCustomToken(auth, initialAuthToken);
+                    currentUserId = userCredential.user.uid;
+                } else {
+                    const userCredential = await signInAnonymously(auth);
+                    currentUserId = userCredential.user.uid;
+                }
+
+                // 2. Tente de récupérer les infos utilisateur depuis la BDD (si l'UID correspond à un admin seedé)
+                const adminDocRef = doc(db, 'artifacts', appId, 'public', 'data', 'users', currentUserId);
+                const adminDoc = await getDoc(adminDocRef);
+
+                if (adminDoc.exists()) {
+                    const data = adminDoc.data();
+                    currentUserName = data.nom;
+                    const roleKey = data.role;
+                    roleDescription = INITIAL_ROLES[roleKey] ? INITIAL_ROLES[roleKey].description : "Rôle Inconnu";
+                }
+                
+                // 3. Mise à jour UI et activation
+                updateUI(roleDescription);
+                document.getElementById('run-setup-btn').disabled = false;
+                document.getElementById('setup-status').textContent = "Prêt à lancer le Setup de votre projet SNG.";
+
+                // 4. Lancement des écouteurs de données
+                listenToData();
+
+                // 5. Attachement de l'événement au bouton Setup
+                document.getElementById('run-setup-btn').addEventListener('click', configInitiale);
+                
+            } catch (error) {
+                console.error("Erreur lors de l'initialisation de l'application:", error);
+                document.getElementById('setup-status').textContent = `❌ Erreur critique d'initialisation: ${error.message}`;
+            }
+        };
+
+    </script>
+</body>
+</html>
