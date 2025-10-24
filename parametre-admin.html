@@ -1,202 +1,415 @@
 <!DOCTYPE html>
 <html lang="fr">
 <head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Paramètres Admin · ISC Lwanga</title>
-  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700;800&display=swap" rel="stylesheet">
-  <style>
-    :root {
-      --bleu-fonce: #1e40af;
-      --gris-fonce: #1f2937;
-      --vert: #10b981;
-      --jaune: #f59e0b;
-      --rouge: #ef4444;
-      --fond: #f4f6f8;
-      --ombre-legere: rgba(0,0,0,0.08);
-    }
-    body { font-family: 'Inter', sans-serif; margin:0; background-color: var(--fond); color: var(--gris-fonce);}
-    header { background-color:white; padding:1rem 2rem; box-shadow:0 1px 5px var(--ombre-legere); display:flex; justify-content:space-between; align-items:center;}
-    header h1 {margin:0;font-size:1.5rem;color:var(--bleu-fonce);}
-    .btn-logout { background-color: var(--rouge); color:white; border:none; padding:.5rem 1rem; border-radius:6px; font-weight:600; cursor:pointer;}
-    main {max-width:1200px;margin:2rem auto;padding:0 1rem;}
-    h2 {margin-bottom:1rem;}
-    table {width:100%;border-collapse:collapse;margin-top:1rem;background:white;border-radius:8px;overflow:hidden;}
-    th, td {padding:.75rem;text-align:left;border-bottom:1px solid #e5e7eb;}
-    th {background-color:#f3f4f6;font-weight:700;}
-    button.action-btn {padding:.3rem .6rem;border:none;border-radius:5px;color:white;cursor:pointer;margin-right:.3rem;}
-    .edit {background-color:#3b82f6;}
-    .delete {background-color:#ef4444;}
-    .reset {background-color:#fbbf24;}
-    .add-user {background-color:var(--vert);margin-bottom:1rem;}
-    form {display:flex;flex-wrap:wrap;gap:.5rem;background:white;padding:1rem;border-radius:8px;margin-bottom:1rem;box-shadow:0 3px 6px var(--ombre-legere);}
-    form input, form select {padding:.5rem;font-size:1rem;border:1px solid #d1d5db;border-radius:6px;flex:1;}
-    form button {flex:none;}
-    #message {margin-top:.5rem;font-weight:600;}
-    @media(max-width:700px){form {flex-direction:column;}}
-  </style>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Paramètres Admin · ISC Lwanga</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700;800&display=swap" rel="stylesheet">
+    <style>
+        body { font-family: 'Inter', sans-serif; background-color: #f4f6f8; }
+        /* Style pour les boutons d'action sur mobile */
+        @media (max-width: 640px) {
+            .action-buttons button { padding: 0.5rem; }
+        }
+    </style>
 </head>
-<body>
+<body class="min-h-screen">
 
-<header>
-  <h1>Paramètres Admin / Préfet</h1>
-  <button class="btn-logout" id="logoutBtn">🚪 Déconnexion</button>
+<!-- Header -->
+<header class="bg-white shadow-md p-4 flex justify-between items-center sticky top-0 z-10">
+    <h1 class="text-2xl font-bold text-indigo-700">Paramètres Admin / Préfet</h1>
+    <button class="bg-red-500 hover:bg-red-600 text-white font-semibold py-2 px-4 rounded-lg shadow-md transition duration-150" id="logoutBtn">
+        🚪 Déconnexion
+    </button>
 </header>
 
-<main>
-  <h2>Ajouter / Modifier Utilisateur</h2>
+<main class="max-w-7xl mx-auto p-4 sm:p-6 lg:p-8">
+    
+    <!-- Zone de notification -->
+    <div id="notification-area" class="fixed top-5 right-5 space-y-2 z-[1000]"></div>
 
-  <form id="userForm">
-    <input type="hidden" id="uid">
-    <input type="text" id="nom" placeholder="Nom" required>
-    <input type="text" id="postNom" placeholder="PostNom">
-    <input type="text" id="prenom" placeholder="Prénom">
-    <input type="email" id="email" placeholder="Email" required>
-    <input type="password" id="password" placeholder="Mot de passe (laisser vide si inchangé)">
-    <select id="role" required>
-      <option value="">-- Rôle --</option>
-      <option value="admin">Admin</option>
-      <option value="prefet">Préfet</option>
-      <option value="directeur_etudes">Directeur des Études</option>
-      <option value="directeur_discipline">Directeur Discipline</option>
-      <option value="secretaire">Secrétaire</option>
-      <option value="econome">Économe</option>
-      <option value="enseignant">Enseignant</option>
-      <option value="eleve">Élève</option>
-    </select>
-    <button type="submit" class="add-user">Enregistrer</button>
-    <span id="message"></span>
-  </form>
+    <!-- Formulaire Ajouter / Modifier Utilisateur -->
+    <div class="bg-white p-6 rounded-xl shadow-lg mb-6">
+        <h2 class="text-xl font-semibold mb-4 text-gray-800">Ajouter / Modifier Utilisateur (Profil BDD)</h2>
 
-  <table id="usersTable">
-    <thead>
-      <tr>
-        <th>Nom</th>
-        <th>PostNom</th>
-        <th>Prénom</th>
-        <th>Email</th>
-        <th>Rôle</th>
-        <th>Actions</th>
-      </tr>
-    </thead>
-    <tbody></tbody>
-  </table>
+        <form id="userForm" class="grid grid-cols-1 sm:grid-cols-3 lg:grid-cols-6 gap-3">
+            <input type="hidden" id="uid">
+            
+            <input type="text" id="nom" placeholder="Nom" required
+                   class="col-span-1 sm:col-span-3 lg:col-span-1 p-2 border border-gray-300 rounded-lg focus:ring-indigo-500 focus:border-indigo-500">
+            <input type="text" id="postNom" placeholder="PostNom"
+                   class="col-span-1 sm:col-span-3 lg:col-span-1 p-2 border border-gray-300 rounded-lg focus:ring-indigo-500 focus:border-indigo-500">
+            <input type="text" id="prenom" placeholder="Prénom"
+                   class="col-span-1 sm:col-span-3 lg:col-span-1 p-2 border border-gray-300 rounded-lg focus:ring-indigo-500 focus:border-indigo-500">
+            
+            <input type="email" id="email" placeholder="Email" required
+                   class="col-span-1 sm:col-span-3 lg:col-span-1 p-2 border border-gray-300 rounded-lg focus:ring-indigo-500 focus:border-indigo-500">
+            <input type="password" id="password" placeholder="Mot de passe (Obligatoire à la création)"
+                   class="col-span-1 sm:col-span-3 lg:col-span-1 p-2 border border-gray-300 rounded-lg focus:ring-indigo-500 focus:border-indigo-500">
+            
+            <select id="role" required class="col-span-1 sm:col-span-3 lg:col-span-1 p-2 border border-gray-300 rounded-lg focus:ring-indigo-500 focus:border-indigo-500">
+                <option value="">-- Rôle --</option>
+                <option value="prefet">Préfet</option>
+                <option value="directeur_etudes">Directeur des Études</option>
+                <option value="directeur_discipline">Directeur Discipline</option>
+                <option value="secretaire">Secrétaire</option>
+                <option value="econome">Économe</option>
+                <option value="enseignant">Enseignant</option>
+                <option value="eleve">Élève</option>
+            </select>
+            
+            <button type="submit" id="submitButton"
+                    class="col-span-full lg:col-span-6 bg-indigo-600 hover:bg-indigo-700 text-white font-semibold py-2 rounded-lg transition duration-150">
+                Ajouter l'Utilisateur
+            </button>
+            <span id="message" class="col-span-full text-center font-medium"></span>
+        </form>
+    </div>
+    
+    <!-- Tableau de Gestion des Utilisateurs -->
+    <div class="bg-white p-6 rounded-xl shadow-lg">
+        <h2 class="text-xl font-semibold mb-4 text-gray-800">Liste des Utilisateurs (Temps Réel)</h2>
+        <div class="overflow-x-auto">
+            <table id="usersTable" class="min-w-full divide-y divide-gray-200">
+                <thead class="bg-gray-50">
+                    <tr>
+                        <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Nom Complet</th>
+                        <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Email</th>
+                        <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Rôle</th>
+                        <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">UID</th>
+                        <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Actions</th>
+                    </tr>
+                </thead>
+                <tbody class="bg-white divide-y divide-gray-200" id="usersTableBody">
+                    <tr><td colspan="6" class="p-4 text-center text-gray-500">Chargement des utilisateurs...</td></tr>
+                </tbody>
+            </table>
+        </div>
+    </div>
 </main>
 
+<!-- Modale de Confirmation (Remplacement de window.confirm) -->
+<div id="confirmModal" class="fixed inset-0 bg-gray-600 bg-opacity-75 hidden flex items-center justify-center z-[1100]">
+    <div class="bg-white rounded-lg p-6 shadow-xl max-w-sm w-full">
+        <h3 class="text-lg font-semibold text-gray-900 mb-4">Confirmation</h3>
+        <p id="confirmMessage" class="text-sm text-gray-600 mb-6"></p>
+        <div class="flex justify-end space-x-3">
+            <button id="cancelConfirm" class="px-4 py-2 text-sm font-medium text-gray-700 bg-gray-200 rounded-lg hover:bg-gray-300 transition duration-150">Annuler</button>
+            <button id="okConfirm" class="px-4 py-2 text-sm font-medium text-white bg-red-600 rounded-lg hover:bg-red-700 transition duration-150">Confirmer</button>
+        </div>
+    </div>
+</div>
+
+
 <script type="module">
-  import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-app.js";
-  import { getAuth, signOut, createUserWithEmailAndPassword, updatePassword, updateEmail } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-auth.js";
-  import { getFirestore, doc, setDoc, collection, getDocs, deleteDoc, updateDoc } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore.js";
+    // --------------------------------------------------------------------------------
+    // 🧩 INITIALISATION FIREBASE & CONFIGURATION (Logique unifiée et robuste)
+    // --------------------------------------------------------------------------------
 
-  const firebaseConfig = {
-    apiKey: "AIzaSyAgv4TDYnR60TXnns-LISqbZTgcdLT31cc",
-    authDomain: "gestionlwanga.firebaseapp.com",
-    projectId: "gestionlwanga",
-    storageBucket: "gestionlwanga.firebasestorage.app",
-    messagingSenderId: "622604298611",
-    appId: "1:622604298611:web:4ab4314ed3eec6826c3d06"
-  };
+    // Import des modules Firebase
+    import { initializeApp, getApps, getApp } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-app.js";
+    import { getAuth, signOut, createUserWithEmailAndPassword, signInWithCustomToken, signInAnonymously } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-auth.js";
+    import { getFirestore, doc, setDoc, collection, onSnapshot, deleteDoc, updateDoc, setLogLevel } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-firestore.js";
 
-  const app = initializeApp(firebaseConfig);
-  const auth = getAuth(app);
-  const db = getFirestore(app);
+    // 🚨 MANDATORY: Récupération des configurations fournies par l'environnement Canvas
+    const APP_ID = typeof __app_id !== 'undefined' ? __app_id : 'default-canvas-app-id';
+    const INITIAL_AUTH_TOKEN = typeof __initial_auth_token !== 'undefined' ? __initial_auth_token : null;
 
-  const logoutBtn = document.getElementById('logoutBtn');
-  logoutBtn.addEventListener('click', async () => {
-    await signOut(auth);
-    window.location.href = 'admin.html';
-  });
-
-  const userForm = document.getElementById('userForm');
-  const messageElement = document.getElementById('message');
-  const usersTableBody = document.querySelector('#usersTable tbody');
-
-  async function loadUsers() {
-    usersTableBody.innerHTML = '';
-    const querySnapshot = await getDocs(collection(db, "users"));
-    querySnapshot.forEach(docSnap => {
-      const data = docSnap.data();
-      const tr = document.createElement('tr');
-      tr.innerHTML = `
-        <td>${data.nom || ''}</td>
-        <td>${data.postNom || ''}</td>
-        <td>${data.prenom || ''}</td>
-        <td>${data.email}</td>
-        <td>${data.role}</td>
-        <td>
-          <button class="action-btn edit" data-id="${docSnap.id}">✏️</button>
-          <button class="action-btn delete" data-id="${docSnap.id}">🗑️</button>
-          <button class="action-btn reset" data-id="${docSnap.id}">🔑</button>
-        </td>
-      `;
-      usersTableBody.appendChild(tr);
-    });
-  }
-
-  userForm.addEventListener('submit', async e => {
-    e.preventDefault();
-    messageElement.textContent = '';
-    const uid = document.getElementById('uid').value;
-    const nom = document.getElementById('nom').value.trim();
-    const postNom = document.getElementById('postNom').value.trim();
-    const prenom = document.getElementById('prenom').value.trim();
-    const email = document.getElementById('email').value.trim();
-    const password = document.getElementById('password').value.trim();
-    const role = document.getElementById('role').value;
-
+    let FIREBASE_CONFIG = {};
     try {
-      if(uid){ // Modification
-        const userRef = doc(db, "users", uid);
-        await updateDoc(userRef, { nom, postNom, prenom, email, role });
-        messageElement.style.color = "green";
-        messageElement.textContent = "Utilisateur modifié avec succès !";
-      } else { // Création
-        const userCredential = await createUserWithEmailAndPassword(auth, email, password);
-        const newUid = userCredential.user.uid;
-        await setDoc(doc(db, "users", newUid), { nom, postNom, prenom, email, role });
-        messageElement.style.color = "green";
-        messageElement.textContent = "Utilisateur ajouté avec succès !";
-      }
-      userForm.reset();
-      document.getElementById('uid').value = '';
-      loadUsers();
-    } catch(error) {
-      messageElement.style.color = "red";
-      messageElement.textContent = "Erreur : " + error.message;
+        FIREBASE_CONFIG = JSON.parse(typeof __firebase_config !== 'undefined' ? __firebase_config : '{}');
+    } catch (e) {
+        console.error("Erreur lors de l'analyse de la configuration Firebase :", e);
     }
-  });
 
-  usersTableBody.addEventListener('click', async e => {
-    const uid = e.target.dataset.id;
-    if(e.target.classList.contains('delete')){
-      if(confirm("Supprimer cet utilisateur ?")){
-        await deleteDoc(doc(db, "users", uid));
-        loadUsers();
-      }
-    } else if(e.target.classList.contains('edit')){
-      const userDoc = await doc(db, "users", uid).get();
-      const data = (await userDoc).data();
-      document.getElementById('uid').value = uid;
-      document.getElementById('nom').value = data.nom || '';
-      document.getElementById('postNom').value = data.postNom || '';
-      document.getElementById('prenom').value = data.prenom || '';
-      document.getElementById('email').value = data.email;
-      document.getElementById('role').value = data.role;
-    } else if(e.target.classList.contains('reset')){
-      const newPassword = prompt("Entrez le nouveau mot de passe :");
-      if(newPassword){
-        try {
-          // Pour réinitialiser le mot de passe Firebase Auth côté admin, il faudrait utiliser Admin SDK côté serveur.
-          alert("⚠️ Réinitialisation mot de passe via Admin SDK nécessaire. Pour la version front-end, utilisez 'mot de passe oublié'.");
-        } catch(err) {
-          alert("Erreur : " + err.message);
+    // Initialisation
+    function initializeFirebaseApp() {
+        if (getApps().length) return getApp();
+        if (Object.keys(FIREBASE_CONFIG).length > 0) {
+            const app = initializeApp(FIREBASE_CONFIG, APP_ID);
+            setLogLevel('debug'); 
+            return app;
         }
-      }
+        throw new Error("Impossible d'initialiser Firebase. Configuration manquante.");
     }
-  });
+    const app = initializeFirebaseApp();
+    const auth = getAuth(app);
+    const db = getFirestore(app);
 
-  loadUsers();
+    // Fonction d'authentification obligatoire
+    async function ensureAuth() {
+        if (!auth.currentUser) {
+            try {
+                if (INITIAL_AUTH_TOKEN) {
+                    await signInWithCustomToken(auth, INITIAL_AUTH_TOKEN);
+                    console.log("Authentification réussie (Custom Token).");
+                } else {
+                    await signInAnonymously(auth);
+                    console.warn("Authentification anonyme (Token non trouvé).");
+                }
+            } catch (error) {
+                console.error("Erreur critique d'authentification :", error);
+            }
+        }
+    }
+    
+    // --------------------------------------------------------------------------------
+    // 🧩 GESTION DE L'INTERFACE UTILISATEUR & DES SERVICES
+    // --------------------------------------------------------------------------------
+
+    // Sélecteurs DOM
+    const logoutBtn = document.getElementById('logoutBtn');
+    const userForm = document.getElementById('userForm');
+    const submitButton = document.getElementById('submitButton');
+    const messageElement = document.getElementById('message');
+    const usersTableBody = document.getElementById('usersTableBody');
+    const notificationArea = document.getElementById('notification-area');
+    
+    // Champs du formulaire
+    const uidInput = document.getElementById('uid');
+    const nomInput = document.getElementById('nom');
+    const postNomInput = document.getElementById('postNom');
+    const prenomInput = document.getElementById('prenom');
+    const emailInput = document.getElementById('email');
+    const passwordInput = document.getElementById('password');
+    const roleInput = document.getElementById('role');
+
+
+    // 1. Fonction de notification (Remplacée par Tailwind)
+    function showNotification(msg, type = "success") {
+        const notif = document.createElement("div");
+        notif.textContent = msg;
+
+        const baseClasses = "p-4 rounded-lg shadow-xl font-medium transition duration-300 transform translate-x-full opacity-0";
+        const successClasses = "bg-green-500 text-white";
+        const errorClasses = "bg-red-500 text-white";
+        const infoClasses = "bg-blue-500 text-white";
+        
+        let styleClasses = type === "error" ? errorClasses : (type === "info" ? infoClasses : successClasses);
+        notif.className = baseClasses + ' ' + styleClasses;
+        
+        notificationArea.appendChild(notif);
+
+        setTimeout(() => {
+            notif.classList.remove('translate-x-full', 'opacity-0');
+            notif.classList.add('translate-x-0', 'opacity-100');
+        }, 50); 
+
+        setTimeout(() => {
+            notif.classList.remove('translate-x-0', 'opacity-100');
+            notif.classList.add('translate-x-full', 'opacity-0');
+            setTimeout(() => notif.remove(), 300); 
+        }, 5000);
+    }
+    
+    // 2. Modale de confirmation (Remplacement de window.confirm/prompt)
+    function customConfirm(message) {
+        return new Promise(resolve => {
+            const modal = document.getElementById('confirmModal');
+            const msgElement = document.getElementById('confirmMessage');
+            const okBtn = document.getElementById('okConfirm');
+            const cancelBtn = document.getElementById('cancelConfirm');
+
+            msgElement.textContent = message;
+            modal.classList.remove('hidden');
+
+            const resolveAndClean = (result) => {
+                modal.classList.add('hidden');
+                okBtn.removeEventListener('click', okHandler);
+                cancelBtn.removeEventListener('click', cancelHandler);
+                resolve(result);
+            };
+
+            const okHandler = () => resolveAndClean(true);
+            const cancelHandler = () => resolveAndClean(false);
+
+            okBtn.addEventListener('click', okHandler);
+            cancelBtn.addEventListener('click', cancelHandler);
+        });
+    }
+
+    // 3. Rendu temps réel des utilisateurs (onSnapshot)
+    const usersCollectionRef = collection(db, "users");
+    
+    function startRealtimeUserListener() {
+        onSnapshot(usersCollectionRef, (snapshot) => {
+            usersTableBody.innerHTML = '';
+            
+            if (snapshot.empty) {
+                usersTableBody.innerHTML = '<tr><td colspan="6" class="p-4 text-center text-gray-500">Aucun utilisateur trouvé.</td></tr>';
+                return;
+            }
+
+            snapshot.forEach(docSnap => {
+                const data = docSnap.data();
+                const uid = docSnap.id;
+                const tr = document.createElement('tr');
+                tr.className = "hover:bg-gray-50 transition duration-150";
+
+                const fullName = `${data.nom || ''} ${data.postNom || ''} ${data.prenom || ''}`.trim();
+
+                tr.innerHTML = `
+                    <td class="px-6 py-4 whitespace-nowrap text-sm font-medium text-gray-900">${fullName}</td>
+                    <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500">${data.email || 'N/A'}</td>
+                    <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500 capitalize">${data.role || 'Inconnu'}</td>
+                    <td class="px-6 py-4 whitespace-nowrap text-xs text-gray-400">${uid}</td>
+                    <td class="px-6 py-4 whitespace-nowrap text-sm font-medium action-buttons">
+                        <button class="action-btn edit bg-blue-500 hover:bg-blue-600 text-white font-medium py-1 px-2 rounded-lg transition duration-150" data-id="${uid}" title="Modifier">✏️</button>
+                        <button class="action-btn delete bg-red-500 hover:bg-red-600 text-white font-medium py-1 px-2 rounded-lg transition duration-150 ml-2" data-id="${uid}" title="Supprimer">🗑️</button>
+                        <button class="action-btn reset bg-yellow-500 hover:bg-yellow-600 text-gray-900 font-medium py-1 px-2 rounded-lg transition duration-150 ml-2" data-id="${uid}" title="Réinitialiser Mot de Passe">🔑</button>
+                    </td>
+                `;
+                usersTableBody.appendChild(tr);
+            });
+        }, (error) => {
+             console.error("Erreur lors de l'écoute des utilisateurs :", error);
+             usersTableBody.innerHTML = '<tr><td colspan="6" class="p-4 text-center text-red-500">Erreur de chargement des données.</td></tr>';
+        });
+    }
+
+    // 4. Gestionnaire de Déconnexion
+    logoutBtn.addEventListener('click', async () => {
+        try {
+            await signOut(auth);
+            showNotification("Déconnexion réussie.", "info");
+            // Redirection vers la page de connexion
+            setTimeout(() => {
+                window.location.href = 'connexion.html'; 
+            }, 500);
+        } catch(error) {
+             showNotification("Erreur lors de la déconnexion.", "error");
+             console.error("Logout Error:", error);
+        }
+    });
+
+    // 5. Soumission du Formulaire (Création ou Modification)
+    userForm.addEventListener('submit', async e => {
+        e.preventDefault();
+        
+        submitButton.disabled = true;
+        messageElement.textContent = 'Traitement en cours...';
+        messageElement.className = 'col-span-full text-center font-medium text-blue-600';
+
+        const uid = uidInput.value;
+        const nom = nomInput.value.trim();
+        const postNom = postNomInput.value.trim();
+        const prenom = prenomInput.value.trim();
+        const email = emailInput.value.trim();
+        const password = passwordInput.value.trim();
+        const role = roleInput.value;
+        const userData = { nom, postNom, prenom, email, role };
+
+        try {
+            if (uid) { // Modification (Update Firestore Doc)
+                const userRef = doc(db, "users", uid);
+                await updateDoc(userRef, userData);
+                
+                // Mettre à jour l'Email ou le mot de passe Firebase Auth nécessite l'Admin SDK
+                if (password) {
+                    showNotification("⚠️ La modification du mot de passe Auth a été ignorée (Admin SDK requis).", "info");
+                }
+
+                showNotification("Profil BDD mis à jour avec succès !", "success");
+                messageElement.textContent = "Profil mis à jour.";
+                messageElement.className = 'col-span-full text-center font-medium text-green-600';
+            
+            } else { // Création (Create Auth User + Set Firestore Doc)
+                if (!password || password.length < 6) {
+                     throw new Error("Le mot de passe est obligatoire pour la création et doit faire au moins 6 caractères.");
+                }
+                
+                // CRITIQUE: Cette fonction crée l'utilisateur dans Firebase AUTH.
+                // Elle est OK ici car l'Admin n'a pas besoin de maintenir sa propre session.
+                const userCredential = await createUserWithEmailAndPassword(auth, email, password);
+                const newUid = userCredential.user.uid;
+                
+                // Ajout des données Firestore
+                await setDoc(doc(db, "users", newUid), userData);
+                
+                // Se déconnecter pour revenir à l'état authentifié par Canvas
+                await auth.signOut();
+                await ensureAuth(); 
+                
+                showNotification("Nouvel utilisateur créé avec succès dans Auth et BDD !", "success");
+                messageElement.textContent = "Utilisateur ajouté.";
+                messageElement.className = 'col-span-full text-center font-medium text-green-600';
+            }
+            
+            // Nettoyage
+            userForm.reset();
+            uidInput.value = '';
+            passwordInput.placeholder = "Mot de passe (Obligatoire à la création)";
+
+        } catch(error) {
+            console.error("Erreur d'enregistrement :", error);
+            showNotification("Erreur : " + (error.message.includes('auth/') ? 'Problème d\'authentification Firebase (e.g. email déjà utilisé).' : error.message), "error");
+            messageElement.textContent = "Erreur: " + error.message;
+            messageElement.className = 'col-span-full text-center font-medium text-red-600';
+        } finally {
+            submitButton.disabled = false;
+            submitButton.textContent = uidInput.value ? 'Mettre à jour l\'Utilisateur' : 'Ajouter l\'Utilisateur';
+        }
+    });
+
+    // 6. Gestionnaire du Tableau (Edit/Delete/Reset)
+    usersTableBody.addEventListener('click', async e => {
+        const uid = e.target.dataset.id;
+        if (!uid) return;
+
+        if (e.target.classList.contains('delete')) {
+            const confirmed = await customConfirm("Êtes-vous sûr de vouloir supprimer ce profil BDD ? (L'utilisateur Auth devra être supprimé manuellement via la console Firebase).");
+            
+            if (confirmed) {
+                try {
+                    await deleteDoc(doc(db, "users", uid));
+                    showNotification(`Profil BDD (UID: ${uid.substring(0, 4)}...) supprimé.`, "success");
+                } catch (error) {
+                    console.error("Erreur suppression:", error);
+                    showNotification("Erreur lors de la suppression du document BDD.", "error");
+                }
+            }
+        
+        } else if (e.target.classList.contains('edit')) {
+            const docRef = doc(db, "users", uid);
+            const docSnap = await getDoc(docRef);
+            
+            if (docSnap.exists()) {
+                const data = docSnap.data();
+                uidInput.value = uid;
+                nomInput.value = data.nom || '';
+                postNomInput.value = data.postNom || '';
+                prenomInput.value = data.prenom || '';
+                emailInput.value = data.email || '';
+                roleInput.value = data.role || '';
+                
+                passwordInput.value = '';
+                passwordInput.placeholder = "Mot de passe (Laisser vide pour ne pas changer)";
+                submitButton.textContent = 'Mettre à jour l\'Utilisateur';
+                
+                showNotification(`Mode édition activé pour ${data.nom || data.email}.`, "info");
+                window.scrollTo({ top: 0, behavior: 'smooth' }); // Remonter au formulaire
+            }
+        
+        } else if (e.target.classList.contains('reset')) {
+            // NOTE IMPORTANTE: Impossible de réinitialiser le mot de passe d'un AUTRE utilisateur
+            // en toute sécurité depuis le client sans l'Admin SDK.
+            showNotification("⚠️ Action annulée. La réinitialisation du mot de passe d'un tiers nécessite l'Admin SDK (côté serveur) pour des raisons de sécurité.", "error");
+        }
+    });
+
+
+    // 7. Initialisation de la page
+    window.onload = async () => {
+        await ensureAuth();
+        if (auth.currentUser) {
+            // L'écouteur en temps réel démarre
+            startRealtimeUserListener();
+        } else {
+            console.error("Impossible de démarrer l'écouteur, utilisateur non authentifié.");
+        }
+    };
+
 </script>
-
 </body>
 </html>
