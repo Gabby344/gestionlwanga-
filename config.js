@@ -1,82 +1,95 @@
-// config.js - Configuration centrale Firebase + redirections par rôle
-
 // 🔌 Import des modules Firebase (SDK Modular v10.x)
-import { initializeApp, getApps, getApp } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-app.js";
-import { getAuth } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-auth.js";
-import { getFirestore, connectFirestoreEmulator } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore.js";
+// Nous utilisons des imports directs pour la compatibilité maximale
+import { initializeApp, getApps, getApp } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-app.js";
+import { getAuth, signInWithCustomToken, signInAnonymously } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-auth.js";
+import { getFirestore, setLogLevel } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-firestore.js";
 
-// --- 1. CONFIGURATION DU PROJET (À REMPLACER PAR VOTRE CONFIG DYNAMIQUE EN PROD) ---
+// --- 1. CONFIGURATION ET INITIALISATION ROBUSTE ---
 
-// ⚠️ ATTENTION : Ces clés sont exposées. En production réelle, utilisez un mécanisme
-// côté serveur ou des variables d'environnement.
-const FIREBASE_CONFIG = {
-    apiKey: "AIzaSyAgv4TDYnR60TXnns-LISqbZTgcdLT31cc",
-    authDomain: "gestionlwanga.firebaseapp.com",
-    projectId: "gestionlwanga",
-    storageBucket: "gestionlwanga.appspot.com",
-    messagingSenderId: "622604298611",
-    appId: "1:622604298611:web:4ab43144d3eec6826c3d06" // Corrigé l'appId pour qu'il ne soit pas identique à l'ID du message (ajusté la fin)
-};
+// 🚨 MANDATORY: Récupération des configurations fournies par l'environnement Canvas
+// Si ces variables ne sont pas définies (hors Canvas), nous utilisons des valeurs par défaut sécurisées.
+const APP_ID = typeof __app_id !== 'undefined' ? __app_id : 'default-canvas-app-id';
+const INITIAL_AUTH_TOKEN = typeof __initial_auth_token !== 'undefined' ? __initial_auth_token : null;
 
-// --- 2. INITIALISATION ROBUSTE ---
+let FIREBASE_CONFIG = {};
+try {
+    // La configuration est fournie sous forme de chaîne JSON
+    FIREBASE_CONFIG = JSON.parse(typeof __firebase_config !== 'undefined' ? __firebase_config : '{}');
+} catch (e) {
+    console.error("Erreur lors de l'analyse de la configuration Firebase :", e);
+}
+
 
 /**
- * Initialise Firebase de manière idempotente.
+ * Initialise Firebase de manière idempotente (une seule fois).
  * @returns {object} L'instance de l'application Firebase.
  */
 function initializeFirebaseApp() {
     // Tente de récupérer l'application par défaut si elle existe déjà.
-    try {
-        return getApp(); 
-    } catch (e) {
-        // Si l'application par défaut n'existe pas, l'initialiser.
-        if (FIREBASE_CONFIG.projectId) {
-            return initializeApp(FIREBASE_CONFIG);
-        } else {
-            console.error("ERREUR FATALE: Configuration Firebase manquante ou incomplète.");
-            throw new Error("Impossible d'initialiser Firebase. Vérifiez FIREBASE_CONFIG.");
-        }
+    if (getApps().length) {
+        return getApp();
+    }
+
+    // Sinon, l'initialiser avec la configuration fournie.
+    if (Object.keys(FIREBASE_CONFIG).length > 0) {
+        const app = initializeApp(FIREBASE_CONFIG, APP_ID);
+        // Activer le mode debug pour voir les logs Firestore
+        setLogLevel('debug'); 
+        return app;
+    } else {
+        console.error("ERREUR FATALE: Configuration Firebase (FIREBASE_CONFIG) manquante.");
+        throw new Error("Impossible d'initialiser Firebase. Veuillez vérifier la configuration.");
     }
 }
 
+// Initialiser l'application Firebase
 const app = initializeFirebaseApp();
 
-// Optionnel: Connexion à l'émulateur (décommenter si vous testez en local)
-const USE_EMULATOR = true; // Bascule pour activer ou désactiver l'émulateur
-if (USE_EMULATOR && window.location.hostname === "localhost") {
-    // Nous devons d'abord obtenir l'instance db pour la connecter
-    const firestoreInstance = getFirestore(app);
-    connectFirestoreEmulator(firestoreInstance, '127.0.0.1', 8080);
-    console.warn("⚠️ Connexion à l'émulateur Firestore.");
-}
-
-// --- 3. EXPORT DES SERVICES ---
-
-// 🔐 Export des modules Firebase
+// Initialiser les services
 export const auth = getAuth(app);
 export const db = getFirestore(app);
 
-// --- 4. GESTION DES REDIRECTIONS ET ACCÈS ---
+// --- 2. FONCTION D'AUTHENTIFICATION OBLIGATOIRE ---
+
+/**
+ * Authentifie l'utilisateur en utilisant le token Canvas ou de manière anonyme si aucun token n'est fourni.
+ * Cette fonction DOIT être appelée au début de votre script principal.
+ */
+export async function ensureAuth() {
+    try {
+        if (INITIAL_AUTH_TOKEN) {
+            // Utilise le token custom fourni par l'environnement
+            await signInWithCustomToken(auth, INITIAL_AUTH_TOKEN);
+            console.log("Authentification réussie via Custom Token.");
+        } else {
+            // Si le token n'est pas fourni, authentification anonyme (pour les invités)
+            await signInAnonymously(auth);
+            console.warn("Authentification anonyme utilisée (Token non trouvé).");
+        }
+    } catch (error) {
+        console.error("Erreur d'authentification Firebase :", error);
+        // Gérer l'échec d'authentification (ex: rediriger vers une page d'erreur)
+    }
+}
+
+
+// --- 3. GESTION DES REDIRECTIONS ET ACCÈS (votre logique originale) ---
 
 // 🧭 Mapping des pages d'accueil par rôle utilisateur.
-// Tous les rôles sont stockés en minuscules pour garantir la cohérence.
 export const ROLE_REDIRECTS = Object.freeze({
     // Administration & Direction
     'prefet': "dashboard-prefet.html",
     'directeur_etudes': "dashboard-directeur-etudes.html",
     'directeur_discipline': "dashboard-directeur-discipline.html",
-    'secretaire': "gestion-eleves.html", // Redirection vers la gestion directe des élèves
+    'secretaire': "gestion-eleves.html", 
     'econome': "dashboard-econome.html",
-    
     // Personnel Pédagogique
     'enseignant': "dashboard-enseignant.html",
-    
     // Utilisateurs Extérieurs
     'eleve': "dashboard-eleve.html",
     'parent': "dashboard-eleve.html", 
-    
-    // Cas par défaut pour rôles inconnus ou erreurs
-    'default': "connexion.html" // Rediriger l'utilisateur à se reconnecter s'il n'a pas de rôle valide
+    // Cas par défaut pour rôles inconnus
+    'default': "connexion.html" 
 });
 
 /**
@@ -85,14 +98,12 @@ export const ROLE_REDIRECTS = Object.freeze({
  * @returns {string} L'URL de la page de tableau de bord.
  */
 export function getRedirectForRole(role) {
-    // Normaliser le rôle en minuscules et supprimer les espaces
     const normalizedRole = String(role).toLowerCase().trim();
-    
-    // Vérification de l'existence du rôle
     if (ROLE_REDIRECTS.hasOwnProperty(normalizedRole)) {
         return ROLE_REDIRECTS[normalizedRole];
     }
-    
-    // Renvoyer l'URL par défaut
     return ROLE_REDIRECTS['default'];
 }
+
+// L'App ID peut être utile pour construire les chemins de données Firestore.
+export { APP_ID };
