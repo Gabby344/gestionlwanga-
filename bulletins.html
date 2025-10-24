@@ -1,254 +1,223 @@
 <!DOCTYPE html>
 <html lang="fr">
 <head>
-  <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Bulletins · Institut Saint Charles Lwanga</title>
-  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600&display=swap" rel="stylesheet">
-  <style>
-    body {
-      font-family: 'Inter', sans-serif;
-      background-color: #f9fafb;
-      margin: 0;
-      padding: 2rem;
-      color: #374151;
-    }
-    h1 {
-      text-align: center;
-      color: #1e3a8a;
-      margin-bottom: 1rem;
-    }
-    form {
-      max-width: 600px;
-      margin: auto;
-      background-color: white;
-      padding: 1rem;
-      border-radius: 8px;
-      box-shadow: 0 0 5px rgba(0,0,0,0.05);
-      margin-bottom: 2rem;
-    }
-    input, select, textarea {
-      width: 100%;
-      padding: 0.6rem;
-      margin-bottom: 1rem;
-      border: 1px solid #d1d5db;
-      border-radius: 6px;
-      font-size: 1rem;
-    }
-    button {
-      background-color: #1e3a8a;
-      color: white;
-      padding: 0.6rem 1.2rem;
-      border: none;
-      border-radius: 6px;
-      font-size: 1rem;
-      cursor: pointer;
-    }
-    .filters {
-      display: flex;
-      gap: 1rem;
-      flex-wrap: wrap;
-      justify-content: center;
-      margin-bottom: 1rem;
-    }
-    table {
-      width: 100%;
-      border-collapse: collapse;
-      background-color: white;
-      box-shadow: 0 0 5px rgba(0,0,0,0.05);
-    }
-    th, td {
-      padding: 0.6rem;
-      border-bottom: 1px solid #e5e7eb;
-      text-align: left;
-    }
-    th {
-      background-color: #f3f4f6;
-      color: #1f2937;
-    }
-    .export-btn {
-      margin: 1rem auto;
-      display: block;
-      background-color: #1e3a8a;
-      color: white;
-      padding: 0.5rem 1rem;
-      border-radius: 6px;
-      border: none;
-      cursor: pointer;
-    }
-    footer {
-      margin-top: 3rem;
-      text-align: center;
-      font-size: 0.85rem;
-      color: #6b7280;
-    }
-  </style>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Bulletin de Cotes - RDC (Structuré)</title>
+    <!-- Chargement de Tailwind CSS -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700;800&display=swap" rel="stylesheet">
+    <style>
+        /* Configuration de la police Inter */
+        body {
+            font-family: 'Inter', sans-serif;
+            background-color: #f3f4f6; 
+            padding: 20px;
+        }
+
+        /* Style spécifique pour la zone d'impression */
+        .bulletin-container {
+            max-width: 950px;
+            margin: 20px auto;
+            background-color: white;
+            padding: 30px;
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+            border: 2px solid #1e3a8a; /* Bordure forte pour l'aspect officiel */
+        }
+
+        /* Styles de tableau général pour garantir les lignes et colonnes */
+        .result-table, .info-table {
+            border-collapse: collapse; /* Supprime les doubles bordures */
+            width: 100%;
+        }
+
+        .result-table th, .result-table td, .info-table th, .info-table td {
+            border: 1px solid #1f2937; /* Bordures nettes et sombres */
+            padding: 6px 8px;
+            font-size: 0.85rem;
+            line-height: 1.2;
+        }
+        
+        .result-table th {
+            background-color: #eef2ff; /* Fond bleu très clair pour les en-têtes */
+            font-weight: 700;
+            text-transform: uppercase;
+            color: #1e3a8a;
+            text-align: center;
+        }
+        .section-header {
+            background-color: #dbeafe !important;
+            font-weight: 800 !important;
+            color: #1e3a8a;
+            text-align: left !important;
+            padding-left: 10px !important;
+        }
+
+        /* Styles pour l'impression (média query) */
+        @media print {
+            body { background-color: white !important; padding: 0; }
+            .bulletin-container { max-width: none; width: 100%; margin: 0; padding: 15px; box-shadow: none; border: 1px solid black; }
+            .no-print { display: none !important; }
+        }
+    </style>
 </head>
 <body>
-  <h1>📝 Gestion des Bulletins</h1>
 
-  <form id="bulletinForm">
-    <input type="text" id="nom" placeholder="Nom de l'élève" required />
-    <input type="text" id="postNom" placeholder="Post-nom" required />
-    <input type="text" id="prenom" placeholder="Prénom" required />
-    <input type="text" id="classe" placeholder="Classe" required />
-    <select id="periode" required>
-      <option value="">Choisir la période</option>
-      <option value="Premier trimestre">Premier trimestre</option>
-      <option value="Deuxième trimestre">Deuxième trimestre</option>
-      <option value="Troisième trimestre">Troisième trimestre</option>
-    </select>
-    <textarea id="matieres" placeholder="Matières et notes (ex: Mathématiques:78, Français:85)" required></textarea>
-    <input type="number" id="moyenne" placeholder="Moyenne générale" required />
-    <textarea id="remarque" placeholder="Remarque générale" required></textarea>
-    <button type="submit">Ajouter le bulletin</button>
-  </form>
+    <div class="no-print text-center mb-6">
+        <button onclick="window.print()" class="bg-indigo-600 hover:bg-indigo-700 text-white font-bold py-2 px-4 rounded-lg shadow-md transition duration-300">
+            🖨️ Imprimer ce Bulletin
+        </button>
+    </div>
 
-  <div class="filters">
-    <input type="text" id="searchInput" placeholder="🔍 Rechercher par nom ou classe..." />
-    <select id="periodeFilter">
-      <option value="">📆 Toutes les périodes</option>
-      <option value="Premier trimestre">Premier trimestre</option>
-      <option value="Deuxième trimestre">Deuxième trimestre</option>
-      <option value="Troisième trimestre">Troisième trimestre</option>
-    </select>
-    <button class="export-btn" id="exportBtn">📄 Exporter CSV</button>
-  </div>
+    <div class="bulletin-container rounded-lg">
+        
+        <!-- EN-TÊTE OFFICIEL -->
+        <header class="text-center mb-6">
+            <h1 class="text-xl font-extrabold mb-1 uppercase">RÉPUBLIQUE DÉMOCRATIQUE DU CONGO</h1>
+            <h2 class="text-md font-bold text-gray-700 border-b border-blue-900 pb-1 mb-2">MINISTÈRE DE L'ENSEIGNEMENT PRIMAIRE, SECONDAIRE ET TECHNIQUE (EPST)</h2>
+            <h3 class="text-2xl font-black text-blue-900 mb-4">BULLETIN DE COTES TRIMESTRIEL</h3>
+        </header>
 
-  <table id="bulletinTable">
-    <thead>
-      <tr>
-        <th>Nom</th>
-        <th>Post-nom</th>
-        <th>Prénom</th>
-        <th>Classe</th>
-        <th>Période</th>
-        <th>Moyenne</th>
-        <th>Remarque</th>
-      </tr>
-    </thead>
-    <tbody></tbody>
-  </table>
+        <!-- SECTION I: IDENTIFICATION (Tableau d'informations générales) -->
+        <table class="info-table w-full mb-4">
+            <tr>
+                <td class="bg-gray-100 font-semibold w-1/4">PROVINCE ÉDUCATIONNELLE :</td>
+                <td class="w-1/4">HAUT-KATANGA I</td>
+                <td class="bg-gray-100 font-semibold w-1/4">ANNÉE SCOLAIRE :</td>
+                <td class="w-1/4">2024 - 2025</td>
+            </tr>
+            <tr>
+                <td class="bg-gray-100 font-semibold">ÉTABLISSEMENT :</td>
+                <td>Institut Saint Charles Lwanga</td>
+                <td class="bg-gray-100 font-semibold">TRIMESTRE :</td>
+                <td>DEUXIÈME</td>
+            </tr>
+            <tr>
+                <td class="bg-gray-100 font-semibold">NOM & POST-NOM :</td>
+                <td>MUKENDI KALONJI</td>
+                <td class="bg-gray-100 font-semibold">CLASSE (OPTION) :</td>
+                <td>5e Scientifique A</td>
+            </tr>
+            <tr>
+                <td class="bg-gray-100 font-semibold">PRÉNOM :</td>
+                <td>JULES</td>
+                <td class="bg-gray-100 font-semibold">N° PERMANENT :</td>
+                <td>045 / 2024</td>
+            </tr>
+        </table>
 
-  <footer>
-    &copy; 2025 · Institut Saint Charles Lwanga · Lubumbashi
-  </footer>
+        <!-- SECTION II: RÉSULTATS DÉTAILLÉS (Tableau principal avec toutes les lignes et colonnes) -->
+        <h4 class="text-lg font-bold mb-2 text-blue-800 border-b border-gray-300 pb-1">II. RÉSULTATS DÉTAILLÉS</h4>
+        <table class="result-table w-full mb-6">
+            <thead>
+                <tr>
+                    <th rowspan="2" class="w-[3%]">N°</th>
+                    <th rowspan="2" class="w-[35%]">MATIÈRES ENSEIGNÉES</th>
+                    <th colspan="2" class="w-[20%]">COTATION TRIMESTRIELLE</th>
+                    <th rowspan="2" class="w-[10%]">%</th>
+                    <th rowspan="2" class="w-[32%]">OBSERVATIONS & APPRÉCIATIONS</th>
+                </tr>
+                <tr>
+                    <th class="w-[10%]">MAX.</th>
+                    <th class="w-[10%]">OBTENU</th>
+                </tr>
+            </thead>
+            <tbody>
+                <!-- Bloc A : FORMATION LINGUISTIQUE -->
+                <tr><td colspan="6" class="section-header">A. FORMATION LINGUISTIQUE</td></tr>
+                <tr>
+                    <td class="text-center">1</td><td>Français (Langue & Grammaire)</td><td class="text-center">100</td><td class="text-center font-semibold">78</td><td class="text-center">78%</td><td>Très Bien</td>
+                </tr>
+                <tr>
+                    <td class="text-center">2</td><td>Anglais</td><td class="text-center">100</td><td class="text-center font-semibold">65</td><td class="text-center">65%</td><td>Bien</td>
+                </tr>
+                <tr>
+                    <td class="text-center">3</td><td>Langue Nationale (Lingala)</td><td class="text-center">50</td><td class="text-center font-semibold">45</td><td class="text-center">90%</td><td>Excellent.</td>
+                </tr>
+                
+                <!-- Bloc B : FORMATION SCIENTIFIQUE -->
+                <tr><td colspan="6" class="section-header">B. FORMATION SCIENTIFIQUE</td></tr>
+                <tr>
+                    <td class="text-center">4</td><td>Mathématiques</td><td class="text-center">100</td><td class="text-center font-semibold">88</td><td class="text-center">88%</td><td>Performance remarquable.</td>
+                </tr>
+                <tr>
+                    <td class="text-center">5</td><td>Physique</td><td class="text-center">100</td><td class="text-center font-semibold">72</td><td class="text-center">72%</td><td>Bonne maîtrise des concepts.</td>
+                </tr>
+                <tr>
+                    <td class="text-center">6</td><td>Chimie</td><td class="text-center">100</td><td class="text-center font-semibold">60</td><td class="text-center">60%</td><td>Assez Bien. Doit redoubler d'efforts.</td>
+                </tr>
 
-  <script type="module">
-    import { initializeApp } from "https://www.gstatic.com/firebasejs/10.5.2/firebase-app.js";
-    import { getFirestore, collection, addDoc, getDocs, serverTimestamp } from "https://www.gstatic.com/firebasejs/10.5.2/firebase-firestore.js";
+                <!-- Bloc C : FORMATION LITTÉRAIRE & HUMAINE -->
+                <tr><td colspan="6" class="section-header">C. FORMATION LITTÉRAIRE & HUMAINE</td></tr>
+                <tr>
+                    <td class="text-center">7</td><td>Histoire</td><td class="text-center">50</td><td class="text-center font-semibold">40</td><td class="text-center">80%</td><td>Très Bon travail.</td>
+                </tr>
+                <tr>
+                    <td class="text-center">8</td><td>Géographie</td><td class="text-center">50</td><td class="text-center font-semibold">35</td><td class="text-center">70%</td><td>Bon résultat.</td>
+                </tr>
+                
+                <!-- Bloc D : FORMATION DIVERSES -->
+                <tr><td colspan="6" class="section-header">D. AUTRES FORMATIONS</td></tr>
+                <tr>
+                    <td class="text-center">9</td><td>Biologie</td><td class="text-center">100</td><td class="text-center font-semibold">58</td><td class="text-center">58%</td><td>Insuffisant. Nécessite plus de concentration.</td>
+                </tr>
+                <tr>
+                    <td class="text-center">10</td><td>Éducation Civique</td><td class="text-center">50</td><td class="text-center font-semibold">42</td><td class="text-center">84%</td><td>Très Bien.</td>
+                </tr>
+                <tr>
+                    <td class="text-center">11</td><td>EPS</td><td class="text-center">25</td><td class="text-center font-semibold">20</td><td class="text-center">80%</td><td>Très Bien.</td>
+                </tr>
 
-    const firebaseConfig = {
-      apiKey: "TON_API_KEY",
-      authDomain: "TON_DOMAINE.firebaseapp.com",
-      projectId: "TON_PROJECT_ID"
-    };
+                <!-- LIGNE DES TOTAUX -->
+                <tr>
+                    <td colspan="2" class="text-right font-black bg-blue-100">TOTAL GÉNÉRAL :</td>
+                    <td class="text-center font-black bg-blue-100">825</td>
+                    <td class="text-center font-black bg-blue-100 text-xl text-green-700">683</td>
+                    <td class="text-center font-black bg-blue-100 text-xl text-green-700">82.78%</td>
+                    <td class="font-black bg-blue-100">MENTION : TRÈS BIEN</td>
+                </tr>
+            </tbody>
+        </table>
 
-    const app = initializeApp(firebaseConfig);
-    const db = getFirestore(app);
+        <!-- SECTION III: CONDUITE, ABSENCES, ET DÉCISION -->
+        <h4 class="text-lg font-bold mb-2 text-blue-800 border-b border-gray-300 pb-1">III. CLASSEMENT ET DÉCISION</h4>
+        <table class="info-table w-full mb-6">
+            <tr>
+                <td class="bg-gray-100 font-semibold w-1/4">CLASSEMENT (RANG) :</td>
+                <td class="font-bold text-lg text-red-600 w-1/4">3ème / 48</td>
+                <td class="bg-gray-100 font-semibold w-1/4">CONDUITE / DISCIPLINE :</td>
+                <td class="font-bold text-lg text-green-700 w-1/4">Exemplaire</td>
+            </tr>
+            <tr>
+                <td class="bg-gray-100 font-semibold">ABSENCES INJUSTIFIÉES :</td>
+                <td class="font-bold">0 Jours</td>
+                <td class="bg-gray-100 font-semibold">DÉCISION DU CONSEIL :</td>
+                <td class="font-bold text-xl text-blue-900">ADMIS EN CLASSE SUPÉRIEURE</td>
+            </tr>
+        </table>
 
-    const form = document.getElementById("bulletinForm");
-    const tableBody = document.querySelector("#bulletinTable tbody");
-    const searchInput = document.getElementById("searchInput");
-    const periodeFilter = document.getElementById("periodeFilter");
-    const exportBtn = document.getElementById("exportBtn");
 
-    let allBulletins = [];
+        <!-- SECTION V: SIGNATURES -->
+        <p class="text-sm mt-8 mb-2">Fait à Kolwezi, le [Date du Jour]</p>
+        <div class="flex justify-between text-sm">
+            <div class="text-center w-1/3 pt-4">
+                <p>Le Titulaire de Classe,</p>
+                <div class="mt-8 border-b-2 border-gray-600 pb-1 w-3/4 mx-auto"></div>
+                <p class="text-xs mt-1">(Signature & Cachet)</p>
+            </div>
+            <div class="text-center w-1/3 pt-4">
+                <p>Le Chef d'Établissement,</p>
+                <div class="mt-8 border-b-2 border-gray-600 pb-1 w-3/4 mx-auto"></div>
+                <p class="text-xs mt-1">(Signature & Cachet)</p>
+            </div>
+            <div class="text-center w-1/3 pt-4">
+                <p>Parents / Tuteur Légal,</p>
+                <div class="mt-8 border-b-2 border-gray-600 pb-1 w-3/4 mx-auto"></div>
+                <p class="text-xs mt-1">(Signature)</p>
+            </div>
+        </div>
+        
 
-    form.addEventListener("submit", async (e) => {
-      e.preventDefault();
-
-      const nom = document.getElementById("nom").value.trim();
-      const postNom = document.getElementById("postNom").value.trim();
-      const prenom = document.getElementById("prenom").value.trim();
-      const classe = document.getElementById("classe").value.trim();
-      const periode = document.getElementById("periode").value;
-      const moyenne = parseFloat(document.getElementById("moyenne").value);
-      const remarque = document.getElementById("remarque").value.trim();
-      const matieresRaw = document.getElementById("matieres").value.trim();
-
-      const matieres = matieresRaw.split(",").map(pair => {
-        const [nom, note] = pair.split(":");
-        return { nom: nom.trim(), note: parseFloat(note) };
-      });
-
-      await addDoc(collection(db, "bulletins"), {
-        nom, postNom, prenom, classe, periode, moyenne, remarque, matieres,
-        createdAt: serverTimestamp()
-      });
-
-      form.reset();
-      chargerBulletins();
-    });
-
-    async function chargerBulletins() {
-      const snapshot = await getDocs(collection(db, "bulletins"));
-      allBulletins = [];
-      snapshot.forEach(doc => {
-        const data = doc.data();
-        allBulletins.push(data);
-      });
-      afficherBulletins();
-    }
-
-    function afficherBulletins() {
-      const search = searchInput.value.toLowerCase();
-      const periode = periodeFilter.value;
-
-      const filtres = allBulletins.filter(b => {
-        const matchTexte = (
-          b.nom.toLowerCase().includes(search) ||
-          b.postNom.toLowerCase().includes(search) ||
-          b.prenom.toLowerCase().includes(search) ||
-          b.classe.toLowerCase().includes(search)
-        );
-        const matchPeriode = periode === "" || b.periode === periode;
-        return matchTexte && matchPeriode;
-      });
-
-      tableBody.innerHTML = "";
-      filtres.forEach(b => {
-        const row = document.createElement("tr");
-        row.innerHTML = `
-          <td>${b.nom}</td>
-          <td>${b.postNom}</td>
-          <td>${b.prenom}</td>
-          <td>${b.classe}</td>
-          <td>${b.periode}</td>
-          <td>${b.moyenne}</td>
-          <td>${b.remarque}</td>
-        `;
-        tableBody.appendChild(row);
-      });
-    }
-
-        exportBtn.addEventListener("click", () => {
-      const lignes = [["Nom", "Post-nom", "Prénom", "Classe", "Période", "Moyenne", "Remarque"]];
-      allBulletins.forEach(b => {
-        lignes.push([
-          b.nom,
-          b.postNom,
-          b.prenom,
-          b.classe,
-          b.periode,
-          b.moyenne,
-          b.remarque
-        ]);
-      });
-
-      const csvContent = "data:text/csv;charset=utf-8," + lignes.map(e => e.join(",")).join("\n");
-      const link = document.createElement("a");
-      link.setAttribute("href", csvContent);
-      link.setAttribute("download", "bulletins.csv");
-      document.body.appendChild(link);
-      link.click();
-      document.body.removeChild(link);
-    });
-
-    searchInput.addEventListener("input", afficherBulletins);
-    periodeFilter.addEventListener("change", afficherBulletins);
-
-    chargerBulletins();
-  </script>
+    </div>
 </body>
 </html>
