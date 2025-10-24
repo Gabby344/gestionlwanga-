@@ -11,6 +11,10 @@
         body {
             font-family: 'Inter', sans-serif;
         }
+        /* Custom disabled style for form fields */
+        .form-disabled {
+            @apply opacity-70 cursor-not-allowed bg-gray-200;
+        }
     </style>
     <script>
         tailwind.config = {
@@ -101,7 +105,7 @@
                     </div>
                     
                     <!-- Bouton de Soumission -->
-                    <button type="submit" class="btn-submit col-span-full mt-4 bg-action-green text-white font-bold py-3 px-6 rounded-lg text-lg hover:bg-emerald-600 transition duration-200 shadow-md hover:shadow-lg disabled:opacity-50 disabled:cursor-not-allowed">
+                    <button type="submit" id="submitBtn" class="btn-submit col-span-full mt-4 bg-action-green text-white font-bold py-3 px-6 rounded-lg text-lg hover:bg-emerald-600 transition duration-200 shadow-md hover:shadow-lg disabled:opacity-50 disabled:cursor-not-allowed">
                         💾 Enregistrer le Nouvel Élève
                     </button>
                 </div>
@@ -116,6 +120,11 @@
         <a href="#" onclick="alert('La page de gestion des élèves n\'est pas implémentée dans ce fichier unique.'); return false;" class="btn-retour block text-center mt-6 text-gray-600 hover:text-primary-blue font-medium transition duration-200">
             ← Retour à la Gestion des Élèves
         </a>
+
+        <!-- Affichage de l'ID utilisateur pour la conformité Firestore -->
+        <p id="userIdDisplay" class="text-xs text-center text-gray-400 mt-4">
+            <!-- User ID sera inséré ici -->
+        </p>
     </div>
 
     <!-- SCRIPTS FIREBASE ET LOGIQUE APPLICATIVE -->
@@ -135,21 +144,45 @@
         let userId = null;
         let isAuthReady = false;
 
+        const eleveForm = document.getElementById('eleveForm');
+        const submitBtn = document.getElementById('submitBtn');
+        const userIdDisplay = document.getElementById('userIdDisplay');
+        const formFields = eleveForm.querySelectorAll('input, select');
+        
+        // Fonction pour mettre à jour l'état du formulaire (désactiver/réactiver)
+        function setFormEnabled(enabled) {
+            formFields.forEach(field => {
+                field.disabled = !enabled;
+                if (!enabled) {
+                    field.classList.add('form-disabled');
+                } else {
+                    field.classList.remove('form-disabled');
+                }
+            });
+            submitBtn.disabled = !enabled;
+        }
+
         // Fonction utilitaire pour afficher les messages
-        function showMessage(text, type) {
+        function showMessage(text, type, actionContent = '') {
             const messageEl = document.getElementById('message');
             let colorClass = '';
+            let icon = '';
+            
             if (type === 'success') {
                 colorClass = 'bg-green-100 text-green-800 border-green-400';
+                icon = '✅';
             } else if (type === 'error') {
                 colorClass = 'bg-red-100 text-red-800 border-red-400';
+                icon = '❌';
             } else {
                 colorClass = 'bg-yellow-100 text-yellow-800 border-yellow-400';
+                icon = 'ℹ️';
             }
             
             messageEl.innerHTML = `
-                <div role="alert" class="p-4 rounded-lg border-l-4 font-semibold ${colorClass}">
-                    ${text}
+                <div role="alert" class="p-4 rounded-xl border-l-4 font-semibold ${colorClass} shadow-lg">
+                    <p class="mb-3">${icon} ${text}</p>
+                    ${actionContent}
                 </div>
             `;
         }
@@ -180,25 +213,34 @@
                 if (user) {
                     userId = user.uid;
                     isAuthReady = true;
+                    userIdDisplay.textContent = `User ID (pour Firebase): ${userId}`;
                     console.log("Firebase Auth prêt. User ID:", userId);
                     showMessage('Prêt à enregistrer l\'élève.', 'info');
+                    setFormEnabled(true);
                 } else {
+                    setFormEnabled(false);
                     const token = typeof __initial_auth_token !== 'undefined' ? __initial_auth_token : null;
                     try {
                         if (token) {
                             await signInWithCustomToken(auth, token);
                         } else {
-                            await signInAnonymously(auth);
+                            // Générer un ID utilisateur aléatoire si l'auth anonyme échoue ou n'est pas configurée
+                            const anonymousSignIn = await signInAnonymously(auth);
+                            userId = anonymousSignIn.user.uid;
                         }
                         // L'écouteur onAuthStateChanged se déclenchera à nouveau avec l'utilisateur
                     } catch (error) {
                         console.error("Firebase authentication failed:", error);
                         showMessage('❌ Erreur d\'authentification Firebase. Veuillez rafraîchir.', 'error');
+                        userId = crypto.randomUUID();
+                        userIdDisplay.textContent = `User ID non authentifié (temporaire): ${userId}`;
+                        isAuthReady = true;
                     }
                 }
             });
         } else {
             showMessage('❌ Configuration Firebase manquante. Enregistrement non fonctionnel.', 'error');
+            setFormEnabled(false);
             console.error("Firebase configuration is missing.");
         }
 
@@ -214,20 +256,19 @@
                 return;
             }
 
-            const form = e.target;
-            const btn = document.querySelector('.btn-submit');
-            const originalText = btn.innerHTML;
+            const originalText = submitBtn.innerHTML;
 
-            btn.disabled = true;
-            btn.innerHTML = '<span class="animate-spin inline-block w-4 h-4 mr-2 border-2 border-t-transparent border-white rounded-full"></span> Chargement...'; // État de chargement
+            submitBtn.disabled = true;
+            submitBtn.innerHTML = '<span class="animate-spin inline-block w-4 h-4 mr-2 border-2 border-t-transparent border-white rounded-full"></span> Enregistrement...'; // État de chargement
+            setFormEnabled(false); // Désactiver les champs pendant le traitement
 
-            const nom = form.nom.value.trim().toUpperCase();
-            const postNom = form.postNom.value.trim().toUpperCase(); // Nouveau champ
-            const prenom = form.prenom.value.trim();
-            const classe = form.classe.value;
-            const dateNaissance = form.dateNaissance.value;
-            const sexe = form.sexe.value;
-            const statutPaiement = form.statutPaiement.value;
+            const nom = eleveForm.nom.value.trim().toUpperCase();
+            const postNom = eleveForm.postNom.value.trim().toUpperCase(); 
+            const prenom = eleveForm.prenom.value.trim();
+            const classe = eleveForm.classe.value;
+            const dateNaissance = eleveForm.dateNaissance.value;
+            const sexe = eleveForm.sexe.value;
+            const statutPaiement = eleveForm.statutPaiement.value;
 
             // Logique de génération de Matricule (simple)
             const annee = new Date().getFullYear().toString().slice(-2);
@@ -237,7 +278,7 @@
 
             const newEleve = {
                 nom: nom,
-                postNom: postNom, // Ajout du postNom
+                postNom: postNom, 
                 prenom: prenom,
                 matricule: matricule,
                 classe: classe,
@@ -246,7 +287,7 @@
                 statutPaiement: statutPaiement,
                 dateInscription: serverTimestamp(),
                 anneeScolaire: new Date().getFullYear(),
-                ownerId: userId // Lien avec l'utilisateur
+                ownerId: userId 
             };
 
             // Chemin de la collection sécurisée (Private Data)
@@ -255,20 +296,43 @@
             try {
                 await fetchWithBackoff(() => addDoc(collection(db, collectionPath), newEleve));
 
-                showMessage(`✅ L'élève **${nom} ${postNom} ${prenom}** a été enregistré avec succès ! Son matricule est : **${matricule}**`, 'success');
-                form.reset();
+                const successMessage = `L'élève **${nom} ${postNom} ${prenom}** a été enregistré avec succès ! Son matricule est : **${matricule}**.`;
+                
+                const actionContent = `
+                    <div class="flex flex-col sm:flex-row gap-3 mt-4">
+                        <button type="button" id="resetFormBtn" class="flex-1 bg-primary-blue text-white font-semibold py-2 px-4 rounded-lg hover:bg-blue-800 transition">
+                            ➕ Nouvelle Inscription
+                        </button>
+                        <button type="button" onclick="alert('La page de gestion des élèves n\'est pas implémentée dans ce fichier unique.');" class="flex-1 bg-blue-50 text-primary-blue border border-primary-blue font-semibold py-2 px-4 rounded-lg hover:bg-blue-200 transition">
+                            Voir la Liste
+                        </button>
+                    </div>
+                `;
+
+                showMessage(successMessage, 'success', actionContent);
+
+                document.getElementById('resetFormBtn').addEventListener('click', () => {
+                    eleveForm.reset();
+                    document.getElementById('message').innerHTML = ''; // Cacher le message
+                    setFormEnabled(true);
+                });
+
+
             } catch (error) {
                 showMessage(`❌ Erreur d'enregistrement : ${error.message}`, 'error');
                 console.error("Error adding document: ", error);
+                setFormEnabled(true); // Réactiver le formulaire en cas d'erreur
             } finally {
-                btn.disabled = false;
-                btn.innerHTML = originalText;
+                submitBtn.disabled = false;
+                submitBtn.innerHTML = originalText;
             }
         };
 
         // Attacher l'écouteur d'événement
         document.addEventListener('DOMContentLoaded', () => {
-            document.getElementById('eleveForm').addEventListener('submit', handleFormSubmit);
+            // Initialement désactiver le formulaire en attendant l'authentification
+            setFormEnabled(false);
+            eleveForm.addEventListener('submit', handleFormSubmit);
         });
     </script>
 </body>
