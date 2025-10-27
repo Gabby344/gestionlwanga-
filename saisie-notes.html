@@ -1,350 +1,440 @@
 <!DOCTYPE html>
 <html lang="fr">
 <head>
-  <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Saisie des Cotes - Institut Saint Charles Lwanga (SIGS)</title>
-  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700;800&display=swap" rel="stylesheet">
-  <style>
-    :root {
-      --bleu-fonce: #1e40af; 
-      --gris-fonce: #1f2937;
-      --orange-notes: #f59e0b; /* Accent Notes */
-      --vert-succes: #10b981; /* Bouton d'enregistrement */
-      --fond-principal: #f4f6f8;
-      --gris-bordure: #d1d5db; 
-      --ombre-legere: rgba(0,0,0,0.08);
-    }
-    body {
-      font-family: 'Inter', sans-serif;
-      background-color: var(--fond-principal);
-      margin: 0;
-      padding: 2rem 1rem;
-      color: var(--gris-fonce);
-    }
-    h1 {
-      text-align: center;
-      font-size: 1.8rem;
-      color: var(--bleu-fonce);
-      margin-bottom: 0.5rem;
-    }
-    h2 {
-      text-align: center;
-      font-size: 1rem;
-      font-weight: normal;
-      color: #6b7280;
-      margin-bottom: 2rem;
-    }
-    .container {
-        max-width: 1200px;
-        margin: auto;
-    }
-
-    /* --- BARRE DE FILTRE ET CONTEXTE --- */
-    .filter-bar {
-        background-color: white;
-        padding: 1.5rem;
-        border-radius: 8px;
-        box-shadow: 0 4px 6px var(--ombre-legere);
-        margin-bottom: 1.5rem;
-        display: grid;
-        gap: 1.5rem;
-        grid-template-columns: 1fr;
-    }
-    @media (min-width: 768px) {
-        .filter-bar {
-            grid-template-columns: repeat(4, 1fr); /* 4 colonnes pour les filtres */
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Saisie des Cotes - Institut Saint Charles Lwanga (SIGS)</title>
+    <!-- Chargement de Tailwind CSS -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <!-- Chargement d'une librairie d'icônes moderne (Lucide Icons) -->
+    <script src="https://unpkg.com/lucide@latest"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet" />
+    
+    <style>
+        body {
+            font-family: 'Inter', sans-serif;
         }
-    }
-    .input-group label {
-        display: block;
-        font-size: 0.85rem;
-        font-weight: 600;
-        color: #6b7280;
-        margin-bottom: 0.4rem;
-    }
-    .input-group select {
-        width: 100%;
-        padding: 0.75rem;
-        border: 1px solid var(--gris-bordure);
-        border-radius: 6px;
-        box-sizing: border-box;
-        background-color: #f9fafb;
-    }
-    .btn-charger-liste {
-        padding: 0.75rem 1rem;
-        border: none;
-        border-radius: 6px;
-        font-weight: 700;
-        cursor: pointer;
-        background-color: var(--orange-notes);
-        color: white;
-        align-self: flex-end; /* Aligner le bouton sur la ligne de base des champs */
-        transition: background-color 0.2s;
-    }
-    .btn-charger-liste:hover { background-color: #d97706; }
-
-    /* --- GRILLE DE SAISIE DES NOTES --- */
-    .notes-saisie-card {
-        background-color: white;
-        border-radius: 8px;
-        box-shadow: 0 4px 10px var(--ombre-legere);
-        padding: 1.5rem;
-    }
-    .notes-table-wrapper {
-        overflow-x: auto;
-        max-height: 60vh; /* Limiter la hauteur pour les longues listes */
-        margin-bottom: 1rem;
-    }
-    .notes-table {
-        width: 100%;
-        border-collapse: separate;
-        border-spacing: 0;
-        min-width: 700px;
-    }
-    .notes-table th, .notes-table td {
-        padding: 0.75rem 1rem;
-        border-bottom: 1px solid #e5e7eb;
-        text-align: center;
-    }
-    .notes-table th {
-        background-color: #f3f4f6;
-        color: var(--gris-fonce);
-        font-weight: 600;
-        text-transform: uppercase;
-        font-size: 0.8rem;
-        position: sticky; /* Entêtes fixes lors du défilement */
-        top: 0;
-        z-index: 10;
-    }
-    .notes-table td:first-child {
-        text-align: left;
-        font-weight: 600;
-        width: 30%;
-        color: var(--bleu-fonce);
-    }
-    .note-input {
-        width: 80px; /* Taille fixe pour la note */
-        padding: 0.5rem;
-        border: 1px solid var(--gris-bordure);
-        border-radius: 4px;
-        text-align: center;
-        transition: border-color 0.2s;
-    }
-    .note-input:focus {
-        border-color: var(--orange-notes);
-        box-shadow: 0 0 0 2px rgba(245, 158, 11, 0.2);
-        outline: none;
-    }
-
-    /* --- BAS DE PAGE ET BOUTON SAUVEGARDE --- */
-    .footer-actions {
-        text-align: center;
-        padding-top: 1rem;
-        border-top: 1px solid #e5e7eb;
-    }
-    .btn-sauvegarder {
-        padding: 1rem 3rem;
-        font-size: 1.1rem;
-        font-weight: 700;
-        border: none;
-        border-radius: 8px;
-        cursor: pointer;
-        background-color: var(--vert-succes);
-        color: white;
-        transition: background-color 0.2s;
-    }
-    .btn-sauvegarder:hover {
-        background-color: #059669;
-    }
-    
-    .message-info {
-        margin-top: 1.5rem;
-        font-size: 0.9rem;
-        color: #6b7280;
-    }
-  </style>
+        /* Styles pour les entêtes de tableau fixes */
+        .notes-table th {
+            position: sticky;
+            top: 0;
+            z-index: 10;
+        }
+        /* Style pour les champs d'entrée de note */
+        .note-input {
+            appearance: textfield; /* Cache les flèches du champ number */
+        }
+        /* Couleurs pour le statut */
+        .color-danger { color: #ef4444; }
+        .color-success { color: #10b981; }
+    </style>
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    colors: {
+                        'primary-blue': '#1e40af',
+                        'accent-notes': '#f59e0b', /* Jaune/Orange */
+                        'save-success': '#10b981', /* Vert */
+                        'bg-light': '#f8fafc',
+                        'input-border': '#d1d5db'
+                    }
+                }
+            }
+        }
+    </script>
 </head>
-<body>
-  <div class="container">
-    <h1>✍️ Saisie des Cotes des Élèves</h1>
-    <h2>Sélectionnez le contexte d'évaluation pour charger la liste des élèves.</h2>
+<body class="p-4 sm:p-8 bg-bg-light">
+    <div class="container max-w-7xl mx-auto">
+        <header class="text-center mb-8">
+            <h1 class="text-3xl font-extrabold text-primary-blue mb-1">
+                <i data-lucide="notebook-pen" class="inline-block w-8 h-8 mr-2 text-accent-notes"></i> Saisie des Cotes
+            </h1>
+            <p class="text-gray-500">Outil réservé aux enseignants. Veuillez sélectionner le contexte pour la saisie.</p>
+        </header>
 
-    <div class="filter-bar">
-        <div class="input-group">
-            <label for="anneeScolaire">Année Scolaire</label>
-            <select id="anneeScolaire">
-                <option>2024-2025</option>
-                <option>2023-2024</option>
-            </select>
-        </div>
-        <div class="input-group">
-            <label for="trimestre">Trimestre</label>
-            <select id="trimestre">
-                <option>1er Trimestre</option>
-                <option>2ème Trimestre</option>
-                <option>3ème Trimestre</option>
-            </select>
-        </div>
-        <div class="input-group">
-            <label for="classe">Classe & Matière</label>
-            <select id="classe">
-                <option value="6A-MATH">6ème A - Mathématiques</option>
-                <option value="5S-FR">5ème S - Français</option>
-                <option value="4H-HG">4ème H - Histoire Géographie</option>
-            </select>
-        </div>
-        <button class="btn-charger-liste" onclick="chargerListe()">Charger la Grille</button>
-    </div>
-
-    <div id="notesSection" style="display: none;">
-        <div class="notes-saisie-card">
-            <h3>Saisie des Notes pour: <span id="currentContext">6ème A - Mathématiques | 1er Trimestre</span></h3>
+        <!-- Formulaire de Filtre et Sélection de Contexte -->
+        <form id="filterForm" class="bg-white p-6 rounded-xl shadow-lg mb-6 grid grid-cols-1 md:grid-cols-4 gap-4 items-end border-t-4 border-accent-notes">
             
-            <div class="notes-table-wrapper">
-                <table class="notes-table">
-                    <thead>
-                        <tr>
-                            <th>Nom & Prénom Élève</th>
-                            <th>Interro 1 (20)</th>
-                            <th>Interro 2 (20)</th>
-                            <th>Examen (60)</th>
-                            <th>Total (100)</th>
-                        </tr>
-                    </thead>
-                    <tbody id="notesBody">
+            <div class="input-group">
+                <label for="anneeScolaire" class="block text-sm font-semibold text-gray-700 mb-2">Année Scolaire</label>
+                <select id="anneeScolaire" class="w-full p-3 border border-input-border rounded-lg bg-gray-50 focus:ring-accent-notes focus:border-accent-notes">
+                    <option value="2024-2025">2024-2025</option>
+                    <option value="2023-2024">2023-2024</option>
+                </select>
+            </div>
+
+            <div class="input-group">
+                <label for="periode" class="block text-sm font-semibold text-gray-700 mb-2">Période/Semestre (RDC)</label>
+                <select id="periode" class="w-full p-3 border border-input-border rounded-lg bg-gray-50 focus:ring-accent-notes focus:border-accent-notes">
+                    <option value="">Sélectionner...</option>
+                    <option value="P1">1ère Période</option>
+                    <option value="P2">2ème Période</option>
+                    <option value="S1">1er Semestre</option>
+                    <option value="P3">3ème Période</option>
+                    <option value="P4">4ème Période</option>
+                    <option value="S2" selected>2ème Semestre</option>
+                    <option value="Annuel">Annuel</option>
+                </select>
+            </div>
+
+            <div class="input-group">
+                <label for="classeMatiere" class="block text-sm font-semibold text-gray-700 mb-2">Classe & Matière</label>
+                <select id="classeMatiere" class="w-full p-3 border border-input-border rounded-lg bg-gray-50 focus:ring-accent-notes focus:border-accent-notes">
+                    <option value="6CA-MATH">6ème Commerciale A - Mathématiques</option>
+                    <option value="5LA-FR">5ème Littéraire A - Français</option>
+                    <option value="4PA-HG">4ème Primaire A - Histoire/Géo</option>
+                </select>
+            </div>
+            
+            <!-- Bouton Charger -->
+            <button type="submit" class="w-full py-3 px-4 bg-accent-notes text-white font-bold rounded-lg hover:bg-yellow-600 transition duration-200 flex items-center justify-center space-x-2">
+                <i data-lucide="users" class="w-5 h-5"></i>
+                <span>Charger la Grille</span>
+            </button>
+        </form>
+
+        <!-- Section de Saisie des Notes -->
+        <div id="notesSection" class="hidden">
+            <div class="bg-white p-6 rounded-xl shadow-lg">
+                <h3 class="text-xl font-bold text-gray-800 mb-4 border-b pb-2">
+                    Saisie des Notes pour: <span id="currentContext" class="text-accent-notes font-extrabold"></span>
+                </h3>
+                
+                <div class="overflow-x-auto max-h-[65vh] mb-4 border rounded-lg">
+                    <table class="notes-table w-full whitespace-nowrap">
+                        <thead>
+                            <tr class="bg-gray-100 text-gray-600 uppercase text-xs">
+                                <th class="py-3 px-4 text-left rounded-tl-lg">Nom & Post-Nom de l'Élève</th>
+                                <th class="py-3 px-4">Interro 1 / 20</th>
+                                <th class="py-3 px-4">Interro 2 / 20</th>
+                                <th class="py-3 px-4">Examen / 60</th>
+                                <th class="py-3 px-4 rounded-tr-lg">TOTAL / 100</th>
+                            </tr>
+                        </thead>
+                        <tbody id="notesBody" class="divide-y divide-gray-200">
+                            <!-- Les lignes d'élèves seront insérées ici -->
                         </tbody>
-                </table>
-            </div>
+                    </table>
+                </div>
 
-            <div class="footer-actions">
-                <button class="btn-sauvegarder" onclick="sauvegarderNotes()">Enregistrer les Cotes</button>
-                <p id="saveMessage" class="message-info"></p>
+                <div class="footer-actions text-right pt-4">
+                    <button type="button" id="saveBtn" class="py-3 px-8 bg-save-success text-white font-bold rounded-lg hover:bg-green-600 transition duration-200 shadow-md">
+                        <i data-lucide="save" class="inline-block w-5 h-5 mr-2"></i> Enregistrer les Cotes
+                    </button>
+                    <p id="saveMessage" class="message-info text-sm text-gray-500 mt-2"></p>
+                </div>
             </div>
         </div>
+
+        <!-- Bouton de retour -->
+        <a href="dashboard.html" class="flex items-center space-x-2 mt-6 py-2 px-4 bg-gray-200 text-gray-700 font-semibold rounded-lg hover:bg-gray-300 transition duration-200 text-sm w-max mx-auto">
+            <i data-lucide="arrow-left" class="w-4 h-4"></i>
+            <span>Retour au Tableau de Bord</span>
+        </a>
+
     </div>
 
-    <a href="bulletins.html" class="btn-retour" style="display: block; text-align: center; margin-top: 2rem;">← Retour au Menu Notes & Bulletins</a>
-  </div>
+    <!-- Zone de notification -->
+    <div id="notification-area" class="fixed top-4 right-4 z-50 p-4 font-semibold text-white rounded-xl shadow-xl hidden" onclick="this.classList.add('hidden')"></div>
 
-  <script>
-    // --- SIMULATION DE DONNÉES ET FONCTIONS ---
-    
-    // Exemple de données d'élèves pour une classe
-    const elevesExemple = [
-        { id: '101', nom: 'UMBA', prenom: 'Gabby' },
-        { id: '102', nom: 'KABULO', prenom: 'Ndaya' },
-        { id: '103', nom: 'MUTOMBO', prenom: 'Kalubi' },
-        { id: '104', nom: 'KASONGO', prenom: 'Tshibola' },
-    ];
 
-    // Simule le chargement de la liste
-    function chargerListe() {
-        const context = document.getElementById('classe').options[document.getElementById('classe').selectedIndex].text + " | " + document.getElementById('trimestre').value;
-        document.getElementById('currentContext').textContent = context;
-        document.getElementById('notesSection').style.display = 'block';
-        document.getElementById('saveMessage').textContent = 'Liste chargée. Vous pouvez commencer la saisie.';
+    <script type="module">
+        import { initializeApp } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-app.js";
+        import { getAuth, signInAnonymously, signInWithCustomToken, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-auth.js";
+        import { getFirestore, setLogLevel, doc, setDoc, Timestamp, collection } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-firestore.js";
         
-        renderNotesTable(elevesExemple);
-    }
-    
-    // Génère les lignes du tableau
-    function renderNotesTable(eleves) {
+        // --- CONFIGURATION ET INITIALISATION GLOBALE ---
+        setLogLevel('Debug');
+        const appId = typeof __app_id !== 'undefined' ? __app_id : 'default-app-id';
+        const firebaseConfig = typeof __firebase_config !== 'undefined' ? JSON.parse(__firebase_config) : {};
+        const initialAuthToken = typeof __initial_auth_token !== 'undefined' ? __initial_auth_token : null;
+
+        let auth, db, userId;
+        let isAuthReady = false;
+
+        const notify = document.getElementById("notification-area");
+        const filterForm = document.getElementById('filterForm');
+        const notesSection = document.getElementById('notesSection');
         const notesBody = document.getElementById('notesBody');
-        notesBody.innerHTML = '';
-        
-        eleves.forEach(eleve => {
-            const row = notesBody.insertRow();
-            row.id = `eleve-${eleve.id}`;
-            
-            // Cellule Nom
-            row.insertCell().textContent = `${eleve.nom} ${eleve.prenom}`;
-            
-            // Cellules de Saisie des Cotes (Interro 1, Interro 2, Examen)
-            ['interro1', 'interro2', 'examen'].forEach((type, index) => {
-                const max = (index < 2) ? 20 : 60; // Max 20 pour interro, 60 pour examen
-                const cell = row.insertCell();
-                cell.innerHTML = `
-                    <input type="number" 
-                           class="note-input" 
-                           data-eleve-id="${eleve.id}" 
-                           data-type="${type}" 
-                           min="0" max="${max}" 
-                           oninput="calculerTotal('${eleve.id}')"
-                           placeholder="${max}"
-                    />`;
-            });
+        const saveBtn = document.getElementById('saveBtn');
+        const saveMessage = document.getElementById('saveMessage');
 
-            // Cellule Total (Lecture seule)
-            const totalCell = row.insertCell();
-            totalCell.id = `total-${eleve.id}`;
-            totalCell.textContent = '0';
-        });
-    }
-    
-    // Calcule le total d'un élève
-    function calculerTotal(eleveId) {
-        let total = 0;
-        const inputs = document.querySelectorAll(`#eleve-${eleveId} .note-input`);
+        // --- SIMULATION DE DONNÉES ÉLÈVES (Devrait venir de Firestore) ---
+        const elevesExemple = [
+            { id: '101', nom: 'UMBA', prenom: 'Gabby' },
+            { id: '102', nom: 'KABULO', prenom: 'Ndaya' },
+            { id: '103', nom: 'MUTOMBO', prenom: 'Kalubi' },
+            { id: '104', nom: 'KASONGO', prenom: 'Tshibola' },
+            { id: '105', nom: 'LUBULA', prenom: 'Marcel' },
+            { id: '106', nom: 'MPIANA', prenom: 'Fanny' },
+            { id: '107', nom: 'NKONGOLO', prenom: 'Yves' },
+            { id: '108', nom: 'ILUNGA', prenom: 'Esther' },
+        ];
+
+
+        /**
+         * Affiche une notification temporaire.
+         */
+        function showNotification(message, type = "success") {
+            let bgColor = 'bg-save-success';
+            if (type === "error") bgColor = 'bg-red-600';
+            if (type === "warning") bgColor = 'bg-yellow-600';
+
+            notify.textContent = message;
+            notify.className = `fixed top-4 right-4 z-50 p-4 font-semibold text-white rounded-xl shadow-xl transition-all duration-300 ${bgColor}`;
+            notify.classList.remove("hidden");
+            setTimeout(() => {
+                notify.classList.add("hidden");
+            }, 4000);
+        }
         
-        inputs.forEach(input => {
-            const note = parseFloat(input.value) || 0;
-            const max = parseFloat(input.max);
-            
-            // Validation simple
-            if (note > max) {
-                input.style.borderColor = 'var(--rouge-danger)';
-                alert(`La note ne peut pas dépasser ${max}.`);
-                input.value = max;
-                total += max;
-            } else {
-                input.style.borderColor = 'var(--gris-bordure)';
+        // --- LOGIQUE D'AUTHENTIFICATION FIREBASE ---
+        if (Object.keys(firebaseConfig).length > 0) {
+            const app = initializeApp(firebaseConfig);
+            auth = getAuth(app);
+            db = getFirestore(app);
+
+            onAuthStateChanged(auth, async (user) => {
+                if (user) {
+                    isAuthReady = true;
+                    userId = user.uid;
+                    // showNotification(`Authentifié comme ${user.email || user.uid}. Prêt pour la saisie.`, "success");
+                } else {
+                    try {
+                        if (initialAuthToken) {
+                            const result = await signInWithCustomToken(auth, initialAuthToken);
+                            userId = result.user.uid;
+                        } else {
+                            const result = await signInAnonymously(auth);
+                            userId = result.user.uid; // Utilisateur anonyme
+                        }
+                        isAuthReady = true;
+                    } catch (error) {
+                        console.error("Erreur d'authentification:", error);
+                        showNotification("❌ Accès refusé. Authentification requise pour la saisie.", "error");
+                        isAuthReady = false;
+                    }
+                }
+            });
+        } else {
+            showNotification('❌ Système non opérationnel (Firebase non configuré).', 'error');
+        }
+
+        // --- FONCTIONS DE SAISIE ET CALCUL ---
+
+        /**
+         * Calcule le total d'un élève et effectue la validation.
+         */
+        function calculerTotal(eleveId) {
+            let total = 0;
+            const inputs = document.querySelectorAll(`#eleve-${eleveId} .note-input`);
+            let isRowValid = true;
+
+            inputs.forEach(input => {
+                let note = parseFloat(input.value) || 0;
+                const max = parseFloat(input.max);
+                
+                // Valider si la note dépasse le maximum ou est négative
+                if (note < 0 || note > max) {
+                    input.classList.add('border-red-500', 'ring-1', 'ring-red-500');
+                    isRowValid = false;
+                    note = Math.min(Math.max(0, note), max); // Limiter pour le calcul, mais laisser la bordure
+                } else {
+                    input.classList.remove('border-red-500', 'ring-1', 'ring-red-500');
+                }
                 total += note;
+            });
+            
+            const totalElement = document.getElementById(`total-${eleveId}`);
+            totalElement.textContent = total.toFixed(0);
+            
+            // Mise en évidence du total
+            totalElement.classList.remove('color-danger', 'color-success', 'text-gray-900');
+            if (total < 50) {
+                totalElement.classList.add('color-danger', 'font-extrabold');
+            } else if (total > 80) {
+                totalElement.classList.add('color-success', 'font-extrabold');
+            } else {
+                totalElement.classList.add('text-gray-900');
+            }
+            
+            return isRowValid;
+        }
+
+        /**
+         * Génère les lignes du tableau d'élèves.
+         */
+        function renderNotesTable(eleves, existingNotes = {}) {
+            notesBody.innerHTML = '';
+            
+            eleves.forEach(eleve => {
+                const existing = existingNotes[eleve.id] || { interro1: null, interro2: null, examen: null };
+
+                const row = notesBody.insertRow();
+                row.id = `eleve-${eleve.id}`;
+                row.className = 'hover:bg-gray-50 transition duration-100';
+                
+                // Cellule Nom
+                row.insertCell().innerHTML = `<div class="font-medium text-gray-900">${eleve.nom.toUpperCase()} <span class="text-primary-blue">${eleve.prenom}</span></div>`;
+                
+                // Cellules de Saisie des Cotes (Interro 1, Interro 2, Examen)
+                ['interro1', 'interro2', 'examen'].forEach((type, index) => {
+                    const max = (index < 2) ? 20 : 60;
+                    const cell = row.insertCell();
+                    cell.className = 'text-center';
+                    cell.innerHTML = `
+                        <input type="number" 
+                                class="note-input w-20 p-2 border border-input-border rounded-md text-center focus:border-accent-notes focus:ring-accent-notes/50 transition duration-150" 
+                                data-eleve-id="${eleve.id}" 
+                                data-type="${type}" 
+                                min="0" max="${max}" 
+                                value="${existing[type] !== null ? existing[type] : ''}"
+                                oninput="window.calculerTotal('${eleve.id}')"
+                                placeholder="/${max}"
+                        />`;
+                });
+
+                // Cellule Total (Lecture seule)
+                const totalCell = row.insertCell();
+                totalCell.id = `total-${eleve.id}`;
+                totalCell.className = 'font-bold text-lg';
+                totalCell.textContent = '0';
+                
+                // Calculer le total initial (au cas où il y avait des notes existantes)
+                window.calculerTotal(eleve.id);
+            });
+            
+            // Exposer la fonction globale pour l'événement oninput
+            window.calculerTotal = calculerTotal;
+        }
+
+
+        /**
+         * Gestionnaire de soumission du formulaire de filtre.
+         */
+        filterForm.addEventListener('submit', function(e) {
+            e.preventDefault();
+            
+            if (!isAuthReady) {
+                showNotification("Veuillez patienter pour l'authentification...", "warning");
+                return;
+            }
+
+            const annee = document.getElementById('anneeScolaire').value;
+            const periode = document.getElementById('periode').value;
+            const classeMatiere = document.getElementById('classeMatiere').value;
+            const classeMatiereText = document.getElementById('classeMatiere').options[document.getElementById('classeMatiere').selectedIndex].text;
+
+            if (!periode) {
+                showNotification("Veuillez sélectionner une Période d'Évaluation.", "warning");
+                return;
+            }
+
+            document.getElementById('currentContext').textContent = `${classeMatiereText} | ${periode} | ${annee}`;
+            notesSection.classList.remove('hidden');
+            saveMessage.textContent = 'Grille chargée. Saisissez les cotes et cliquez sur "Enregistrer".';
+            
+            // SIMULATION DE CHARGEMENT DES NOTES EXISTANTES
+            const existingNotes = {}; // Dans un vrai app, on chargerait les notes de Firestore ici
+            
+            renderNotesTable(elevesExemple, existingNotes);
+            showNotification(`Grille chargée pour ${classeMatiereText} (${periode}).`, "success");
+            lucide.createIcons();
+        });
+
+
+        /**
+         * Fonction de sauvegarde des notes vers Firestore.
+         */
+        saveBtn.addEventListener('click', async function() {
+            if (!isAuthReady) {
+                showNotification("Erreur: Non authentifié. Impossible de sauvegarder.", "error");
+                return;
+            }
+            
+            let allValid = true;
+            const notesASauver = [];
+            const annee = document.getElementById('anneeScolaire').value;
+            const periode = document.getElementById('periode').value;
+            const classeMatiere = document.getElementById('classeMatiere').value;
+
+            // 1. Collecte et validation
+            const rows = notesBody.rows;
+            if (rows.length === 0) return;
+
+            for (let i = 0; i < rows.length; i++) {
+                const row = rows[i];
+                const eleveId = row.id.replace('eleve-', '');
+                const inputs = row.querySelectorAll('.note-input');
+                let rowValid = true;
+                
+                const notes = { eleveId, total: 0, details: {} };
+                let currentTotal = 0;
+
+                inputs.forEach(input => {
+                    const note = parseFloat(input.value) || 0;
+                    const max = parseFloat(input.max);
+                    if (note < 0 || note > max) {
+                        rowValid = false;
+                        allValid = false;
+                    }
+                    notes.details[input.dataset.type] = note;
+                    currentTotal += note;
+                });
+                
+                if (!rowValid) {
+                    // Si une ligne a des erreurs, on l'ignore pour la sauvegarde mais on bloque le processus
+                    allValid = false;
+                } else {
+                    notes.total = currentTotal;
+                    notesASauver.push(notes);
+                }
+            }
+
+            if (!allValid) {
+                showNotification("❌ Veuillez corriger toutes les notes en rouge avant d'enregistrer.", "error");
+                return;
+            }
+
+            // 2. Préparation de l'enregistrement
+            const contextId = `${classeMatiere}_${periode}_${annee}`;
+            const recordPath = `artifacts/${appId}/users/${userId}/notes_records`;
+            const dataToSave = {
+                anneeScolaire: annee,
+                periode: periode,
+                classeMatiere: classeMatiere,
+                notes: notesASauver,
+                lastUpdated: Timestamp.now(),
+                teacherId: userId
+            };
+            
+            saveBtn.disabled = true;
+            saveBtn.innerHTML = '<div class="animate-spin w-5 h-5 border-2 border-t-transparent border-white rounded-full mx-auto"></div>';
+
+            try {
+                // Utilise setDoc pour créer ou écraser le document basé sur le contexte unique
+                await setDoc(doc(db, recordPath, contextId), dataToSave);
+                
+                saveMessage.className = 'message-info text-sm text-save-success mt-2 font-bold';
+                saveMessage.textContent = '✅ Toutes les notes ont été enregistrées avec succès!';
+                showNotification("Notes enregistrées ! Les données sont à jour.", "success");
+            } catch (error) {
+                console.error("Erreur lors de la sauvegarde des notes:", error);
+                saveMessage.className = 'message-info text-sm text-red-500 mt-2 font-bold';
+                saveMessage.textContent = '❌ Erreur de sauvegarde. Vérifiez votre connexion.';
+                showNotification("Erreur de sauvegarde. Voir la console.", "error");
+            } finally {
+                saveBtn.disabled = false;
+                saveBtn.innerHTML = '<i data-lucide="save" class="inline-block w-5 h-5 mr-2"></i> Enregistrer les Cotes';
+                lucide.createIcons();
             }
         });
-        
-        document.getElementById(`total-${eleveId}`).textContent = total.toFixed(0);
-        
-        // Mise en évidence du total (ex: si le total est faible)
-        const totalElement = document.getElementById(`total-${eleveId}`);
-        if (total < 50) {
-            totalElement.style.color = 'var(--rouge-danger)';
-        } else {
-            totalElement.style.color = 'var(--vert-succes)';
-        }
-    }
 
-    // Sauvegarde les notes (Simulation)
-    function sauvegarderNotes() {
-        const notesASauver = [];
-        const rows = document.getElementById('notesBody').rows;
-        
-        // Simuler la collecte des données pour l'envoi au backend
-        for (let i = 0; i < rows.length; i++) {
-            const row = rows[i];
-            const eleveId = row.id.replace('eleve-', '');
-            const inputs = row.querySelectorAll('.note-input');
-            const total = parseFloat(document.getElementById(`total-${eleveId}`).textContent);
-            
-            const notes = { eleveId, total, details: {} };
-            
-            inputs.forEach(input => {
-                notes.details[input.dataset.type] = parseFloat(input.value) || 0;
-            });
-            notesASauver.push(notes);
-        }
-
-        console.log("Notes prêtes à être sauvegardées:", notesASauver);
-        
-        document.getElementById('saveMessage').style.color = 'var(--vert-succes)';
-        document.getElementById('saveMessage').textContent = '✅ Toutes les notes ont été enregistrées avec succès dans la base de données!';
-    }
-
-    // Chargement initial
-    document.addEventListener('DOMContentLoaded', () => {
-        document.getElementById('compteur').textContent = 'Veuillez sélectionner le contexte pour charger la grille de saisie.';
-    });
-
-  </script>
+        // Initialisation des icônes
+        document.addEventListener('DOMContentLoaded', () => {
+            lucide.createIcons();
+        });
+    </script>
 </body>
 </html>
