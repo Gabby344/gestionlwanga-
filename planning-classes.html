@@ -1,221 +1,728 @@
 <!DOCTYPE html>
 <html lang="fr">
 <head>
-  <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Horaires de Cours - Institut Saint Charles Lwanga</title>
-  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700&display=swap" rel="stylesheet">
-  <style>
-    :root {
-      --bleu-fonce: #1e40af;
-      --gris-fonce: #1f2937;
-      --orange: #f59e0b;
-      --vert: #10b981;
-      --fond: #f4f6f8;
-      --ombre-legere: rgba(0,0,0,0.08);
-    }
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Planning des Cours | Direction des Études</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script src="https://kit.fontawesome.com/a2e0e6a56b.js" crossorigin="anonymous"></script>
+    
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    colors: {
+                        'indigo-800': '#3730a3',
+                        'indigo-900': '#312e81',
+                        'green-600': '#10b981',
+                        'red-600': '#dc2626',
+                        'sky-500': '#0ea5e9', // Bleu ciel
+                        'sky-100': '#f0f9ff', // Très léger ciel
+                    },
+                    boxShadow: {
+                        '3xl': '0 35px 60px -15px rgba(0, 0, 0, 0.3)',
+                    }
+                }
+            }
+        }
+    </script>
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Inter:wght@100..900&display=swap');
+        body { font-family: 'Inter', sans-serif; background-color: #f8fafc; }
+        .sidebar { transition: transform 0.3s ease-in-out; min-height: 100vh; }
+        @media (max-width: 767px) {
+            .sidebar { transform: translateX(-100%); position: fixed; z-index: 50; height: 100%; }
+            .sidebar.active { transform: translateX(0); box-shadow: 6px 0 15px rgba(0, 0, 0, 0.2); }
+        }
 
-    body {
-      font-family: 'Inter', sans-serif;
-      background-color: var(--fond);
-      margin: 0;
-      padding: 2rem 1rem;
-      color: var(--gris-fonce);
-    }
+        /* Styles spécifiques au tableau */
+        .planning-table {
+            border-collapse: separate;
+            border-spacing: 0;
+            min-width: 800px; /* Assure la lisibilité sur mobile */
+        }
+        .planning-table th, .planning-table td {
+            border: 1px solid #e5e7eb;
+            padding: 0.5rem;
+            text-align: center;
+            vertical-align: middle;
+            height: 90px; /* Augmenté pour l'esthétique */
+        }
+        .planning-table thead th {
+            background-color: #312e81; /* indigo-900 */
+            color: white;
+            font-weight: 700;
+            text-transform: uppercase;
+            font-size: 0.8rem;
+        }
+        .heure-col { 
+            background-color: #eef2ff; /* indigo-50 */
+            color: #312e81; 
+            font-weight: 700; 
+            width: 100px; 
+            font-size: 0.9rem; 
+            position: sticky;
+            left: 0;
+            z-index: 10;
+        }
 
-    h1 {
-      text-align: center;
-      font-size: 1.8rem;
-      color: var(--bleu-fonce);
-      margin-bottom: 0.25rem;
-    }
-    h2 {
-      text-align: center;
-      font-size: 1rem;
-      font-weight: normal;
-      color: #6b7280;
-      margin-bottom: 2rem;
-    }
-
-    .container { max-width: 1200px; margin: auto; }
-
-    .controls-bar {
-      background-color: white;
-      padding: 1rem;
-      border-radius: 8px;
-      box-shadow: 0 2px 6px var(--ombre-legere);
-      margin-bottom: 1.5rem;
-      display: flex;
-      flex-wrap: wrap;
-      gap: 1rem;
-      justify-content: space-between;
-      align-items: center;
-    }
-
-    .input-group label { font-weight: 600; margin-right: 0.5rem; color: var(--gris-fonce); }
-    select { padding: 0.6rem; border-radius: 4px; border: 1px solid #d1d5db; }
-
-    .btn-action { padding: 0.6rem 1rem; border: none; border-radius: 4px; font-weight: 600; cursor: pointer; }
-    .btn-imprimer { background-color: var(--vert); color: white; }
-    .btn-imprimer:hover { background-color: #059669; }
-
-    #planningContainer {
-      overflow-x: auto;
-      background-color: white;
-      border-radius: 8px;
-      box-shadow: 0 4px 10px var(--ombre-legere);
-    }
-
-    .planning-table {
-      width: 100%;
-      border-collapse: collapse;
-      min-width: 800px;
-    }
-
-    th, td {
-      border: 1px solid #e5e7eb;
-      padding: 0.5rem;
-      text-align: center;
-      vertical-align: middle;
-      height: 80px;
-    }
-
-    th {
-      background-color: var(--bleu-fonce);
-      color: white;
-      font-weight: 700;
-      text-transform: uppercase;
-      font-size: 0.8rem;
-      position: sticky;
-      top: 0;
-    }
-
-    .heure-col { background-color: #f3f4f6; color: var(--gris-fonce); font-weight: 600; width: 90px; font-size: 0.9rem; }
-
-    .cours-cell { background-color: #fffbeb; cursor: pointer; transition: background-color 0.1s; }
-    .cours-cell:hover { background-color: #fef3c7; }
-    .cours-cell strong { display: block; color: var(--orange); font-size: 0.95rem; margin-bottom: 0.2rem; }
-    .cours-cell span { display: block; font-size: 0.75rem; color: #6b7280; }
-    .cours-cell.pause { background-color: #e5e7eb; color: #9ca3af; font-style: italic; font-weight: 500; }
-    .cours-cell.libre { background-color: white; color: #9ca3af; }
-
-    .btn-retour { display: block; text-align: center; margin-top: 1.5rem; color: var(--gris-fonce); text-decoration: none; font-size: 0.9rem; }
-
-  </style>
+        /* Styles de la cellule de cours */
+        .cours-cell { 
+            background-color: white; 
+            cursor: pointer; 
+            transition: background-color 0.1s, box-shadow 0.1s; 
+            position: relative;
+        }
+        .cours-cell:not(.pause):not(.libre):hover { 
+            background-color: #eff6ff; /* blue-50 */
+            box-shadow: inset 0 0 0 2px #93c5fd; /* blue-300 */
+        }
+        .cours-cell.libre { 
+            background-color: #f9fafb; /* gray-50 */
+            color: #9ca3af; 
+            font-style: italic;
+        }
+        .cours-cell.pause { 
+            background-color: #f3f4f6; /* gray-100 */
+            color: #6b7280; 
+            font-weight: 600; 
+        }
+        .cours-cell strong { 
+            display: block; 
+            color: #0ea5e9; /* sky-500 */
+            font-size: 0.95rem; 
+            font-weight: 700; 
+            margin-bottom: 0.1rem;
+        }
+        .cours-cell span { 
+            display: block; 
+            font-size: 0.75rem; 
+            color: #4b5563; /* gray-600 */
+        }
+        
+        /* Conteneur pour le tableau responsive */
+        .table-responsive {
+            overflow-x: auto;
+            border-radius: 0.75rem;
+            box-shadow: 0 4px 10px rgba(0,0,0,0.05);
+        }
+    </style>
 </head>
-<body>
-  <div class="container">
-    <h1>🗓️ Horaires de Cours</h1>
-    <h2>Consultez les horaires par classe et section (EB et Secondaire)</h2>
 
-    <div class="controls-bar">
-      <div class="input-group">
-        <label for="selectClasse">Choisir une classe :</label>
-        <select id="selectClasse" onchange="loadHoraires(this.value)">
-          <!-- EB : 7ème et 8ème -->
-          <option value="7S">7ème  (EB)</option>
-          <option value="7A">7ème (EB)</option>
-          <option value="7C">7ème  (EB)</option>
-          <option value="7P">7ème (EB)</option>
-          <option value="8S">8ème  (EB)</option>
-          <option value="8A">8ème  (EB)</option>
-          <option value="8C">8ème  (EB)</option>
-          <option value="8P">8ème  (EB)</option>
-          <!-- Secondaire : 1ère → 4ème -->
-          <option value="1S">1ère Scientifique</option>
-          <option value="1A">1ère Agriculture</option>
-          <option value="1C">1ère Commerciale & Gestion</option>
-          <option value="1P">1ère Pédagogie générale</option>
-          <option value="2S">2ème Scientifique</option>
-          <option value="2A">2ème Agriculture</option>
-          <option value="2C">2ème Commerciale & Gestion</option>
-          <option value="2P">2ème Pédagogie générale</option>
-          <option value="3S">3ème Scientifique</option>
-          <option value="3A">3ème Agriculture</option>
-          <option value="3C">3ème Commerciale & Gestion</option>
-          <option value="3P">3ème Pédagogie générale</option>
-          <option value="4S">4ème Scientifique</option>
-          <option value="4A">4ème Agriculture</option>
-          <option value="4C">4ème Commerciale & Gestion</option>
-          <option value="4P">4ème Pédagogie générale</option>
-        </select>
-      </div>
-      <button class="btn-action btn-imprimer" onclick="window.print()">🖨️ Imprimer les Horaires</button>
+<body class="bg-gray-50 text-gray-900 flex min-h-screen">
+
+    <!-- Bouton Toggle Mobile -->
+    <button id="menuToggle" class="fixed top-4 left-4 z-50 p-2 bg-indigo-800 text-white rounded-lg shadow-xl md:hidden">
+        <i class="fa-solid fa-bars"></i>
+    </button>
+
+    <!-- Sidebar de Navigation (Ajoutée pour un contexte pro) -->
+    <aside id="sidebar" class="sidebar w-64 bg-indigo-800 text-white flex flex-col shadow-2xl md:translate-x-0 flex-shrink-0">
+        <div class="p-6 text-3xl font-extrabold border-b border-indigo-700 flex items-center gap-2">
+            <i class="fa-solid fa-user-graduate text-yellow-300"></i> Direction
+        </div>
+        <nav class="flex-1 p-4 space-y-2">
+            <a href="accueil-directeur-etudes.html" class="flex items-center gap-3 p-3 hover:bg-indigo-700 rounded-lg transition">
+                <i class="fa-solid fa-chart-line w-5 text-center"></i> Tableau de bord
+            </a>
+            <a href="ajouter-enseignants.html" class="flex items-center gap-3 p-3 hover:bg-indigo-700 rounded-lg transition">
+                <i class="fa-solid fa-chalkboard-user w-5 text-center"></i> Ajouter Enseignants
+            </a>
+            <a href="liste-enseignants.html" class="flex items-center gap-3 p-3 hover:bg-indigo-700 rounded-lg transition">
+                <i class="fa-solid fa-users-viewfinder w-5 text-center"></i> Liste Enseignants
+            </a>
+            <a href="#" class="flex items-center gap-3 p-3 bg-indigo-700 rounded-lg transition font-semibold shadow-md border-l-4 border-sky-400">
+                <i class="fa-solid fa-calendar-alt w-5 text-center"></i> Planning des Cours
+            </a>
+            <a href="liste-eleves.html" class="flex items-center gap-3 p-3 hover:bg-indigo-700 rounded-lg transition">
+                <i class="fa-solid fa-users w-5 text-center"></i> Liste des Élèves
+            </a>
+            <a href="profil-utilisateur.html" class="flex items-center gap-3 p-3 hover:bg-indigo-700 rounded-lg transition">
+                <i class="fa-solid fa-user w-5 text-center"></i> Mon Profil
+            </a>
+        </nav>
+        <button id="logoutBtn" class="m-4 py-3 bg-red-600 hover:bg-red-700 rounded-xl flex items-center justify-center gap-2 font-semibold transition duration-200 shadow-lg">
+            <i class="fa-solid fa-right-from-bracket"></i> Déconnexion
+        </button>
+    </aside>
+
+    <!-- Contenu Principal -->
+    <main id="mainContent" class="flex-1 p-4 md:p-8 overflow-y-auto">
+        <div class="max-w-7xl mx-auto">
+            <header class="mb-8 border-b pb-4 flex justify-between items-center">
+                <div>
+                    <h1 class="text-3xl md:text-4xl font-extrabold text-indigo-900 flex items-center gap-3">
+                        <i class="fa-solid fa-calendar-days text-sky-500"></i> Planning des Cours
+                    </h1>
+                    <p class="text-lg font-medium text-gray-600 mt-2">
+                        Gestion centralisée des horaires pour toutes les classes.
+                    </p>
+                </div>
+                <button id="printBtn" onclick="window.print()" class="py-2 px-4 bg-green-600 text-white font-semibold rounded-lg shadow-md hover:bg-green-700 transition duration-200 flex items-center gap-2 text-sm md:text-base print:hidden">
+                    <i class="fa-solid fa-print"></i> Imprimer
+                </button>
+            </header>
+
+            <!-- Sélecteurs de Classe -->
+            <div class="bg-white p-6 rounded-xl shadow-lg mb-8 flex flex-col md:flex-row gap-4 print:hidden">
+                <div class="flex-1">
+                    <label for="classSelector" class="block text-sm font-medium text-gray-700 mb-1">Sélectionner la Classe</label>
+                    <select id="classSelector" class="w-full p-3 border border-gray-300 rounded-lg shadow-sm focus:ring-sky-500 focus:border-sky-500 bg-gray-50 transition duration-150">
+                        <!-- Options basées sur votre code original, utilisées comme clés Firestore -->
+                        <option value="7S">7ème (EB)</option>
+                        <option value="7A">8ème  (EB)</option>
+                        <option value="7C">1ème Commerciale (EB)</option>
+                        <option value="7P">1ème Pédagogie (EB)</option>
+                        <option value="8S">1ème Scientifique (EB)</option>
+                        <option value="8A">4ème Agriculture (EB)</option>
+                        <option value="8C">2ème Commerciale (EB)</option>
+                        <option value="8P">2ème Pédagogie (EB)</option>
+                        <!-- Secondaire : 1ère → 4ème -->
+                        <option value="1S">2ère Scientifique</option>
+                        <option value="1A">2ère Agriculture</option>
+                        <option value="1C">3ère Commerciale & Gestion</option>
+                        <option value="1P">3ère Pédagogie générale</option>
+                        <option value="2S">3ème Scientifique</option>
+                        <option value="2A">3ème Agriculture</option>
+                        <option value="2C">4ème Commerciale & Gestion</option>
+                        <option value="2P">4ème Pédagogie générale</option>
+                        <option value="3S">4ème Scientifique</option>
+                        <option value="3A">4ème Agriculture</option>
+                    </select>
+                </div>
+            </div>
+
+            <!-- Zone d'affichage des messages (chargement/erreur) -->
+            <div id="messageArea" class="mb-6 print:hidden"></div>
+
+            <!-- Affichage du Planning -->
+            <div class="bg-white rounded-xl shadow-2xl">
+                <div class="p-4 bg-indigo-50 rounded-t-xl print:bg-white print:p-0">
+                    <h2 class="text-2xl font-bold text-indigo-900" id="currentClassDisplayTitle">Horaires pour: 7ème Scientifique (EB)</h2>
+                    <p class="text-sm text-gray-600 print:hidden">Cliquez sur une case pour ajouter/modifier un cours.</p>
+                </div>
+                
+                <div id="planningContainer" class="table-responsive">
+                    <!-- Le tableau sera généré ici par JavaScript -->
+                    <p class="p-6 text-center text-gray-500" id="loadingMessage">Chargement du planning...</p>
+                </div>
+            </div>
+        </div>
+    </main>
+    
+    <!-- Modal d'Ajout/Édition de Séance (Réutilisé de l'exemple précédent) -->
+    <div id="scheduleModal" class="fixed inset-0 bg-gray-900 bg-opacity-75 hidden flex items-center justify-center p-4 z-50 transition-opacity duration-300 print:hidden">
+        <div class="bg-white rounded-xl shadow-3xl w-full max-w-lg p-6 transform transition-transform duration-300 scale-95">
+            <h3 class="text-2xl font-bold text-indigo-900 mb-4 border-b pb-2" id="modalTitle">Ajouter une Nouvelle Séance</h3>
+            
+            <form id="scheduleForm" class="space-y-4">
+                <input type="hidden" id="scheduleId" value="">
+                <input type="hidden" id="modalDay" value="">
+                <input type="hidden" id="modalTimeSlot" value="">
+
+                <div>
+                    <label for="courseName" class="block text-sm font-medium text-gray-700">Nom de la Matière <span class="text-red-500">*</span></label>
+                    <input type="text" id="courseName" required class="mt-1 block w-full p-3 border border-gray-300 rounded-lg shadow-sm focus:ring-sky-500 focus:border-sky-500 transition">
+                </div>
+                
+                <div>
+                    <label for="teacherId" class="block text-sm font-medium text-gray-700">Enseignant <span class="text-red-500">*</span></label>
+                    <select id="teacherId" required class="mt-1 block w-full p-3 border border-gray-300 rounded-lg shadow-sm focus:ring-sky-500 focus:border-sky-500 bg-white transition">
+                        <option value="">-- Sélectionner un enseignant --</option>
+                        <!-- Les options des enseignants seront chargées ici -->
+                    </select>
+                </div>
+
+                <div class="grid grid-cols-2 gap-4">
+                    <div>
+                        <label for="startTime" class="block text-sm font-medium text-gray-700">Heure de Début <span class="text-red-500">*</span></label>
+                        <input type="time" id="startTime" required class="mt-1 block w-full p-3 border border-gray-300 rounded-lg shadow-sm focus:ring-sky-500 focus:border-sky-500 transition">
+                    </div>
+                    <div>
+                        <label for="endTime" class="block text-sm font-medium text-gray-700">Heure de Fin <span class="text-red-500">*</span></label>
+                        <input type="time" id="endTime" required class="mt-1 block w-full p-3 border border-gray-300 rounded-lg shadow-sm focus:ring-sky-500 focus:border-sky-500 transition">
+                    </div>
+                </div>
+
+                <div>
+                    <label for="room" class="block text-sm font-medium text-gray-700">Salle de Classe (Optionnel)</label>
+                    <input type="text" id="room" class="mt-1 block w-full p-3 border border-gray-300 rounded-lg shadow-sm focus:ring-sky-500 focus:border-sky-500 transition">
+                </div>
+                
+                <div class="flex items-center gap-2">
+                    <input type="checkbox" id="isBreak" class="rounded border-gray-300 text-sky-600 shadow-sm focus:ring-sky-500">
+                    <label for="isBreak" class="text-sm font-medium text-gray-700">Ceci est une Pause / Récréation</label>
+                </div>
+
+                <div class="flex justify-end gap-3 pt-4">
+                    <button type="button" id="closeModalBtn" class="py-2 px-4 border border-gray-300 rounded-lg shadow-sm text-sm font-medium text-gray-700 hover:bg-gray-50 transition">
+                        Annuler
+                    </button>
+                    <button type="submit" class="py-2 px-4 bg-indigo-600 text-white font-semibold rounded-lg shadow-md hover:bg-indigo-700 transition duration-200 flex items-center gap-2">
+                        <i class="fa-solid fa-save"></i> Enregistrer la Séance
+                    </button>
+                    <button type="button" id="deleteScheduleBtn" class="py-2 px-4 bg-red-600 text-white font-semibold rounded-lg shadow-md hover:bg-red-700 transition duration-200 hidden flex items-center gap-2">
+                        <i class="fa-solid fa-trash"></i> Supprimer
+                    </button>
+                </div>
+            </form>
+        </div>
     </div>
 
-    <div id="planningContainer"></div>
 
-    <a href="cours.html" class="btn-retour">← Retour au menu Cours & Planning</a>
-  </div>
+    <script type="module">
+        import { initializeApp } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-app.js";
+        import { getAuth, onAuthStateChanged, signOut, signInWithCustomToken, signInAnonymously } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-auth.js";
+        import { 
+            getFirestore, collection, onSnapshot, setLogLevel, 
+            query, where, addDoc, doc, updateDoc, deleteDoc, getDocs 
+        } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-firestore.js";
+        
+        // Active le logging pour le débogage de Firestore
+        setLogLevel('debug');
 
-  <script>
-    const horairesData = {
-      // Exemples EB (7ème et 8ème)
-      '7S': {
-        '07:30-08:20': { lun: 'Math', mar: 'Physique', mer: 'Chimie', jeu: 'Bio', ven: 'Math' },
-        '08:20-09:10': { lun: 'Francais', mar: 'Math', mer: 'Anglais', jeu: 'Physique', ven: 'Informatique' },
-        '09:10-09:30': { lun: 'Pause', mar: 'Pause', mer: 'Pause', jeu: 'Pause', ven: 'Pause' },
-        '09:30-10:20': { lun: 'Bio', mar: 'Francais', mer: 'Math', jeu: 'Chimie', ven: 'Sport' },
-        '10:20-11:10': { lun: 'Informatique', mar: 'Bio', mer: 'Physique', jeu: 'Math', ven: 'Libre' },
-        '11:10-12:00': { lun: 'E.Civique', mar: 'Libre', mer: 'Francais', jeu: 'Libre', ven: 'Histoire' }
-      },
-      '8S': {
-        '07:30-08:20': { lun: 'Physique', mar: 'Math', mer: 'Chimie', jeu: 'Bio', ven: 'Math' },
-        '08:20-09:10': { lun: 'Francais', mar: 'Informatique', mer: 'Anglais', jeu: 'Physique', ven: 'Sport' },
-        '09:10-09:30': { lun: 'Pause', mar: 'Pause', mer: 'Pause', jeu: 'Pause', ven: 'Pause' },
-        '09:30-10:20': { lun: 'Math', mar: 'Bio', mer: 'Francais', jeu: 'Chimie', ven: 'Libre' },
-        '10:20-11:10': { lun: 'Informatique', mar: 'Math', mer: 'Physique', jeu: 'Bio', ven: 'Libre' },
-        '11:10-12:00': { lun: 'E.Civique', mar: 'Libre', mer: 'Francais', jeu: 'Libre', ven: 'Histoire' }
-      },
-      // Secondaire exemple pour 1ère Scientifique
-      '1S': {
-        '07:30-08:20': { lun: 'Math', mar: 'Physique', mer: 'Chimie', jeu: 'Bio', ven: 'Math' },
-        '08:20-09:10': { lun: 'Francais', mar: 'Math', mer: 'Anglais', jeu: 'Physique', ven: 'Informatique' },
-        '09:10-09:30': { lun: 'Pause', mar: 'Pause', mer: 'Pause', jeu: 'Pause', ven: 'Pause' },
-        '09:30-10:20': { lun: 'Bio', mar: 'Francais', mer: 'Math', jeu: 'Chimie', ven: 'Sport' },
-        '10:20-11:10': { lun: 'Informatique', mar: 'Bio', mer: 'Physique', jeu: 'Math', ven: 'Libre' },
-        '11:10-12:00': { lun: 'E.Civique', mar: 'Libre', mer: 'Francais', jeu: 'Libre', ven: 'Histoire' }
-      }
-      // Les autres classes peuvent être ajoutées avec la même structure
-    };
+        // --- Configuration Firebase ---
+        const appId = typeof __app_id !== 'undefined' ? __app_id : 'default-app-id';
+        const firebaseConfig = JSON.parse(typeof __firebase_config !== 'undefined' ? __firebase_config : '{}');
+        const initialAuthToken = typeof __initial_auth_token !== 'undefined' ? __initial_auth_token : null;
+        
+        let app, auth, db, userId;
 
-    function loadHoraires(classeKey) {
-      const horaires = horairesData[classeKey] || horairesData['7S'];
-      const jours = ['lun','mar','mer','jeu','ven'];
-      const joursAffichage = ['Lundi','Mardi','Mercredi','Jeudi','Vendredi'];
+        try {
+            app = initializeApp(firebaseConfig);
+            auth = getAuth(app);
+            db = getFirestore(app);
+        } catch (error) {
+            console.error("Erreur d'initialisation Firebase:", error);
+        }
+        
+        // --- Constantes et Variables Globales ---
+        const DAYS_OF_WEEK = ['lun', 'mar', 'mer', 'jeu', 'ven']; // Clés de jour
+        const DAYS_DISPLAY = ['Lundi', 'Mardi', 'Mercredi', 'Jeudi', 'Vendredi']; // Affichage
+        
+        // Définition des plages horaires fixes (adaptée à votre format)
+        const TIME_SLOTS = [
+            '07:30-08:20',
+            '08:20-09:10',
+            '09:10-09:30',
+            '09:30-10:20', // Pause
+            '10:20-11:10',
+            '11:10-12:00',
+            '12:00-13:00', // Sortie (Ajouté pour un planning complet)
+            '13:00-13:50',
+            '13:50-14:40',
+            '14:40-15:30',
+        ];
+        
+        let allTeachers = []; // { id, nom, prenom }
+        let currentScheduleMap = {}; // Map { time_day: { id, data } } pour un accès rapide
+        
+        // --- Éléments du DOM ---
+        const messageArea = document.getElementById('messageArea');
+        const sidebar = document.getElementById("sidebar");
+        const menuToggle = document.getElementById("menuToggle");
+        const logoutBtn = document.getElementById("logoutBtn");
+        
+        const classSelector = document.getElementById('classSelector');
+        const planningContainer = document.getElementById('planningContainer');
+        const currentClassDisplayTitle = document.getElementById('currentClassDisplayTitle');
+        const loadingMessage = document.getElementById('loadingMessage');
+        
+        const scheduleModal = document.getElementById('scheduleModal');
+        const scheduleForm = document.getElementById('scheduleForm');
+        const closeModalBtn = document.getElementById('closeModalBtn');
+        const deleteScheduleBtn = document.getElementById('deleteScheduleBtn');
+        const teacherSelect = document.getElementById('teacherId');
+        const modalTitle = document.getElementById('modalTitle');
+        
+        const isBreakCheckbox = document.getElementById('isBreak');
+        const courseNameInput = document.getElementById('courseName');
+        const teacherSelectContainer = document.getElementById('teacherId').parentNode;
+        const roomInput = document.getElementById('room');
 
-      let tableHTML = `<table class="planning-table"><thead><tr><th>Heures</th>`;
-      joursAffichage.forEach(j => tableHTML += `<th>${j}</th>`);
-      tableHTML += `</tr></thead><tbody>`;
 
-      for (const heure in horaires) {
-        tableHTML += `<tr><td class="heure-col">${heure}</td>`;
-        jours.forEach(jour => {
-          const cours = horaires[heure][jour];
-          let cellClass = 'cours-cell';
-          let cellContent = '';
-          if(cours === 'Pause') {
-            cellClass += ' pause';
-            cellContent = 'Pause / Récréation';
-          } else if(cours === 'Libre') {
-            cellClass += ' libre';
-            cellContent = 'Libre';
-          } else {
-            const classe = classeKey; // Affiche la classe comme "salle"
-            const enseignant = 'M. Gabby'; // Exemple
-            cellContent = `<strong>${cours}</strong><span>${enseignant}</span><span>Classe: ${classe}</span>`;
-          }
-          tableHTML += `<td class="${cellClass}">${cellContent}</td>`;
+        // --- Fonctions UX & Messages ---
+
+        function displayAlert(message, type = 'error') {
+            // (Fonction d'alerte Tailwind/Font Awesome réutilisée)
+            let bgColor, borderColor, icon, textColor;
+            switch(type) {
+                case 'success': bgColor = 'bg-green-100'; borderColor = 'border-green-400'; icon = 'fa-circle-check'; textColor = 'text-green-700'; break;
+                case 'error': bgColor = 'bg-red-100'; borderColor = 'border-red-400'; icon = 'fa-circle-xmark'; textColor = 'text-red-700'; break;
+                case 'loading': bgColor = 'bg-indigo-100'; borderColor = 'border-indigo-400'; icon = 'fa-spinner fa-spin'; textColor = 'text-indigo-700'; break;
+                default: bgColor = 'bg-gray-100'; borderColor = 'border-gray-400'; icon = 'fa-circle-info'; textColor = 'text-gray-700';
+            }
+
+            messageArea.innerHTML = `
+                <div class="${bgColor} ${textColor} border-l-4 ${borderColor} p-4 rounded-lg shadow-md flex items-center gap-3" role="alert">
+                    <i class="fa-solid ${icon} text-xl"></i>
+                    <p class="font-medium">${message}</p>
+                </div>
+            `;
+            
+            if (type !== 'loading') {
+                 setTimeout(() => messageArea.innerHTML = '', 5000);
+            }
+        }
+        
+        function getTeacherName(teacherId) {
+            const teacher = allTeachers.find(t => t.id === teacherId);
+            const name = teacher ? `${teacher.prenom || ''} ${teacher.nom || ''}`.trim() : 'Enseignant Inconnu';
+            return name || `ID: ${teacherId.substring(0, 4)}...`;
+        }
+
+        // --- Fonctions Modal ---
+        
+        function openModal(dayKey, timeSlot) {
+            scheduleForm.reset();
+            deleteScheduleBtn.classList.add('hidden');
+            document.getElementById('scheduleId').value = '';
+            document.getElementById('modalDay').value = dayKey;
+            document.getElementById('modalTimeSlot').value = timeSlot;
+            
+            const scheduleKey = `${timeSlot}_${dayKey}`;
+            const scheduleEntry = currentScheduleMap[scheduleKey];
+            
+            // Extrait les heures
+            const [startTime, endTime] = timeSlot.split('-');
+            document.getElementById('startTime').value = startTime;
+            document.getElementById('endTime').value = endTime;
+            
+            // Cache la suppression par défaut
+            deleteScheduleBtn.classList.add('hidden');
+            
+            if (scheduleEntry) {
+                // Mode Édition
+                const data = scheduleEntry.data;
+                document.getElementById('scheduleId').value = scheduleEntry.id;
+                modalTitle.textContent = `Modifier la Séance pour ${DAYS_DISPLAY[DAYS_OF_WEEK.indexOf(dayKey)]} (${timeSlot})`;
+                
+                if (data.isBreak) {
+                    isBreakCheckbox.checked = true;
+                    toggleBreakFields(true);
+                    courseNameInput.value = data.courseName || 'Pause / Récréation';
+                } else {
+                    isBreakCheckbox.checked = false;
+                    toggleBreakFields(false);
+                    document.getElementById('courseName').value = data.courseName;
+                    document.getElementById('teacherId').value = data.teacherId || '';
+                    document.getElementById('room').value = data.room || '';
+                }
+                deleteScheduleBtn.classList.remove('hidden');
+            } else {
+                // Mode Création
+                modalTitle.textContent = `Ajouter une Séance pour ${DAYS_DISPLAY[DAYS_OF_WEEK.indexOf(dayKey)]} (${timeSlot})`;
+                isBreakCheckbox.checked = false;
+                toggleBreakFields(false);
+
+                // Gère la détection automatique des pauses
+                const isFixedBreak = timeSlot === '09:10-09:30' || timeSlot === '12:00-13:00';
+                if (isFixedBreak) {
+                    isBreakCheckbox.checked = true;
+                    toggleBreakFields(true);
+                    courseNameInput.value = timeSlot === '09:10-09:30' ? 'Récréation' : 'Pause Déjeuner';
+                }
+            }
+            
+            scheduleModal.classList.remove('hidden');
+            scheduleModal.querySelector('div').classList.remove('scale-95');
+            scheduleModal.querySelector('div').classList.add('scale-100');
+        }
+
+        function closeModal() {
+            scheduleModal.querySelector('div').classList.remove('scale-100');
+            scheduleModal.querySelector('div').classList.add('scale-95');
+            
+            setTimeout(() => {
+                scheduleModal.classList.add('hidden');
+            }, 300);
+        }
+        
+        function toggleBreakFields(isBreak) {
+            const courseContainer = courseNameInput.parentNode;
+            
+            // Masque ou affiche les champs de cours/enseignant/salle
+            courseContainer.classList.toggle('hidden', isBreak);
+            teacherSelectContainer.classList.toggle('hidden', isBreak);
+            roomInput.parentNode.classList.toggle('hidden', isBreak);
+
+            // Gère l'exigence des champs
+            courseNameInput.required = !isBreak;
+            teacherSelect.required = !isBreak;
+            
+            if (isBreak) {
+                courseNameInput.value = courseNameInput.value || 'Pause / Récréation';
+                modalTitle.textContent = 'Ajouter une Pause';
+            } else {
+                if (modalTitle.textContent.includes('Pause')) {
+                    modalTitle.textContent = 'Ajouter une Nouvelle Séance';
+                }
+            }
+        }
+        
+        isBreakCheckbox.addEventListener('change', (e) => {
+            toggleBreakFields(e.target.checked);
         });
-        tableHTML += `</tr>`;
-      }
-      tableHTML += `</tbody></table>`;
-      document.getElementById('planningContainer').innerHTML = tableHTML;
-    }
 
-    document.addEventListener('DOMContentLoaded', () => {
-      loadHoraires(document.getElementById('selectClasse').value);
-    });
-  </script>
+        // --- Fonctions CRUD Firestore ---
+
+        /**
+         * Récupère la liste de tous les enseignants pour le sélecteur.
+         */
+        async function fetchTeachersForSelect() {
+            try {
+                const teachersColRef = collection(db, `artifacts/${appId}/public/data/teachers`);
+                const snapshot = await getDocs(teachersColRef);
+                
+                allTeachers = [];
+                teacherSelect.innerHTML = '<option value="">-- Sélectionner un enseignant --</option>';
+
+                snapshot.forEach(doc => {
+                    const data = doc.data();
+                    const id = doc.id;
+                    allTeachers.push({ id, ...data });
+                    
+                    const fullName = `${data.prenom || ''} ${data.nom || ''}`.trim();
+                    const option = document.createElement('option');
+                    option.value = id;
+                    option.textContent = fullName || `Enseignant (ID: ${id.substring(0, 4)}...)`;
+                    teacherSelect.appendChild(option);
+                });
+
+            } catch (error) {
+                console.error("Erreur de chargement des enseignants:", error);
+                // On n'affiche pas d'alerte ici, mais on s'assure que le select est vide
+            }
+        }
+
+        /**
+         * Écoute en temps réel les horaires pour la classe sélectionnée.
+         */
+        function setupScheduleListener() {
+            if (!userId) return;
+
+            const selectedClassKey = classSelector.value;
+            const selectedClassText = classSelector.options[classSelector.selectedIndex].text;
+
+            currentClassDisplayTitle.textContent = `Horaires pour: ${selectedClassText}`;
+            currentScheduleMap = {};
+            
+            // Collection publique des horaires
+            const schedulesColRef = collection(db, `artifacts/${appId}/public/data/schedules`);
+            
+            // Requête pour filtrer par classe
+            const q = query(
+                schedulesColRef, 
+                where('classKey', '==', selectedClassKey)
+            );
+            
+            loadingMessage.classList.remove('hidden');
+            planningContainer.innerHTML = '';
+            
+            // onSnapshot écoute les changements en temps réel
+            onSnapshot(q, (snapshot) => {
+                currentScheduleMap = {}; // Réinitialise la carte
+                snapshot.forEach(doc => {
+                    const data = doc.data();
+                    // Clé unique pour le tableau : 'heure_jour' (ex: '07:30-08:20_lun')
+                    const key = `${data.timeSlot}_${data.day}`;
+                    currentScheduleMap[key] = { id: doc.id, data: data };
+                });
+                
+                // Redessine le tableau complet
+                renderScheduleTable();
+                loadingMessage.classList.add('hidden');
+
+            }, (error) => {
+                console.error("Erreur d'écoute en temps réel de Firestore:", error);
+                displayAlert("Erreur lors du chargement du planning.", 'error');
+                loadingMessage.textContent = "Erreur de connexion. Veuillez réessayer.";
+            });
+        }
+        
+        /**
+         * Génère et injecte la structure du tableau HTML.
+         */
+        function renderScheduleTable() {
+            let tableHTML = `<table class="planning-table w-full"><thead><tr><th>Heures</th>`;
+            DAYS_DISPLAY.forEach(j => tableHTML += `<th>${j}</th>`);
+            tableHTML += `</tr></thead><tbody>`;
+
+            TIME_SLOTS.forEach(timeSlot => {
+                const [startTime, endTime] = timeSlot.split('-');
+                tableHTML += `<tr><td class="heure-col">${timeSlot}</td>`;
+
+                DAYS_OF_WEEK.forEach(dayKey => {
+                    const scheduleKey = `${timeSlot}_${dayKey}`;
+                    const scheduleEntry = currentScheduleMap[scheduleKey];
+                    
+                    let cellClass = 'cours-cell';
+                    let cellContent = 'Libre';
+                    
+                    if (scheduleEntry) {
+                        const data = scheduleEntry.data;
+                        if (data.isBreak) {
+                            cellClass += ' pause';
+                            cellContent = data.courseName || 'Pause / Récréation';
+                        } else {
+                            const teacherName = getTeacherName(data.teacherId);
+                            cellContent = `<strong>${data.courseName}</strong><span>${teacherName}</span>`;
+                            if (data.room) {
+                                cellContent += `<span>Salle: ${data.room}</span>`;
+                            }
+                        }
+                    } else if (timeSlot === '09:10-09:30' || timeSlot === '12:00-13:00') {
+                        // Si l'entrée n'existe pas, on met un défaut pour les pauses fixes
+                        cellClass += ' pause';
+                        cellContent = timeSlot === '09:10-09:30' ? 'Récréation' : 'Pause Déjeuner';
+                    } else {
+                        cellClass += ' libre';
+                    }
+
+                    // Ajoute l'événement onclick pour l'édition/ajout
+                    tableHTML += `<td class="${cellClass}" onclick="openModal('${dayKey}', '${timeSlot}')">${cellContent}</td>`;
+                });
+                tableHTML += `</tr>`;
+            });
+
+            tableHTML += `</tbody></table>`;
+            planningContainer.innerHTML = tableHTML;
+        }
+
+        /**
+         * Gère l'ajout ou la mise à jour d'une séance.
+         */
+        async function handleSaveSchedule(e) {
+            e.preventDefault();
+            
+            const scheduleId = document.getElementById('scheduleId').value;
+            const isEditing = !!scheduleId;
+            const isBreak = isBreakCheckbox.checked;
+            
+            const timeSlot = document.getElementById('modalTimeSlot').value;
+            const [startTime, endTime] = [document.getElementById('startTime').value, document.getElementById('endTime').value];
+
+            // Validation de l'heure
+            if (startTime >= endTime) {
+                displayAlert("L'heure de fin doit être postérieure à l'heure de début.", 'error');
+                return;
+            }
+            
+            // Construit l'objet de données
+            const scheduleData = {
+                classKey: classSelector.value,
+                day: document.getElementById('modalDay').value,
+                timeSlot: timeSlot,
+                startTime: startTime,
+                endTime: endTime,
+                isBreak: isBreak,
+            };
+
+            if (isBreak) {
+                scheduleData.courseName = courseNameInput.value || (timeSlot === '09:10-09:30' ? 'Récréation' : 'Pause');
+                scheduleData.teacherId = null;
+                scheduleData.room = null;
+            } else {
+                scheduleData.courseName = courseNameInput.value;
+                scheduleData.teacherId = teacherSelect.value;
+                scheduleData.room = roomInput.value || null;
+                
+                if (!scheduleData.teacherId) {
+                    displayAlert("Veuillez sélectionner un enseignant.", 'error');
+                    return;
+                }
+            }
+            
+            try {
+                if (isEditing) {
+                    // Mettre à jour
+                    const scheduleDocRef = doc(db, `artifacts/${appId}/public/data/schedules`, scheduleId);
+                    await updateDoc(scheduleDocRef, scheduleData);
+                    displayAlert("Séance de cours mise à jour avec succès !", 'success');
+                } else {
+                    // Ajouter
+                    const schedulesColRef = collection(db, `artifacts/${appId}/public/data/schedules`);
+                    await addDoc(schedulesColRef, scheduleData);
+                    displayAlert("Nouvelle séance de cours ajoutée avec succès !", 'success');
+                }
+                closeModal();
+            } catch (error) {
+                console.error("Erreur de sauvegarde de la séance:", error);
+                displayAlert("Erreur lors de l'enregistrement de la séance.", 'error');
+            }
+        }
+
+        /**
+         * Gère la suppression d'une séance.
+         */
+        async function handleDeleteSchedule() {
+            const scheduleId = document.getElementById('scheduleId').value;
+            if (!scheduleId) return;
+            
+            // Note: Dans une application réelle, ceci nécessiterait un modal de confirmation.
+            // On procède à la suppression directement pour le contexte de l'immersive.
+            
+            try {
+                const scheduleDocRef = doc(db, `artifacts/${appId}/public/data/schedules`, scheduleId);
+                await deleteDoc(scheduleDocRef);
+                displayAlert("Séance de cours supprimée avec succès !", 'success');
+                closeModal();
+            } catch (error) {
+                console.error("Erreur de suppression de la séance:", error);
+                displayAlert("Erreur lors de la suppression de la séance.", 'error');
+            }
+        }
+
+        // --- Lancement et Écouteurs ---
+
+        window.openModal = openModal; // Rend la fonction accessible au onclick du tableau
+
+        // Listeners
+        closeModalBtn.addEventListener('click', closeModal);
+        scheduleForm.addEventListener('submit', handleSaveSchedule);
+        deleteScheduleBtn.addEventListener('click', handleDeleteSchedule);
+        classSelector.addEventListener('change', setupScheduleListener);
+
+        menuToggle.addEventListener('click', () => {
+            sidebar.classList.toggle('active');
+        });
+
+        logoutBtn.addEventListener("click", async () => {
+            try {
+                await signOut(auth);
+                displayAlert("Déconnexion réussie.", 'success');
+            } catch (error) {
+                displayAlert("Erreur lors de la déconnexion.", 'error');
+            }
+        });
+
+        // Exécuter l'authentification initiale et le chargement
+        async function initialSetup() {
+            await initialSignIn();
+            await fetchTeachersForSelect();
+            // Charge le planning pour la classe par défaut (première option)
+            setupScheduleListener();
+        }
+
+        async function initialSignIn() {
+            if (initialAuthToken) {
+                try {
+                    await signInWithCustomToken(auth, initialAuthToken);
+                } catch (error) {
+                    console.error("Erreur d'authentification par jeton:", error);
+                    await signInAnonymously(auth);
+                }
+            } else if (!auth.currentUser) {
+                 try {
+                    await signInAnonymously(auth);
+                } catch (e) {
+                    console.error("Erreur de connexion anonyme:", e);
+                }
+            }
+            userId = auth.currentUser ? auth.currentUser.uid : 'anonymous';
+        }
+
+        window.onload = initialSetup;
+    </script>
 </body>
 </html>
