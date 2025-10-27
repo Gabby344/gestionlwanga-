@@ -13,7 +13,18 @@
         }
         /* Custom disabled style for form fields */
         .form-disabled {
-            @apply opacity-70 cursor-not-allowed bg-gray-200;
+            /* Utilisation d'une couleur plus claire pour l'arrière-plan */
+            @apply opacity-70 cursor-not-allowed bg-gray-100; 
+        }
+        /* Style des select pour uniformiser le look */
+        select {
+            /* Supprime l'icône de flèche native sur certains navigateurs pour utiliser une customisée (non ajoutée ici, mais rend le style plus propre) */
+            appearance: none; 
+            background-image: url("data:image/svg+xml;charset=UTF-8,%3csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 20 20' fill='currentColor'%3e%3cpath fill-rule='evenodd' d='M5.293 7.293a1 1 0 011.414 0L10 10.586l3.293-3.293a1 1 0 111.414 1.414l-4 4a1 1 0 01-1.414 0l-4-4a1 1 0 010-1.414z' clip-rule='evenodd' /%3e%3c/svg%3e");
+            background-repeat: no-repeat;
+            background-position: right 0.75rem center;
+            background-size: 1.5em 1.5em;
+            padding-right: 2.5rem !important; /* Ajoute de l'espace pour l'icône */
         }
     </style>
     <script>
@@ -22,58 +33,63 @@
                 extend: {
                     colors: {
                         'primary-blue': '#1e40af', // bleu-fonce
-                        'action-green': '#10b981', // vert-action
+                        'action-green': '#059669', // vert-action (légèrement plus sombre pour contraste)
+                        'secondary-gray': '#f3f4f6',
                     }
                 }
             }
         }
     </script>
 </head>
-<body class="bg-gray-50 min-h-screen p-4 sm:p-8">
+<body class="bg-secondary-gray min-h-screen p-4 sm:p-8">
     
     <div class="header text-center mb-8 max-w-4xl mx-auto">
         <h1 class="text-3xl sm:text-4xl font-extrabold text-primary-blue mb-1">
-            ➕ Enregistrer un Nouvel Élève
+            <span role="img" aria-label="Plus icon">➕</span> Enregistrer un Nouvel Élève
         </h1>
         <p class="text-gray-600">
-            Remplissez les informations (Nom, Post-Nom, Prénoms) pour créer un dossier élève complet.
+            Remplissez les informations de base et la classe d'affectation pour l'année scolaire en cours.
         </p>
     </div>
 
     <div class="container max-w-4xl mx-auto">
         <div class="form-card bg-white p-6 sm:p-8 rounded-xl shadow-2xl border-t-8 border-primary-blue">
             <form id="eleveForm">
-                <!-- Grille principale à 3 colonnes pour les grands écrans pour les noms -->
                 <div class="grid grid-cols-1 md:grid-cols-3 gap-x-6 gap-y-6">
                     
                     <!-- Nom de Famille -->
                     <div class="form-group">
                         <label for="nom" class="block font-semibold text-gray-700 mb-1">Nom de Famille *</label>
-                        <input type="text" id="nom" name="nom" class="w-full p-3 border border-gray-300 rounded-lg focus:border-primary-blue focus:ring-4 focus:ring-primary-blue/20 transition duration-150 bg-gray-50" placeholder="Ex: UMBA" required />
+                        <input type="text" id="nom" name="nom" class="w-full p-3 border border-gray-300 rounded-lg focus:border-primary-blue focus:ring-4 focus:ring-primary-blue/20 transition duration-150 bg-white" placeholder="Ex: UMBA" required />
                     </div>
                     
-                    <!-- Post-Nom (Nouveau Champ) -->
+                    <!-- Post-Nom -->
                     <div class="form-group">
                         <label for="postNom" class="block font-semibold text-gray-700 mb-1">Post-Nom *</label>
-                        <input type="text" id="postNom" name="postNom" class="w-full p-3 border border-gray-300 rounded-lg focus:border-primary-blue focus:ring-4 focus:ring-primary-blue/20 transition duration-150 bg-gray-50" placeholder="Ex: MBO" required />
+                        <input type="text" id="postNom" name="postNom" class="w-full p-3 border border-gray-300 rounded-lg focus:border-primary-blue focus:ring-4 focus:ring-primary-blue/20 transition duration-150 bg-white" placeholder="Ex: MBO" required />
                     </div>
                     
                     <!-- Prénoms -->
                     <div class="form-group">
                         <label for="prenom" class="block font-semibold text-gray-700 mb-1">Prénoms *</label>
-                        <input type="text" id="prenom" name="prenom" class="w-full p-3 border border-gray-300 rounded-lg focus:border-primary-blue focus:ring-4 focus:ring-primary-blue/20 transition duration-150 bg-gray-50" placeholder="Ex: Gabby" required />
+                        <input type="text" id="prenom" name="prenom" class="w-full p-3 border border-gray-300 rounded-lg focus:border-primary-blue focus:ring-4 focus:ring-primary-blue/20 transition duration-150 bg-white" placeholder="Ex: Gabby" required />
                     </div>
 
-                    <!-- Date de Naissance -->
-                    <div class="form-group">
-                        <label for="dateNaissance" class="block font-semibold text-gray-700 mb-1">Date de Naissance *</label>
-                        <input type="date" id="dateNaissance" name="dateNaissance" class="w-full p-3 border border-gray-300 rounded-lg focus:border-primary-blue focus:ring-4 focus:ring-primary-blue/20 transition duration-150 bg-gray-50" required />
+                    <!-- Date de Naissance et Affichage de l'âge (Groupe de champs) -->
+                    <div class="form-group md:col-span-2">
+                        <label for="dateNaissance" class="block font-semibold text-gray-700 mb-1">
+                            Date de Naissance *
+                            <span id="ageDisplay" class="text-sm font-medium text-gray-500 ml-2">(Âge: -- ans)</span>
+                        </label>
+                        <input type="date" id="dateNaissance" name="dateNaissance" class="w-full p-3 border border-gray-300 rounded-lg focus:border-primary-blue focus:ring-4 focus:ring-primary-blue/20 transition duration-150 bg-white" required />
+                        <!-- Champ caché pour stocker l'âge dans les données -->
+                        <input type="hidden" id="ageCache" name="ageCache" value="" />
                     </div>
-
+                    
                     <!-- Sexe -->
                     <div class="form-group">
-                        <label for="sexe" class="block font-semibold text-gray-700 mb-1">Sexe</label>
-                        <select id="sexe" name="sexe" class="w-full p-3 border border-gray-300 rounded-lg focus:border-primary-blue focus:ring-4 focus:ring-primary-blue/20 transition duration-150 bg-gray-50">
+                        <label for="sexe" class="block font-semibold text-gray-700 mb-1">Sexe *</label>
+                        <select id="sexe" name="sexe" class="w-full p-3 border border-gray-300 rounded-lg focus:border-primary-blue focus:ring-4 focus:ring-primary-blue/20 transition duration-150 bg-white" required>
                             <option value="">-- Sexe --</option>
                             <option value="M">Masculin</option>
                             <option value="F">Féminin</option>
@@ -83,7 +99,7 @@
                     <!-- Classe d'Affectation -->
                     <div class="form-group">
                         <label for="classe" class="block font-semibold text-gray-700 mb-1">Classe d'Affectation *</label>
-                        <select id="classe" name="classe" class="w-full p-3 border border-gray-300 rounded-lg focus:border-primary-blue focus:ring-4 focus:ring-primary-blue/20 transition duration-150 bg-gray-50" required>
+                        <select id="classe" name="classe" class="w-full p-3 border border-gray-300 rounded-lg focus:border-primary-blue focus:ring-4 focus:ring-primary-blue/20 transition duration-150 bg-white" required>
                             <option value="">-- Sélectionner une classe --</option>
                             <option value="6A">6ème Commerciale A</option>
                             <option value="6B">6ème Commerciale B</option>
@@ -93,20 +109,20 @@
                         </select>
                     </div>
                     
-                    <!-- Statut Initial de Paiement (Full width on small screens, one column on large) -->
-                    <div class="form-group md:col-span-3">
+                    <!-- Statut Initial de Paiement -->
+                    <div class="form-group md:col-span-2">
                         <label for="statutPaiement" class="block font-semibold text-gray-700 mb-1">Statut Initial de Paiement *</label>
-                        <select id="statutPaiement" name="statutPaiement" class="w-full p-3 border border-gray-300 rounded-lg focus:border-primary-blue focus:ring-4 focus:ring-primary-blue/20 transition duration-150 bg-gray-50" required>
+                        <select id="statutPaiement" name="statutPaiement" class="w-full p-3 border border-gray-300 rounded-lg focus:border-primary-blue focus:ring-4 focus:ring-primary-blue/20 transition duration-150 bg-white" required>
                             <option value="">-- Statut de paiement --</option>
-                            <option value="Payé">✅ Payé intégralement</option>
-                            <option value="Partiel">⚠️ Partiel</option>
-                            <option value="Non payé">❌ Non payé</option>
+                            <option value="Payé" class="text-green-600 font-bold">✅ Payé intégralement</option>
+                            <option value="Partiel" class="text-yellow-600 font-bold">⚠️ Partiel</option>
+                            <option value="Non payé" class="text-red-600 font-bold">❌ Non payé</option>
                         </select>
                     </div>
                     
                     <!-- Bouton de Soumission -->
-                    <button type="submit" id="submitBtn" class="btn-submit col-span-full mt-4 bg-action-green text-white font-bold py-3 px-6 rounded-lg text-lg hover:bg-emerald-600 transition duration-200 shadow-md hover:shadow-lg disabled:opacity-50 disabled:cursor-not-allowed">
-                        💾 Enregistrer le Nouvel Élève
+                    <button type="submit" id="submitBtn" class="btn-submit col-span-full mt-4 bg-action-green text-white font-bold py-3 px-6 rounded-lg text-lg hover:bg-emerald-700 transition duration-200 shadow-xl hover:shadow-2xl disabled:opacity-50 disabled:cursor-not-allowed">
+                        <span role="img" aria-label="Save icon">💾</span> Enregistrer le Nouvel Élève
                     </button>
                 </div>
             </form>
@@ -118,7 +134,7 @@
         </div>
 
         <a href="#" onclick="alert('La page de gestion des élèves n\'est pas implémentée dans ce fichier unique.'); return false;" class="btn-retour block text-center mt-6 text-gray-600 hover:text-primary-blue font-medium transition duration-200">
-            ← Retour à la Gestion des Élèves
+            ← Retour à l'Accueil (Simulé)
         </a>
 
         <!-- Affichage de l'ID utilisateur pour la conformité Firestore -->
@@ -147,7 +163,10 @@
         const eleveForm = document.getElementById('eleveForm');
         const submitBtn = document.getElementById('submitBtn');
         const userIdDisplay = document.getElementById('userIdDisplay');
-        const formFields = eleveForm.querySelectorAll('input, select');
+        const dateNaissanceInput = document.getElementById('dateNaissance');
+        const ageDisplay = document.getElementById('ageDisplay');
+        const ageCache = document.getElementById('ageCache');
+        const formFields = eleveForm.querySelectorAll('input:not([type="hidden"]), select');
         
         // Fonction pour mettre à jour l'état du formulaire (désactiver/réactiver)
         function setFormEnabled(enabled) {
@@ -198,6 +217,33 @@
                     await new Promise(resolve => setTimeout(resolve, delay));
                     console.warn(`Retry ${i + 1}/${maxRetries} after ${delay}ms: ${error.message}`);
                 }
+            }
+        }
+
+        // Fonction pour calculer l'âge
+        function calculateAge(dateString) {
+            if (!dateString) return null;
+            const today = new Date();
+            const birthDate = new Date(dateString);
+            let age = today.getFullYear() - birthDate.getFullYear();
+            const m = today.getMonth() - birthDate.getMonth();
+            if (m < 0 || (m === 0 && today.getDate() < birthDate.getDate())) {
+                age--;
+            }
+            return age;
+        }
+        
+        // Mettre à jour l'âge dans l'UI et le champ caché
+        function updateAge() {
+            const dob = dateNaissanceInput.value;
+            const age = calculateAge(dob);
+            
+            if (age !== null && age >= 0) {
+                ageDisplay.textContent = `(Âge: ${age} ans)`;
+                ageCache.value = age;
+            } else {
+                ageDisplay.textContent = `(Âge: -- ans)`;
+                ageCache.value = '';
             }
         }
         
@@ -262,6 +308,7 @@
             submitBtn.innerHTML = '<span class="animate-spin inline-block w-4 h-4 mr-2 border-2 border-t-transparent border-white rounded-full"></span> Enregistrement...'; // État de chargement
             setFormEnabled(false); // Désactiver les champs pendant le traitement
 
+            // Récupération des données du formulaire
             const nom = eleveForm.nom.value.trim().toUpperCase();
             const postNom = eleveForm.postNom.value.trim().toUpperCase(); 
             const prenom = eleveForm.prenom.value.trim();
@@ -269,10 +316,11 @@
             const dateNaissance = eleveForm.dateNaissance.value;
             const sexe = eleveForm.sexe.value;
             const statutPaiement = eleveForm.statutPaiement.value;
+            const age = eleveForm.ageCache.value; // Récupération de l'âge calculé
 
-            // Logique de génération de Matricule (simple)
+            // Logique de génération de Matricule (basique mais unique)
             const annee = new Date().getFullYear().toString().slice(-2);
-            // Utiliser un horodatage pour une unicité
+            // Utiliser un horodatage pour une unicité et un ID court
             const uniquePart = Date.now().toString().slice(-6); 
             const matricule = `STC-${annee}-${classe}/${uniquePart}`;
 
@@ -283,6 +331,7 @@
                 matricule: matricule,
                 classe: classe,
                 dateNaissance: dateNaissance,
+                age: parseInt(age) || null, // Sauvegarde de l'âge
                 sexe: sexe,
                 statutPaiement: statutPaiement,
                 dateInscription: serverTimestamp(),
@@ -296,12 +345,12 @@
             try {
                 await fetchWithBackoff(() => addDoc(collection(db, collectionPath), newEleve));
 
-                const successMessage = `L'élève **${nom} ${postNom} ${prenom}** a été enregistré avec succès ! Son matricule est : **${matricule}**.`;
+                const successMessage = `L'élève **${nom} ${postNom} ${prenom}** (${age || '--'} ans) a été enregistré avec succès ! Son matricule est : **${matricule}**.`;
                 
                 const actionContent = `
                     <div class="flex flex-col sm:flex-row gap-3 mt-4">
                         <button type="button" id="resetFormBtn" class="flex-1 bg-primary-blue text-white font-semibold py-2 px-4 rounded-lg hover:bg-blue-800 transition">
-                            ➕ Nouvelle Inscription
+                            <span role="img" aria-label="Plus icon">➕</span> Nouvelle Inscription
                         </button>
                         <button type="button" onclick="alert('La page de gestion des élèves n\'est pas implémentée dans ce fichier unique.');" class="flex-1 bg-blue-50 text-primary-blue border border-primary-blue font-semibold py-2 px-4 rounded-lg hover:bg-blue-200 transition">
                             Voir la Liste
@@ -313,6 +362,7 @@
 
                 document.getElementById('resetFormBtn').addEventListener('click', () => {
                     eleveForm.reset();
+                    updateAge(); // Réinitialiser l'affichage de l'âge
                     document.getElementById('message').innerHTML = ''; // Cacher le message
                     setFormEnabled(true);
                 });
@@ -328,11 +378,17 @@
             }
         };
 
-        // Attacher l'écouteur d'événement
+        // -----------------------------------------------------
+        // 3. ÉVÉNEMENTS
+        // -----------------------------------------------------
+
         document.addEventListener('DOMContentLoaded', () => {
-            // Initialement désactiver le formulaire en attendant l'authentification
+            // Initialiser l'âge et désactiver le formulaire en attendant l'authentification
+            updateAge();
             setFormEnabled(false);
+            
             eleveForm.addEventListener('submit', handleFormSubmit);
+            dateNaissanceInput.addEventListener('change', updateAge);
         });
     </script>
 </body>
