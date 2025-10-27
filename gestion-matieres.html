@@ -51,6 +51,39 @@
         .notification.success { background-color: #10b981; }
         .notification.error { background-color: #ef4444; }
         .notification.info { background-color: #3b82f6; }
+
+        /* Style pour la Modale de Confirmation */
+        .modal-overlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0, 0, 0, 0.6);
+            display: none; /* Caché par défaut */
+            justify-content: center;
+            align-items: center;
+            z-index: 2000;
+            backdrop-filter: blur(2px);
+        }
+        .modal-content {
+            background: white;
+            padding: 2rem;
+            border-radius: 1rem;
+            width: 90%;
+            max-width: 400px;
+            box-shadow: 0 10px 25px rgba(0, 0, 0, 0.2);
+            transform: scale(0.9);
+            opacity: 0;
+            transition: all 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275); /* Effet rebond */
+        }
+        .modal-overlay.active {
+            display: flex;
+        }
+        .modal-overlay.active .modal-content {
+            transform: scale(1);
+            opacity: 1;
+        }
     </style>
     
 </head>
@@ -186,6 +219,24 @@
         </div>
     </main>
 
+    <!-- MODALE DE CONFIRMATION (Remplace window.confirm) -->
+    <div id="confirmationModal" class="modal-overlay">
+        <div class="modal-content">
+            <h3 class="text-xl font-bold text-gray-800 mb-4 flex items-center gap-2">
+                <i class="fa-solid fa-triangle-exclamation text-yellow-500"></i> Confirmation
+            </h3>
+            <p id="modalMessage" class="mb-6 text-gray-700"></p>
+            <div class="flex justify-end gap-3">
+                <button id="cancelModalBtn" class="py-2 px-4 bg-gray-200 text-gray-800 rounded-lg hover:bg-gray-300 font-semibold transition duration-200">
+                    Annuler
+                </button>
+                <button id="confirmModalBtn" class="py-2 px-4 bg-red-600 text-white rounded-lg hover:bg-red-700 font-semibold transition duration-200">
+                    Confirmer la Suppression
+                </button>
+            </div>
+        </div>
+    </div>
+
     <!-- LOGIQUE JAVASCRIPT & FIREBASE -->
     <script type="module">
     import { initializeApp } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-app.js";
@@ -209,7 +260,7 @@
     
     // setLogLevel('Debug'); // Décommenter pour le débogage
     
-    // Collection des matières: stockée dans la zone publique de l'application car accessible par plusieurs rôles (enseignants, directeurs)
+    // Collection des matières: stockée dans la zone publique de l'application
     const SUBJECTS_COLLECTION_PATH = `/artifacts/${appId}/public/data/subjects`; 
 
     // 2. ÉLÉMENTS DU DOM
@@ -221,11 +272,19 @@
     const formTitle = document.getElementById('formTitle');
     const cancelEditBtn = document.getElementById('cancelEditBtn');
 
-    // Champs du formulaire
+    // Éléments du formulaire
     const subjectIdInput = document.getElementById('subjectId');
     const nameInput = document.getElementById('name');
     const codeInput = document.getElementById('code');
     const coefficientInput = document.getElementById('coefficient');
+
+    // Éléments de la Modale de Confirmation
+    const confirmationModal = document.getElementById('confirmationModal');
+    const modalMessage = document.getElementById('modalMessage');
+    const confirmModalBtn = document.getElementById('confirmModalBtn');
+    const cancelModalBtn = document.getElementById('cancelModalBtn');
+    
+    let currentConfirmationCallback = () => {}; // Fonction à exécuter si confirmation
 
     // 3. FONCTIONNALITÉS UTILITAIRES
 
@@ -241,6 +300,26 @@
             setTimeout(() => notificationArea.removeChild(notif), 300);
         }, 4000);
     }
+
+    // Affiche la modale de confirmation
+    function showConfirmationModal(messageHtml, callback) {
+        modalMessage.innerHTML = messageHtml;
+        currentConfirmationCallback = callback;
+        confirmationModal.classList.add('active');
+    }
+
+    // Cache la modale
+    function hideConfirmationModal() {
+        confirmationModal.classList.remove('active');
+    }
+
+    // Gestion des clics sur la modale
+    confirmModalBtn.addEventListener('click', () => {
+        hideConfirmationModal();
+        currentConfirmationCallback();
+    });
+
+    cancelModalBtn.addEventListener('click', hideConfirmationModal);
     
     // Déconnexion
     async function handleLogout() {
@@ -251,13 +330,15 @@
     // Fonction d'authentification initiale
     async function initializeAuth() {
         try {
-            if (typeof __initial_auth_token !== 'undefined' && __initial_auth_token) {
-                await signInWithCustomToken(auth, __initial_auth_token);
+            const token = typeof __initial_auth_token !== 'undefined' ? __initial_auth_token : null;
+            if (token) {
+                await signInWithCustomToken(auth, token);
             } else {
                 await signInAnonymously(auth);
             }
         } catch (error) {
             console.error("Erreur d'authentification initiale:", error);
+            showNotification("Erreur d'authentification. Redirection...", "error");
             setTimeout(() => window.location.href = "index.html", 1500);
         }
     }
@@ -282,8 +363,8 @@
         const coefficient = parseInt(coefficientInput.value, 10);
         const subjectId = subjectIdInput.value;
 
-        if (!name || !code || isNaN(coefficient) || coefficient < 1) {
-            showNotification("Veuillez remplir tous les champs correctement.", "error");
+        if (!name || !code || isNaN(coefficient) || coefficient < 1 || coefficient > 10) {
+            showNotification("Veuillez vérifier le nom, le code et le coefficient (entre 1 et 10).", "error");
             return;
         }
 
@@ -297,8 +378,7 @@
                 await setDoc(docRef, subjectData, { merge: true });
                 showNotification(`✅ Matière '${name}' mise à jour !`, "success");
             } else {
-                // Mode Création (ID basé sur le code pour l'unicité, mais on utilise un ID auto-généré ou un code clean)
-                // Pour la simplicité, utilisons l'ID de Firebase, et on s'assure de l'unicité du code dans le code métier si nécessaire.
+                // Mode Création
                 docRef = doc(collection(db, SUBJECTS_COLLECTION_PATH));
                 await setDoc(docRef, subjectData);
                 showNotification(`✅ Matière '${name}' ajoutée !`, "success");
@@ -325,17 +405,19 @@
         window.scrollTo({ top: 0, behavior: 'smooth' }); // Remonter en haut de page pour le formulaire
     };
 
-    // Supprimer une matière
-    window.deleteSubject = async (id, name) => {
-        if (!confirm(`Voulez-vous vraiment supprimer la matière: ${name} ?`)) return;
-
-        try {
-            await deleteDoc(doc(db, SUBJECTS_COLLECTION_PATH, id));
-            showNotification(`🗑️ Matière '${name}' supprimée.`, "info");
-        } catch (err) {
-            console.error("Erreur de suppression de la matière:", err);
-            showNotification("Erreur: Impossible de supprimer la matière.", "error");
-        }
+    // Supprimer une matière (Utilise la modale de confirmation)
+    window.deleteSubject = (id, name) => {
+        const message = `Êtes-vous sûr de vouloir supprimer la matière : <span class="font-bold text-red-600">${name}</span> ? Cette action est irréversible.`;
+        
+        showConfirmationModal(message, async () => {
+            try {
+                await deleteDoc(doc(db, SUBJECTS_COLLECTION_PATH, id));
+                showNotification(`🗑️ Matière '${name}' supprimée.`, "info");
+            } catch (err) {
+                console.error("Erreur de suppression de la matière:", err);
+                showNotification("Erreur: Impossible de supprimer la matière.", "error");
+            }
+        });
     };
 
     // ✅ Écouteur en temps réel pour charger la liste des matières
@@ -353,29 +435,38 @@
             snapshot.forEach(docSnap => {
                 const data = docSnap.data();
                 const id = docSnap.id;
+                
+                // Prévention contre les injections de guillemets simples dans les appels onclick
+                const safeName = data.name.replace(/'/g, "\\'"); 
 
                 const row = subjectsTableBody.insertRow();
                 row.className = 'hover:bg-gray-50';
                 
                 // Nom
-                row.insertCell().textContent = data.name;
+                const nameCell = row.insertCell();
+                nameCell.className = 'px-6 py-4 whitespace-nowrap font-medium text-gray-900';
+                nameCell.textContent = data.name;
                 
                 // Code
-                row.insertCell().textContent = data.code;
+                const codeCell = row.insertCell();
+                codeCell.className = 'px-6 py-4 whitespace-nowrap text-sm text-gray-500 font-mono';
+                codeCell.textContent = data.code;
                 
                 // Coefficient
-                row.insertCell().textContent = data.coefficient;
+                const coeffCell = row.insertCell();
+                coeffCell.className = 'px-6 py-4 whitespace-nowrap text-sm text-gray-900 font-semibold';
+                coeffCell.textContent = data.coefficient;
                 
                 // Actions
                 const actionsCell = row.insertCell();
-                actionsCell.className = 'px-6 py-3 whitespace-nowrap text-right text-sm font-medium space-x-2';
+                actionsCell.className = 'px-6 py-4 whitespace-nowrap text-right text-sm font-medium space-x-2';
                 actionsCell.innerHTML = `
-                    <button onclick="window.loadSubjectForEdit('${id}', '${data.name}', '${data.code}', ${data.coefficient})" 
-                            class="text-indigo-600 hover:text-indigo-900 transition duration-150">
+                    <button onclick="window.loadSubjectForEdit('${id}', '${safeName}', '${data.code}', ${data.coefficient})" 
+                            class="text-indigo-600 hover:text-indigo-900 transition duration-150 p-1 rounded-md hover:bg-indigo-100">
                         <i class="fa-solid fa-edit"></i> Modifier
                     </button>
-                    <button onclick="window.deleteSubject('${id}', '${data.name}')" 
-                            class="text-red-600 hover:text-red-900 transition duration-150 ml-3">
+                    <button onclick="window.deleteSubject('${id}', '${safeName}')" 
+                            class="text-red-600 hover:text-red-900 transition duration-150 ml-3 p-1 rounded-md hover:bg-red-100">
                         <i class="fa-solid fa-trash"></i> Supprimer
                     </button>
                 `;
@@ -411,17 +502,20 @@
                     
                     // Vérification de rôle : Seuls l'Admin ou le Directeur des Études peuvent gérer les matières
                     if (data.role !== 'admin' && data.role !== 'directeur_etudes') {
-                        showNotification("Accès non autorisé à cette page.", "error");
+                        showNotification("Accès non autorisé à cette page. Redirection.", "error");
+                        // Remplacer par la page utilisateur standard
                         setTimeout(() => window.location.href = "dashboard-user.html", 1500); 
                         return;
                     }
                     setupSubjectsListener(); // Charger la liste si l'utilisateur est autorisé
                 } else {
                     console.warn("Document utilisateur manquant. Accès limité.");
+                    userInfo.textContent = `Utilisateur ID: ${userId} (Rôle Inconnu)`;
                     setupSubjectsListener();
                 }
             }).catch(err => {
                 console.error("Erreur de récupération du document utilisateur:", err);
+                userInfo.textContent = `Utilisateur ID: ${userId} (Erreur de chargement)`;
                 setupSubjectsListener();
             });
         }
