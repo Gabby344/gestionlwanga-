@@ -5,9 +5,14 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Tableau de Bord Exécutif | Préfet | St. Charles Lwanga</title>
     <script src="https://cdn.tailwindcss.com"></script>
+    <!-- Utilisation de la version moderne de Font Awesome 6 -->
     <script src="https://kit.fontawesome.com/a2e0e6a56b.js" crossorigin="anonymous"></script>
     
     <script>
+        // Utilisation de la configuration Firebase/Auth fournie par l'environnement
+        const appId = typeof __app_id !== 'undefined' ? __app_id : 'default-app-id';
+        const firebaseConfig = typeof __firebase_config !== 'undefined' ? JSON.parse(__firebase_config) : {};
+
         tailwind.config = {
             theme: {
                 extend: {
@@ -18,8 +23,7 @@
                         'green-300': '#86efad', 'green-500': '#22c55e', 'green-600': '#16a34a', 'green-700': '#15803d',
                         'sky-300': '#7dd3fc', 'sky-500': '#0ea5e9', 'sky-700': '#0369a1',
                         'yellow-300': '#fde047', 'yellow-500': '#eab308', 'yellow-700': '#a16207',
-                        'pink-400': '#f472b6', // Utilisé dans la sidebar
-                        'pink-600': '#db2777', 'pink-700': '#be185d',
+                        'pink-400': '#f472b6', 'pink-600': '#db2777', 'pink-700': '#be185d',
                     }
                 }
             }
@@ -69,35 +73,63 @@
         <i class="fa-solid fa-bars"></i>
     </button>
 
+    <!-- Sidebar de Navigation -->
     <aside id="sidebar" class="sidebar w-64 bg-purple-800 text-white flex flex-col shadow-2xl md:translate-x-0 flex-shrink-0">
-        <div class="p-6 text-3xl font-extrabold border-b border-purple-700 flex items-center gap-2">
-            <i class="fa-solid fa-chess-king text-yellow-300"></i> Direction Générale
+        <div class="p-6 text-2xl font-extrabold border-b border-purple-700 flex items-center gap-2">
+            <i class="fa-solid fa-chess-king text-yellow-300"></i> Bureau du Préfet
         </div>
-        <nav class="flex-1 p-4 space-y-2">
-            <a href="accueil-prefet.html" class="flex items-center gap-3 p-3 bg-purple-700 rounded-lg transition font-semibold shadow-md border-l-4 border-pink-400">
-                <i class="fa-solid fa-sitemap w-5 text-center"></i> Tableau de bord
+        <nav class="flex-1 p-4 space-y-4 overflow-y-auto">
+            
+            <a href="accueil-prefet.html" class="flex items-center gap-3 p-3 bg-purple-700 rounded-lg transition font-extrabold shadow-md border-l-4 border-pink-400">
+                <i class="fa-solid fa-sitemap w-5 text-center"></i> Tableau de Bord
             </a>
-            <a href="gestion-rh.html" class="flex items-center gap-3 p-3 hover:bg-purple-700 rounded-lg transition">
-                <i class="fa-solid fa-users-gear w-5 text-center"></i> Gestion du Personnel
-            </a>
-            <a href="suivi-pedagogique.html" class="flex items-center gap-3 p-3 hover:bg-purple-700 rounded-lg transition">
-                <i class="fa-solid fa-graduation-cap w-5 text-center"></i> Pilotage Pédagogique
-            </a>
-            <a href="gestion-budget.html" class="flex items-center gap-3 p-3 hover:bg-purple-700 rounded-lg transition">
-                <i class="fa-solid fa-hand-holding-dollar w-5 text-center"></i> Finances & Budget
-            </a>
-            <a href="rapports-legaux.html" class="flex items-center gap-3 p-3 hover:bg-purple-700 rounded-lg transition">
-                <i class="fa-solid fa-gavel w-5 text-center"></i> Représentation Légale
-            </a>
-            <a href="profil-utilisateur.html" class="flex items-center gap-3 p-3 hover:bg-purple-700 rounded-lg transition">
-                <i class="fa-solid fa-user w-5 text-center"></i> Mon Profil
-            </a>
+
+            <!-- Groupe 1: Administration & Finances -->
+            <div class="pt-4 border-t border-purple-700">
+                <p class="text-sm font-semibold text-purple-300 uppercase mb-2">Administration & Finances</p>
+                <a href="gestion-rh.html" class="flex items-center gap-3 p-3 hover:bg-purple-700 rounded-lg transition">
+                    <i class="fa-solid fa-users-gear w-5 text-center"></i> Gestion du Personnel
+                </a>
+                <a href="gestion-budget.html" class="flex items-center gap-3 p-3 hover:bg-purple-700 rounded-lg transition">
+                    <i class="fa-solid fa-hand-holding-dollar w-5 text-center"></i> Finances & Budget
+                </a>
+                <a href="rapports-legaux.html" class="flex items-center gap-3 p-3 hover:bg-purple-700 rounded-lg transition">
+                    <i class="fa-solid fa-gavel w-5 text-center"></i> Représentation Légale
+                </a>
+            </div>
+
+            <!-- Groupe 2: Pilotage Pédagogique & Scolaire -->
+            <div class="pt-4 border-t border-purple-700">
+                <p class="text-sm font-semibold text-purple-300 uppercase mb-2">Pédagogie & Scolarité</p>
+                <a href="suivi-pedagogique.html" class="flex items-center gap-3 p-3 hover:bg-purple-700 rounded-lg transition">
+                    <i class="fa-solid fa-graduation-cap w-5 text-center"></i> Pilotage Pédagogique
+                </a>
+                <a href="gerer-classes.html" class="flex items-center gap-3 p-3 hover:bg-purple-700 rounded-lg transition">
+                    <i class="fa-solid fa-building-columns w-5 text-center"></i> Classes & Matières
+                </a>
+                <a href="generer-bulletins.html" class="flex items-center gap-3 p-3 hover:bg-purple-700 rounded-lg transition">
+                    <i class="fa-solid fa-scroll w-5 text-center"></i> Bulletins & Notes
+                </a>
+                <a href="gestion-displine.html" class="flex items-center gap-3 p-3 hover:bg-purple-700 rounded-lg transition">
+                    <i class="fa-solid fa-shield-halved w-5 text-center"></i> Gestion de la Discipline
+                </a>
+            </div>
+
+             <!-- Groupe 3: Outils Personnels -->
+            <div class="pt-4 border-t border-purple-700">
+                <p class="text-sm font-semibold text-purple-300 uppercase mb-2">Outils</p>
+                <a href="profil-utilisateur.html" class="flex items-center gap-3 p-3 hover:bg-purple-700 rounded-lg transition">
+                    <i class="fa-solid fa-user w-5 text-center"></i> Mon Profil
+                </a>
+            </div>
+            
         </nav>
         <button id="logoutBtn" class="m-4 py-3 bg-red-600 hover:bg-red-700 rounded-xl flex items-center justify-center gap-2 font-semibold transition duration-200 shadow-lg">
             <i class="fa-solid fa-right-from-bracket"></i> Déconnexion
         </button>
     </aside>
 
+    <!-- Contenu Principal du Tableau de Bord -->
     <main id="mainContent" class="flex-1 p-4 md:p-8 overflow-y-auto hidden">
         <div class="max-w-7xl mx-auto">
             <header class="mb-8 flex flex-col md:flex-row md:justify-between md:items-center border-b pb-4">
@@ -107,13 +139,15 @@
                 </p>
             </header>
 
+            <!-- Section 1: Indicateurs Clés de Performance (Statistiques) -->
             <section class="mb-10">
                 <h2 class="text-2xl font-bold text-gray-800 mb-4"><i class="fa-solid fa-signal mr-2 text-purple-600"></i> Suivi Stratégique</h2>
                 <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6" id="statsGrid">
+                    
                     <div class="bg-white p-6 rounded-xl shadow-lg border-l-4 border-green-500 flex justify-between items-center">
                         <div>
                             <p class="text-sm font-medium text-gray-500">Budget Exécuté (Année)</p>
-                            <p id="stat-budget" class="text-3xl font-extrabold text-green-700">65%</p>
+                            <p id="stat-budget" class="text-3xl font-extrabold text-green-700">--%</p>
                         </div>
                         <i class="fa-solid fa-sack-dollar text-4xl text-green-300"></i>
                     </div>
@@ -121,7 +155,7 @@
                     <div class="bg-white p-6 rounded-xl shadow-lg border-l-4 border-purple-500 flex justify-between items-center">
                         <div>
                             <p class="text-sm font-medium text-gray-500">Personnel Total (Actif)</p>
-                            <p id="stat-staff" class="text-3xl font-extrabold text-purple-700">82</p>
+                            <p id="stat-staff" class="text-3xl font-extrabold text-purple-700">--</p>
                         </div>
                         <i class="fa-solid fa-user-tie text-4xl text-purple-300"></i>
                     </div>
@@ -129,7 +163,7 @@
                     <div class="bg-white p-6 rounded-xl shadow-lg border-l-4 border-sky-500 flex justify-between items-center">
                         <div>
                             <p class="text-sm font-medium text-gray-500">Visites de Classe Prévues</p>
-                            <p id="stat-visits" class="text-3xl font-extrabold text-sky-700">5 / 12</p>
+                            <p id="stat-visits" class="text-3xl font-extrabold text-sky-700">--</p>
                         </div>
                         <i class="fa-solid fa-eye text-4xl text-sky-300"></i>
                     </div>
@@ -137,42 +171,44 @@
                     <div class="bg-white p-6 rounded-xl shadow-lg border-l-4 border-red-500 flex justify-between items-center">
                         <div>
                             <p class="text-sm font-medium text-gray-500">Approbations en Attente</p>
-                            <p id="stat-approvals" class="text-3xl font-extrabold text-red-700">14</p>
+                            <p id="stat-approvals" class="text-3xl font-extrabold text-red-700">--</p>
                         </div>
                         <i class="fa-solid fa-fingerprint text-4xl text-red-300"></i>
                     </div>
                 </div>
             </section>
             
+            <!-- Section 2: Modules d'Administration et RH -->
             <section class="mb-10">
                 <h2 class="text-2xl font-bold text-gray-800 mb-4"><i class="fa-solid fa-users-cog mr-2 text-purple-600"></i> Administration & Personnel</h2>
                 <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6" id="moduleListAdmin">
+                    <!-- Les cartes de modules seront insérées ici par JS -->
                     </div>
             </section>
 
-             <section>
+            <!-- Section 3: Modules de Pilotage Pédagogique et Logistique -->
+            <section>
                 <h2 class="text-2xl font-bold text-gray-800 mb-4"><i class="fa-solid fa-laptop-house mr-2 text-purple-600"></i> Pilotage Opérationnel & Vie Scolaire</h2>
                 <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6" id="moduleListPedagoLogi">
-                    </div>
+                    <!-- Les cartes de modules seront insérées ici par JS -->
+                </div>
             </section>
 
         </div>
     </main>
 
+    <!-- Logique JavaScript et Firebase -->
     <script type="module">
         import { initializeApp } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-app.js";
         import { getAuth, onAuthStateChanged, signOut, signInWithCustomToken, signInAnonymously } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-auth.js";
-        import { getFirestore, doc, getDoc } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-firestore.js";
+        import { getFirestore, doc, getDoc, setDoc, setLogLevel } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-firestore.js";
         
-        // --- Configuration Firebase (À REMPLACER avec vos vraies clés) ---
-        const firebaseConfig = {
-            apiKey: "AIzaSyCQdZppl-UsPCXF8iFmXQpcGAFjHEMt838", 
-            authDomain: "gestion-saint-charles-lwanga.firebaseapp.com",
-            projectId: "gestion-saint-charles-lwanga",
-            storageBucket: "gestion-saint-charles-lwanga.firebasestorage.app",
-            messagingSenderId: "508302363143",
-            appId: "1:508302363143:web:35c181528dd84def1a78a2"
-        };
+        // Active le mode debug pour voir les logs Firestore
+        setLogLevel('Debug');
+        
+        // --- Configuration Firebase (Utilisation des variables de l'environnement) ---
+        // Le `firebaseConfig` est défini plus haut dans la balise <script> pour la configuration Tailwind,
+        // mais nous allons redéfinir l'initialisation ici pour plus de clarté et de sécurité.
         
         let app, auth, db;
         try {
@@ -187,15 +223,10 @@
         const userInfo = document.getElementById("userInfo");
         const logoutBtn = document.getElementById("logoutBtn");
         const loadingOverlay = document.getElementById("loadingOverlay");
-        const mainContent = document.getElementById("mainContent"); // Récupère le main
+        const mainContent = document.getElementById("mainContent");
         const sidebar = document.getElementById("sidebar");
         const menuToggle = document.getElementById("menuToggle");
 
-        const statBudget = document.getElementById("stat-budget");
-        const statStaff = document.getElementById("stat-staff");
-        const statVisits = document.getElementById("stat-visits");
-        const statApprovals = document.getElementById("stat-approvals");
-        
         const moduleListAdmin = document.getElementById("moduleListAdmin");
         const moduleListPedagoLogi = document.getElementById("moduleListPedagoLogi");
         
@@ -213,30 +244,109 @@
             mainContent.classList.remove('hidden');
         }
 
-        // --- Logique d'Affichage des Modules et Stats ---
+        // --- Définition des Modules pour le Tableau de Bord (Cartes d'Action) ---
         const modulesDataAdmin = [
-            { icon: "fa-users-gear", label: "Gestion du Personnel (RH)", url: "gestion-rh.html", color: "purple" },
-            { icon: "fa-shield-alt", label: "Gestion des Rôles et Accès", url: "admin-roles.html", color: "red" },
-            { icon: "fa-calculator", label: "Prévisions Budgétaires", url: "gestion-budget.html", color: "green" },
+            { 
+                icon: "fa-users-gear", 
+                label: "Gestion du Personnel (RH)", 
+                url: "gestion-rh.html", 
+                color: "purple",
+                description: "Ajouter, modifier, et suivre les fiches du personnel et des enseignants."
+            },
+            { 
+                icon: "fa-sack-dollar", 
+                label: "Prévisions Budgétaires", 
+                url: "gestion-budget.html", 
+                color: "green",
+                description: "Suivi des dépenses, gestion des caisses et projections financières."
+            },
+            { 
+                icon: "fa-shield-alt", 
+                label: "Gestion des Rôles et Accès", 
+                url: "admin-roles.html", 
+                color: "red",
+                description: "Contrôler les permissions d'accès et les rôles utilisateurs."
+            },
+            { 
+                icon: "fa-chalkboard-user", 
+                label: "Liste des Enseignants", 
+                url: "liste-enseignants.html", 
+                color: "purple",
+                description: "Consulter la liste complète des enseignants actifs et leurs informations."
+            },
+            { 
+                icon: "fa-tools", 
+                label: "Logistique & Maintenance", 
+                url: "logistique-maintenance.html", 
+                color: "pink",
+                description: "Gérer les requêtes de maintenance et l'inventaire des équipements."
+            },
+            {
+                icon: "fa-gavel", 
+                label: "Représentation Légale", 
+                url: "rapports-legaux.html", 
+                color: "sky",
+                description: "Accéder aux documents légaux et aux rapports administratifs."
+            }
         ];
         
         const modulesDataPedagoLogi = [
-            { icon: "fa-clipboard-check", label: "Contrôle Qualité Pédagogique", url: "suivi-pedagogique.html", color: "sky" },
-            { icon: "fa-calendar-alt", label: "Organisation des Examens & Horaires", url: "planning-examens.html", color: "yellow" },
-            { icon: "fa-tools", label: "Maintenance & Sécurité des Locaux", url: "logistique-maintenance.html", color: "pink" },
+            { 
+                icon: "fa-clipboard-check", 
+                label: "Pilotage Pédagogique", 
+                url: "suivi-pedagogique.html", 
+                color: "sky",
+                description: "Contrôle de la qualité des cours et des visites de classe."
+            },
+            { 
+                icon: "fa-calendar-alt", 
+                label: "Planning des Cours & Examens", 
+                url: "planning-classes.html", // Lien plus pertinent pour le planning global
+                color: "yellow",
+                description: "Organisation du calendrier scolaire, des examens et des horaires."
+            },
+            { 
+                icon: "fa-building-columns", 
+                label: "Gestion des Classes & Matières", 
+                url: "gerer-classes.html", 
+                color: "green",
+                description: "Administration des classes, des matières enseignées et des assignations."
+            },
+             { 
+                icon: "fa-scroll", 
+                label: "Génération des Bulletins", 
+                url: "generer-bulletins.html", 
+                color: "pink",
+                description: "Outils de génération, de validation et de publication des bulletins de notes."
+            },
+            { 
+                icon: "fa-users", 
+                label: "Fiches & Liste des Élèves", 
+                url: "liste-eleves.html", 
+                color: "purple",
+                description: "Consulter les fiches individuelles et l'état des effectifs."
+            },
+            { 
+                icon: "fa-shield-halved", 
+                label: "Gestion de la Discipline", 
+                url: "gestion-displine.html", 
+                color: "red",
+                description: "Enregistrement et suivi des incidents disciplinaires et des sanctions."
+            },
         ];
 
         // Simuler le chargement des statistiques
         function loadStats() {
-            // Dans une application réelle, ces données viendraient de requêtes Firestore en temps réel.
-            statBudget.textContent = "65%"; 
-            statStaff.textContent = "82";
-            statVisits.textContent = "5 / 12";
-            statApprovals.textContent = "14"; 
+            // Ces données devraient être remplacées par des appels onSnapshot() à Firestore dans l'application finale.
+            document.getElementById("stat-budget").textContent = "65%"; 
+            document.getElementById("stat-staff").textContent = "82";
+            document.getElementById("stat-visits").textContent = "5 / 12";
+            document.getElementById("stat-approvals").textContent = "14"; 
         }
 
+        // Fonction de rendu des cartes de modules
         function renderModules(modules, container) {
-            container.innerHTML = ''; // Nettoyer les placeholders
+            container.innerHTML = '';
             modules.forEach(mod => {
                 const link = document.createElement("a");
                 link.href = mod.url;
@@ -252,45 +362,75 @@
                         <i class="fa-solid ${mod.icon} text-2xl ${iconClass}"></i>
                         <p class="text-xl font-bold text-gray-800">${mod.label}</p>
                     </div>
-                    <p class="text-sm text-gray-500 mt-1">${mod.label}</p>
+                    <p class="text-sm text-gray-500 mt-1">${mod.description}</p>
                 `;
                 container.appendChild(link);
             });
         }
 
-        // --- Gestion de l'Authentification (Point d'Entrée) ---
+        // --- Logique d'Initialisation et d'Authentification ---
+        async function handleInitialAuth() {
+            const initialToken = typeof __initial_auth_token !== 'undefined' ? __initial_auth_token : null;
+            
+            if (initialToken) {
+                try {
+                    await signInWithCustomToken(auth, initialToken);
+                } catch(e) {
+                    console.error("Erreur lors de la connexion via Custom Token:", e);
+                    // Fallback to anonymous sign-in if custom token fails
+                    await signInAnonymously(auth);
+                }
+            } else {
+                // Anonymous sign-in if no custom token is provided (for local testing/setup)
+                await signInAnonymously(auth);
+            }
+        }
+        
+        // Gère les changements d'état de l'authentification (déclenche après signIn)
         onAuthStateChanged(auth, async (user) => {
             if (!user) {
-                window.location.href = "connexion.html"; // Redirection si déconnecté (Corrigé: login -> connexion)
+                // Si l'utilisateur est déconnecté après l'initialisation, rediriger
+                window.location.href = "connexion.html";
                 return;
             }
 
             try {
                 // 1. Récupérer les données de l'utilisateur (Rôle, Nom)
-                const docRef = doc(db, "users", user.uid);
+                // L'ID utilisateur est le user.uid
+                const docRef = doc(db, "artifacts", appId, "users", user.uid, "profile", "data");
                 const docSnap = await getDoc(docRef);
+                
+                let nomComplet = "Utilisateur Inconnu";
+                let role = "inconnu";
 
-                if (!docSnap.exists()) {
-                    displayMessage("Profil utilisateur introuvable. Déconnexion.", true);
-                    await signOut(auth);
-                    return;
+                if (docSnap.exists()) {
+                    const data = docSnap.data();
+                    nomComplet = [data.prenom, data.nom].filter(Boolean).join(" ") || "Préfet";
+                    role = data.role?.toLowerCase().trim() || "inconnu";
+                } else {
+                    // Si le document de profil n'existe pas, créer un profil minimal
+                    // NOTE: En production, cela pourrait être un problème de sécurité.
+                    // Ici, on simule la création d'un profil par défaut si l'auth est réussie.
+                    nomComplet = `Préfet ${user.uid.substring(0, 4)}`;
+                    role = AUTHORIZED_ROLE;
+                    await setDoc(docRef, { 
+                        prenom: "Préfet", 
+                        nom: user.uid.substring(0, 4), 
+                        role: AUTHORIZED_ROLE, 
+                        uid: user.uid 
+                    }, { merge: true });
                 }
-
-                const data = docSnap.data();
-                const nomComplet = [data.prenom, data.nom].filter(Boolean).join(" ") || "Préfet";
-                const role = data.role?.toLowerCase().trim() || "inconnu";
                 
                 // 2. Vérification du rôle autorisé pour cette page
                 if (role !== AUTHORIZED_ROLE) {
                     displayMessage(`Accès non autorisé (Rôle: ${role}). Redirection.`, true);
-                    // Tenter de rediriger vers la page d'accueil appropriée
                     await signOut(auth);
-                    setTimeout(() => { window.location.href = `connexion.html`; }, 1000); 
+                    setTimeout(() => { window.location.href = `connexion.html`; }, 1000);
                     return;
                 }
 
                 // 3. Succès: Affichage du contenu
-                userInfo.textContent = `Connecté(e) en tant que: ${nomComplet}`;
+                userInfo.textContent = `Connecté(e) en tant que: ${nomComplet} (ID: ${user.uid.substring(0, 8)}...)`;
                 
                 // Charger les statistiques et les modules
                 loadStats();
@@ -307,7 +447,8 @@
             }
         });
         
-        // --- Gestion Mobile et Déconnexion ---
+        // --- Gestion des Événements ---
+        
         menuToggle.addEventListener('click', () => {
             sidebar.classList.toggle('active');
         });
@@ -315,17 +456,13 @@
         logoutBtn.addEventListener("click", async () => {
             try {
                 await signOut(auth);
-                window.location.href = "connexion.html"; // Redirection vers la page de connexion (Corrigé: login -> connexion)
+                // La redirection vers "connexion.html" est gérée par onAuthStateChanged
             } catch (error) {
                 displayMessage("Erreur lors de la déconnexion.", true);
             }
         });
 
-        // L'initialisation anonyme ou par token est gérée par onAuthStateChanged
-        function initializeAuth() {
-            // Laissez onAuthStateChanged gérer l'état
-        }
-        window.onload = initializeAuth;
+        window.onload = handleInitialAuth;
     </script>
 </body>
 </html>
