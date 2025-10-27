@@ -1,173 +1,316 @@
 <!DOCTYPE html>
 <html lang="fr">
 <head>
-  <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Fiche Élève</title>
-  <link rel="icon" href="favicon.ico" />
-  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600&display=swap" rel="stylesheet" />
-  <style>
-    body {
-      font-family: 'Inter', sans-serif;
-      background-color: #f9fafb;
-      color: #374151;
-      padding: 2rem;
-    }
-
-    .fiche {
-      max-width: 700px;
-      margin: auto;
-      background: white;
-      padding: 2rem;
-      border-radius: 12px;
-      box-shadow: 0 4px 10px rgba(0,0,0,0.05);
-    }
-
-    h1 {
-      text-align: center;
-      color: #1e3a8a;
-      margin-bottom: 1rem;
-    }
-
-    .photo {
-      text-align: center;
-      margin-bottom: 1rem;
-    }
-
-    .photo img {
-      width: 120px;
-      height: 120px;
-      border-radius: 50%;
-      object-fit: cover;
-      border: 2px solid #1e3a8a;
-    }
-
-    .ligne {
-      margin-bottom: 1rem;
-    }
-
-    .label {
-      font-weight: 600;
-      color: #1e3a8a;
-    }
-
-    .valeur {
-      margin-left: 0.5rem;
-    }
-
-    .actions {
-      text-align: center;
-      margin-top: 2rem;
-    }
-
-    .actions button, .actions a {
-      margin: 0.5rem;
-      padding: 0.6rem 1rem;
-      background-color: #1e3a8a;
-      color: white;
-      border: none;
-      border-radius: 8px;
-      font-weight: 600;
-      cursor: pointer;
-      text-decoration: none;
-    }
-
-    .actions button:hover, .actions a:hover {
-      background-color: #0f2f79;
-    }
-
-    #notification-area {
-      position: fixed;
-      top: 20px;
-      right: 20px;
-      z-index: 9999;
-      font-weight: 600;
-      padding: 0.75rem 1rem;
-      border-radius: 8px;
-      background-color: #1e3a8a;
-      color: white;
-      display: none;
-    }
-  </style>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Dossier Élève Professionnel</title>
+    <!-- Chargement de Tailwind CSS -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <!-- Chargement d'une librairie d'icônes moderne (Lucide Icons) -->
+    <script src="https://unpkg.com/lucide@latest"></script>
+    <!-- Utilisation de la police Inter -->
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet" />
+    
+    <style>
+        body {
+            font-family: 'Inter', sans-serif;
+            background-color: #f3f4f6;
+        }
+        /* Styles pour l'impression */
+        @media print {
+            .no-print {
+                display: none !important;
+            }
+            .fiche-container {
+                box-shadow: none !important;
+                border: none !important;
+            }
+        }
+        .data-label {
+            @apply text-sm font-semibold text-gray-500 uppercase;
+        }
+        .data-value {
+            @apply text-lg font-medium text-gray-800 break-words;
+        }
+    </style>
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    colors: {
+                        'primary-blue': '#1e3a8a', /* Bleu institutionnel */
+                        'accent-green': '#10b981', /* Vert vif pour l'action */
+                    }
+                }
+            }
+        }
+    </script>
 </head>
-<body>
-  <h1>📄 Fiche Élève</h1>
-  <div class="fiche" id="ficheContainer">Chargement...</div>
+<body class="p-4 sm:p-8">
 
-  <div class="actions">
-    <button onclick="window.print()">🖨 Imprimer</button>
-    <a href="liste-eleves.html">← Retour à la liste</a>
-  </div>
+    <div class="max-w-4xl mx-auto">
+        <!-- En-tête -->
+        <header class="text-center mb-8 no-print">
+            <h1 class="text-3xl sm:text-4xl font-extrabold text-primary-blue flex items-center justify-center">
+                <i data-lucide="file-text" class="w-7 h-7 mr-3 text-accent-green"></i> 
+                Dossier Administratif Élève
+            </h1>
+            <p class="text-gray-500 mt-1">Détails complets de l'élève pour l'année scolaire en cours.</p>
+        </header>
 
-  <div id="notification-area"></div>
+        <!-- Conteneur principal de la fiche -->
+        <div id="ficheContainer" class="fiche-container bg-white p-6 sm:p-8 rounded-2xl shadow-2xl border-t-4 border-primary-blue">
+            <!-- État de chargement initial -->
+            <div id="loadingState" class="text-center py-12 text-gray-500 font-medium">
+                <div class="animate-spin inline-block w-8 h-8 border-4 border-t-transparent border-primary-blue rounded-full mb-3"></div>
+                Chargement des données de l'élève...
+            </div>
+            
+            <!-- Les données seront insérées ici par JS -->
+        </div>
 
-  <script type="module">
-    import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-app.js";
-    import { getAuth, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-auth.js";
-    import { getFirestore, doc, getDoc } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore.js";
+        <!-- Section Actions -->
+        <div class="actions flex justify-center space-x-4 mt-8 no-print">
+            <button onclick="window.print()" class="flex items-center space-x-2 py-3 px-6 bg-gray-700 text-white font-bold rounded-xl hover:bg-gray-800 transition duration-200 shadow-lg">
+                <i data-lucide="printer" class="w-5 h-5"></i>
+                <span>Imprimer / PDF</span>
+            </button>
+            <a href="liste-eleves.html" class="flex items-center space-x-2 py-3 px-6 bg-gray-200 text-gray-700 font-bold rounded-xl hover:bg-gray-300 transition duration-200 shadow-lg">
+                <i data-lucide="arrow-left" class="w-5 h-5"></i>
+                <span>Retour à la liste</span>
+            </a>
+            <!-- Bouton d'édition (simulé) -->
+            <button id="editBtn" class="flex items-center space-x-2 py-3 px-6 bg-accent-green text-white font-bold rounded-xl hover:bg-green-600 transition duration-200 shadow-lg">
+                <i data-lucide="pencil" class="w-5 h-5"></i>
+                <span>Modifier la fiche</span>
+            </button>
+        </div>
+    </div>
 
-    const firebaseConfig = {
-      apiKey: "AIzaSyAgv4TDYnR60TXnns-LISqbZTgcdLT31cc",
-      authDomain: "gestionlwanga.firebaseapp.com",
-      projectId: "gestionlwanga"
-    };
+    <!-- Zone de notification -->
+    <div id="notification-area" class="fixed top-4 right-4 z-50 p-4 font-semibold text-white rounded-xl shadow-xl hidden" onclick="this.classList.add('hidden')"></div>
 
-    const app = initializeApp(firebaseConfig);
-    const auth = getAuth(app);
-    const db = getFirestore(app);
+    <script type="module">
+        import { initializeApp } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-app.js";
+        import { getAuth, signInAnonymously, signInWithCustomToken, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-auth.js";
+        import { getFirestore, doc, getDoc, setLogLevel } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-firestore.js";
+        
+        // Configuration Firebase (MANDATAIRE: utilisation des variables globales)
+        setLogLevel('Debug');
+        const appId = typeof __app_id !== 'undefined' ? __app_id : 'default-app-id';
+        const firebaseConfig = typeof __firebase_config !== 'undefined' ? JSON.parse(__firebase_config) : {};
+        const initialAuthToken = typeof __initial_auth_token !== 'undefined' ? __initial_auth_token : null;
 
-    const ficheContainer = document.getElementById("ficheContainer");
-    const notify = document.getElementById("notification-area");
+        const ficheContainer = document.getElementById("ficheContainer");
+        const loadingState = document.getElementById("loadingState");
+        const notify = document.getElementById("notification-area");
 
-    function showNotification(message, type = "success") {
-      notify.textContent = message;
-      notify.style.backgroundColor = type === "error" ? "#dc2626" : "#1e3a8a";
-      notify.style.display = "block";
-      setTimeout(() => notify.style.display = "none", 3000);
-    }
+        let db, auth, currentUserId = null;
 
-    const params = new URLSearchParams(window.location.search);
-    const eleveId = params.get("id");
-
-    onAuthStateChanged(auth, async (user) => {
-      if (!user) {
-        window.location.href = "login.html";
-        return;
-      }
-
-      if (!eleveId) {
-        ficheContainer.innerHTML = "⛔ Aucun ID fourni.";
-        return;
-      }
-
-      try {
-        const snap = await getDoc(doc(db, "eleves", eleveId));
-        if (!snap.exists()) {
-          ficheContainer.innerHTML = "⛔ Élève introuvable.";
-          return;
+        /**
+         * Affiche une notification temporaire.
+         */
+        function showNotification(message, type = "success") {
+            notify.textContent = message;
+            notify.className = `fixed top-4 right-4 z-50 p-4 font-semibold text-white rounded-xl shadow-xl transition-all duration-300 ${
+                type === "error" ? "bg-red-600" : "bg-primary-blue"
+            }`;
+            notify.classList.remove("hidden");
+            setTimeout(() => {
+                notify.classList.add("hidden");
+            }, 3500);
         }
 
-        const e = snap.data();
-        ficheContainer.innerHTML = `
-          <div class="photo">
-            <img src="${e.photoURL || 'https://via.placeholder.com/120'}" alt="Photo de l’élève" />
-          </div>
-          <div class="ligne"><span class="label">Nom :</span><span class="valeur">${e.nom} ${e.postNom || ""} ${e.prenom}</span></div>
-          <div class="ligne"><span class="label">Sexe :</span><span class="valeur">${e.sexe}</span></div>
-          <div class="ligne"><span class="label">Date de naissance :</span><span class="valeur">${e.dateNaissance}</span></div>
-          <div class="ligne"><span class="label">Classe :</span><span class="valeur">${e.classe}</span></div>
-          <div class="ligne"><span class="label">Section :</span><span class="valeur">${e.section || "-"}</span></div>
-          <div class="ligne"><span class="label">Option :</span><span class="valeur">${e.option || "-"}</span></div>
-          <div class="ligne"><span class="label">Adresse :</span><span class="valeur">${e.adresse || "-"}</span></div>
-          <div class="ligne"><span class="label">Tuteur :</span><span class="valeur">${e.tuteurNom || "-"} (${e.tuteurTel || "-"})</span></div>
-          <div class="ligne"><span class="label">Inscrit le :</span><span class="valeur">${new Date(e.dateInscription).toLocaleDateString()}</span></div>
-          <div class="ligne"><span class="label">Statut :</span><span class="valeur">${e.statut}</span></div>
-        `;
-      } catch (err) {
-        console.error(err);
-        showNotification("❌ Erreur de chargement", "error");
-      }
-    });
-  </script>
+        /**
+         * Génère le HTML pour l'affichage de la fiche.
+         */
+        function renderFiche(eleve) {
+            
+            // Détermine la couleur du badge de statut
+            let statusColor, statusText;
+            switch (eleve.statut?.toUpperCase()) {
+                case 'ACTIF':
+                    statusColor = 'bg-green-100 text-green-800';
+                    statusText = 'Actif';
+                    break;
+                case 'INACTIF':
+                    statusColor = 'bg-yellow-100 text-yellow-800';
+                    statusText = 'En instance';
+                    break;
+                case 'EXCLUS':
+                    statusColor = 'bg-red-100 text-red-800';
+                    statusText = 'Exclu(e)';
+                    break;
+                default:
+                    statusColor = 'bg-gray-100 text-gray-800';
+                    statusText = eleve.statut || 'Non Défini';
+            }
+
+            // Récupération de la photo (placeholder par défaut)
+            const photoURL = eleve.photoURL || `https://placehold.co/120x120/d1d5db/4b5563?text=${eleve.prenom?.charAt(0) || 'E'}`;
+
+            // Fonction utilitaire pour formater les données (si null, affiche un tiret)
+            const format = (value) => value || '-';
+            
+            // Formatage de la date d'inscription
+            let dateInscriptionFormatted = '-';
+            if (eleve.dateInscription && eleve.dateInscription.toDate) {
+                dateInscriptionFormatted = eleve.dateInscription.toDate().toLocaleDateString('fr-FR');
+            } else if (eleve.dateInscription) {
+                // Pour les objets Date ou chaînes non Firestore Timestamp
+                dateInscriptionFormatted = new Date(eleve.dateInscription).toLocaleDateString('fr-FR');
+            }
+
+
+            // Génération de la structure de la fiche
+            ficheContainer.innerHTML = `
+                <!-- En-tête de la fiche -->
+                <div class="flex flex-col sm:flex-row items-start sm:items-center space-y-4 sm:space-y-0 sm:space-x-6 pb-6 border-b border-gray-200 mb-6">
+                    <img src="${photoURL}" alt="Photo de l’élève" onerror="this.onerror=null;this.src='https://placehold.co/120x120/d1d5db/4b5563?text=Photo'" 
+                         class="w-28 h-28 object-cover rounded-full ring-4 ring-primary-blue mx-auto sm:mx-0" />
+                    <div class="text-center sm:text-left flex-grow">
+                        <h2 class="text-3xl font-extrabold text-gray-900 leading-tight">
+                            ${eleve.nom || ''} ${format(eleve.postNom)} ${eleve.prenom || ''}
+                        </h2>
+                        <p class="text-xl font-medium text-primary-blue">${format(eleve.classe)} - ${format(eleve.section)}</p>
+                        <span class="inline-block mt-2 px-3 py-1 text-xs font-bold rounded-full ${statusColor}">${statusText}</span>
+                    </div>
+                </div>
+
+                <!-- GRILLE DES INFORMATIONS -->
+                <div class="grid grid-cols-1 lg:grid-cols-3 gap-8">
+                    
+                    <!-- Colonne 1: Identification & État Civil -->
+                    <div class="lg:col-span-1 space-y-4">
+                        <h3 class="flex items-center text-lg font-bold text-gray-700 pb-2 border-b border-gray-100">
+                            <i data-lucide="badge-info" class="w-5 h-5 mr-2 text-primary-blue"></i> État Civil
+                        </h3>
+                        ${renderDetail('Sexe', eleve.sexe, 'person-standing')}
+                        ${renderDetail('Né(e) le', format(eleve.dateNaissance), 'cake')}
+                        ${renderDetail('Âge', `${format(eleve.age)} ans`, 'clock')}
+                        ${renderDetail('Adresse', format(eleve.adresse), 'map-pin')}
+                        ${renderDetail('Inscription', dateInscriptionFormatted, 'calendar-plus')}
+                    </div>
+
+                    <!-- Colonne 2: Détails Scolaires -->
+                    <div class="lg:col-span-1 space-y-4">
+                        <h3 class="flex items-center text-lg font-bold text-gray-700 pb-2 border-b border-gray-100">
+                            <i data-lucide="graduation-cap" class="w-5 h-5 mr-2 text-primary-blue"></i> Parcours Scolaire
+                        </h3>
+                        ${renderDetail('Classe', format(eleve.classe), 'tag')}
+                        ${renderDetail('Section', format(eleve.section), 'layers')}
+                        ${renderDetail('Option', format(eleve.option), 'puzzle')}
+                        ${renderDetail('Année Scolaire', format(eleve.anneeScolaire), 'git-fork')}
+                    </div>
+                    
+                    <!-- Colonne 3: Tuteur & Contact -->
+                    <div class="lg:col-span-1 space-y-4">
+                        <h3 class="flex items-center text-lg font-bold text-gray-700 pb-2 border-b border-gray-100">
+                            <i data-lucide="user-check" class="w-5 h-5 mr-2 text-primary-blue"></i> Contact Tuteur
+                        </h3>
+                        ${renderDetail('Nom Tuteur', format(eleve.tuteurNom), 'users')}
+                        ${renderDetail('Téléphone', format(eleve.tuteurTel), 'phone')}
+                        ${renderDetail('Statut Paiement', format(eleve.statutPaiement), 'wallet-cards')}
+                    </div>
+                </div>
+            `;
+            // Rendre les nouvelles icônes après insertion du HTML
+            lucide.createIcons();
+        }
+
+        /**
+         * Fonction utilitaire pour générer une ligne de détail formatée.
+         */
+        function renderDetail(label, value, iconName) {
+            return `
+                <div>
+                    <div class="data-label flex items-center mb-1">
+                        <i data-lucide="${iconName}" class="w-4 h-4 mr-2"></i> ${label}
+                    </div>
+                    <p class="data-value">${value}</p>
+                </div>
+            `;
+        }
+
+
+        // --- LOGIQUE FIREBASE ---
+
+        if (Object.keys(firebaseConfig).length > 0) {
+            const app = initializeApp(firebaseConfig);
+            auth = getAuth(app);
+            db = getFirestore(app);
+
+            // Gère l'authentification et le chargement des données
+            onAuthStateChanged(auth, async (user) => {
+                if (!user) {
+                    try {
+                        // Tente de s'authentifier anonymement ou via token si non déjà fait
+                        if (initialAuthToken) {
+                            await signInWithCustomToken(auth, initialAuthToken);
+                        } else {
+                            await signInAnonymously(auth);
+                        }
+                        // L'écouteur se redéclenchera avec l'utilisateur
+                        return; 
+                    } catch (error) {
+                        console.error("Erreur d'authentification:", error);
+                        loadingState.textContent = "❌ Accès refusé. Veuillez vous connecter.";
+                        showNotification("❌ Authentification requise pour voir la fiche.", "error");
+                        return;
+                    }
+                }
+
+                currentUserId = user.uid;
+                
+                const params = new URLSearchParams(window.location.search);
+                // L'ID de l'élève est récupéré via l'URL (ex: ?id=...)
+                const eleveId = params.get("id");
+
+                if (!eleveId) {
+                    ficheContainer.innerHTML = `<div class="p-4 text-center text-xl text-red-600 font-bold">⛔ Aucun identifiant d'élève n'a été fourni dans l'URL.</div>`;
+                    return;
+                }
+
+                // Chemin Firestore pour les données publiques ou partagées entre le personnel
+                // /artifacts/{appId}/public/data/eleves/{eleveId}
+                const eleveDocPath = `artifacts/${appId}/public/data/eleves/${eleveId}`;
+
+                try {
+                    const snap = await getDoc(doc(db, eleveDocPath));
+                    
+                    if (!snap.exists()) {
+                        ficheContainer.innerHTML = `<div class="p-4 text-center text-xl text-red-600 font-bold">⛔ Élève introuvable avec l'ID: ${eleveId}.</div>`;
+                        showNotification("❌ Fiche non trouvée.", "error");
+                        return;
+                    }
+
+                    const eleveData = snap.data();
+                    // Assurer que le loading state est effacé
+                    ficheContainer.innerHTML = '';
+                    renderFiche(eleveData);
+                    showNotification("Fiche chargée avec succès.", "success");
+
+                } catch (err) {
+                    console.error("Erreur de chargement Firestore:", err);
+                    ficheContainer.innerHTML = `<div class="p-4 text-center text-xl text-red-600 font-bold">❌ Erreur lors de la récupération des données. Consultez la console.</div>`;
+                    showNotification("❌ Erreur de chargement.", "error");
+                }
+            });
+        } else {
+            loadingState.textContent = "❌ Configuration Firebase manquante. Le système n'est pas opérationnel.";
+            showNotification('❌ Le système n\'est pas opérationnel (Firebase non configuré).', 'error');
+        }
+
+        // Simule l'action d'édition
+        document.getElementById('editBtn').addEventListener('click', () => {
+            showNotification("Fonctionnalité d'édition non implémentée (simulation).", "primary-blue");
+        });
+
+        // Initialisation des icônes après le chargement du DOM (nécessaire si le JS n'a pas encore injecté le contenu)
+        document.addEventListener('DOMContentLoaded', () => {
+            lucide.createIcons();
+        });
+
+    </script>
 </body>
 </html>
