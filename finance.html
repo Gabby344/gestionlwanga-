@@ -1,191 +1,217 @@
 <!DOCTYPE html>
 <html lang="fr">
 <head>
-  <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>💰 Gestion Financière - Institut Saint Charles Lwanga</title>
-  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700;800&display=swap" rel="stylesheet">
-
-  <style>
-    :root {
-      --bleu-fonce: #1e40af; 
-      --gris-fonce: #1f2937;
-      --vert-finance: #047857;
-      --fond-principal: #f4f6f8;
-      --ombre-forte: rgba(0,0,0,0.15);
-      --ombre-legere: rgba(0,0,0,0.05);
-    }
-    body {
-      font-family: 'Inter', sans-serif;
-      background-color: var(--fond-principal);
-      margin: 0;
-      padding: 2rem 1rem;
-      color: var(--gris-fonce);
-      text-align: center;
-    }
-    .header {
-      max-width: 900px;
-      margin: auto;
-      margin-bottom: 2rem;
-    }
-    h1 {
-      font-size: 2rem;
-      color: var(--bleu-fonce);
-      margin-bottom: 0.25rem;
-    }
-    h2 {
-      font-size: 1.1rem;
-      font-weight: 400;
-      color: #6b7280;
-      margin-bottom: 2rem;
-    }
-
-    /* --- GRILLE DES MODULES --- */
-    .modules-grid {
-      display: grid;
-      grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
-      gap: 1.5rem;
-      max-width: 900px;
-      margin: auto;
-    }
-    .module-card {
-      display: block;
-      background-color: white;
-      padding: 1.5rem;
-      border-radius: 12px;
-      text-decoration: none;
-      color: var(--gris-fonce);
-      box-shadow: 0 4px 10px var(--ombre-legere);
-      transition: transform 0.2s, box-shadow 0.2s;
-      border-left: 5px solid var(--vert-finance);
-      text-align: left;
-    }
-    .module-card:hover {
-      transform: translateY(-5px);
-      box-shadow: 0 8px 20px var(--ombre-forte);
-    }
-    .card-icon {
-      font-size: 2.5rem;
-      color: var(--vert-finance);
-      margin-bottom: 0.5rem;
-      line-height: 1;
-    }
-    .card-title {
-      font-size: 1.25rem;
-      font-weight: 700;
-      margin-bottom: 0.5rem;
-      color: var(--gris-fonce);
-    }
-    .card-description {
-      font-size: 0.9rem;
-      color: #6b7280;
-    }
-
-    /* Bouton retour + profil + déconnexion */
-    .top-bar {
-      max-width: 900px;
-      margin: auto;
-      display: flex;
-      justify-content: space-between;
-      align-items: center;
-      margin-bottom: 1.5rem;
-    }
-    #userInfo {
-      font-weight: 600;
-      color: var(--bleu-fonce);
-      background: #e0e7ff;
-      padding: 8px 12px;
-      border-radius: 6px;
-    }
-    .logout-btn {
-      background-color: #ef4444;
-      color: white;
-      border: none;
-      border-radius: 6px;
-      padding: 8px 14px;
-      font-weight: 600;
-      cursor: pointer;
-      transition: background-color 0.2s;
-    }
-    .logout-btn:hover {
-      background-color: #dc2626;
-    }
-    .btn-retour {
-      display: inline-block;
-      padding: 0.75rem 1.5rem;
-      background-color: #e5e7eb;
-      color: var(--gris-fonce);
-      border-radius: 8px;
-      text-decoration: none;
-      font-weight: 600;
-      margin-top: 3rem;
-      transition: background-color 0.2s;
-    }
-    .btn-retour:hover {
-      background-color: #d1d5db;
-    }
-  </style>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>💰 Gestion Financière Professionnelle</title>
+    <!-- Chargement de Tailwind CSS pour un design moderne -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <!-- Chargement d'une librairie d'icônes moderne (Lucide Icons) -->
+    <script src="https://unpkg.com/lucide@latest"></script>
+    <!-- Utilisation de la police Inter -->
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet" />
+    
+    <style>
+        body {
+            font-family: 'Inter', sans-serif;
+        }
+        /* Définition des couleurs personnalisées */
+        .module-card {
+            transition: transform 0.3s ease, box-shadow 0.3s ease;
+        }
+        .module-card:hover {
+            transform: translateY(-4px);
+            box-shadow: 0 10px 25px rgba(0, 0, 0, 0.15);
+        }
+    </style>
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    colors: {
+                        'primary-dark': '#0f3a62',      /* Bleu marine */
+                        'primary-light': '#1e40af',     /* Bleu standard */
+                        'accent-finance': '#10b981',    /* Vert Tendance (Success/Money) */
+                    }
+                }
+            }
+        }
+    </script>
 </head>
 
-<body>
-  <!-- Barre supérieure -->
-  <div class="top-bar">
-    <div id="userInfo">Chargement...</div>
-    <button id="logoutBtn" class="logout-btn">Se déconnecter</button>
-  </div>
+<body class="bg-gray-50 min-h-screen p-4 sm:p-8">
 
-  <div class="header">
-    <h1>💰 Gestion Financière & Scolarité</h1>
-    <h2>Centre de gestion des paiements, reçus et rapports comptables.</h2>
-  </div>
+    <!-- Conteneur principal -->
+    <div class="max-w-7xl mx-auto">
+        
+        <!-- Barre supérieure: Profil & Déconnexion -->
+        <div class="flex flex-col sm:flex-row justify-between items-center mb-8 p-4 bg-white rounded-xl shadow-lg border-t-4 border-primary-light">
+            <div id="userInfo" class="flex items-center space-x-2 p-2 bg-blue-50 text-primary-dark rounded-lg font-semibold text-sm mb-3 sm:mb-0">
+                <i data-lucide="user-circle" class="w-5 h-5 text-primary-light"></i>
+                <span id="userRole">Chargement du profil...</span>
+            </div>
+            <button id="logoutBtn" class="flex items-center space-x-2 py-2 px-4 bg-red-600 text-white font-semibold rounded-lg hover:bg-red-700 transition duration-200 shadow-md">
+                <i data-lucide="log-out" class="w-5 h-5"></i>
+                <span>Se déconnecter</span>
+            </button>
+        </div>
 
-  <div class="modules-grid">
-    <a href="enregistrer-paiement.html" class="module-card">
-      <div class="card-icon">💵</div>
-      <div class="card-title">Enregistrement des Paiements</div>
-      <div class="card-description">Enregistrer les règlements de minerval et autres frais scolaires.</div>
-    </a>
+        <!-- Header -->
+        <header class="text-center mb-12">
+            <h1 class="text-4xl sm:text-5xl font-extrabold text-gray-800 mb-2">
+                <span class="text-accent-finance">💰</span> Trésorerie & Comptabilité Scolaire
+            </h1>
+            <p class="text-lg text-gray-500 max-w-4xl mx-auto">
+                Accédez rapidement aux outils de gestion financière, de suivi des frais scolaires et de génération de rapports.
+            </p>
+        </header>
 
-    <a href="historique-paiements.html" class="module-card">
-      <div class="card-icon">📜</div>
-      <div class="card-title">Historique & Relevé des Scolarités</div>
-      <div class="card-description">Vérifier les reçus, soldes et générer les relevés de compte.</div>
-    </a>
+        <!-- Grille des Modules (Tableau de Bord) -->
+        <div id="modulesGrid" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
+            
+            <!-- Module 1: Enregistrement -->
+            <a href="enregistrer-paiement.html" class="module-card bg-white p-6 rounded-2xl shadow-xl border-l-4 border-accent-finance">
+                <div class="card-icon mb-3">
+                    <i data-lucide="wallet" class="w-10 h-10 text-accent-finance"></i>
+                </div>
+                <h3 class="text-xl font-bold text-gray-800 mb-1">Enregistrement Paiements</h3>
+                <p class="text-sm text-gray-500">Saisir les versements, générer les reçus et imprimer.</p>
+            </a>
 
-    <a href="config-frais.html" class="module-card">
-      <div class="card-icon">⚙️</div>
-      <div class="card-title">Configuration des Frais</div>
-      <div class="card-description">Définir ou modifier les montants de scolarité et cotisations.</div>
-    </a>
+            <!-- Module 2: Historique -->
+            <a href="historique-paiements.html" class="module-card bg-white p-6 rounded-2xl shadow-xl border-l-4 border-primary-light">
+                <div class="card-icon mb-3">
+                    <i data-lucide="scroll-text" class="w-10 h-10 text-primary-light"></i>
+                </div>
+                <h3 class="text-xl font-bold text-gray-800 mb-1">Relevés & Historique</h3>
+                <p class="text-sm text-gray-500">Consulter les soldes débiteurs/créditeurs par élève et classe.</p>
+            </a>
 
-    <a href="rapport-financier.html" class="module-card">
-      <div class="card-icon">📈</div>
-      <div class="card-title">Rapports Financiers</div>
-      <div class="card-description">Voir les statistiques de recouvrement et le solde global.</div>
-    </a>
-  </div>
+            <!-- Module 3: Configuration -->
+            <a href="config-frais.html" class="module-card bg-white p-6 rounded-2xl shadow-xl border-l-4 border-yellow-500">
+                <div class="card-icon mb-3">
+                    <i data-lucide="settings" class="w-10 h-10 text-yellow-500"></i>
+                </div>
+                <h3 class="text-xl font-bold text-gray-800 mb-1">Configuration des Frais</h3>
+                <p class="text-sm text-gray-500">Définir ou mettre à jour les montants de scolarité et cotisations.</p>
+            </a>
 
-  <a href="dashboard.html" class="btn-retour">← Retour au Tableau de Bord Principal</a>
+            <!-- Module 4: Rapports -->
+            <a href="rapport-financier.html" class="module-card bg-white p-6 rounded-2xl shadow-xl border-l-4 border-indigo-500">
+                <div class="card-icon mb-3">
+                    <i data-lucide="bar-chart-3" class="w-10 h-10 text-indigo-500"></i>
+                </div>
+                <h3 class="text-xl font-bold text-gray-800 mb-1">Rapports & Statistiques</h3>
+                <p class="text-sm text-gray-500">Tableaux de bord des recouvrements et bilans globaux.</p>
+            </a>
+        </div>
 
-  <div id="notification-area"></div>
+        <!-- Retour au Tableau de Bord Principal -->
+        <div class="text-center mt-12">
+            <a href="dashboard.html" class="inline-flex items-center space-x-2 py-3 px-6 bg-gray-200 text-gray-700 font-bold rounded-xl hover:bg-gray-300 transition duration-200 shadow-md">
+                <i data-lucide="home" class="w-5 h-5"></i>
+                <span>Retour au Tableau de Bord Principal</span>
+            </a>
+        </div>
+    </div>
 
-  <!-- Scripts -->
-  <script type="module">
-    import { protectPage, logoutUser, showNotification } from "./authGuard.js";
+    <!-- Zone de notification -->
+    <div id="notification-area" class="fixed top-4 right-4 z-50 p-4 font-semibold text-white rounded-xl shadow-xl hidden" onclick="this.classList.add('hidden')"></div>
 
-    // ✅ Protection stricte de la page (accès : économe, admin, préfet)
-    protectPage(["econome", "admin", "prefet"]);
+    <!-- Scripts Firebase et Logique -->
+    <script type="module">
+        import { initializeApp } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-app.js";
+        import { getAuth, signInAnonymously, signInWithCustomToken, onAuthStateChanged, signOut } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-auth.js";
+        import { getFirestore, setLogLevel } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-firestore.js";
+        
+        // Configuration et Initialisation Firebase
+        setLogLevel('Debug');
+        const appId = typeof __app_id !== 'undefined' ? __app_id : 'default-app-id';
+        const firebaseConfig = typeof __firebase_config !== 'undefined' ? JSON.parse(__firebase_config) : {};
+        const initialAuthToken = typeof __initial_auth_token !== 'undefined' ? __initial_auth_token : null;
 
-    // 🔹 Gestion du bouton de déconnexion
-    const logoutBtn = document.getElementById("logoutBtn");
-    logoutBtn.addEventListener("click", () => {
-      logoutUser();
-    });
+        let auth, db;
+        let isAuthReady = false;
 
-    // 🔹 Affichage de notification de bienvenue
-    window.addEventListener("DOMContentLoaded", () => {
-      showNotification("Bienvenue dans le module Finance 💼", "success");
-    });
-  </script>
+        const notify = document.getElementById("notification-area");
+        const userRoleSpan = document.getElementById("userRole");
+        const logoutBtn = document.getElementById("logoutBtn");
+
+        /**
+         * Affiche une notification temporaire.
+         */
+        function showNotification(message, type = "success") {
+            notify.textContent = message;
+            notify.className = `fixed top-4 right-4 z-50 p-4 font-semibold text-white rounded-xl shadow-xl transition-all duration-300 ${
+                type === "error" ? "bg-red-600" : "bg-accent-finance"
+            }`;
+            notify.classList.remove("hidden");
+            setTimeout(() => {
+                notify.classList.add("hidden");
+            }, 3500);
+        }
+
+        /**
+         * Gère la déconnexion de l'utilisateur.
+         */
+        function logoutUser() {
+            signOut(auth).then(() => {
+                showNotification("👋 Déconnexion réussie.", "success");
+                setTimeout(() => {
+                    // Redirection vers la page de connexion après déconnexion
+                    window.location.href = "login.html"; 
+                }, 500);
+            }).catch((error) => {
+                console.error("Erreur de déconnexion:", error);
+                showNotification("❌ Erreur de déconnexion.", "error");
+            });
+        }
+
+        if (Object.keys(firebaseConfig).length > 0) {
+            const app = initializeApp(firebaseConfig);
+            auth = getAuth(app);
+            db = getFirestore(app);
+
+            // Tente d'authentifier l'utilisateur
+            onAuthStateChanged(auth, async (user) => {
+                if (user) {
+                    // Rôle simulé pour la démonstration du tableau de bord
+                    const userRole = "Sécrétaire Financier (ID: " + user.uid.substring(0, 8) + "...)";
+                    userRoleSpan.textContent = userRole;
+                    isAuthReady = true;
+                    showNotification("Connexion réussie. Accès aux modules Finance. 🚀", "success");
+                } else {
+                    try {
+                        if (initialAuthToken) {
+                            // Si un jeton est disponible, essayez de vous connecter
+                            await signInWithCustomToken(auth, initialAuthToken);
+                        } else {
+                            // Fallback à la connexion anonyme
+                            await signInAnonymously(auth);
+                            // Le onAuthStateChanged se redéclenchera avec l'utilisateur anonyme
+                        }
+                    } catch (error) {
+                        console.error("Erreur lors de l'authentification:", error);
+                        // Rediriger ou afficher un message d'erreur si l'authentification échoue
+                        userRoleSpan.textContent = "Accès refusé. Non authentifié.";
+                        showNotification("❌ Authentification requise. Redirection...", "error");
+                        // Simuler la redirection vers une page de connexion si l'auth échoue
+                        // window.location.href = "login.html"; 
+                    }
+                }
+            });
+        } else {
+            userRoleSpan.textContent = "Erreur: Configuration Firebase indisponible.";
+            showNotification("❌ Le tableau de bord n'est pas opérationnel (Firebase non configuré).", "error");
+        }
+
+        // Événement du bouton de déconnexion
+        logoutBtn.addEventListener('click', logoutUser);
+
+        // Initialisation des icônes
+        document.addEventListener('DOMContentLoaded', () => {
+            lucide.createIcons();
+        });
+    </script>
 </body>
 </html>
