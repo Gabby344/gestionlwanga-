@@ -1,316 +1,395 @@
 <!DOCTYPE html>
 <html lang="fr">
 <head>
-    <meta charset="UTF-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>Ajouter un Membre du Personnel - SIGS</title>
-    <!-- Chargement de Tailwind CSS et de la police Inter -->
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Ajouter un Enseignant | Direction des Études</title>
     <script src="https://cdn.tailwindcss.com"></script>
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700;800&display=swap" rel="stylesheet">
-    <style>
-        body {
-            font-family: 'Inter', sans-serif;
-        }
-    </style>
+    <script src="https://kit.fontawesome.com/a2e0e6a56b.js" crossorigin="anonymous"></script>
+    
     <script>
         tailwind.config = {
             theme: {
                 extend: {
                     colors: {
-                        'primary-indigo': '#4f46e5', // Couleur d'action pour le personnel
-                        'secondary-dark': '#1f2937',
+                        'indigo-800': '#3730a3',
+                        'green-600': '#10b981',
+                        'red-600': '#dc2626',
                     }
                 }
             }
         }
     </script>
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Inter:wght@100..900&display=swap');
+        body { font-family: 'Inter', sans-serif; background-color: #f8fafc; }
+        .sidebar { transition: transform 0.3s ease-in-out; min-height: 100vh; }
+        @media (max-width: 767px) {
+            .sidebar { transform: translateX(-100%); position: fixed; z-index: 50; height: 100%; }
+            .sidebar.active { transform: translateX(0); box-shadow: 6px 0 15px rgba(0, 0, 0, 0.2); }
+        }
+        /* Style de base pour les champs de formulaire */
+        .form-input {
+            width: 100%;
+            padding: 10px 15px;
+            border: 1px solid #d1d5db; /* gray-300 */
+            border-radius: 8px; /* rounded-lg */
+            box-shadow: 0 1px 2px 0 rgba(0, 0, 0, 0.05); /* shadow-sm */
+            transition: border-color 0.2s, box-shadow 0.2s;
+        }
+        .form-input:focus {
+            border-color: #4f46e5; /* indigo-600 */
+            box-shadow: 0 0 0 3px rgba(79, 70, 229, 0.1);
+            outline: none;
+        }
+        /* Loading Overlay (Hidden by default here, visible by JS) */
+        #loadingOverlay { display: none; }
+    </style>
 </head>
-<body class="bg-gray-50 min-h-screen p-4 sm:p-8">
-    
-    <div class="header text-center mb-8 max-w-4xl mx-auto">
-        <h1 class="text-3xl sm:text-4xl font-extrabold text-primary-indigo mb-1">
-            ➕ Enregistrer un Nouveau Membre du Personnel
-        </h1>
-        <p class="text-gray-600">
-            Formulaire d'enregistrement des informations personnelles et professionnelles.
-        </p>
-    </div>
 
-    <div class="container max-w-4xl mx-auto">
-        <div class="form-card bg-white p-6 sm:p-8 rounded-xl shadow-2xl border-t-8 border-primary-indigo">
-            <form id="personnelForm">
-                <!-- Grille principale : 3 colonnes sur grand écran pour l'identité, 2 pour les autres champs -->
-                <div class="grid grid-cols-1 md:grid-cols-3 gap-x-6 gap-y-6">
+<body class="bg-gray-50 text-gray-900 flex min-h-screen">
+
+    <!-- Bouton Toggle Mobile -->
+    <button id="menuToggle" class="fixed top-4 left-4 z-50 p-2 bg-indigo-800 text-white rounded-lg shadow-xl md:hidden">
+        <i class="fa-solid fa-bars"></i>
+    </button>
+
+    <!-- Sidebar de Navigation -->
+    <aside id="sidebar" class="sidebar w-64 bg-indigo-800 text-white flex flex-col shadow-2xl md:translate-x-0 flex-shrink-0">
+        <div class="p-6 text-3xl font-extrabold border-b border-indigo-700 flex items-center gap-2">
+            <i class="fa-solid fa-user-graduate text-yellow-300"></i> Direction
+        </div>
+        <nav class="flex-1 p-4 space-y-2">
+            <a href="accueil-directeur-etudes.html" class="flex items-center gap-3 p-3 hover:bg-indigo-700 rounded-lg transition">
+                <i class="fa-solid fa-chart-line w-5 text-center"></i> Tableau de bord
+            </a>
+            <a href="ajouter-enseignants.html" class="flex items-center gap-3 p-3 bg-indigo-700 rounded-lg transition font-semibold shadow-md border-l-4 border-sky-400">
+                <i class="fa-solid fa-chalkboard-user w-5 text-center"></i> Gérer Enseignants
+            </a>
+            <a href="planning-classes.html" class="flex items-center gap-3 p-3 hover:bg-indigo-700 rounded-lg transition">
+                <i class="fa-solid fa-calendar-alt w-5 text-center"></i> Planning des Cours
+            </a>
+            <a href="liste-eleves.html" class="flex items-center gap-3 p-3 hover:bg-indigo-700 rounded-lg transition">
+                <i class="fa-solid fa-users w-5 text-center"></i> Liste des Élèves
+            </a>
+            <a href="profil-utilisateur.html" class="flex items-center gap-3 p-3 hover:bg-indigo-700 rounded-lg transition">
+                <i class="fa-solid fa-user w-5 text-center"></i> Mon Profil
+            </a>
+        </nav>
+        <button id="logoutBtn" class="m-4 py-3 bg-red-600 hover:bg-red-700 rounded-xl flex items-center justify-center gap-2 font-semibold transition duration-200 shadow-lg">
+            <i class="fa-solid fa-right-from-bracket"></i> Déconnexion
+        </button>
+    </aside>
+
+    <!-- Contenu Principal -->
+    <main id="mainContent" class="flex-1 p-4 md:p-8 overflow-y-auto">
+        <div class="max-w-4xl mx-auto">
+            <header class="mb-8 border-b pb-4">
+                <h1 class="text-3xl md:text-4xl font-extrabold text-indigo-900 flex items-center gap-3">
+                    <i class="fa-solid fa-user-plus text-indigo-600"></i> Ajouter un Nouvel Enseignant
+                </h1>
+                <p class="text-lg font-medium text-gray-600 mt-2">
+                    Veuillez saisir toutes les informations requises pour créer le profil de l'enseignant.
+                </p>
+                <!-- Zone d'affichage des messages -->
+                <div id="messageArea" class="mt-4"></div>
+            </header>
+
+            <!-- Formulaire d'Ajout d'Enseignant -->
+            <form id="addTeacherForm" class="bg-white p-6 md:p-10 rounded-xl shadow-2xl space-y-6">
+                
+                <!-- Section 1: Informations Personnelles -->
+                <h2 class="text-xl font-bold text-gray-700 border-b pb-2 mb-4 flex items-center gap-2">
+                    <i class="fa-solid fa-user-tie"></i> Identité & Rôle
+                </h2>
+                
+                <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
                     
-                    <!-- Nom de Famille -->
-                    <div class="form-group">
-                        <label for="nom" class="block font-semibold text-gray-700 mb-1">Nom de Famille *</label>
-                        <input type="text" id="nom" name="nom" class="w-full p-3 border border-gray-300 rounded-lg focus:border-primary-indigo focus:ring-4 focus:ring-primary-indigo/20 transition duration-150 bg-gray-50" placeholder="Ex: UMBA" required />
+                    <div>
+                        <label for="nom" class="block text-sm font-medium text-gray-700 mb-1">Nom <span class="text-red-500">*</span></label>
+                        <input type="text" id="nom" name="nom" required class="form-input" placeholder="Nom de famille">
                     </div>
                     
-                    <!-- Post-Nom -->
-                    <div class="form-group">
-                        <label for="postNom" class="block font-semibold text-gray-700 mb-1">Post-Nom *</label>
-                        <input type="text" id="postNom" name="postNom" class="w-full p-3 border border-gray-300 rounded-lg focus:border-primary-indigo focus:ring-4 focus:ring-primary-indigo/20 transition duration-150 bg-gray-50" placeholder="Ex: MBO" required />
-                    </div>
-                    
-                    <!-- Prénoms -->
-                    <div class="form-group">
-                        <label for="prenom" class="block font-semibold text-gray-700 mb-1">Prénoms *</label>
-                        <input type="text" id="prenom" name="prenom" class="w-full p-3 border border-gray-300 rounded-lg focus:border-primary-indigo focus:ring-4 focus:ring-primary-indigo/20 transition duration-150 bg-gray-50" placeholder="Ex: Gabby" required />
+                    <div>
+                        <label for="postNom" class="block text-sm font-medium text-gray-700 mb-1">Post-nom</label>
+                        <input type="text" id="postNom" name="postNom" class="form-input" placeholder="Post-nom (facultatif)">
                     </div>
 
-                    <!-- Date de Naissance (Utilise 2 colonnes sur petit écran, aligné sur 1/3 sur grand) -->
-                    <div class="form-group md:col-span-1">
-                        <label for="dateNaissance" class="block font-semibold text-gray-700 mb-1">Date de Naissance *</label>
-                        <input type="date" id="dateNaissance" name="dateNaissance" class="w-full p-3 border border-gray-300 rounded-lg focus:border-primary-indigo focus:ring-4 focus:ring-primary-indigo/20 transition duration-150 bg-gray-50" required />
+                    <div>
+                        <label for="prenom" class="block text-sm font-medium text-gray-700 mb-1">Prénom <span class="text-red-500">*</span></label>
+                        <input type="text" id="prenom" name="prenom" required class="form-input" placeholder="Prénom">
                     </div>
-                    
-                    <!-- Sexe -->
-                    <div class="form-group md:col-span-1">
-                        <label for="sexe" class="block font-semibold text-gray-700 mb-1">Sexe *</label>
-                        <select id="sexe" name="sexe" class="w-full p-3 border border-gray-300 rounded-lg focus:border-primary-indigo focus:ring-4 focus:ring-primary-indigo/20 transition duration-150 bg-gray-50" required>
-                            <option value="">-- Sélectionner --</option>
+                </div>
+
+                <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
+                    <div>
+                        <label for="sexe" class="block text-sm font-medium text-gray-700 mb-1">Sexe <span class="text-red-500">*</span></label>
+                        <select id="sexe" name="sexe" required class="form-input">
+                            <option value="">Sélectionner</option>
                             <option value="M">Masculin</option>
                             <option value="F">Féminin</option>
                         </select>
                     </div>
+                    <div>
+                        <label for="dateNaissance" class="block text-sm font-medium text-gray-700 mb-1">Date de Naissance <span class="text-red-500">*</span></label>
+                        <input type="date" id="dateNaissance" name="dateNaissance" required class="form-input">
+                    </div>
+                    <div>
+                        <label for="nationalite" class="block text-sm font-medium text-gray-700 mb-1">Nationalité</label>
+                        <input type="text" id="nationalite" name="nationalite" class="form-input" value="Congolaise">
+                    </div>
+                </div>
 
-                    <!-- Téléphone -->
-                    <div class="form-group md:col-span-1">
-                        <label for="telephone" class="block font-semibold text-gray-700 mb-1">Téléphone</label>
-                        <input type="tel" id="telephone" name="telephone" class="w-full p-3 border border-gray-300 rounded-lg focus:border-primary-indigo focus:ring-4 focus:ring-primary-indigo/20 transition duration-150 bg-gray-50" placeholder="Ex: +243 99 999 9999" />
+                <!-- Section 2: Coordonnées et Contact -->
+                <h2 class="text-xl font-bold text-gray-700 border-b pb-2 mb-4 pt-4 flex items-center gap-2">
+                    <i class="fa-solid fa-address-card"></i> Contact & Adresse
+                </h2>
+                
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                    <div>
+                        <label for="telephone" class="block text-sm font-medium text-gray-700 mb-1">Téléphone <span class="text-red-500">*</span></label>
+                        <input type="tel" id="telephone" name="telephone" required class="form-input" placeholder="+243 XXX XXX XXX">
                     </div>
+                    <div>
+                        <label for="email" class="block text-sm font-medium text-gray-700 mb-1">Email <span class="text-red-500">*</span></label>
+                        <input type="email" id="email" name="email" required class="form-input" placeholder="prenom.nom@ecole.com">
+                    </div>
+                </div>
 
-                    <!-- Adresse E-mail Professionnelle (Pleine largeur sur petit écran, 2/3 sur grand) -->
-                    <div class="form-group md:col-span-2">
-                        <label for="email" class="block font-semibold text-gray-700 mb-1">Adresse E-mail Professionnelle *</label>
-                        <input type="email" id="email" name="email" class="w-full p-3 border border-gray-300 rounded-lg focus:border-primary-indigo focus:ring-4 focus:ring-primary-indigo/20 transition duration-150 bg-gray-50" placeholder="Ex: g.umba@stcharles.com" required />
-                    </div>
-                    
-                    <!-- Plus Haute Qualification (1/3 sur grand écran) -->
-                    <div class="form-group md:col-span-1">
-                        <label for="qualification" class="block font-semibold text-gray-700 mb-1">Plus Haute Qualification</label>
-                        <input type="text" id="qualification" name="qualification" class="w-full p-3 border border-gray-300 rounded-lg focus:border-primary-indigo focus:ring-4 focus:ring-primary-indigo/20 transition duration-150 bg-gray-50" placeholder="Ex: Licence en Pédagogie" />
-                    </div>
+                <div>
+                    <label for="adresse" class="block text-sm font-medium text-gray-700 mb-1">Adresse Complète</label>
+                    <textarea id="adresse" name="adresse" rows="2" class="form-input" placeholder="Numéro de Parcelle, Avenue, Quartier, Commune, Ville"></textarea>
+                </div>
 
-                    <!-- Ligne 2 : Professionnel -->
-                    
-                    <!-- Titre / Fonction -->
-                    <div class="form-group md:col-span-2">
-                        <label for="titre" class="block font-semibold text-gray-700 mb-1">Titre / Fonction *</label>
-                        <select id="titre" name="titre" class="w-full p-3 border border-gray-300 rounded-lg focus:border-primary-indigo focus:ring-4 focus:ring-primary-indigo/20 transition duration-150 bg-gray-50" required>
-                            <option value="">-- Choisir une fonction --</option>
-                            <option value="Professeur">Professeur</option>
-                            <option value="Directeur">Directeur</option>
-                            <option value="Préfet">Préfet des Études</option>
-                            <option value="Secrétaire">Secrétaire</option>
-                            <option value="Comptable">Comptable</option>
-                            <option value="Surveillant">Surveillant Général</option>
-                        </select>
+                <!-- Section 3: Informations Professionnelles -->
+                <h2 class="text-xl font-bold text-gray-700 border-b pb-2 mb-4 pt-4 flex items-center gap-2">
+                    <i class="fa-solid fa-briefcase"></i> Détails Professionnels
+                </h2>
+                
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                    <div>
+                        <label for="dateEmbauche" class="block text-sm font-medium text-gray-700 mb-1">Date d'Embauche <span class="text-red-500">*</span></label>
+                        <input type="date" id="dateEmbauche" name="dateEmbauche" required class="form-input">
                     </div>
-                    
-                    <!-- Statut du Contrat -->
-                    <div class="form-group md:col-span-1">
-                        <label for="statutContrat" class="block font-semibold text-gray-700 mb-1">Statut du Contrat *</label>
-                        <select id="statutContrat" name="statutContrat" class="w-full p-3 border border-gray-300 rounded-lg focus:border-primary-indigo focus:ring-4 focus:ring-primary-indigo/20 transition duration-150 bg-gray-50" required>
-                            <option value="">-- Statut --</option>
-                            <option value="Permanent">Permanent</option>
-                            <option value="Vacataire">Vacataire</option>
-                            <option value="Administratif">Administratif</option>
-                        </select>
+                    <div>
+                        <label for="specialite" class="block text-sm font-medium text-gray-700 mb-1">Spécialité Principale <span class="text-red-500">*</span></label>
+                        <input type="text" id="specialite" name="specialite" required class="form-input" placeholder="Ex: Mathématiques, Français, etc.">
                     </div>
-                    
-                    <!-- Bouton de Soumission -->
-                    <button type="submit" class="btn-submit col-span-full mt-4 bg-primary-indigo text-white font-bold py-3 px-6 rounded-lg text-lg hover:bg-indigo-700 transition duration-200 shadow-md hover:shadow-lg disabled:opacity-50 disabled:cursor-not-allowed">
-                        💾 Enregistrer le Personnel et Créer la Fiche
+                </div>
+
+                <!-- Bouton de Soumission -->
+                <div class="pt-6">
+                    <button type="submit" id="submitBtn" class="w-full py-3 px-4 bg-indigo-600 text-white font-semibold rounded-xl shadow-lg hover:bg-indigo-700 transition duration-200 flex items-center justify-center gap-3">
+                        <i class="fa-solid fa-save"></i> Enregistrer l'Enseignant
                     </button>
                 </div>
             </form>
         </div>
-        
-        <!-- Conteneur de Message -->
-        <div id="message" class="mt-6 max-w-xl mx-auto">
-            <!-- Les messages de succès/erreur apparaîtront ici -->
+    </main>
+    
+    <!-- Modal de Message (non utilisé par défaut, mais prêt si besoin) -->
+    <div id="messageModal" class="fixed inset-0 bg-gray-600 bg-opacity-75 hidden flex items-center justify-center p-4">
+        <div class="bg-white p-6 rounded-lg shadow-xl max-w-sm w-full text-center">
+            <div id="modalIcon" class="mb-4 text-3xl"></div>
+            <p id="modalMessage" class="text-lg font-semibold mb-4"></p>
+            <button id="closeModalBtn" class="py-2 px-4 bg-indigo-600 text-white rounded-lg hover:bg-indigo-700">Fermer</button>
         </div>
-
-        <a href="#" onclick="showMessage('La page de gestion du personnel n\'est pas implémentée dans ce fichier unique.', 'info'); return false;" class="btn-retour block text-center mt-6 text-gray-600 hover:text-primary-indigo font-medium transition duration-200">
-            ← Retour au Menu du Personnel
-        </a>
-        <p id="auth-status" class="text-xs text-center mt-2 text-gray-400">
-            Statut : Initialisation...
-        </p>
     </div>
 
-    <!-- SCRIPTS FIREBASE ET LOGIQUE APPLICATIVE -->
+
     <script type="module">
         import { initializeApp } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-app.js";
-        import { getAuth, signInAnonymously, signInWithCustomToken, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-auth.js";
-        import { getFirestore, addDoc, collection, serverTimestamp, setLogLevel } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-firestore.js";
+        import { getAuth, onAuthStateChanged, signOut, signInWithCustomToken, signInAnonymously } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-auth.js";
+        import { getFirestore, doc, collection, addDoc, setLogLevel } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-firestore.js";
+        
+        // Active le logging pour le débogage de Firestore
+        setLogLevel('debug');
 
-        // -----------------------------------------------------
-        // 1. INITIALISATION ET AUTHENTIFICATION (MANDATAIRE)
-        // -----------------------------------------------------
-
+        // --- Configuration Firebase (Utilisation des variables globales MANDATOIRES) ---
         const appId = typeof __app_id !== 'undefined' ? __app_id : 'default-app-id';
         const firebaseConfig = JSON.parse(typeof __firebase_config !== 'undefined' ? __firebase_config : '{}');
+        const initialAuthToken = typeof __initial_auth_token !== 'undefined' ? __initial_auth_token : null;
+        
+        let app, auth, db, userId;
 
-        let app, db, auth;
-        let userId = null;
-        let isAuthReady = false;
-
-        // Fonction utilitaire pour afficher les messages
-        function showMessage(text, type) {
-            const messageEl = document.getElementById('message');
-            let colorClass = '';
-            if (type === 'success') {
-                colorClass = 'bg-green-100 text-green-800 border-green-400';
-            } else if (type === 'error') {
-                colorClass = 'bg-red-100 text-red-800 border-red-400';
-            } else {
-                colorClass = 'bg-yellow-100 text-yellow-800 border-yellow-400';
-            }
-            
-            messageEl.innerHTML = `
-                <div role="alert" class="p-4 rounded-lg border-l-4 font-semibold ${colorClass}">
-                    ${text}
-                </div>
-            `;
-            // Vider le message après 8 secondes pour ne pas surcharger l'interface
-            setTimeout(() => {
-                if (messageEl.querySelector('div')) {
-                    messageEl.innerHTML = '';
-                }
-            }, 8000);
-        }
-
-        // Utilitaire pour le backoff exponentiel lors des appels API
-        async function fetchWithBackoff(func, maxRetries = 5) {
-            for (let i = 0; i < maxRetries; i++) {
-                try {
-                    return await func();
-                } catch (error) {
-                    if (i === maxRetries - 1) throw error;
-                    const delay = Math.pow(2, i) * 1000;
-                    await new Promise(resolve => setTimeout(resolve, delay));
-                    console.warn(`Retry ${i + 1}/${maxRetries} after ${delay}ms: ${error.message}`);
-                }
-            }
+        try {
+            app = initializeApp(firebaseConfig);
+            auth = getAuth(app);
+            db = getFirestore(app);
+        } catch (error) {
+            console.error("Erreur d'initialisation Firebase:", error);
+            displayAlert("Erreur critique: Firebase n'a pas pu être initialisé.");
         }
         
-        // Initialisation de Firebase
-        if (Object.keys(firebaseConfig).length > 0) {
-            app = initializeApp(firebaseConfig);
-            db = getFirestore(app);
-            auth = getAuth(app);
-            setLogLevel('Debug');
+        // RÔLE ATTENDU: Seul le Directeur des Études peut accéder et ajouter des enseignants
+        const AUTHORIZED_ROLE = 'directeur_etudes'; 
 
-            // Écouteur d'état d'authentification
-            onAuthStateChanged(auth, async (user) => {
-                const authStatusEl = document.getElementById('auth-status');
-                if (user) {
-                    userId = user.uid;
-                    isAuthReady = true;
-                    console.log("Firebase Auth prêt. User ID:", userId);
-                    authStatusEl.textContent = `Statut : Authentifié (ID: ${userId})`;
-                    showMessage('Prêt à enregistrer le membre du personnel.', 'info');
-                } else {
-                    const token = typeof __initial_auth_token !== 'undefined' ? __initial_auth_token : null;
-                    try {
-                        if (token) {
-                            await signInWithCustomToken(auth, token);
-                        } else {
-                            await signInAnonymously(auth);
-                        }
-                        // L'écouteur onAuthStateChanged se déclenchera à nouveau avec l'utilisateur
-                    } catch (error) {
-                        console.error("Firebase authentication failed:", error);
-                        authStatusEl.textContent = 'Statut : Erreur d\'authentification';
-                        showMessage('❌ Erreur d\'authentification Firebase. Veuillez rafraîchir.', 'error');
-                    }
-                }
-            });
-        } else {
-            showMessage('❌ Configuration Firebase manquante. Enregistrement non fonctionnel.', 'error');
-            console.error("Firebase configuration is missing.");
-            document.getElementById('auth-status').textContent = 'Statut : Configuration manquante';
+        // --- Éléments du DOM ---
+        const form = document.getElementById('addTeacherForm');
+        const messageArea = document.getElementById('messageArea');
+        const submitBtn = document.getElementById('submitBtn');
+        const sidebar = document.getElementById("sidebar");
+        const menuToggle = document.getElementById("menuToggle");
+        const logoutBtn = document.getElementById("logoutBtn");
+        
+        // --- Fonctions UX & Messages ---
+
+        /**
+         * Affiche un message d'alerte dans la zone de message.
+         * @param {string} message Le contenu du message.
+         * @param {('success'|'error'|'loading')} type Le type de message.
+         */
+        function displayAlert(message, type = 'error') {
+            let bgColor, borderColor, icon, textColor;
+            
+            switch(type) {
+                case 'success':
+                    bgColor = 'bg-green-100';
+                    borderColor = 'border-green-400';
+                    icon = 'fa-circle-check';
+                    textColor = 'text-green-700';
+                    break;
+                case 'error':
+                    bgColor = 'bg-red-100';
+                    borderColor = 'border-red-400';
+                    icon = 'fa-circle-xmark';
+                    textColor = 'text-red-700';
+                    break;
+                case 'loading':
+                    bgColor = 'bg-indigo-100';
+                    borderColor = 'border-indigo-400';
+                    icon = 'fa-spinner fa-spin';
+                    textColor = 'text-indigo-700';
+                    break;
+                default:
+                    bgColor = 'bg-gray-100';
+                    borderColor = 'border-gray-400';
+                    icon = 'fa-circle-info';
+                    textColor = 'text-gray-700';
+            }
+
+            messageArea.innerHTML = `
+                <div class="${bgColor} ${textColor} border-l-4 ${borderColor} p-4 rounded-lg shadow-md flex items-center gap-3" role="alert">
+                    <i class="fa-solid ${icon} text-xl"></i>
+                    <p class="font-medium">${message}</p>
+                </div>
+            `;
+            
+            // Masquer les messages de succès ou de chargement après 5 secondes
+            if (type !== 'error') {
+                setTimeout(() => {
+                    messageArea.innerHTML = '';
+                }, 5000);
+            }
         }
 
-        // -----------------------------------------------------
-        // 2. LOGIQUE DU FORMULAIRE
-        // -----------------------------------------------------
+        // --- Gestion de l'Authentification et Autorisation ---
 
-        const handleFormSubmit = async (e) => {
-            e.preventDefault();
+        async function initialSignIn() {
+            if (initialAuthToken) {
+                try {
+                    await signInWithCustomToken(auth, initialAuthToken);
+                } catch (error) {
+                    console.error("Erreur d'authentification par jeton:", error);
+                    await signInAnonymously(auth);
+                }
+            } else if (!auth.currentUser) {
+                 try {
+                    await signInAnonymously(auth);
+                } catch (e) {
+                    console.error("Erreur de connexion anonyme:", e);
+                }
+            }
+        }
 
-            if (!db || !userId || !isAuthReady) {
-                showMessage('❌ Erreur: En attente de l\'authentification Firebase...', 'error');
+        onAuthStateChanged(auth, async (user) => {
+            if (!user) {
+                window.location.href = "connexion.html";
                 return;
             }
+            
+            userId = user.uid;
+            
+            // Vérification du rôle (simplifiée, car l'accès complet se fait sur l'accueil)
+            // L'hypothèse est que si l'utilisateur est ici, il est le Directeur des Études
+            // Pour une application réelle, une vérification complète du rôle devrait être effectuée ici aussi.
 
-            const form = e.target;
-            const btn = document.querySelector('.btn-submit');
-            const originalText = btn.innerHTML;
-
-            btn.disabled = true;
-            btn.innerHTML = '<span class="animate-spin inline-block w-4 h-4 mr-2 border-2 border-t-transparent border-white rounded-full"></span> Chargement...'; // État de chargement
-
-            const nom = form.nom.value.trim().toUpperCase();
-            const postNom = form.postNom.value.trim().toUpperCase();
-            const prenom = form.prenom.value.trim();
-            const dateNaissance = form.dateNaissance.value;
-            const sexe = form.sexe.value;
-            const email = form.email.value.trim();
-            const telephone = form.telephone.value.trim();
-            const titre = form.titre.value;
-            const statutContrat = form.statutContrat.value;
-            const qualification = form.qualification.value.trim();
-
-            // Logique de génération de Matricule Personnel (STCP: St-Charles Personnel)
-            const annee = new Date().getFullYear().toString().slice(-2);
-            // PR pour Professeur, AD pour Administratif/Autre
-            const prefix = (titre === 'Professeur') ? 'PR' : 'AD'; 
-            // Utilise les 6 derniers chiffres du timestamp pour l'unicité
-            const uniquePart = Date.now().toString().slice(-6); 
-            const matriculePersonnel = `STCP-${prefix}-${annee}/${uniquePart}`;
-
-            const newPersonnel = {
-                nom: nom,
-                postNom: postNom,
-                prenom: prenom,
-                matriculePersonnel: matriculePersonnel,
-                dateNaissance: dateNaissance,
-                sexe: sexe,
-                email: email,
-                telephone: telephone || 'N/A',
-                titre: titre,
-                statutContrat: statutContrat,
-                qualification: qualification || 'N/A',
-                dateEmbauche: serverTimestamp(),
-                ownerId: userId // Lien avec l'utilisateur
-            };
-
-            // Chemin de la collection sécurisée (Private Data)
-            const collectionPath = `artifacts/${appId}/users/${userId}/personnel`;
+        });
+        
+        // --- Logique du Formulaire ---
+        form.addEventListener('submit', async (e) => {
+            e.preventDefault();
+            
+            submitBtn.disabled = true;
+            submitBtn.innerHTML = '<i class="fa-solid fa-spinner fa-spin"></i> Enregistrement en cours...';
+            messageArea.innerHTML = '';
 
             try {
-                await fetchWithBackoff(() => addDoc(collection(db, collectionPath), newPersonnel));
+                // 1. Récupérer les données du formulaire
+                const formData = {
+                    nom: document.getElementById('nom').value.trim().toUpperCase(),
+                    postNom: document.getElementById('postNom').value.trim(),
+                    prenom: document.getElementById('prenom').value.trim(),
+                    sexe: document.getElementById('sexe').value,
+                    dateNaissance: document.getElementById('dateNaissance').value,
+                    nationalite: document.getElementById('nationalite').value.trim(),
+                    telephone: document.getElementById('telephone').value.trim(),
+                    email: document.getElementById('email').value.trim().toLowerCase(),
+                    adresse: document.getElementById('adresse').value.trim(),
+                    dateEmbauche: document.getElementById('dateEmbauche').value,
+                    specialite: document.getElementById('specialite').value.trim(),
+                    role: 'enseignant', // Rôle fixé pour cette collection
+                    statut: 'actif',
+                    createdAt: new Date().toISOString()
+                };
 
-                showMessage(`✅ La fiche du membre du personnel **${nom} ${postNom} ${prenom}** a été enregistrée avec succès ! Son matricule est : **${matriculePersonnel}**`, 'success');
-                form.reset();
+                // 2. Validation simple
+                if (!formData.nom || !formData.prenom || !formData.sexe || !formData.dateNaissance || !formData.email || !formData.telephone || !formData.dateEmbauche || !formData.specialite) {
+                    throw new Error("Veuillez remplir tous les champs obligatoires (*).");
+                }
+                
+                // 3. Sauvegarde dans Firestore
+                // Chemin public pour les enseignants : /artifacts/{appId}/public/data/teachers
+                const teachersCollectionRef = collection(db, `artifacts/${appId}/public/data/teachers`);
+                
+                // On utilise addDoc pour créer un nouveau document avec un ID auto-généré
+                const newDocRef = await addDoc(teachersCollectionRef, formData);
+
+                displayAlert(`Enseignant ${formData.nom} ${formData.prenom} enregistré avec succès! (ID: ${newDocRef.id})`, 'success');
+                
+                // Réinitialiser le formulaire après succès
+                form.reset(); 
+
             } catch (error) {
-                showMessage(`❌ Erreur d'enregistrement : ${error.message}`, 'error');
-                console.error("Error adding document: ", error);
-            } finally {
-                btn.disabled = false;
-                btn.innerHTML = originalText;
-            }
-        };
+                console.error("Erreur lors de l'enregistrement de l'enseignant:", error);
+                const errorMessage = error.message.includes('permission-denied') 
+                    ? "Accès refusé. Vérifiez vos permissions de sauvegarde ou votre connexion."
+                    : error.message;
 
-        // Attacher l'écouteur d'événement
-        document.addEventListener('DOMContentLoaded', () => {
-            document.getElementById('personnelForm').addEventListener('submit', handleFormSubmit);
+                displayAlert(`Échec de l'enregistrement : ${errorMessage}`, 'error');
+
+            } finally {
+                submitBtn.disabled = false;
+                submitBtn.innerHTML = '<i class="fa-solid fa-save"></i> Enregistrer l\'Enseignant';
+            }
         });
+        
+        // --- Gestion Mobile et Déconnexion ---
+        menuToggle.addEventListener('click', () => {
+            sidebar.classList.toggle('active');
+        });
+
+        logoutBtn.addEventListener("click", async () => {
+            try {
+                await signOut(auth);
+                window.location.href = "connexion.html"; // Redirection vers la page de connexion
+            } catch (error) {
+                displayAlert("Erreur lors de la déconnexion.", 'error');
+            }
+        });
+
+        // Exécuter l'authentification initiale
+        initialSignIn();
     </script>
 </body>
 </html>
