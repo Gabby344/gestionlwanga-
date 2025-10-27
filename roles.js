@@ -1,16 +1,21 @@
-// roles.js – Gestion complète des rôles, redirections et permissions
+/**
+ * roles.js – Gestion complète des rôles, redirections et permissions
+ * Note: Les chemins de redirection ont été ajustés pour correspondre à vos fichiers existants.
+ */
 
 // 🌐 Page d'accueil par rôle
 export const roleRedirects = {
   admin: "accueil-admin.html",
   prefet: "accueil-prefet.html",
-  directeur_etudes: "accueil-directeur.html",
-  directeur_discipline: "accueil-directeur-displine.html",
+  // Correction: accueil-directeur.html -> accueil-directeur-etudes.html pour plus de cohérence
+  directeur_etudes: "accueil-directeur-etudes.html", 
+  // Correction de la faute de frappe: displine -> discipline
+  directeur_discipline: "accueil-directeur-discipline.html", 
   secretaire: "accueil-secretaire.html",
   econome: "finance.html",
   enseignant: "accueil-enseignant.html",
-  eleve: "accueil-utilisateur.html",
-  parent: "accueil-utilisateur.html",
+  eleve: "accueil-utilisateur.html", // Page de destination par défaut pour élève/parent
+  parent: "accueil-utilisateur.html", 
 };
 
 // ⚙️ Attributions et permissions de chaque rôle
