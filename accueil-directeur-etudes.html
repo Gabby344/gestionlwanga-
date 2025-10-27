@@ -13,11 +13,12 @@
                 extend: {
                     colors: {
                         // Ajout des classes de couleurs spécifiques utilisées dynamiquement pour éviter le bug JIT
-                        'indigo-600': '#4f46e5', 'indigo-700': '#4338ca', 
+                        'indigo-600': '#4f46e5', 'indigo-700': '#4338ca', 'indigo-900': '#312e81',
                         'green-600': '#10b981', 'green-700': '#059669',
                         'sky-600': '#0284c7', 'sky-700': '#0369a1',
                         'red-600': '#dc2626', 'red-700': '#b91c1c',
                         'yellow-600': '#d97706', 'yellow-700': '#b45309',
+                        'pink-500': '#ec4899', 'pink-700': '#be185d'
                     }
                 }
             }
@@ -30,6 +31,7 @@
         body { font-family: 'Inter', sans-serif; }
         .sidebar {
             transition: transform 0.3s ease-in-out;
+            min-height: 100vh;
         }
         /* Rendre la sidebar responsive */
         @media (max-width: 767px) {
@@ -103,36 +105,41 @@
             </header>
 
             <section class="mb-10">
-                <h2 class="text-2xl font-bold text-gray-800 mb-4">Aperçu Académique</h2>
+                <h2 class="text-2xl font-bold text-gray-800 mb-4">Aperçu Académique (Données Live)</h2>
                 <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6" id="statsGrid">
+                    
+                    <!-- Stat 1: Enseignants Actifs -->
                     <div class="bg-white p-6 rounded-xl shadow-lg border-l-4 border-indigo-500 flex justify-between items-center">
                         <div>
                             <p class="text-sm font-medium text-gray-500">Enseignants Actifs</p>
-                            <p id="stat-teachers" class="text-3xl font-extrabold text-indigo-700">--</p>
+                            <p id="stat-teachers" class="text-3xl font-extrabold text-indigo-700 animate-pulse">...</p>
                         </div>
                         <i class="fa-solid fa-users-line text-4xl text-indigo-300"></i>
                     </div>
                     
+                    <!-- Stat 2: Classes Gérées -->
                     <div class="bg-white p-6 rounded-xl shadow-lg border-l-4 border-green-500 flex justify-between items-center">
                         <div>
                             <p class="text-sm font-medium text-gray-500">Classes Gérées</p>
-                            <p id="stat-classes" class="text-3xl font-extrabold text-green-700">--</p>
+                            <p id="stat-classes" class="text-3xl font-extrabold text-green-700 animate-pulse">...</p>
                         </div>
                         <i class="fa-solid fa-building-columns text-4xl text-green-300"></i>
                     </div>
 
+                    <!-- Stat 3: Cours Planifiés (Total) -->
                     <div class="bg-white p-6 rounded-xl shadow-lg border-l-4 border-yellow-500 flex justify-between items-center">
                         <div>
-                            <p class="text-sm font-medium text-gray-500">Cours Planifiés (Semaine)</p>
-                            <p id="stat-courses" class="text-3xl font-extrabold text-yellow-700">--</p>
+                            <p class="text-sm font-medium text-gray-500">Cours Planifiés (Total)</p>
+                            <p id="stat-courses" class="text-3xl font-extrabold text-yellow-700 animate-pulse">...</p>
                         </div>
                         <i class="fa-solid fa-calendar-check text-4xl text-yellow-300"></i>
                     </div>
 
+                    <!-- Stat 4: Taux de Présence (Simulé) -->
                     <div class="bg-white p-6 rounded-xl shadow-lg border-l-4 border-pink-500 flex justify-between items-center">
                         <div>
                             <p class="text-sm font-medium text-gray-500">Taux de Présence</p>
-                            <p id="stat-attendance" class="text-3xl font-extrabold text-pink-700">--</p>
+                            <p id="stat-attendance" class="text-3xl font-extrabold text-pink-700">98%</p>
                         </div>
                         <i class="fa-solid fa-person-circle-check text-4xl text-pink-300"></i>
                     </div>
@@ -142,7 +149,8 @@
             <section>
                 <h2 class="text-2xl font-bold text-gray-800 mb-4">Accès aux Outils Clés</h2>
                 <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6" id="moduleList">
-                    </div>
+                <!-- Les modules seront injectés ici par JavaScript -->
+                </div>
             </section>
 
         </div>
@@ -150,20 +158,19 @@
 
     <script type="module">
         import { initializeApp } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-app.js";
-        import { getAuth, onAuthStateChanged, signOut } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-auth.js";
-        import { getFirestore, doc, getDoc } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-firestore.js";
+        import { getAuth, onAuthStateChanged, signOut, signInWithCustomToken, signInAnonymously } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-auth.js";
+        import { getFirestore, doc, getDoc, collection, onSnapshot, setLogLevel } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-firestore.js";
         
-        // --- Configuration Firebase (À REMPLACER avec vos vraies clés) ---
-        const firebaseConfig = {
-            apiKey: "AIzaSyCQdZppl-UsPCXF8iFmXQpcGAFjHEMt838", 
-            authDomain: "gestion-saint-charles-lwanga.firebaseapp.com",
-            projectId: "gestion-saint-charles-lwanga",
-            storageBucket: "gestion-saint-charles-lwanga.firebasestorage.app",
-            messagingSenderId: "508302363143",
-            appId: "1:508302363143:web:35c181528dd84def1a78a2"
-        };
+        // Active le logging pour le débogage de Firestore
+        setLogLevel('debug');
+
+        // --- Configuration Firebase (Utilisation des variables globales MANDATOIRES) ---
+        const appId = typeof __app_id !== 'undefined' ? __app_id : 'default-app-id';
+        const firebaseConfig = JSON.parse(typeof __firebase_config !== 'undefined' ? __firebase_config : '{}');
+        const initialAuthToken = typeof __initial_auth_token !== 'undefined' ? __initial_auth_token : null;
         
-        let app, auth, db;
+        let app, auth, db, userId;
+
         try {
             app = initializeApp(firebaseConfig);
             auth = getAuth(app);
@@ -177,7 +184,7 @@
         const moduleList = document.getElementById("moduleList");
         const logoutBtn = document.getElementById("logoutBtn");
         const loadingOverlay = document.getElementById("loadingOverlay");
-        const mainContent = document.getElementById("mainContent"); // Récupère le main
+        const mainContent = document.getElementById("mainContent");
         const sidebar = document.getElementById("sidebar");
         const menuToggle = document.getElementById("menuToggle");
 
@@ -186,8 +193,8 @@
         const statCourses = document.getElementById("stat-courses");
         const statAttendance = document.getElementById("stat-attendance");
         
-        // RÔLE ATTENDU : Utilisation du tiret pour l'harmonisation
-        const AUTHORIZED_ROLE = 'directeur-etudes'; 
+        // RÔLE ATTENDU: Correction pour correspondre à la clé de roles.js
+        const AUTHORIZED_ROLE = 'directeur_etudes'; 
 
         // --- Fonctions UX ---
         function displayMessage(message, isError = false) {
@@ -203,18 +210,55 @@
 
         // --- Logique d'Affichage des Modules et Stats ---
         const modulesData = [
-            { icon: "fa-user-plus", label: "Gérer Enseignants", url: "ajouter-enseignants.html", color: "indigo" },
+            { icon: "fa-user-plus", label: "Ajouter Enseignants", url: "ajouter-enseignants.html", color: "indigo" },
             { icon: "fa-calendar-days", label: "Gestion du Planning", url: "planning-classes.html", color: "green" },
             { icon: "fa-users", label: "Listes et Suivi Élèves", url: "liste-eleves.html", color: "sky" },
             { icon: "fa-pencil-alt", label: "Validation des Notes", url: "validation-bulletins.html", color: "red" },
-            { icon: "fa-envelope", label: "Communications", url: "envoyer-message.html", color: "yellow" }
+            { icon: "fa-envelope", label: "Communications", url: "publier-message.html", color: "yellow" }
         ];
         
+        /**
+         * Charge les statistiques en temps réel à partir de Firestore
+         */
         function loadStats() {
-            // Simulation des données statistiques
-            statTeachers.textContent = "45"; 
-            statClasses.textContent = "12";
-            statCourses.textContent = "210";
+            if (!db || !appId) return;
+
+            // Chemins des collections (Public Data)
+            const teachersPath = `artifacts/${appId}/public/data/teachers`;
+            const classesPath = `artifacts/${appId}/public/data/classes`;
+            const coursesPath = `artifacts/${appId}/public/data/course_schedule`;
+
+            // 1. Enseignants Actifs
+            onSnapshot(collection(db, teachersPath), (snapshot) => {
+                statTeachers.textContent = snapshot.size;
+                statTeachers.classList.remove('animate-pulse');
+            }, (error) => {
+                console.error("Erreur de lecture des enseignants:", error);
+                statTeachers.textContent = "Erreur";
+                statTeachers.classList.remove('animate-pulse');
+            });
+
+            // 2. Classes Gérées
+            onSnapshot(collection(db, classesPath), (snapshot) => {
+                statClasses.textContent = snapshot.size;
+                statClasses.classList.remove('animate-pulse');
+            }, (error) => {
+                console.error("Erreur de lecture des classes:", error);
+                statClasses.textContent = "Erreur";
+                statClasses.classList.remove('animate-pulse');
+            });
+
+            // 3. Cours Planifiés (Total)
+            onSnapshot(collection(db, coursesPath), (snapshot) => {
+                statCourses.textContent = snapshot.size;
+                statCourses.classList.remove('animate-pulse');
+            }, (error) => {
+                console.error("Erreur de lecture des cours:", error);
+                statCourses.textContent = "Erreur";
+                statCourses.classList.remove('animate-pulse');
+            });
+            
+            // 4. Taux de Présence (Maintenu statique ou par défaut pour la démo)
             statAttendance.textContent = "98%"; 
         }
 
@@ -240,6 +284,32 @@
             });
         }
 
+        // --- Fonction pour l'authentification initiale (si rafraîchissement) ---
+        async function initialSignIn() {
+            if (initialAuthToken) {
+                try {
+                    await signInWithCustomToken(auth, initialAuthToken);
+                    console.log("Authentification réussie via jeton personnalisé.");
+                } catch (error) {
+                    console.error("Erreur d'authentification par jeton:", error);
+                    try {
+                        // Tentative d'anonyme si le jeton échoue (moins sécurisé, mais assure la continuité)
+                        await signInAnonymously(auth);
+                    } catch (e) {
+                        console.error("Erreur de connexion anonyme:", e);
+                        // Ne pas rediriger, laisser onAuthStateChanged gérer
+                    }
+                }
+            } else if (!auth.currentUser) {
+                // Si aucun jeton et non connecté, forcer l'anonyme pour les droits de lecture basiques
+                 try {
+                    await signInAnonymously(auth);
+                } catch (e) {
+                    console.error("Erreur de connexion anonyme:", e);
+                }
+            }
+        }
+        
         // --- Gestion de l'Authentification (Point d'Entrée) ---
         onAuthStateChanged(auth, async (user) => {
             if (!user) {
@@ -247,9 +317,14 @@
                 return;
             }
 
+            userId = user.uid;
+
             try {
-                // 1. Récupérer les données de l'utilisateur (Rôle et Nom)
-                const docRef = doc(db, "users", user.uid);
+                // 1. Récupérer les données de l'utilisateur (Rôle et Nom) - CHEMIN CORRIGÉ
+                // Chemin: /artifacts/{appId}/users/{userId}/user_profiles/profile
+                const profilePath = `artifacts/${appId}/users/${userId}/user_profiles/profile`;
+                const docRef = doc(db, profilePath);
+                
                 const docSnap = await getDoc(docRef);
 
                 if (!docSnap.exists()) {
@@ -264,8 +339,8 @@
                 
                 // 2. Vérification du rôle pour cette page
                 if (role !== AUTHORIZED_ROLE) {
-                    displayMessage(`Accès non autorisé (Rôle: ${role}). Redirection.`, true);
-                    // Rediriger vers la page d'accueil appropriée (via la page de connexion)
+                    displayMessage(`Accès non autorisé (Rôle: ${role}). Redirection vers l'accueil général.`, true);
+                    // Déconnexion et redirection pour forcer le flux de connexion correct
                     await signOut(auth);
                     setTimeout(() => { window.location.href = "connexion.html"; }, 1000); 
                     return;
@@ -274,7 +349,7 @@
                 // 3. Succès: Affichage du contenu
                 userInfo.textContent = `Connecté(e) en tant que: ${nomComplet}`;
                 
-                // Charger les statistiques et les modules
+                // Charger les statistiques en temps réel et les modules
                 loadStats();
                 renderModules(modulesData);
                 
@@ -284,7 +359,7 @@
 
             } catch (error) {
                 console.error("Erreur critique d'authentification ou de base de données:", error);
-                displayMessage("Impossible de charger les données du profil. Vérifiez la connexion Firebase/Firestore.", true);
+                displayMessage("Impossible de charger les données du profil.", true);
             }
         });
         
@@ -301,6 +376,10 @@
                 displayMessage("Erreur lors de la déconnexion.", true);
             }
         });
+
+        // Exécuter l'authentification initiale pour s'assurer que l'utilisateur est bien connecté
+        // si la page est chargée directement (refresh)
+        initialSignIn();
     </script>
 </body>
 </html>
