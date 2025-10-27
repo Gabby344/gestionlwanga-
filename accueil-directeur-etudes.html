@@ -4,7 +4,9 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Direction des Études | Gestion Académique</title>
+    <!-- Tailwind CSS (CDN) -->
     <script src="https://cdn.tailwindcss.com"></script>
+    <!-- Font Awesome (Icônes) -->
     <script src="https://kit.fontawesome.com/a2e0e6a56b.js" crossorigin="anonymous"></script>
     
     <script>
@@ -12,13 +14,15 @@
             theme: {
                 extend: {
                     colors: {
-                        // Ajout des classes de couleurs spécifiques utilisées dynamiquement pour éviter le bug JIT
+                        // Couleurs JIT pour les stats et modules
                         'indigo-600': '#4f46e5', 'indigo-700': '#4338ca', 'indigo-900': '#312e81',
                         'green-600': '#10b981', 'green-700': '#059669',
                         'sky-600': '#0284c7', 'sky-700': '#0369a1',
                         'red-600': '#dc2626', 'red-700': '#b91c1c',
                         'yellow-600': '#d97706', 'yellow-700': '#b45309',
-                        'pink-500': '#ec4899', 'pink-700': '#be185d'
+                        'pink-500': '#ec4899', 'pink-700': '#be185d',
+                        'cyan-500': '#06b6d4', 'cyan-700': '#0e7490',
+                        'purple-600': '#9333ea', 'purple-700': '#7e22ce'
                     }
                 }
             }
@@ -46,10 +50,10 @@
                 box-shadow: 6px 0 15px rgba(0, 0, 0, 0.2);
             }
         }
-        /* Loading Overlay : Rendre initialement visible et au-dessus de tout */
+        /* Loading Overlay */
         #loadingOverlay {
             position: fixed; top: 0; left: 0; width: 100%; height: 100%;
-            background-color: #f9fafb; /* bg-gray-50 */
+            background-color: #f9fafb; 
             display: flex; justify-content: center; align-items: center;
             z-index: 999;
         }
@@ -58,54 +62,55 @@
 
 <body class="bg-gray-50 text-gray-900 flex min-h-screen">
 
+    <!-- Écran de Chargement -->
     <div id="loadingOverlay" class="loading-overlay">
         <div class="flex flex-col items-center">
             <i class="fa-solid fa-graduation-cap fa-spin-pulse fa-3x text-indigo-700 mb-4"></i>
-            <p class="text-lg text-gray-700 font-semibold">Chargement du Tableau de Bord Académique...</p>
+            <p class="text-lg text-gray-700 font-semibold">Vérification de l'accès et chargement des données...</p>
         </div>
     </div>
 
+    <!-- Bouton Toggle Mobile -->
     <button id="menuToggle" class="fixed top-4 left-4 z-50 p-2 bg-indigo-800 text-white rounded-lg shadow-xl md:hidden">
         <i class="fa-solid fa-bars"></i>
     </button>
 
+    <!-- Barre Latérale (Navigation) -->
     <aside id="sidebar" class="sidebar w-64 bg-indigo-800 text-white flex flex-col shadow-2xl md:translate-x-0 flex-shrink-0">
         <div class="p-6 text-3xl font-extrabold border-b border-indigo-700 flex items-center gap-2">
             <i class="fa-solid fa-user-graduate text-yellow-300"></i> Direction
         </div>
         <nav class="flex-1 p-4 space-y-2">
-            <a href="accueil-directeur-etudes.html" class="flex items-center gap-3 p-3 bg-indigo-700 rounded-lg transition font-semibold shadow-md border-l-4 border-sky-400">
+            <!-- Lien actif vers le Tableau de bord -->
+            <a href="direction-des-etudes.html" class="flex items-center gap-3 p-3 bg-indigo-700 rounded-lg transition font-semibold shadow-md border-l-4 border-sky-400">
                 <i class="fa-solid fa-chart-line w-5 text-center"></i> Tableau de bord
             </a>
-            <a href="ajouter-enseignants.html" class="flex items-center gap-3 p-3 hover:bg-indigo-700 rounded-lg transition">
-                <i class="fa-solid fa-chalkboard-user w-5 text-center"></i> Gérer Enseignants
-            </a>
-            <a href="planning-classes.html" class="flex items-center gap-3 p-3 hover:bg-indigo-700 rounded-lg transition">
-                <i class="fa-solid fa-calendar-alt w-5 text-center"></i> Planning des Cours
-            </a>
-            <a href="liste-eleves.html" class="flex items-center gap-3 p-3 hover:bg-indigo-700 rounded-lg transition">
-                <i class="fa-solid fa-users w-5 text-center"></i> Liste des Élèves
-            </a>
-            <a href="profil-utilisateur.html" class="flex items-center gap-3 p-3 hover:bg-indigo-700 rounded-lg transition">
-                <i class="fa-solid fa-user w-5 text-center"></i> Mon Profil
-            </a>
+            <!-- Autres liens (pour l'architecture complète) -->
+            <a href="ajouter-enseignants.html" class="flex items-center gap-3 p-3 hover:bg-indigo-700 rounded-lg transition"><i class="fa-solid fa-chalkboard-user w-5 text-center"></i> Gérer Enseignants</a>
+            <a href="gerer-classes.html" class="flex items-center gap-3 p-3 hover:bg-indigo-700 rounded-lg transition"><i class="fa-solid fa-building-columns w-5 text-center"></i> Gérer Classes</a>
+            <a href="gerer-matieres.html" class="flex items-center gap-3 p-3 hover:bg-indigo-700 rounded-lg transition"><i class="fa-solid fa-book-open-reader w-5 text-center"></i> Gérer Matières</a>
+            <a href="planning-classes.html" class="flex items-center gap-3 p-3 hover:bg-indigo-700 rounded-lg transition"><i class="fa-solid fa-calendar-alt w-5 text-center"></i> Planning des Cours</a>
+            <a href="liste-eleves.html" class="flex items-center gap-3 p-3 hover:bg-indigo-700 rounded-lg transition"><i class="fa-solid fa-users w-5 text-center"></i> Liste des Élèves</a>
+            <a href="profil-utilisateur.html" class="flex items-center gap-3 p-3 hover:bg-indigo-700 rounded-lg transition"><i class="fa-solid fa-user w-5 text-center"></i> Mon Profil</a>
         </nav>
         <button id="logoutBtn" class="m-4 py-3 bg-red-600 hover:bg-red-700 rounded-xl flex items-center justify-center gap-2 font-semibold transition duration-200 shadow-lg">
             <i class="fa-solid fa-right-from-bracket"></i> Déconnexion
         </button>
     </aside>
 
+    <!-- Contenu Principal -->
     <main id="mainContent" class="flex-1 p-4 md:p-8 overflow-y-auto hidden">
         <div class="max-w-7xl mx-auto">
             <header class="mb-8 flex flex-col md:flex-row md:justify-between md:items-center border-b pb-4">
-                <h1 class="text-3xl md:text-4xl font-extrabold text-indigo-900">Directeur des Études</h1>
+                <h1 class="text-3xl md:text-4xl font-extrabold text-indigo-900">Tableau de Bord du Directeur des Études</h1>
                 <p id="userInfo" class="text-lg font-medium text-gray-600 mt-2 md:mt-0">
                     Chargement du profil...
                 </p>
             </header>
 
+            <!-- Section Statistiques Live -->
             <section class="mb-10">
-                <h2 class="text-2xl font-bold text-gray-800 mb-4">Aperçu Académique (Données Live)</h2>
+                <h2 class="text-2xl font-bold text-gray-800 mb-4">Aperçu des Données en Temps Réel</h2>
                 <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6" id="statsGrid">
                     
                     <!-- Stat 1: Enseignants Actifs -->
@@ -114,38 +119,39 @@
                             <p class="text-sm font-medium text-gray-500">Enseignants Actifs</p>
                             <p id="stat-teachers" class="text-3xl font-extrabold text-indigo-700 animate-pulse">...</p>
                         </div>
-                        <i class="fa-solid fa-users-line text-4xl text-indigo-300"></i>
+                        <i class="fa-solid fa-chalkboard-user text-4xl text-indigo-300"></i>
                     </div>
                     
-                    <!-- Stat 2: Classes Gérées -->
-                    <div class="bg-white p-6 rounded-xl shadow-lg border-l-4 border-green-500 flex justify-between items-center">
+                    <!-- Stat 2: Classes Gérées (Nouveau) -->
+                    <div class="bg-white p-6 rounded-xl shadow-lg border-l-4 border-sky-500 flex justify-between items-center">
                         <div>
                             <p class="text-sm font-medium text-gray-500">Classes Gérées</p>
-                            <p id="stat-classes" class="text-3xl font-extrabold text-green-700 animate-pulse">...</p>
+                            <p id="stat-classes" class="text-3xl font-extrabold text-sky-700 animate-pulse">...</p>
                         </div>
-                        <i class="fa-solid fa-building-columns text-4xl text-green-300"></i>
+                        <i class="fa-solid fa-building-columns text-4xl text-sky-300"></i>
                     </div>
 
-                    <!-- Stat 3: Cours Planifiés (Total) -->
+                    <!-- Stat 3: Matières Académiques (Nouveau) -->
+                    <div class="bg-white p-6 rounded-xl shadow-lg border-l-4 border-green-500 flex justify-between items-center">
+                        <div>
+                            <p class="text-sm font-medium text-gray-500">Matières Académiques</p>
+                            <p id="stat-subjects" class="text-3xl font-extrabold text-green-700 animate-pulse">...</p>
+                        </div>
+                        <i class="fa-solid fa-book-open-reader text-4xl text-green-300"></i>
+                    </div>
+
+                    <!-- Stat 4: Cours Planifiés (Total) -->
                     <div class="bg-white p-6 rounded-xl shadow-lg border-l-4 border-yellow-500 flex justify-between items-center">
                         <div>
-                            <p class="text-sm font-medium text-gray-500">Cours Planifiés (Total)</p>
+                            <p class="text-sm font-medium text-gray-500">Cours Planifiés</p>
                             <p id="stat-courses" class="text-3xl font-extrabold text-yellow-700 animate-pulse">...</p>
                         </div>
                         <i class="fa-solid fa-calendar-check text-4xl text-yellow-300"></i>
                     </div>
-
-                    <!-- Stat 4: Taux de Présence (Simulé) -->
-                    <div class="bg-white p-6 rounded-xl shadow-lg border-l-4 border-pink-500 flex justify-between items-center">
-                        <div>
-                            <p class="text-sm font-medium text-gray-500">Taux de Présence</p>
-                            <p id="stat-attendance" class="text-3xl font-extrabold text-pink-700">98%</p>
-                        </div>
-                        <i class="fa-solid fa-person-circle-check text-4xl text-pink-300"></i>
-                    </div>
                 </div>
             </section>
             
+            <!-- Section Accès Modules -->
             <section>
                 <h2 class="text-2xl font-bold text-gray-800 mb-4">Accès aux Outils Clés</h2>
                 <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6" id="moduleList">
@@ -172,11 +178,14 @@
         let app, auth, db, userId;
 
         try {
+            // Initialisation de l'application
             app = initializeApp(firebaseConfig);
             auth = getAuth(app);
             db = getFirestore(app);
         } catch (error) {
             console.error("Erreur d'initialisation Firebase:", error);
+            // Afficher une erreur utilisateur si l'initialisation échoue
+            document.getElementById("loadingOverlay").innerHTML = `<div class="p-6 bg-red-100 border-l-4 border-red-500 text-red-700"><p class="font-bold">Erreur Critique</p><p>Impossible d'initialiser Firebase. Vérifiez la configuration.</p></div>`;
         }
         
         // --- Éléments du DOM ---
@@ -190,76 +199,65 @@
 
         const statTeachers = document.getElementById("stat-teachers");
         const statClasses = document.getElementById("stat-classes");
+        const statSubjects = document.getElementById("stat-subjects"); // Nouvelle stat
         const statCourses = document.getElementById("stat-courses");
-        const statAttendance = document.getElementById("stat-attendance");
         
-        // RÔLE ATTENDU: Correction pour correspondre à la clé de roles.js
+        // RÔLE ATTENDU pour cette page
         const AUTHORIZED_ROLE = 'directeur_etudes'; 
 
-        // --- Fonctions UX ---
-        function displayMessage(message, isError = false) {
+        // --- Fonctions UX & Messages d'Erreur ---
+        function displayError(message) {
             console.error(message);
-            userInfo.innerHTML = isError 
-                ? `<span class="text-red-600 font-bold"><i class="fa-solid fa-circle-exclamation mr-2"></i> Erreur: ${message}</span>`
-                : `<span class="text-gray-600 font-medium">${message}</span>`;
-            
+            userInfo.innerHTML = `<span class="text-red-600 font-bold"><i class="fa-solid fa-circle-exclamation mr-2"></i> Erreur: ${message}</span>`;
             // Masquer le chargement et afficher le contenu principal (pour voir l'erreur)
             loadingOverlay.style.display = 'none';
             mainContent.classList.remove('hidden');
         }
 
-        // --- Logique d'Affichage des Modules et Stats ---
+        // --- Configuration des Modules (avec les nouveaux ajouts) ---
         const modulesData = [
-            { icon: "fa-user-plus", label: "Ajouter Enseignants", url: "ajouter-enseignants.html", color: "indigo" },
-            { icon: "fa-calendar-days", label: "Gestion du Planning", url: "planning-classes.html", color: "green" },
-            { icon: "fa-users", label: "Listes et Suivi Élèves", url: "liste-eleves.html", color: "sky" },
-            { icon: "fa-pencil-alt", label: "Validation des Notes", url: "validation-bulletins.html", color: "red" },
-            { icon: "fa-envelope", label: "Communications", url: "publier-message.html", color: "yellow" }
+            { icon: "fa-chalkboard-user", label: "Gérer Enseignants", url: "ajouter-enseignants.html", color: "indigo" },
+            { icon: "fa-building-columns", label: "Gérer Classes", url: "gerer-classes.html", color: "sky" }, 
+            { icon: "fa-book-open-reader", label: "Gérer Matières", url: "gerer-matieres.html", color: "green" }, 
+            { icon: "fa-calendar-days", label: "Gestion du Planning", url: "planning-classes.html", color: "yellow" },
+            { icon: "fa-users", label: "Listes et Suivi Élèves", url: "liste-eleves.html", color: "pink" },
+            { icon: "fa-check-circle", label: "Validation des Notes", url: "validation-bulletins.html", color: "red" },
+            { icon: "fa-envelope", label: "Communications", url: "publier-message.html", color: "cyan" } 
         ];
         
         /**
          * Charge les statistiques en temps réel à partir de Firestore
          */
         function loadStats() {
-            if (!db || !appId) return;
+            if (!db || !appId) {
+                displayError("Base de données non initialisée pour le chargement des stats.");
+                return;
+            }
 
-            // Chemins des collections (Public Data)
-            const teachersPath = `artifacts/${appId}/public/data/teachers`;
-            const classesPath = `artifacts/${appId}/public/data/classes`;
-            const coursesPath = `artifacts/${appId}/public/data/course_schedule`;
-
-            // 1. Enseignants Actifs
-            onSnapshot(collection(db, teachersPath), (snapshot) => {
-                statTeachers.textContent = snapshot.size;
-                statTeachers.classList.remove('animate-pulse');
-            }, (error) => {
-                console.error("Erreur de lecture des enseignants:", error);
-                statTeachers.textContent = "Erreur";
-                statTeachers.classList.remove('animate-pulse');
-            });
-
-            // 2. Classes Gérées
-            onSnapshot(collection(db, classesPath), (snapshot) => {
-                statClasses.textContent = snapshot.size;
-                statClasses.classList.remove('animate-pulse');
-            }, (error) => {
-                console.error("Erreur de lecture des classes:", error);
-                statClasses.textContent = "Erreur";
-                statClasses.classList.remove('animate-pulse');
-            });
-
-            // 3. Cours Planifiés (Total)
-            onSnapshot(collection(db, coursesPath), (snapshot) => {
-                statCourses.textContent = snapshot.size;
-                statCourses.classList.remove('animate-pulse');
-            }, (error) => {
-                console.error("Erreur de lecture des cours:", error);
-                statCourses.textContent = "Erreur";
-                statCourses.classList.remove('animate-pulse');
-            });
+            // Chemins des collections de données publiques pour les stats
+            const PUBLIC_BASE_PATH = `artifacts/${appId}/public/data`;
             
-            // 4. Taux de Présence (Maintenu statique ou par défaut pour la démo)
-            statAttendance.textContent = "98%"; 
+            // Mappe des stats avec leur chemin de collection et élément DOM
+            const statsMap = {
+                teachers: { path: `${PUBLIC_BASE_PATH}/teachers`, element: statTeachers, color: 'indigo' },
+                classes: { path: `${PUBLIC_BASE_PATH}/classes`, element: statClasses, color: 'sky' },
+                subjects: { path: `${PUBLIC_BASE_PATH}/subjects`, element: statSubjects, color: 'green' }, // Nouveau
+                courses: { path: `${PUBLIC_BASE_PATH}/course_schedule`, element: statCourses, color: 'yellow' }
+            };
+
+            Object.keys(statsMap).forEach(key => {
+                const { path, element } = statsMap[key];
+                
+                // Utilisation d'onSnapshot pour l'écoute en temps réel
+                onSnapshot(collection(db, path), (snapshot) => {
+                    element.textContent = snapshot.size;
+                    element.classList.remove('animate-pulse');
+                }, (error) => {
+                    console.error(`Erreur de lecture de ${key}:`, error);
+                    element.textContent = "Erreur";
+                    element.classList.remove('animate-pulse');
+                });
+            });
         }
 
         function renderModules(modules) {
@@ -284,51 +282,47 @@
             });
         }
 
-        // --- Fonction pour l'authentification initiale (si rafraîchissement) ---
+        // --- Authentification Initiale ---
         async function initialSignIn() {
+            if (!auth) return;
+
             if (initialAuthToken) {
                 try {
                     await signInWithCustomToken(auth, initialAuthToken);
                     console.log("Authentification réussie via jeton personnalisé.");
                 } catch (error) {
                     console.error("Erreur d'authentification par jeton:", error);
-                    try {
-                        // Tentative d'anonyme si le jeton échoue (moins sécurisé, mais assure la continuité)
-                        await signInAnonymously(auth);
-                    } catch (e) {
-                        console.error("Erreur de connexion anonyme:", e);
-                        // Ne pas rediriger, laisser onAuthStateChanged gérer
-                    }
+                    // Tentative d'anonyme si le jeton échoue
+                    await signInAnonymously(auth).catch(e => console.error("Erreur de connexion anonyme:", e));
                 }
             } else if (!auth.currentUser) {
-                // Si aucun jeton et non connecté, forcer l'anonyme pour les droits de lecture basiques
-                 try {
-                    await signInAnonymously(auth);
-                } catch (e) {
-                    console.error("Erreur de connexion anonyme:", e);
-                }
+                // Si aucun jeton et non connecté, forcer l'anonyme
+                 await signInAnonymously(auth).catch(e => console.error("Erreur de connexion anonyme:", e));
             }
         }
         
         // --- Gestion de l'Authentification (Point d'Entrée) ---
         onAuthStateChanged(auth, async (user) => {
             if (!user) {
-                window.location.href = "connexion.html"; // Redirection si déconnecté
+                // Gérer la déconnexion ou l'absence d'utilisateur
+                console.log("Utilisateur déconnecté ou non authentifié.");
+                // Redirection ou affichage d'un message (gardé en commentaire pour rester dans l'immersive)
+                // window.location.href = "connexion.html"; 
+                displayError("Utilisateur non connecté. Veuillez vous authentifier.");
                 return;
             }
 
             userId = user.uid;
 
             try {
-                // 1. Récupérer les données de l'utilisateur (Rôle et Nom) - CHEMIN CORRIGÉ
-                // Chemin: /artifacts/{appId}/users/{userId}/user_profiles/profile
+                // 1. Récupérer les données du profil utilisateur (CHEMIN PRIVÉ)
                 const profilePath = `artifacts/${appId}/users/${userId}/user_profiles/profile`;
                 const docRef = doc(db, profilePath);
                 
                 const docSnap = await getDoc(docRef);
 
                 if (!docSnap.exists()) {
-                    displayMessage("Profil utilisateur introuvable. Déconnexion.", true);
+                    displayError("Profil utilisateur introuvable. Déconnexion.");
                     await signOut(auth);
                     return;
                 }
@@ -339,27 +333,25 @@
                 
                 // 2. Vérification du rôle pour cette page
                 if (role !== AUTHORIZED_ROLE) {
-                    displayMessage(`Accès non autorisé (Rôle: ${role}). Redirection vers l'accueil général.`, true);
-                    // Déconnexion et redirection pour forcer le flux de connexion correct
+                    displayError(`Accès refusé. Vous êtes connecté comme ${role}, cette page est réservée au ${AUTHORIZED_ROLE}.`);
                     await signOut(auth);
-                    setTimeout(() => { window.location.href = "connexion.html"; }, 1000); 
                     return;
                 }
 
                 // 3. Succès: Affichage du contenu
-                userInfo.textContent = `Connecté(e) en tant que: ${nomComplet}`;
+                userInfo.textContent = `Connecté(e) en tant que: ${nomComplet} (UID: ${userId})`;
                 
                 // Charger les statistiques en temps réel et les modules
                 loadStats();
                 renderModules(modulesData);
                 
-                // MASKER L'ÉCRAN DE CHARGEMENT et afficher le contenu principal
+                // Masquer l'écran de chargement et afficher le contenu principal
                 loadingOverlay.style.display = 'none';
                 mainContent.classList.remove('hidden');
 
             } catch (error) {
                 console.error("Erreur critique d'authentification ou de base de données:", error);
-                displayMessage("Impossible de charger les données du profil.", true);
+                displayError("Erreur de base de données. Impossible de charger les données du profil.");
             }
         });
         
@@ -371,14 +363,14 @@
         logoutBtn.addEventListener("click", async () => {
             try {
                 await signOut(auth);
-                window.location.href = "connexion.html"; // Redirection vers la page de connexion
+                // Après la déconnexion, l'onAuthStateChanged gérera la redirection si configuré
+                console.log("Déconnexion réussie.");
             } catch (error) {
-                displayMessage("Erreur lors de la déconnexion.", true);
+                displayError("Erreur lors de la déconnexion.");
             }
         });
 
-        // Exécuter l'authentification initiale pour s'assurer que l'utilisateur est bien connecté
-        // si la page est chargée directement (refresh)
+        // Lancer l'authentification initiale
         initialSignIn();
     </script>
 </body>
