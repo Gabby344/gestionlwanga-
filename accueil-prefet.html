@@ -9,15 +9,16 @@
     <script src="https://kit.fontawesome.com/a2e0e6a56b.js" crossorigin="anonymous"></script>
     
     <script>
-        // Utilisation de la configuration Firebase/Auth fournie par l'environnement
+        // --- Configuration des variables globales (fournies par l'environnement Canvas) ---
         const appId = typeof __app_id !== 'undefined' ? __app_id : 'default-app-id';
         const firebaseConfig = typeof __firebase_config !== 'undefined' ? JSON.parse(__firebase_config) : {};
+        const initialToken = typeof __initial_auth_token !== 'undefined' ? __initial_auth_token : null;
 
+        // Configuration Tailwind pour utiliser les couleurs déclarées dynamiquement (JIT fix)
         tailwind.config = {
             theme: {
                 extend: {
                     colors: {
-                        // Déclaration des classes de couleurs utilisées dynamiquement (JIT fix)
                         'purple-300': '#d8b4fe', 'purple-500': '#8b5cf6', 'purple-600': '#7c3aed', 'purple-700': '#6d28d9', 'purple-800': '#5b21b6', 'purple-900': '#4c1d95',
                         'red-300': '#fca5a5', 'red-500': '#ef4444', 'red-600': '#dc2626', 'red-700': '#b91c1c',
                         'green-300': '#86efad', 'green-500': '#22c55e', 'green-600': '#16a34a', 'green-700': '#15803d',
@@ -36,6 +37,8 @@
         body { font-family: 'Inter', sans-serif; }
         .sidebar {
             transition: transform 0.3s ease-in-out;
+            /* Force l'accélération matérielle */
+            will-change: transform; 
         }
         /* Rendre la sidebar responsive */
         @media (max-width: 767px) {
@@ -49,6 +52,13 @@
                 transform: translateX(0);
                 box-shadow: 6px 0 15px rgba(0, 0, 0, 0.2);
             }
+            .sidebar-bg-overlay {
+                /* Calque noir semi-transparent pour cacher le contenu derrière la sidebar */
+                position: fixed; top: 0; left: 0; width: 100%; height: 100%;
+                background-color: rgba(0, 0, 0, 0.4);
+                z-index: 49;
+                transition: opacity 0.3s ease-in-out;
+            }
         }
         /* Loading Overlay : Rendre initialement visible et au-dessus de tout */
         #loadingOverlay {
@@ -56,12 +66,19 @@
             background-color: #f9fafb; /* bg-gray-50 */
             display: flex; justify-content: center; align-items: center;
             z-index: 999;
+            opacity: 1;
+            transition: opacity 0.5s ease-out;
+        }
+        .hidden-fade {
+            opacity: 0 !important;
+            visibility: hidden;
         }
     </style>
 </head>
 
 <body class="bg-gray-50 text-gray-900 flex min-h-screen">
 
+    <!-- Overlay pour le chargement -->
     <div id="loadingOverlay" class="loading-overlay">
         <div class="flex flex-col items-center">
             <i class="fa-solid fa-gem fa-spin-pulse fa-3x text-purple-700 mb-4"></i>
@@ -69,7 +86,11 @@
         </div>
     </div>
 
-    <button id="menuToggle" class="fixed top-4 left-4 z-50 p-2 bg-purple-800 text-white rounded-lg shadow-xl md:hidden">
+    <!-- Overlay qui apparaît quand la sidebar est ouverte en mobile -->
+    <div id="sidebarOverlay" class="hidden md:hidden sidebar-bg-overlay opacity-0"></div>
+
+    <!-- Bouton de bascule du menu (Visible uniquement sur mobile) -->
+    <button id="menuToggle" class="fixed top-4 left-4 z-50 p-3 bg-purple-800 text-white rounded-full shadow-xl md:hidden">
         <i class="fa-solid fa-bars"></i>
     </button>
 
@@ -80,20 +101,21 @@
         </div>
         <nav class="flex-1 p-4 space-y-4 overflow-y-auto">
             
-            <a href="accueil-prefet.html" class="flex items-center gap-3 p-3 bg-purple-700 rounded-lg transition font-extrabold shadow-md border-l-4 border-pink-400">
+            <a href="#" class="flex items-center gap-3 p-3 bg-purple-700 rounded-xl transition font-extrabold shadow-md border-l-4 border-pink-400">
                 <i class="fa-solid fa-sitemap w-5 text-center"></i> Tableau de Bord
             </a>
 
             <!-- Groupe 1: Administration & Finances -->
             <div class="pt-4 border-t border-purple-700">
                 <p class="text-sm font-semibold text-purple-300 uppercase mb-2">Administration & Finances</p>
-                <a href="gestion-rh.html" class="flex items-center gap-3 p-3 hover:bg-purple-700 rounded-lg transition">
+                <!-- NOTE: J'ai remplacé les liens par '#' pour les pages non existantes afin d'éviter les erreurs de navigation dans un environnement mono-page -->
+                <a href="#" class="flex items-center gap-3 p-3 hover:bg-purple-700 rounded-lg transition">
                     <i class="fa-solid fa-users-gear w-5 text-center"></i> Gestion du Personnel
                 </a>
-                <a href="gestion-budget.html" class="flex items-center gap-3 p-3 hover:bg-purple-700 rounded-lg transition">
+                <a href="#" class="flex items-center gap-3 p-3 hover:bg-purple-700 rounded-lg transition">
                     <i class="fa-solid fa-hand-holding-dollar w-5 text-center"></i> Finances & Budget
                 </a>
-                <a href="rapports-legaux.html" class="flex items-center gap-3 p-3 hover:bg-purple-700 rounded-lg transition">
+                <a href="#" class="flex items-center gap-3 p-3 hover:bg-purple-700 rounded-lg transition">
                     <i class="fa-solid fa-gavel w-5 text-center"></i> Représentation Légale
                 </a>
             </div>
@@ -101,24 +123,24 @@
             <!-- Groupe 2: Pilotage Pédagogique & Scolaire -->
             <div class="pt-4 border-t border-purple-700">
                 <p class="text-sm font-semibold text-purple-300 uppercase mb-2">Pédagogie & Scolarité</p>
-                <a href="suivi-pedagogique.html" class="flex items-center gap-3 p-3 hover:bg-purple-700 rounded-lg transition">
+                <a href="#" class="flex items-center gap-3 p-3 hover:bg-purple-700 rounded-lg transition">
                     <i class="fa-solid fa-graduation-cap w-5 text-center"></i> Pilotage Pédagogique
                 </a>
-                <a href="gerer-classes.html" class="flex items-center gap-3 p-3 hover:bg-purple-700 rounded-lg transition">
+                <a href="#" class="flex items-center gap-3 p-3 hover:bg-purple-700 rounded-lg transition">
                     <i class="fa-solid fa-building-columns w-5 text-center"></i> Classes & Matières
                 </a>
-                <a href="generer-bulletins.html" class="flex items-center gap-3 p-3 hover:bg-purple-700 rounded-lg transition">
+                <a href="#" class="flex items-center gap-3 p-3 hover:bg-purple-700 rounded-lg transition">
                     <i class="fa-solid fa-scroll w-5 text-center"></i> Bulletins & Notes
                 </a>
-                <a href="gestion-displine.html" class="flex items-center gap-3 p-3 hover:bg-purple-700 rounded-lg transition">
+                <a href="#" class="flex items-center gap-3 p-3 hover:bg-purple-700 rounded-lg transition">
                     <i class="fa-solid fa-shield-halved w-5 text-center"></i> Gestion de la Discipline
                 </a>
             </div>
 
-             <!-- Groupe 3: Outils Personnels -->
+            <!-- Groupe 3: Outils Personnels -->
             <div class="pt-4 border-t border-purple-700">
                 <p class="text-sm font-semibold text-purple-300 uppercase mb-2">Outils</p>
-                <a href="profil-utilisateur.html" class="flex items-center gap-3 p-3 hover:bg-purple-700 rounded-lg transition">
+                <a href="#" class="flex items-center gap-3 p-3 hover:bg-purple-700 rounded-lg transition">
                     <i class="fa-solid fa-user w-5 text-center"></i> Mon Profil
                 </a>
             </div>
@@ -129,13 +151,14 @@
         </button>
     </aside>
 
-    <!-- Contenu Principal du Tableau de Bord -->
+    <!-- Contenu Principal du Tableau de Bord (Initialement caché) -->
+    <!-- Cette div sera montrée une fois l'authentification et le rôle validés -->
     <main id="mainContent" class="flex-1 p-4 md:p-8 overflow-y-auto hidden">
         <div class="max-w-7xl mx-auto">
             <header class="mb-8 flex flex-col md:flex-row md:justify-between md:items-center border-b pb-4">
                 <h1 class="text-3xl md:text-4xl font-extrabold text-purple-900">Tableau de Bord Exécutif du Préfet</h1>
                 <p id="userInfo" class="text-lg font-medium text-gray-600 mt-2 md:mt-0">
-                    Chargement du profil...
+                    Authentification en cours...
                 </p>
             </header>
 
@@ -182,15 +205,15 @@
             <section class="mb-10">
                 <h2 class="text-2xl font-bold text-gray-800 mb-4"><i class="fa-solid fa-users-cog mr-2 text-purple-600"></i> Administration & Personnel</h2>
                 <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6" id="moduleListAdmin">
-                    <!-- Les cartes de modules seront insérées ici par JS -->
-                    </div>
+                    <!-- Les cartes de modules seront insérées ici par JS après la connexion -->
+                </div>
             </section>
 
             <!-- Section 3: Modules de Pilotage Pédagogique et Logistique -->
             <section>
                 <h2 class="text-2xl font-bold text-gray-800 mb-4"><i class="fa-solid fa-laptop-house mr-2 text-purple-600"></i> Pilotage Opérationnel & Vie Scolaire</h2>
                 <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6" id="moduleListPedagoLogi">
-                    <!-- Les cartes de modules seront insérées ici par JS -->
+                    <!-- Les cartes de modules seront insérées ici par JS après la connexion -->
                 </div>
             </section>
 
@@ -206,10 +229,7 @@
         // Active le mode debug pour voir les logs Firestore
         setLogLevel('Debug');
         
-        // --- Configuration Firebase (Utilisation des variables de l'environnement) ---
-        // Le `firebaseConfig` est défini plus haut dans la balise <script> pour la configuration Tailwind,
-        // mais nous allons redéfinir l'initialisation ici pour plus de clarté et de sécurité.
-        
+        // --- Configuration Firebase ---
         let app, auth, db;
         try {
             app = initializeApp(firebaseConfig);
@@ -217,6 +237,9 @@
             db = getFirestore(app);
         } catch (error) {
             console.error("Erreur d'initialisation Firebase:", error);
+            // Si Firebase ne s'initialise pas, le programme s'arrête ici
+            document.getElementById("loadingOverlay").innerHTML = `<div class="text-center p-8 bg-red-100 rounded-xl shadow-xl"><i class="fa-solid fa-triangle-exclamation text-red-600 fa-2x mb-3"></i><p class="text-lg font-bold text-red-800">Erreur Critique</p><p>La configuration Firebase est manquante ou incorrecte.</p></div>`;
+            throw new Error("Initialisation Firebase échouée.");
         }
         
         // --- Éléments du DOM ---
@@ -226,113 +249,44 @@
         const mainContent = document.getElementById("mainContent");
         const sidebar = document.getElementById("sidebar");
         const menuToggle = document.getElementById("menuToggle");
-
+        const sidebarOverlay = document.getElementById("sidebarOverlay");
         const moduleListAdmin = document.getElementById("moduleListAdmin");
         const moduleListPedagoLogi = document.getElementById("moduleListPedagoLogi");
         
-        const AUTHORIZED_ROLE = 'prefet'; // Le rôle attendu
+        const AUTHORIZED_ROLE = 'prefet'; // Le rôle autorisé pour cette application
 
-        // --- Fonctions UX (Gestion des Erreurs/Messages) ---
+        // --- Fonctions d'Utilité ---
+        
+        // Affiche un message d'erreur/statut et masque le chargement
         function displayMessage(message, isError = false) {
             console.error(message);
             userInfo.innerHTML = isError 
                 ? `<span class="text-red-600 font-bold"><i class="fa-solid fa-circle-exclamation mr-2"></i> Erreur: ${message}</span>`
                 : `<span class="text-gray-600 font-medium">${message}</span>`;
             
-            // Masquer le chargement et afficher le contenu principal (pour voir l'erreur)
-            loadingOverlay.style.display = 'none';
+            // Masquer le chargement (avec transition) et afficher le contenu principal (pour voir l'erreur)
+            loadingOverlay.classList.add('hidden-fade');
+            setTimeout(() => { loadingOverlay.style.display = 'none'; }, 500);
             mainContent.classList.remove('hidden');
         }
 
         // --- Définition des Modules pour le Tableau de Bord (Cartes d'Action) ---
         const modulesDataAdmin = [
-            { 
-                icon: "fa-users-gear", 
-                label: "Gestion du Personnel (RH)", 
-                url: "gestion-rh.html", 
-                color: "purple",
-                description: "Ajouter, modifier, et suivre les fiches du personnel et des enseignants."
-            },
-            { 
-                icon: "fa-sack-dollar", 
-                label: "Prévisions Budgétaires", 
-                url: "gestion-budget.html", 
-                color: "green",
-                description: "Suivi des dépenses, gestion des caisses et projections financières."
-            },
-            { 
-                icon: "fa-shield-alt", 
-                label: "Gestion des Rôles et Accès", 
-                url: "admin-roles.html", 
-                color: "red",
-                description: "Contrôler les permissions d'accès et les rôles utilisateurs."
-            },
-            { 
-                icon: "fa-chalkboard-user", 
-                label: "Liste des Enseignants", 
-                url: "liste-enseignants.html", 
-                color: "purple",
-                description: "Consulter la liste complète des enseignants actifs et leurs informations."
-            },
-            { 
-                icon: "fa-tools", 
-                label: "Logistique & Maintenance", 
-                url: "logistique-maintenance.html", 
-                color: "pink",
-                description: "Gérer les requêtes de maintenance et l'inventaire des équipements."
-            },
-            {
-                icon: "fa-gavel", 
-                label: "Représentation Légale", 
-                url: "rapports-legaux.html", 
-                color: "sky",
-                description: "Accéder aux documents légaux et aux rapports administratifs."
-            }
+            { icon: "fa-users-gear", label: "Gestion du Personnel (RH)", url: "#", color: "purple", description: "Ajouter, modifier, et suivre les fiches du personnel et des enseignants." },
+            { icon: "fa-sack-dollar", label: "Prévisions Budgétaires", url: "#", color: "green", description: "Suivi des dépenses, gestion des caisses et projections financières." },
+            { icon: "fa-shield-alt", label: "Gestion des Rôles et Accès", url: "#", color: "red", description: "Contrôler les permissions d'accès et les rôles utilisateurs." },
+            { icon: "fa-chalkboard-user", label: "Liste des Enseignants", url: "#", color: "purple", description: "Consulter la liste complète des enseignants actifs et leurs informations." },
+            { icon: "fa-tools", label: "Logistique & Maintenance", url: "#", color: "pink", description: "Gérer les requêtes de maintenance et l'inventaire des équipements." },
+            { icon: "fa-gavel", label: "Représentation Légale", url: "#", color: "sky", description: "Accéder aux documents légaux et aux rapports administratifs." }
         ];
         
         const modulesDataPedagoLogi = [
-            { 
-                icon: "fa-clipboard-check", 
-                label: "Pilotage Pédagogique", 
-                url: "suivi-pedagogique.html", 
-                color: "sky",
-                description: "Contrôle de la qualité des cours et des visites de classe."
-            },
-            { 
-                icon: "fa-calendar-alt", 
-                label: "Planning des Cours & Examens", 
-                url: "planning-classes.html", // Lien plus pertinent pour le planning global
-                color: "yellow",
-                description: "Organisation du calendrier scolaire, des examens et des horaires."
-            },
-            { 
-                icon: "fa-building-columns", 
-                label: "Gestion des Classes & Matières", 
-                url: "gerer-classes.html", 
-                color: "green",
-                description: "Administration des classes, des matières enseignées et des assignations."
-            },
-             { 
-                icon: "fa-scroll", 
-                label: "Génération des Bulletins", 
-                url: "generer-bulletins.html", 
-                color: "pink",
-                description: "Outils de génération, de validation et de publication des bulletins de notes."
-            },
-            { 
-                icon: "fa-users", 
-                label: "Fiches & Liste des Élèves", 
-                url: "liste-eleves.html", 
-                color: "purple",
-                description: "Consulter les fiches individuelles et l'état des effectifs."
-            },
-            { 
-                icon: "fa-shield-halved", 
-                label: "Gestion de la Discipline", 
-                url: "gestion-displine.html", 
-                color: "red",
-                description: "Enregistrement et suivi des incidents disciplinaires et des sanctions."
-            },
+            { icon: "fa-clipboard-check", label: "Pilotage Pédagogique", url: "#", color: "sky", description: "Contrôle de la qualité des cours et des visites de classe." },
+            { icon: "fa-calendar-alt", label: "Planning des Cours & Examens", url: "#", color: "yellow", description: "Organisation du calendrier scolaire, des examens et des horaires." },
+            { icon: "fa-building-columns", label: "Gestion des Classes & Matières", url: "#", color: "green", description: "Administration des classes, des matières enseignées et des assignations." },
+            { icon: "fa-scroll", label: "Génération des Bulletins", url: "#", color: "pink", description: "Outils de génération, de validation et de publication des bulletins de notes." },
+            { icon: "fa-users", label: "Fiches & Liste des Élèves", url: "#", color: "purple", description: "Consulter les fiches individuelles et l'état des effectifs." },
+            { icon: "fa-shield-halved", label: "Gestion de la Discipline", url: "#", color: "red", description: "Enregistrement et suivi des incidents disciplinaires et des sanctions." },
         ];
 
         // Simuler le chargement des statistiques
@@ -351,10 +305,10 @@
                 const link = document.createElement("a");
                 link.href = mod.url;
                 
+                // Utilisation des classes dynamiques pour la bordure et l'icône
                 const borderClass = `border-${mod.color}-600`;
                 const iconClass = `text-${mod.color}-700`;
 
-                // Classes de style modernes pour la carte
                 link.className = `bg-white shadow-xl rounded-xl p-6 transition flex flex-col justify-start items-start hover:shadow-2xl hover:translate-y-[-2px] duration-300 border-l-4 ${borderClass}`;
                 
                 link.innerHTML = `
@@ -368,35 +322,54 @@
             });
         }
 
-        // --- Logique d'Initialisation et d'Authentification ---
-        async function handleInitialAuth() {
-            const initialToken = typeof __initial_auth_token !== 'undefined' ? __initial_auth_token : null;
+        // Fonction d'affichage du tableau de bord APRES vérification
+        function displayDashboard(user, nomComplet) {
+            // 1. Mise à jour des informations utilisateur
+            userInfo.textContent = `Connecté(e) en tant que: ${nomComplet} (ID: ${user.uid.substring(0, 8)}...)`;
             
+            // 2. Charger les statistiques et les modules
+            loadStats();
+            renderModules(modulesDataAdmin, moduleListAdmin);
+            renderModules(modulesDataPedagoLogi, moduleListPedagoLogi);
+            
+            // 3. Masquer l'écran de chargement (avec effet de fondu) et afficher le contenu principal
+            loadingOverlay.classList.add('hidden-fade');
+            setTimeout(() => { 
+                loadingOverlay.style.display = 'none';
+                mainContent.classList.remove('hidden');
+            }, 500);
+        }
+        
+        // --- Logique d'Authentification ---
+
+        // Étape 1: Tenter de se connecter avec le jeton fourni ou anonymement
+        async function handleInitialAuth() {
             if (initialToken) {
                 try {
                     await signInWithCustomToken(auth, initialToken);
+                    console.log("Connexion via Custom Token réussie.");
                 } catch(e) {
-                    console.error("Erreur lors de la connexion via Custom Token:", e);
-                    // Fallback to anonymous sign-in if custom token fails
+                    console.error("Erreur lors de la connexion via Custom Token, tentative de connexion anonyme:", e);
+                    // Fallback vers la connexion anonyme
                     await signInAnonymously(auth);
                 }
             } else {
-                // Anonymous sign-in if no custom token is provided (for local testing/setup)
+                // Connexion anonyme si aucun jeton n'est fourni
                 await signInAnonymously(auth);
+                console.log("Connexion anonyme réussie.");
             }
         }
         
-        // Gère les changements d'état de l'authentification (déclenche après signIn)
+        // Étape 2: Gérer l'état de l'authentification et les autorisations
         onAuthStateChanged(auth, async (user) => {
             if (!user) {
-                // Si l'utilisateur est déconnecté après l'initialisation, rediriger
-                window.location.href = "connexion.html";
+                // Si l'utilisateur est déconnecté, rediriger
+                window.location.href = "connexion.html"; // Assurez-vous que cette page existe
                 return;
             }
 
             try {
-                // 1. Récupérer les données de l'utilisateur (Rôle, Nom)
-                // L'ID utilisateur est le user.uid
+                // 1. Récupérer les données de profil (rôle)
                 const docRef = doc(db, "artifacts", appId, "users", user.uid, "profile", "data");
                 const docSnap = await getDoc(docRef);
                 
@@ -408,9 +381,7 @@
                     nomComplet = [data.prenom, data.nom].filter(Boolean).join(" ") || "Préfet";
                     role = data.role?.toLowerCase().trim() || "inconnu";
                 } else {
-                    // Si le document de profil n'existe pas, créer un profil minimal
-                    // NOTE: En production, cela pourrait être un problème de sécurité.
-                    // Ici, on simule la création d'un profil par défaut si l'auth est réussie.
+                    // Si le profil n'existe pas, on le crée avec un rôle par défaut pour simuler l'accès
                     nomComplet = `Préfet ${user.uid.substring(0, 4)}`;
                     role = AUTHORIZED_ROLE;
                     await setDoc(docRef, { 
@@ -421,48 +392,36 @@
                     }, { merge: true });
                 }
                 
-                // 2. Vérification du rôle autorisé pour cette page
+                // 2. Vérification du rôle
                 if (role !== AUTHORIZED_ROLE) {
-                    displayMessage(`Accès non autorisé (Rôle: ${role}). Redirection.`, true);
+                    displayMessage(`Accès non autorisé. Votre rôle (${role}) n'est pas 'préfet'. Déconnexion.`, true);
                     await signOut(auth);
-                    setTimeout(() => { window.location.href = `connexion.html`; }, 1000);
+                    setTimeout(() => { /* Redirection gérée par la ligne 277 */ }, 1000);
                     return;
                 }
 
-                // 3. Succès: Affichage du contenu
-                userInfo.textContent = `Connecté(e) en tant que: ${nomComplet} (ID: ${user.uid.substring(0, 8)}...)`;
-                
-                // Charger les statistiques et les modules
-                loadStats();
-                renderModules(modulesDataAdmin, moduleListAdmin);
-                renderModules(modulesDataPedagoLogi, moduleListPedagoLogi);
-                
-                // MASKER L'ÉCRAN DE CHARGEMENT et afficher le contenu principal
-                loadingOverlay.style.display = 'none';
-                mainContent.classList.remove('hidden');
+                // 3. Succès: Affichage du Tableau de Bord et des Modules
+                displayDashboard(user, nomComplet);
 
             } catch (error) {
-                console.error("Erreur critique d'authentification ou de base de données:", error);
-                displayMessage("Impossible de charger les données du profil. Vérifiez la connexion Firebase/Firestore.", true);
+                console.error("Erreur critique lors de la vérification du profil ou de la base de données:", error);
+                displayMessage("Impossible de charger le profil. Vérifiez les règles Firestore.", true);
             }
         });
         
         // --- Gestion des Événements ---
         
-        menuToggle.addEventListener('click', () => {
-            sidebar.classList.toggle('active');
-        });
-
-        logoutBtn.addEventListener("click", async () => {
-            try {
-                await signOut(auth);
-                // La redirection vers "connexion.html" est gérée par onAuthStateChanged
-            } catch (error) {
-                displayMessage("Erreur lors de la déconnexion.", true);
+        // Bascule de la barre latérale sur mobile
+        function toggleSidebar() {
+            const isActive = sidebar.classList.toggle('active');
+            if (isActive) {
+                sidebarOverlay.classList.remove('hidden');
+                setTimeout(() => { sidebarOverlay.classList.remove('opacity-0'); }, 10);
+            } else {
+                sidebarOverlay.classList.add('opacity-0');
+                setTimeout(() => { sidebarOverlay.classList.add('hidden'); }, 300);
             }
-        });
+        }
 
-        window.onload = handleInitialAuth;
-    </script>
-</body>
-</html>
+        menuToggle.addEventListener('click', toggleSidebar);
+        sidebarOverlay.
