@@ -38,6 +38,12 @@
         .notification.success { background-color: #10b981; }
         .notification.error { background-color: #ef4444; }
         .notification.info { background-color: #3b82f6; }
+        
+        /* Style spécifique pour le tableau */
+        #elevesBody {
+            max-height: 60vh; /* Limiter la hauteur du corps du tableau */
+            overflow-y: auto;
+        }
     </style>
 </head>
 <body>
@@ -61,7 +67,14 @@
                 <h3 class="text-xl font-bold text-gray-800 flex items-center gap-2">
                     <i class="fa-solid fa-list-check text-teal-600"></i> Effectif total: <span id="eleveCount" class="text-2xl font-extrabold text-violet-600">0</span>
                 </h3>
-                <input type="search" id="searchEleves" placeholder="Rechercher par Nom, Matricule, Classe..." class="p-3 border border-gray-300 rounded-lg w-full sm:w-80 focus:ring-teal-500 focus:border-teal-500 transition duration-150" onkeyup="filterEleves()">
+                
+                <div class="flex flex-col sm:flex-row gap-3 w-full sm:w-auto">
+                    <!-- Bouton Ajouter Élève (Affiché conditionnellement) -->
+                    <button id="addEleveBtn" class="py-3 px-6 bg-violet-600 text-white rounded-lg font-semibold hover:bg-violet-700 transition duration-200 shadow-md hidden" onclick="openModal('addEleveModal')">
+                        <i class="fa-solid fa-plus mr-2"></i> Ajouter Élève
+                    </button>
+                    <input type="search" id="searchEleves" placeholder="Rechercher par Nom, Matricule, Classe..." class="p-3 border border-gray-300 rounded-lg w-full sm:w-80 focus:ring-teal-500 focus:border-teal-500 transition duration-150" onkeyup="filterEleves()">
+                </div>
             </div>
 
             <div class="overflow-x-auto rounded-lg border border-gray-200 shadow-inner">
@@ -90,8 +103,111 @@
             <i class="fa-solid fa-sign-out-alt"></i> Déconnexion
         </button>
     </div>
+    
+    <!-- MODALE AJOUTER ÉLÈVE -->
+    <div id="addEleveModal" class="fixed inset-0 bg-gray-900 bg-opacity-75 z-50 flex items-center justify-center p-4 transition-opacity duration-300 opacity-0 pointer-events-none">
+        <div class="bg-white rounded-xl shadow-2xl w-full max-w-2xl transform transition-transform duration-300 scale-95">
+            <!-- Modal Header -->
+            <div class="p-6 border-b flex justify-between items-center">
+                <h3 class="text-2xl font-bold text-violet-700">Enregistrer un Nouvel Élève</h3>
+                <button onclick="closeModal('addEleveModal')" class="text-gray-400 hover:text-gray-600">
+                    <i class="fa-solid fa-times text-2xl"></i>
+                </button>
+            </div>
+            
+            <!-- Modal Body (Form) -->
+            <form id="addEleveForm" class="p-6 space-y-4" onsubmit="event.preventDefault(); addEleve(this);">
+                
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                    <!-- Matricule -->
+                    <div>
+                        <label for="matricule" class="block text-sm font-medium text-gray-700">Matricule (Unique)</label>
+                        <input type="text" id="matricule" name="matricule" required class="mt-1 block w-full p-3 border border-gray-300 rounded-lg focus:ring-teal-500 focus:border-teal-500">
+                    </div>
+                    <!-- Nom -->
+                    <div>
+                        <label for="nom" class="block text-sm font-medium text-gray-700">Nom</label>
+                        <input type="text" id="nom" name="nom" required class="mt-1 block w-full p-3 border border-gray-300 rounded-lg focus:ring-teal-500 focus:border-teal-500">
+                    </div>
+                    <!-- Post-Nom -->
+                    <div>
+                        <label for="postNom" class="block text-sm font-medium text-gray-700">Post-Nom</label>
+                        <input type="text" id="postNom" name="postNom" class="mt-1 block w-full p-3 border border-gray-300 rounded-lg focus:ring-teal-500 focus:border-teal-500">
+                    </div>
+                    <!-- Prénom -->
+                    <div>
+                        <label for="prenom" class="block text-sm font-medium text-gray-700">Prénom</label>
+                        <input type="text" id="prenom" name="prenom" required class="mt-1 block w-full p-3 border border-gray-300 rounded-lg focus:ring-teal-500 focus:border-teal-500">
+                    </div>
+                </div>
 
-    <!-- LOGIQUE JAVASCRIPT & FIREBASE -->
+                <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
+                    <!-- Sexe -->
+                    <div>
+                        <label for="sexe" class="block text-sm font-medium text-gray-700">Sexe</label>
+                        <select id="sexe" name="sexe" required class="mt-1 block w-full p-3 border border-gray-300 rounded-lg focus:ring-teal-500 focus:border-teal-500">
+                            <option value="">Sélectionner</option>
+                            <option value="M">Masculin</option>
+                            <option value="F">Féminin</option>
+                        </select>
+                    </div>
+                    <!-- Date de Naissance -->
+                    <div>
+                        <label for="dateNaissance" class="block text-sm font-medium text-gray-700">Date de Naissance</label>
+                        <input type="date" id="dateNaissance" name="dateNaissance" required class="mt-1 block w-full p-3 border border-gray-300 rounded-lg focus:ring-teal-500 focus:border-teal-500">
+                    </div>
+                    <!-- Lieu de Naissance -->
+                    <div>
+                        <label for="lieuNaissance" class="block text-sm font-medium text-gray-700">Lieu de Naissance</label>
+                        <input type="text" id="lieuNaissance" name="lieuNaissance" class="mt-1 block w-full p-3 border border-gray-300 rounded-lg focus:ring-teal-500 focus:border-teal-500">
+                    </div>
+                </div>
+
+                <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
+                    <!-- Classe -->
+                    <div>
+                        <label for="classeId" class="block text-sm font-medium text-gray-700">Classe Affectée</label>
+                        <select id="classeId" name="classeId" required class="mt-1 block w-full p-3 border border-gray-300 rounded-lg focus:ring-teal-500 focus:border-teal-500">
+                            <option value="">Chargement des classes...</option>
+                        </select>
+                    </div>
+                    <!-- Statut -->
+                    <div>
+                        <label for="statut" class="block text-sm font-medium text-gray-700">Statut</label>
+                        <select id="statut" name="statut" required class="mt-1 block w-full p-3 border border-gray-300 rounded-lg focus:ring-teal-500 focus:border-teal-500">
+                            <option value="actif">Actif</option>
+                            <option value="inactif">Inactif</option>
+                        </select>
+                    </div>
+                </div>
+                
+                <h4 class="text-lg font-semibold text-gray-800 pt-4 border-t mt-4">Informations Tuteur</h4>
+                
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                    <!-- Nom Tuteur -->
+                    <div>
+                        <label for="tuteurNom" class="block text-sm font-medium text-gray-700">Nom Complet Tuteur</label>
+                        <input type="text" id="tuteurNom" name="tuteurNom" required class="mt-1 block w-full p-3 border border-gray-300 rounded-lg focus:ring-teal-500 focus:border-teal-500">
+                    </div>
+                    <!-- Téléphone Tuteur -->
+                    <div>
+                        <label for="tuteurTel" class="block text-sm font-medium text-gray-700">Téléphone Tuteur</label>
+                        <input type="tel" id="tuteurTel" name="tuteurTel" class="mt-1 block w-full p-3 border border-gray-300 rounded-lg focus:ring-teal-500 focus:border-teal-500">
+                    </div>
+                </div>
+
+
+                <!-- Modal Footer -->
+                <div class="flex justify-end pt-4 border-t">
+                    <button type="button" onclick="closeModal('addEleveModal')" class="mr-3 py-2 px-4 border border-gray-300 rounded-lg text-gray-700 hover:bg-gray-50 transition duration-150">Annuler</button>
+                    <button type="submit" class="py-2 px-4 bg-teal-600 text-white rounded-lg font-semibold hover:bg-teal-700 transition duration-150">
+                        <i class="fa-solid fa-save mr-2"></i> Enregistrer l'Élève
+                    </button>
+                </div>
+            </form>
+        </div>
+    </div>
+    
     <script type="module">
     import { initializeApp } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-app.js";
     import { 
@@ -100,7 +216,7 @@
     } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-auth.js";
     import { 
         getFirestore, collection, doc, deleteDoc, 
-        onSnapshot, getDoc, query, setLogLevel
+        onSnapshot, getDoc, query, addDoc, setLogLevel
     } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-firestore.js";
 
     // IMPORTANT: UTILISATION DES VARIABLES GLOBALES FOURNIES PAR LE CONTEXTE
@@ -125,6 +241,9 @@
     const elevesBody = document.getElementById('elevesBody');
     const eleveCountSpan = document.getElementById('eleveCount');
     const aucunEleve = document.getElementById('aucunEleve');
+    const addEleveBtn = document.getElementById('addEleveBtn');
+    const addEleveModal = document.getElementById('addEleveModal');
+    const classeIdSelect = document.getElementById('classeId');
     
     // 3. CACHE ET DONNÉES GLOBALES
     let currentEleves = [];
@@ -132,6 +251,7 @@
     let userRole = null;
     const AUTHORIZED_ROLES = ['admin', 'prefet', 'secretaire', 'directeur_etudes'];
     const CAN_DELETE_ROLES = ['admin', 'prefet'];
+    const CAN_ADD_ROLES = ['admin', 'secretaire']; // Rôles autorisés à ajouter un élève
     
     // 4. FONCTIONNALITÉS UTILITAIRES
     function showNotification(msg, type = "success") {
@@ -148,7 +268,8 @@
     
     async function handleLogout() {
         await signOut(auth);
-        setTimeout(() => window.location.href = "index.html", 800);
+        showNotification("Déconnexion réussie.", 'info');
+        // Redirection non nécessaire dans ce contexte mais bonne pratique pour une vraie app
     }
 
     async function initializeAuth() {
@@ -161,7 +282,26 @@
         } catch (error) {
             console.error("Erreur d'authentification initiale:", error);
             showNotification("Erreur d'authentification.", "error");
-            setTimeout(() => window.location.href = "index.html", 1500);
+        }
+    }
+    
+    window.openModal = (id) => {
+        const modal = document.getElementById(id);
+        if (modal) {
+            modal.classList.remove('opacity-0', 'pointer-events-none');
+            modal.querySelector(':first-child').classList.remove('scale-95');
+            modal.querySelector(':first-child').classList.add('scale-100');
+        }
+    }
+
+    window.closeModal = (id) => {
+        const modal = document.getElementById(id);
+        if (modal) {
+            modal.querySelector(':first-child').classList.remove('scale-100');
+            modal.querySelector(':first-child').classList.add('scale-95');
+            setTimeout(() => {
+                modal.classList.add('opacity-0', 'pointer-events-none');
+            }, 300);
         }
     }
 
@@ -188,7 +328,7 @@
             
             // Nom & Prénom
             row.insertCell().innerHTML = `
-                <span class="font-semibold text-gray-800">${item.nom} ${item.postNom}</span><br>
+                <span class="font-semibold text-gray-800">${item.nom} ${item.postNom || ''}</span><br>
                 <span class="text-xs text-gray-500">${item.prenom} (${item.sexe.charAt(0).toUpperCase()})</span>
             `;
             
@@ -201,7 +341,7 @@
             // Infos Tuteur / Naissance
             row.insertCell().innerHTML = `
                 <span class="text-sm font-medium text-gray-700">Tuteur: ${item.tuteurNom}</span><br>
-                <span class="text-xs text-gray-500">Tel: ${item.tuteurTel} | Né(e) le ${item.dateNaissance} à ${item.lieuNaissance || 'N/A'}</span>
+                <span class="text-xs text-gray-500">Tel: ${item.tuteurTel || 'N/A'} | Né(e) le ${item.dateNaissance} à ${item.lieuNaissance || 'N/A'}</span>
             `;
 
             // Statut
@@ -225,7 +365,7 @@
             
             // Bouton Supprimer (Disponible pour Admin/Préfet)
             if (canDelete) {
-                const deleteFn = `window.deleteEleve('${item.id}', '${item.matricule}', '${item.nom} ${item.postNom}')`;
+                const deleteFn = `window.deleteEleve('${item.id}', '${item.matricule}', '${item.nom} ${item.postNom || ''}')`;
                 actionsCell.innerHTML += `
                     <button onclick="${deleteFn}" 
                             class="p-2 bg-red-500 text-white rounded-full hover:bg-red-600 transition duration-150" title="Supprimer définitivement l'élève">
@@ -240,7 +380,7 @@
         const searchTerm = document.getElementById('searchEleves').value.toLowerCase();
         const filtered = currentEleves.filter(item =>
             item.nom.toLowerCase().includes(searchTerm) ||
-            item.postNom.toLowerCase().includes(searchTerm) ||
+            (item.postNom || '').toLowerCase().includes(searchTerm) ||
             item.prenom.toLowerCase().includes(searchTerm) ||
             item.matricule.toLowerCase().includes(searchTerm) ||
             item.classeNom.toLowerCase().includes(searchTerm)
@@ -250,21 +390,99 @@
     
     window.viewEleveFile = (id, matricule) => {
         showNotification(`Fonctionnalité 'Voir Fiche' pour ${matricule} à implémenter.`, 'info');
-        // Dans une vraie application, cela ouvrirait une modale ou une nouvelle page avec les détails complets, l'historique de discipline, etc.
     };
 
-    // 6. CHARGEMENT DES DONNÉES
+    // 6. LOGIQUE D'AJOUT D'ÉLÈVE
+    window.addEleve = async (form) => {
+        if (!CAN_ADD_ROLES.includes(userRole)) {
+            showNotification("Vous n'êtes pas autorisé à ajouter des élèves.", 'error');
+            return;
+        }
+
+        const data = Object.fromEntries(new FormData(form).entries());
+
+        // Récupérer les noms de classe pour le document de l'élève
+        const classeDetails = classesCache[data.classeId];
+        if (!classeDetails) {
+            showNotification("Erreur: Classe sélectionnée introuvable.", 'error');
+            return;
+        }
+
+        const newEleve = {
+            matricule: data.matricule.trim(),
+            nom: data.nom.trim(),
+            postNom: data.postNom.trim(),
+            prenom: data.prenom.trim(),
+            sexe: data.sexe,
+            dateNaissance: data.dateNaissance,
+            lieuNaissance: data.lieuNaissance.trim(),
+            classeId: data.classeId,
+            classeNom: classeDetails.fullName,
+            niveauNom: classeDetails.levelName,
+            sectionNom: classeDetails.sectionName,
+            tuteurNom: data.tuteurNom.trim(),
+            tuteurTel: data.tuteurTel.trim(),
+            statut: data.statut,
+            dateCreation: new Date().toISOString()
+        };
+
+        try {
+            await addDoc(collection(db, ELEVES_PATH), newEleve);
+            showNotification(`✅ Élève ${newEleve.nom} ${newEleve.postNom} (Mat: ${newEleve.matricule}) enregistré.`, 'success');
+            form.reset();
+            closeModal('addEleveModal');
+        } catch (err) {
+            console.error("Erreur lors de l'ajout de l'élève:", err);
+            showNotification("Erreur: Impossible d'ajouter l'élève. Vérifiez si le matricule est unique.", 'error');
+        }
+    };
+
+
+    // 7. CHARGEMENT DES DONNÉES
+    function populateClassesSelect() {
+        classeIdSelect.innerHTML = '<option value="">Sélectionner une Classe</option>';
+        const sortedClasses = Object.values(classesCache).sort((a, b) => 
+            a.fullName.localeCompare(b.fullName)
+        );
+
+        sortedClasses.forEach(classe => {
+            const option = document.createElement('option');
+            option.value = classe.id;
+            option.textContent = classe.fullName;
+            classeIdSelect.appendChild(option);
+        });
+        
+        if (sortedClasses.length === 0) {
+            classeIdSelect.innerHTML = '<option value="">Aucune classe trouvée</option>';
+            classeIdSelect.disabled = true;
+        } else {
+            classeIdSelect.disabled = false;
+        }
+    }
+
+
     function setupClassesListener() {
         onSnapshot(query(collection(db, CLASSES_PATH)), (snapshot) => {
             classesCache = {};
             snapshot.forEach(docSnap => {
-                classesCache[docSnap.id] = { id: docSnap.id, ...docSnap.data() };
+                const data = docSnap.data();
+                classesCache[docSnap.id] = { 
+                    id: docSnap.id, 
+                    fullName: data.fullName || data.name, // Assurez-vous d'avoir le nom complet
+                    levelName: data.levelName || 'N/A',
+                    sectionName: data.sectionName || 'N/A',
+                    ...data 
+                };
             });
+            populateClassesSelect();
             setupElevesListener(); 
         }, (err) => console.error("Erreur chargement Classes:", err));
     }
 
     function setupElevesListener() {
+        // Affiche un message de chargement tant que les données ne sont pas prêtes
+        elevesBody.innerHTML = `<tr><td colspan="6" class="text-center py-8 text-gray-500">Chargement des élèves...</td></tr>`;
+
         onSnapshot(query(collection(db, ELEVES_PATH)), (snapshot) => {
             currentEleves = [];
             snapshot.forEach(docSnap => {
@@ -274,7 +492,8 @@
                 currentEleves.push({
                     id: docSnap.id,
                     ...data,
-                    classeNom: classe.fullName || data.classeNom || 'N/A',
+                    // Utilise les données du cache si disponibles, sinon les données du document élève (pour compatibilité)
+                    classeNom: classe.fullName || data.classeNom || 'N/A', 
                     niveauNom: classe.levelName || data.niveauNom || 'N/A',
                     sectionNom: classe.sectionName || data.sectionName || 'N/A',
                 });
@@ -287,17 +506,21 @@
                 return a.nom.localeCompare(b.nom);
             });
             renderEleves();
-        }, (err) => console.error("Erreur chargement Élèves:", err));
+        }, (err) => {
+            console.error("Erreur chargement Élèves:", err);
+            elevesBody.innerHTML = `<tr><td colspan="6" class="text-center py-8 text-red-500">Erreur de chargement. Veuillez vérifier les permissions Firestore.</td></tr>`;
+        });
     }
 
-    // 7. FONCTION DE SUPPRESSION (Réservée Admin/Préfet)
+    // 8. FONCTION DE SUPPRESSION (Réservée Admin/Préfet)
     window.deleteEleve = async (id, matricule, nomComplet) => {
         if (!CAN_DELETE_ROLES.includes(userRole)) {
             showNotification("Vous n'êtes pas autorisé à supprimer des élèves.", 'error');
             return;
         }
 
-        const confirmation = prompt(`Confirmer la suppression de l'élève ${nomComplet} (Matricule: ${matricule}) ? Tapez 'SUPPRIMER' pour continuer.`);
+        // Utilisation d'une modale personnalisée ou d'une fenêtre de confirmation customisée est préférée, mais nous utilisons prompt pour rester dans le format de l'application originale.
+        const confirmation = prompt(`Confirmer la suppression de l'élève ${nomComplet} (Matricule: ${matricule}) ? Tapez 'SUPPRIMER' en majuscule pour continuer.`);
         if (confirmation !== 'SUPPRIMER') {
             showNotification("Suppression annulée.", 'info');
             return;
@@ -313,7 +536,7 @@
     };
 
 
-    // 8. GESTION DES ÉVÉNEMENTS & AUTHENTIFICATION
+    // 9. GESTION DES ÉVÉNEMENTS & AUTHENTIFICATION
     
     logoutBtn.addEventListener("click", handleLogout);
     
@@ -322,30 +545,40 @@
         const userId = user?.uid;
 
         if (!user) {
-            showNotification("Session expirée ou non autorisée.", "error");
-            setTimeout(() => window.location.href = "index.html", 1000);
+            // Pas de redirection forcée ici, la déconnexion peut être gérée par le code appelant
+            userInfo.textContent = "Utilisateur non connecté.";
+            showNotification("Session non autorisée. Veuillez vous connecter.", "error");
         } else {
             getDoc(doc(db, 'users', userId)).then(docSnap => {
                 if (docSnap.exists()) {
                     const data = docSnap.data();
-                    const role = data.role.charAt(0).toUpperCase() + data.role.slice(1);
-                    userInfo.textContent = `${data.nom || data.email} (${role})`;
-                    userRole = data.role;
+                    const role = data.role || 'non-défini';
+                    const roleDisplay = role.charAt(0).toUpperCase() + role.slice(1);
+
+                    userInfo.textContent = `${data.nom || data.email} (${roleDisplay})`;
+                    userRole = role;
                     
                     if (!AUTHORIZED_ROLES.includes(userRole)) {
-                        showNotification(`Accès non autorisé. Votre rôle (${role}) n'est pas autorisé à consulter ce registre.`, "error");
-                        setTimeout(() => window.location.href = `dashboard-${userRole}.html`, 1500); 
-                        return;
+                        showNotification(`Accès non autorisé. Votre rôle (${roleDisplay}) n'est pas autorisé.`, "error");
+                        // Redirection non implémentée ici pour la démonstration, mais la fonction est bloquée.
+                        // setTimeout(() => window.location.href = `dashboard-${userRole}.html`, 1500); 
+                        
+                    } else {
+                        // Afficher le bouton d'ajout si l'utilisateur est autorisé à ajouter
+                        if (CAN_ADD_ROLES.includes(userRole)) {
+                            addEleveBtn.classList.remove('hidden');
+                        }
+                        setupClassesListener(); 
                     }
 
-                    setupClassesListener(); 
-
                 } else {
-                    console.warn("Document utilisateur manquant. Accès limité.");
+                    console.warn("Document utilisateur manquant. Accès limité/Rôle inconnu.");
+                    userInfo.textContent = `Utilisateur ID: ${userId} (Rôle Inconnu)`;
                     setupClassesListener();
                 }
             }).catch(err => {
                 console.error("Erreur de récupération du document utilisateur:", err);
+                userInfo.textContent = `Erreur: Impossible de vérifier le rôle.`;
                 setupClassesListener();
             });
         }
