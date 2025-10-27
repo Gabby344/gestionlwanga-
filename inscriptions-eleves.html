@@ -1,168 +1,383 @@
 <!DOCTYPE html>
 <html lang="fr">
 <head>
-  <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Inscription Élève · Secrétaire</title>
-  <link rel="icon" href="favicon.ico" />
-  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600&display=swap" rel="stylesheet" />
-  <style>
-    body {
-      font-family: 'Inter', sans-serif;
-      background-color: #f9fafb;
-      color: #374151;
-      padding: 2rem;
-    }
-
-    h1 {
-      text-align: center;
-      color: #1e3a8a;
-      margin-bottom: 1rem;
-    }
-
-    form {
-      max-width: 700px;
-      margin: auto;
-      background: white;
-      padding: 2rem;
-      border-radius: 12px;
-      box-shadow: 0 4px 10px rgba(0,0,0,0.05);
-      display: grid;
-      grid-template-columns: 1fr 1fr;
-      gap: 1rem;
-    }
-
-    form input, form select {
-      padding: 0.75rem;
-      border: 1px solid #d1d5db;
-      border-radius: 8px;
-      font-size: 1rem;
-      width: 100%;
-    }
-
-    form button {
-      grid-column: span 2;
-      padding: 0.75rem;
-      background-color: #1e3a8a;
-      color: white;
-      border: none;
-      border-radius: 8px;
-      font-weight: 600;
-      cursor: pointer;
-      transition: background 0.2s ease;
-    }
-
-    form button:hover {
-      background-color: #0f2f79;
-    }
-
-    #notification-area {
-      position: fixed;
-      top: 20px;
-      right: 20px;
-      z-index: 9999;
-      font-weight: 600;
-      padding: 0.75rem 1rem;
-      border-radius: 8px;
-      background-color: #1e3a8a;
-      color: white;
-      display: none;
-    }
-
-    @media (max-width: 600px) {
-      form {
-        grid-template-columns: 1fr;
-      }
-      form button {
-        grid-column: span 1;
-      }
-    }
-  </style>
-</head>
-<body>
-  <h1>📝 Inscription d’un nouvel élève</h1>
-
-  <form id="inscriptionForm">
-    <input type="text" id="nom" placeholder="Nom" required />
-    <input type="text" id="postNom" placeholder="Post-nom" />
-    <input type="text" id="prenom" placeholder="Prénom" required />
-    <select id="sexe" required>
-      <option value="">Sexe</option>
-      <option value="masculin">Masculin</option>
-      <option value="féminin">Féminin</option>
-    </select>
-    <input type="date" id="dateNaissance" required />
-    <input type="text" id="classe" placeholder="Classe (ex: 6e A)" required />
-    <input type="text" id="section" placeholder="Section (ex: Scientifique)" />
-    <input type="text" id="option" placeholder="Option (ex: Math-Physique)" />
-    <input type="text" id="adresse" placeholder="Adresse" />
-    <input type="text" id="tuteurNom" placeholder="Nom du tuteur" />
-    <input type="tel" id="tuteurTel" placeholder="Téléphone du tuteur" />
-    <button type="submit">📥 Enregistrer l’élève</button>
-  </form>
-
-  <div id="notification-area"></div>
-
-  <script type="module">
-    import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-app.js";
-    import { getAuth, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-auth.js";
-    import { getFirestore, collection, addDoc } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore.js";
-
-    const firebaseConfig = {
-      apiKey: "AIzaSyAgv4TDYnR60TXnns-LISqbZTgcdLT31cc",
-      authDomain: "gestionlwanga.firebaseapp.com",
-      projectId: "gestionlwanga"
-    };
-
-    const app = initializeApp(firebaseConfig);
-    const auth = getAuth(app);
-    const db = getFirestore(app);
-
-    const form = document.getElementById("inscriptionForm");
-    const notify = document.getElementById("notification-area");
-
-    function showNotification(message, type = "success") {
-      notify.textContent = message;
-      notify.style.backgroundColor = type === "error" ? "#dc2626" : "#1e3a8a";
-      notify.style.display = "block";
-      setTimeout(() => notify.style.display = "none", 3000);
-    }
-
-    onAuthStateChanged(auth, (user) => {
-      if (!user) {
-        window.location.href = "login.html";
-        return;
-      }
-
-      form.addEventListener("submit", async (e) => {
-        e.preventDefault();
-
-        const eleve = {
-          nom: form.nom.value.trim(),
-          postNom: form.postNom.value.trim(),
-          prenom: form.prenom.value.trim(),
-          sexe: form.sexe.value,
-          dateNaissance: form.dateNaissance.value,
-          classe: form.classe.value.trim(),
-          section: form.section.value.trim(),
-          option: form.option.value.trim(),
-          adresse: form.adresse.value.trim(),
-          tuteurNom: form.tuteurNom.value.trim(),
-          tuteurTel: form.tuteurTel.value.trim(),
-          dateInscription: new Date().toISOString(),
-          statut: "actif"
-        };
-
-        try {
-          await addDoc(collection(db, "eleves"), eleve);
-          showNotification("✅ Élève inscrit avec succès !");
-          form.reset();
-        } catch (err) {
-          console.error(err);
-          showNotification("❌ Erreur lors de l’inscription", "error");
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Inscription Élève Professionnelle</title>
+    <!-- Chargement de Tailwind CSS -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <!-- Chargement d'une librairie d'icônes moderne (Lucide Icons) -->
+    <script src="https://unpkg.com/lucide@latest"></script>
+    <!-- Utilisation de la police Inter -->
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet" />
+    
+    <style>
+        body {
+            font-family: 'Inter', sans-serif;
         }
-      });
-    });
-  </script>
+        /* Style général pour les champs de formulaire */
+        .form-input {
+            @apply w-full p-3 border border-gray-300 rounded-xl bg-white 
+                   focus:ring-2 focus:ring-primary focus:border-primary 
+                   transition duration-200 shadow-sm;
+        }
+        .form-label {
+            @apply block font-medium text-gray-700 mb-1;
+        }
+        /* Custom disabled style for form fields */
+        .form-disabled {
+            @apply opacity-70 cursor-not-allowed bg-gray-100; 
+        }
+    </style>
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    colors: {
+                        'primary': '#0f3a62', /* Bleu marine profond pour le professionnalisme */
+                        'secondary-action': '#22c55e', /* Vert vif pour l'action */
+                    }
+                }
+            }
+        }
+    </script>
+</head>
+<body class="bg-gray-100 min-h-screen p-4 sm:p-8">
+
+    <div class="max-w-5xl mx-auto">
+        <header class="text-center mb-10 bg-white p-6 rounded-2xl shadow-xl border-t-4 border-primary">
+            <h1 class="text-3xl sm:text-4xl font-extrabold text-primary mb-2 flex items-center justify-center">
+                <i data-lucide="user-plus" class="w-8 h-8 mr-3 text-secondary-action"></i> 
+                Formulaire d'Inscription Élève
+            </h1>
+            <p class="text-gray-500 max-w-2xl mx-auto">
+                Remplissez les informations en trois sections pour créer un dossier élève complet pour l'année scolaire.
+            </p>
+        </header>
+
+        <!-- Conteneur principal du formulaire -->
+        <form id="inscriptionForm" class="grid grid-cols-1 lg:grid-cols-3 gap-8">
+            
+            <!-- Colonne 1: Identité de l'élève -->
+            <div class="lg:col-span-1 bg-white p-6 rounded-2xl shadow-lg h-fit">
+                <h2 class="text-xl font-bold text-primary mb-4 pb-2 border-b border-gray-200 flex items-center">
+                    <i data-lucide="badge-info" class="w-5 h-5 mr-2 text-primary"></i> 1. Identification
+                </h2>
+                
+                <div class="space-y-4">
+                    <!-- Nom -->
+                    <div>
+                        <label for="nom" class="form-label">Nom *</label>
+                        <input type="text" id="nom" name="nom" placeholder="Nom de famille" required class="form-input" />
+                    </div>
+                    <!-- Post-Nom -->
+                    <div>
+                        <label for="postNom" class="form-label">Post-Nom</label>
+                        <input type="text" id="postNom" name="postNom" placeholder="Post-Nom (si applicable)" class="form-input" />
+                    </div>
+                    <!-- Prénom -->
+                    <div>
+                        <label for="prenom" class="form-label">Prénom *</label>
+                        <input type="text" id="prenom" name="prenom" placeholder="Prénom(s) usuel(s)" required class="form-input" />
+                    </div>
+                    <!-- Sexe -->
+                    <div>
+                        <label for="sexe" class="form-label">Sexe *</label>
+                        <select id="sexe" name="sexe" required class="form-input appearance-none bg-white pr-8">
+                            <option value="" disabled selected>-- Choisir le sexe --</option>
+                            <option value="Masculin">Masculin</option>
+                            <option value="Féminin">Féminin</option>
+                        </select>
+                    </div>
+                    <!-- Date de Naissance / Âge -->
+                    <div>
+                        <label for="dateNaissance" class="form-label">
+                            Date de Naissance * <span id="ageDisplay" class="text-sm font-medium text-gray-500 ml-2">(Âge: -- ans)</span>
+                        </label>
+                        <input type="date" id="dateNaissance" name="dateNaissance" required class="form-input" />
+                        <input type="hidden" id="ageCache" name="ageCache" value="" />
+                    </div>
+                    <!-- Adresse -->
+                    <div>
+                        <label for="adresse" class="form-label">Adresse</label>
+                        <input type="text" id="adresse" name="adresse" placeholder="Adresse complète" class="form-input" />
+                    </div>
+                </div>
+            </div>
+
+            <!-- Colonne 2: Détails Scolaires et Tuteur -->
+            <div class="lg:col-span-2 space-y-8">
+                
+                <!-- Section Scolaire -->
+                <div class="bg-white p-6 rounded-2xl shadow-lg">
+                    <h2 class="text-xl font-bold text-primary mb-4 pb-2 border-b border-gray-200 flex items-center">
+                        <i data-lucide="book-open-check" class="w-5 h-5 mr-2 text-primary"></i> 2. Détails Scolaires
+                    </h2>
+                    <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                        <!-- Classe -->
+                        <div>
+                            <label for="classe" class="form-label">Classe d'Affectation *</label>
+                            <input type="text" id="classe" name="classe" placeholder="Ex: 6e A" required class="form-input" />
+                        </div>
+                        <!-- Section -->
+                        <div>
+                            <label for="section" class="form-label">Section</label>
+                            <input type="text" id="section" name="section" placeholder="Ex: Scientifique" class="form-input" />
+                        </div>
+                        <!-- Option -->
+                        <div class="sm:col-span-2">
+                            <label for="option" class="form-label">Option</label>
+                            <input type="text" id="option" name="option" placeholder="Ex: Math-Physique ou Commerciale" class="form-input" />
+                        </div>
+                        <!-- Statut de Paiement -->
+                        <div class="sm:col-span-2">
+                            <label for="statutPaiement" class="form-label">Statut Initial de Paiement *</label>
+                            <select id="statutPaiement" name="statutPaiement" required class="form-input appearance-none bg-white pr-8">
+                                <option value="" disabled selected>-- Sélectionner le statut --</option>
+                                <option value="Payé" class="text-green-600 font-bold">✅ Payé intégralement</option>
+                                <option value="Partiel" class="text-yellow-600 font-bold">⚠️ Partiel (Acompte versé)</option>
+                                <option value="Non payé" class="text-red-600 font-bold">❌ Non payé</option>
+                            </select>
+                        </div>
+                    </div>
+                </div>
+                
+                <!-- Section Tuteur -->
+                <div class="bg-white p-6 rounded-2xl shadow-lg">
+                    <h2 class="text-xl font-bold text-primary mb-4 pb-2 border-b border-gray-200 flex items-center">
+                        <i data-lucide="user-check" class="w-5 h-5 mr-2 text-primary"></i> 3. Contact du Tuteur
+                    </h2>
+                    <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                        <!-- Nom du Tuteur -->
+                        <div>
+                            <label for="tuteurNom" class="form-label">Nom du Tuteur</label>
+                            <input type="text" id="tuteurNom" name="tuteurNom" placeholder="Nom complet du responsable légal" class="form-input" />
+                        </div>
+                        <!-- Téléphone du Tuteur -->
+                        <div>
+                            <label for="tuteurTel" class="form-label">Téléphone du Tuteur</label>
+                            <input type="tel" id="tuteurTel" name="tuteurTel" placeholder="Ex: +243 81 234 5678" class="form-input" />
+                        </div>
+                    </div>
+                </div>
+                
+                <!-- Bouton de Soumission -->
+                <button type="submit" id="submitButton"
+                        class="w-full py-4 bg-secondary-action text-white text-xl font-extrabold rounded-2xl
+                               hover:bg-green-600 transition duration-300 shadow-xl hover:shadow-2xl disabled:opacity-50 disabled:cursor-wait
+                               flex items-center justify-center space-x-3 mt-6">
+                    <i data-lucide="save" class="w-6 h-6"></i>
+                    <span id="submitText">ENREGISTRER LE NOUVEL ÉLÈVE</span>
+                </button>
+            </div>
+            
+        </form>
+        
+        <!-- Zone de notification et User ID -->
+        <div class="text-center mt-8">
+            <p id="userIdDisplay" class="text-xs text-gray-400">
+                <!-- User ID pour Firebase sera affiché ici -->
+            </p>
+        </div>
+    </div>
+
+    <!-- Zone de notification fixe (pour remplacer les alerts) -->
+    <div id="notification-area" class="fixed top-4 right-4 z-50 p-4 font-semibold text-white rounded-xl shadow-xl" onclick="this.style.display='none'"></div>
+
+    <script type="module">
+        import { initializeApp } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-app.js";
+        import { getAuth, signInAnonymously, signInWithCustomToken, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-auth.js";
+        import { getFirestore, collection, addDoc, serverTimestamp, setLogLevel } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-firestore.js";
+        
+        // Activer le mode debug pour voir les logs Firestore
+        setLogLevel('Debug');
+
+        // Variables globales fournies par l'environnement Canvas (Mandataire)
+        const appId = typeof __app_id !== 'undefined' ? __app_id : 'default-app-id';
+        const firebaseConfig = typeof __firebase_config !== 'undefined' ? JSON.parse(__firebase_config) : {};
+        const initialAuthToken = typeof __initial_auth_token !== 'undefined' ? __initial_auth_token : null;
+
+        const form = document.getElementById("inscriptionForm");
+        const notify = document.getElementById("notification-area");
+        const submitButton = document.getElementById("submitButton");
+        const submitText = document.getElementById("submitText");
+        const userIdDisplay = document.getElementById('userIdDisplay');
+        const dateNaissanceInput = document.getElementById('dateNaissance');
+        const ageDisplay = document.getElementById('ageDisplay');
+        const ageCache = document.getElementById('ageCache');
+        const formFields = form.querySelectorAll('input, select');
+
+        let app, db, auth;
+        let currentUserId = null;
+
+        /**
+         * Affiche une notification temporaire.
+         */
+        function showNotification(message, type = "success") {
+            notify.textContent = message;
+            notify.className = `fixed top-4 right-4 z-50 p-4 font-semibold text-white rounded-xl shadow-xl transition-all duration-300 ${
+                type === "error" ? "bg-red-600" : "bg-secondary-action"
+            }`;
+            notify.style.display = "block";
+            setTimeout(() => {
+                notify.style.display = "none";
+            }, 3500);
+        }
+
+        /**
+         * Désactive ou active le formulaire.
+         * @param {boolean} enabled - true pour activer, false pour désactiver.
+         */
+        function setFormEnabled(enabled) {
+            formFields.forEach(field => {
+                field.disabled = !enabled;
+                if (!enabled) {
+                    field.classList.add('form-disabled');
+                } else {
+                    field.classList.remove('form-disabled');
+                }
+            });
+            submitButton.disabled = !enabled;
+        }
+
+        /**
+         * Calcule l'âge à partir d'une date de naissance.
+         */
+        function calculateAge(dateString) {
+            if (!dateString) return null;
+            const today = new Date();
+            const birthDate = new Date(dateString);
+            let age = today.getFullYear() - birthDate.getFullYear();
+            const m = today.getMonth() - birthDate.getMonth();
+            if (m < 0 || (m === 0 && today.getDate() < birthDate.getDate())) {
+                age--;
+            }
+            return age;
+        }
+        
+        /**
+         * Met à jour l'affichage de l'âge dans l'UI et le champ caché.
+         */
+        function updateAge() {
+            const dob = dateNaissanceInput.value;
+            const age = calculateAge(dob);
+            
+            if (age !== null && age >= 0) {
+                ageDisplay.textContent = `(Âge: ${age} ans)`;
+                ageCache.value = age;
+            } else {
+                ageDisplay.textContent = `(Âge: -- ans)`;
+                ageCache.value = '';
+            }
+        }
+
+        /**
+         * Tente d'authentifier l'utilisateur et d'initialiser Firebase.
+         */
+        if (Object.keys(firebaseConfig).length > 0) {
+            app = initializeApp(firebaseConfig);
+            db = getFirestore(app);
+            auth = getAuth(app);
+            setFormEnabled(false); // Désactiver le formulaire en attendant l'auth
+
+            onAuthStateChanged(auth, async (user) => {
+                if (user) {
+                    currentUserId = user.uid;
+                    userIdDisplay.textContent = `User ID (Authentifié): ${currentUserId}`;
+                    setFormEnabled(true);
+                    submitText.textContent = "ENREGISTRER LE NOUVEL ÉLÈVE";
+                    showNotification('Système prêt à enregistrer.', 'success');
+                } else {
+                    try {
+                        if (initialAuthToken) {
+                            await signInWithCustomToken(auth, initialAuthToken);
+                        } else {
+                            // Tentative de connexion anonyme comme fallback
+                            const anonymousSignIn = await signInAnonymously(auth);
+                            currentUserId = anonymousSignIn.user.uid;
+                        }
+                        // onAuthStateChanged se redéclenchera avec l'utilisateur
+                    } catch (error) {
+                        console.error("Erreur d'authentification Firebase:", error);
+                        // Utiliser un ID temporaire non authentifié si l'auth échoue
+                        currentUserId = crypto.randomUUID(); 
+                        userIdDisplay.textContent = `User ID (Temporaire): ${currentUserId}`;
+                        setFormEnabled(true);
+                        showNotification("⚠️ Authentification échouée. Fonctionnement en mode non authentifié.", "error");
+                    }
+                }
+            });
+        } else {
+            showNotification('❌ Configuration Firebase manquante. Enregistrement non fonctionnel.', 'error');
+            setFormEnabled(false);
+        }
+
+        /**
+         * Gère la soumission du formulaire et l'enregistrement dans Firestore.
+         */
+        async function handleFormSubmission(e) {
+            e.preventDefault();
+
+            if (!currentUserId) {
+                showNotification("❌ Veuillez patienter, authentification en cours.", "error");
+                return;
+            }
+            
+            const originalText = submitText.textContent;
+
+            // Mise en état de chargement
+            submitText.innerHTML = '<span class="animate-spin inline-block w-6 h-6 mr-3 border-4 border-t-transparent border-white rounded-full"></span> Enregistrement...'; 
+            setFormEnabled(false); 
+            submitButton.classList.add("opacity-50");
+
+            const eleveData = {
+                nom: form.nom.value.trim().toUpperCase(),
+                postNom: form.postNom.value.trim().toUpperCase(),
+                prenom: form.prenom.value.trim(),
+                sexe: form.sexe.value,
+                dateNaissance: form.dateNaissance.value,
+                age: parseInt(form.ageCache.value) || null, // Capture de l'âge
+                classe: form.classe.value.trim().toUpperCase(),
+                section: form.section.value.trim(),
+                option: form.option.value.trim(),
+                statutPaiement: form.statutPaiement.value,
+                adresse: form.adresse.value.trim(),
+                tuteurNom: form.tuteurNom.value.trim(),
+                tuteurTel: form.tuteurTel.value.trim(),
+                dateInscription: serverTimestamp(), // Utilisation de serverTimestamp()
+                anneeScolaire: new Date().getFullYear(),
+                statut: "Actif",
+                ownerId: currentUserId // ID de l'utilisateur qui a créé le dossier
+            };
+
+            // Chemin Firestore requis: /artifacts/{appId}/users/{userId}/eleves (Données privées)
+            const elevesCollectionPath = `artifacts/${appId}/users/${currentUserId}/eleves`;
+
+            try {
+                // Pas de backoff pour la simplicité, mais le try/catch reste pour la robustesse
+                await addDoc(collection(db, elevesCollectionPath), eleveData);
+                
+                showNotification(`✅ ${eleveData.nom} ${eleveData.prenom} inscrit avec succès !`);
+                form.reset();
+                updateAge(); // Réinitialiser l'affichage de l'âge
+            } catch (err) {
+                console.error("Erreur Firestore lors de l’inscription:", err);
+                showNotification("❌ Erreur lors de l’inscription. Veuillez vérifier la console.", "error");
+            } finally {
+                submitText.textContent = originalText;
+                setFormEnabled(true);
+                submitButton.classList.remove("opacity-50");
+            }
+        }
+
+        // Événements
+        document.addEventListener('DOMContentLoaded', () => {
+            updateAge();
+            dateNaissanceInput.addEventListener('change', updateAge);
+            
+            // Initialisation des icônes Lucide après chargement
+            lucide.createIcons();
+        });
+    </script>
 </body>
 </html>
