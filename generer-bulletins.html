@@ -1,166 +1,230 @@
 <!DOCTYPE html>
 <html lang="fr">
 <head>
-  <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Génération de Bulletins - Institut Saint Charles Lwanga</title>
-  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700&display=swap" rel="stylesheet">
-  <style>
-    :root {
-      --bleu-fonce: #1e40af;
-      --gris-fonce: #1f2937;
-      --orange: #f97316; /* Couleur principale du module Notes */
-      --violet: #7c3aed; /* Nouvelle couleur pour l'action Générer */
-      --fond: #f4f6f8;
-      --ombre-legere: rgba(0,0,0,0.08);
-    }
-    body {
-      font-family: 'Inter', sans-serif;
-      background-color: var(--fond);
-      margin: 0;
-      padding: 2rem 1rem;
-      color: var(--gris-fonce);
-      text-align: center;
-    }
-    h1 {
-      font-size: 1.8rem;
-      color: var(--bleu-fonce);
-      margin-bottom: 0.5rem;
-    }
-    h2 {
-      font-size: 1rem;
-      font-weight: normal;
-      color: #6b7280;
-      margin-bottom: 2rem;
-    }
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Génération de Bulletins - ISC Lwanga</title>
+    <!-- Chargement de Tailwind CSS -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <!-- Chargement d'une librairie d'icônes moderne (Lucide Icons) -->
+    <script src="https://unpkg.com/lucide@latest"></script>
+    <!-- Utilisation de la police Inter -->
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet" />
     
-    .container {
-      max-width: 600px;
-      margin: auto;
-      background-color: white;
-      padding: 2rem;
-      border-radius: 12px;
-      box-shadow: 0 4px 10px var(--ombre-legere);
-      border-top: 5px solid var(--orange);
-    }
-    
-    /* --- Formulaire de Sélection --- */
-    .form-section {
-        margin-bottom: 1.5rem;
-    }
-    .form-group {
-      margin-bottom: 1rem;
-      text-align: left;
-    }
-    label {
-      display: block;
-      font-weight: 600;
-      margin-bottom: 0.3rem;
-      font-size: 0.9rem;
-    }
-    select {
-      width: 100%;
-      padding: 0.75rem;
-      border: 1px solid #d1d5db;
-      border-radius: 6px;
-      box-sizing: border-box; 
-      font-size: 1rem;
-      background-color: white;
-    }
-
-    /* --- Bouton d'Action Principale --- */
-    .btn-generate {
-      display: block;
-      width: 100%;
-      padding: 1rem;
-      margin-top: 2rem;
-      background-color: var(--violet);
-      color: white;
-      border: none;
-      border-radius: 8px;
-      font-weight: 700;
-      font-size: 1.1rem;
-      cursor: pointer;
-      transition: background-color 0.2s;
-    }
-    .btn-generate:hover {
-      background-color: #6d28d9;
-    }
-
-    /* Bouton de retour */
-    .btn-retour {
-        display: inline-block;
-        text-align: center;
-        margin-top: 1.5rem;
-        color: var(--gris-fonce);
-        text-decoration: none;
-        font-size: 0.9rem;
-        padding: 0.5rem 1rem;
-        border-radius: 6px;
-        background-color: #e5e7eb;
-    }
-    .btn-retour:hover {
-        background-color: #d1d5db;
-    }
-
-    footer {
-      margin-top: 4rem;
-      font-size: 0.85rem;
-      color: #6b7280;
-    }
-  </style>
+    <style>
+        body {
+            font-family: 'Inter', sans-serif;
+            background-color: #f8fafc;
+        }
+        .form-group label {
+            transition: color 0.2s;
+        }
+        .form-group:focus-within label {
+            color: #7c3aed; /* Violet focus */
+        }
+    </style>
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    colors: {
+                        'primary-blue': '#1e40af',
+                        'accent-notes': '#f97316', /* Orange */
+                        'action-generate': '#7c3aed', /* Violet */
+                    }
+                }
+            }
+        }
+    </script>
 </head>
-<body>
-  <h1>Génération des Bulletins</h1>
-  <h2>Sélectionnez la période et la classe pour imprimer les bulletins officiels.</h2>
 
-  <div class="container">
-    
-    <form>
-        <div class="form-section">
+<body class="p-4 sm:p-8 min-h-screen flex flex-col items-center">
+
+    <!-- Conteneur principal -->
+    <div class="max-w-xl w-full bg-white p-6 sm:p-8 rounded-2xl shadow-xl border-t-4 border-action-generate mt-10">
+        
+        <header class="text-center mb-8">
+            <h1 class="text-3xl font-extrabold text-gray-800 mb-2">
+                <span class="text-action-generate">📜</span> Génération des Bulletins
+            </h1>
+            <p class="text-gray-500">Sélectionnez les critères pour générer et télécharger les documents officiels.</p>
+        </header>
+
+        <form id="bulletinForm" class="space-y-6">
+            
+            <!-- Période d'Évaluation (Adapté au système éducatif Congolais) -->
             <div class="form-group">
-                <label for="periode">Période d'Évaluation :</label>
-                <select id="periode" name="periode" required>
+                <label for="periode" class="flex items-center text-sm font-semibold text-gray-700 mb-2">
+                    <i data-lucide="calendar-check" class="w-4 h-4 mr-2"></i> Période d'Évaluation (RDC) :
+                </label>
+                <select id="periode" name="periode" required class="w-full p-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-action-generate focus:border-action-generate transition duration-150">
                     <option value="">Sélectionner la période...</option>
-                    <option value="t1">Trimestre 1</option>
-                    <option value="t2">Trimestre 2</option>
-                    <option value="t3" selected>Trimestre 3</option>
-                    <option value="annuel">Résultats Annuels</option>
+                    <!-- Premier Semestre -->
+                    <option value="P1">1ère Période (P1)</option>
+                    <option value="P2">2ème Période (P2)</option>
+                    <option value="S1">1er Semestre (P1 + P2)</option>
+                    <!-- Deuxième Semestre -->
+                    <option value="P3">3ème Période (P3)</option>
+                    <option value="P4">4ème Période (P4)</option>
+                    <option value="S2" selected>2ème Semestre (P3 + P4)</option>
+                    <!-- Annuel -->
+                    <option value="Annuel">Résultats Annuels</option>
                 </select>
             </div>
             
+            <!-- Classe Ciblée -->
             <div class="form-group">
-                <label for="classe">Classe Ciblée :</label>
-                <select id="classe" name="classe" required>
+                <label for="classe" class="flex items-center text-sm font-semibold text-gray-700 mb-2">
+                    <i data-lucide="graduation-cap" class="w-4 h-4 mr-2"></i> Classe Ciblée :
+                </label>
+                <select id="classe" name="classe" required class="w-full p-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-action-generate focus:border-action-generate transition duration-150">
                     <option value="">Sélectionner une classe...</option>
-                    <option value="4eme">4ème Année</option>
-                    <option value="5eme">5ème Année</option>
-                    <option value="6eme" selected>6ème Année Commerciale</option>
-                    <option value="all">Toutes les classes</option>
+                    <option value="4eme">4ème Année (Primaire)</option>
+                    <option value="5eme">5ème Année (Secondaire - Latin/Philo)</option>
+                    <option value="6eme" selected>6ème Année (Secondaire - Commerciale)</option>
+                    <option value="all">Toutes les classes de la section</option>
                 </select>
             </div>
 
+            <!-- Format de sortie -->
             <div class="form-group">
-                <label for="format">Format de sortie :</label>
-                <select id="format" name="format">
-                    <option value="pdf" selected>PDF (Pour Impression)</option>
-                    <option value="excel">Excel (Pour Analyse)</option>
+                <label for="format" class="flex items-center text-sm font-semibold text-gray-700 mb-2">
+                    <i data-lucide="file-text" class="w-4 h-4 mr-2"></i> Format de sortie :
+                </label>
+                <select id="format" name="format" class="w-full p-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-action-generate focus:border-action-generate transition duration-150">
+                    <option value="pdf" selected>PDF (Pour Impression - Relevé Officiel)</option>
+                    <option value="excel">Excel (Pour Analyse Statistique)</option>
                 </select>
             </div>
-        </div>
-        
-        <button type="button" class="btn-generate" onclick="alert('Génération des bulletins pour la 6ème Année (T3) en format PDF...')">
-            🖨️ Générer et Télécharger les Bulletins
-        </button>
-        
-    </form>
+            
+            <!-- Bouton d'Action Principale -->
+            <button type="submit" id="generateBtn" class="flex items-center justify-center space-x-3 w-full py-3 px-6 bg-action-generate text-white font-bold rounded-xl hover:bg-violet-700 transition duration-300 shadow-lg hover:shadow-xl text-lg">
+                <i data-lucide="download" class="w-6 h-6"></i>
+                <span>Générer et Télécharger les Bulletins</span>
+            </button>
+        </form>
+    </div>
     
-  </div>
-  
-  <a href="bulletins.html" class="btn-retour">← Retour au menu Bulletins & Notes</a>
+    <!-- Bouton de retour -->
+    <a href="dashboard.html" class="flex items-center space-x-2 mt-6 py-2 px-4 bg-gray-200 text-gray-700 font-semibold rounded-lg hover:bg-gray-300 transition duration-200 text-sm">
+        <i data-lucide="arrow-left" class="w-4 h-4"></i>
+        <span>Retour au Tableau de Bord Principal</span>
+    </a>
 
-  <footer>
-    &copy; 2025 Gabby Umba · Projet éducatif numérique · Lubumbashi
-  </footer>
+    <!-- Zone de notification -->
+    <div id="notification-area" class="fixed top-4 right-4 z-50 p-4 font-semibold text-white rounded-xl shadow-xl hidden" onclick="this.classList.add('hidden')"></div>
+
+    <!-- Scripts Firebase et Logique -->
+    <script type="module">
+        import { initializeApp } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-app.js";
+        import { getAuth, signInAnonymously, signInWithCustomToken, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-auth.js";
+        import { getFirestore, setLogLevel } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-firestore.js";
+        
+        // Configuration Firebase (MANDATAIRE: utilisation des variables globales)
+        setLogLevel('Debug');
+        const appId = typeof __app_id !== 'undefined' ? __app_id : 'default-app-id';
+        const firebaseConfig = typeof __firebase_config !== 'undefined' ? JSON.parse(__firebase_config) : {};
+        const initialAuthToken = typeof __initial_auth_token !== 'undefined' ? __initial_auth_token : null;
+
+        const notify = document.getElementById("notification-area");
+        const form = document.getElementById('bulletinForm');
+        const generateBtn = document.getElementById('generateBtn');
+
+        let auth, db;
+        let isAuthReady = false;
+
+        /**
+         * Affiche une notification temporaire.
+         */
+        function showNotification(message, type = "success") {
+            let bgColor = 'bg-action-generate';
+            if (type === "error") bgColor = 'bg-red-600';
+            if (type === "warning") bgColor = 'bg-yellow-600';
+
+            notify.textContent = message;
+            notify.className = `fixed top-4 right-4 z-50 p-4 font-semibold text-white rounded-xl shadow-xl transition-all duration-300 ${bgColor}`;
+            notify.classList.remove("hidden");
+            setTimeout(() => {
+                notify.classList.add("hidden");
+            }, 4000);
+        }
+
+        // --- LOGIQUE D'AUTHENTIFICATION FIREBASE ---
+        if (Object.keys(firebaseConfig).length > 0) {
+            const app = initializeApp(firebaseConfig);
+            auth = getAuth(app);
+            db = getFirestore(app);
+
+            onAuthStateChanged(auth, async (user) => {
+                if (user) {
+                    isAuthReady = true;
+                    // showNotification("Authentifié. Prêt à générer les bulletins.", "success");
+                    generateBtn.disabled = false;
+                    generateBtn.classList.remove('opacity-50', 'cursor-not-allowed');
+                } else {
+                    try {
+                        // Tente d'authentifier via token ou anonymement
+                        if (initialAuthToken) {
+                            await signInWithCustomToken(auth, initialAuthToken);
+                        } else {
+                            await signInAnonymously(auth);
+                        }
+                    } catch (error) {
+                        console.error("Erreur d'authentification:", error);
+                        showNotification("❌ Accès refusé. Authentification requise.", "error");
+                        generateBtn.disabled = true;
+                        generateBtn.classList.add('opacity-50', 'cursor-not-allowed');
+                    }
+                }
+            });
+        } else {
+            showNotification('❌ Le système n\'est pas opérationnel (Firebase non configuré).', 'error');
+            generateBtn.disabled = true;
+            generateBtn.classList.add('opacity-50', 'cursor-not-allowed');
+        }
+
+        // --- GESTION DU FORMULAIRE ---
+        form.addEventListener('submit', function(e) {
+            e.preventDefault();
+
+            if (!isAuthReady) {
+                showNotification("Veuillez patienter pour l'authentification...", "warning");
+                return;
+            }
+
+            const periode = document.getElementById('periode').value;
+            const classe = document.getElementById('classe').value;
+            const format = document.getElementById('format').value;
+            const periodeText = document.getElementById('periode').options[document.getElementById('periode').selectedIndex].text;
+            const classeText = document.getElementById('classe').options[document.getElementById('classe').selectedIndex].text;
+
+            if (!periode || !classe) {
+                showNotification("Veuillez sélectionner la Période et la Classe.", "warning");
+                return;
+            }
+
+            generateBtn.disabled = true;
+            generateBtn.innerHTML = '<div class="animate-spin w-5 h-5 border-2 border-t-transparent border-white rounded-full mr-2"></div> Génération en cours...';
+
+            console.log(`Préparation de la génération pour: Période=${periode}, Classe=${classe}, Format=${format}`);
+
+            // SIMULATION: Dans une application réelle, cette étape ferait un appel serveur
+            // pour compiler les notes, calculer les moyennes et générer le document PDF/Excel.
+            setTimeout(() => {
+                const message = `✅ Succès! Bulletins générés pour ${classeText} (${periodeText}) en format ${format.toUpperCase()}. Le téléchargement va commencer. (Simulation)`;
+                showNotification(message, "success");
+
+                // Réactiver le bouton après la simulation
+                generateBtn.disabled = false;
+                generateBtn.innerHTML = '<i data-lucide="download" class="w-6 h-6"></i><span>Générer et Télécharger les Bulletins</span>';
+                lucide.createIcons();
+            }, 3000); 
+        });
+
+        // Initialisation des icônes
+        document.addEventListener('DOMContentLoaded', () => {
+            lucide.createIcons();
+        });
+    </script>
 </body>
 </html>
