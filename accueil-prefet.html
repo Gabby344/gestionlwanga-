@@ -73,6 +73,23 @@
             opacity: 0 !important;
             visibility: hidden;
         }
+
+        /* Styles pour le Modal */
+        .modal-overlay {
+            background-color: rgba(0, 0, 0, 0.5);
+            z-index: 60;
+            display: none; /* Caché par défaut */
+        }
+        .modal-content {
+            transform: translateY(-50px);
+            transition: transform 0.3s ease-out;
+        }
+        .modal-overlay.active {
+            display: flex;
+        }
+        .modal-overlay.active .modal-content {
+            transform: translateY(0);
+        }
     </style>
 </head>
 
@@ -108,7 +125,6 @@
             <!-- Groupe 1: Administration & Finances -->
             <div class="pt-4 border-t border-purple-700">
                 <p class="text-sm font-semibold text-purple-300 uppercase mb-2">Administration & Finances</p>
-                <!-- NOTE: J'ai remplacé les liens par '#' pour les pages non existantes afin d'éviter les erreurs de navigation dans un environnement mono-page -->
                 <a href="#" class="flex items-center gap-3 p-3 hover:bg-purple-700 rounded-lg transition">
                     <i class="fa-solid fa-users-gear w-5 text-center"></i> Gestion du Personnel
                 </a>
@@ -146,13 +162,12 @@
             </div>
             
         </nav>
-        <button id="logoutBtn" class="m-4 py-3 bg-red-600 hover:bg-red-700 rounded-xl flex items-center justify-center gap-2 font-semibold transition duration-200 shadow-lg">
+        <button id="showLogoutModalBtn" class="m-4 py-3 bg-red-600 hover:bg-red-700 rounded-xl flex items-center justify-center gap-2 font-semibold transition duration-200 shadow-lg">
             <i class="fa-solid fa-right-from-bracket"></i> Déconnexion
         </button>
     </aside>
 
     <!-- Contenu Principal du Tableau de Bord (Initialement caché) -->
-    <!-- Cette div sera montrée une fois l'authentification et le rôle validés -->
     <main id="mainContent" class="flex-1 p-4 md:p-8 overflow-y-auto hidden">
         <div class="max-w-7xl mx-auto">
             <header class="mb-8 flex flex-col md:flex-row md:justify-between md:items-center border-b pb-4">
@@ -219,6 +234,23 @@
 
         </div>
     </main>
+    
+    <!-- Modal de Confirmation de Déconnexion (Remplacement de window.confirm) -->
+    <div id="logoutModal" class="modal-overlay fixed inset-0 flex items-center justify-center transition-opacity">
+        <div class="modal-content bg-white rounded-xl shadow-2xl p-6 w-11/12 max-w-md" role="dialog" aria-modal="true">
+            <h3 class="text-xl font-bold text-red-700 mb-3 flex items-center gap-2"><i class="fa-solid fa-triangle-exclamation"></i> Confirmer la Déconnexion</h3>
+            <p class="text-gray-700 mb-6">Êtes-vous sûr(e) de vouloir vous déconnecter de votre session Préfet ?</p>
+            <div class="flex justify-end gap-3">
+                <button id="cancelLogoutBtn" class="px-4 py-2 bg-gray-200 text-gray-800 rounded-lg hover:bg-gray-300 transition font-medium">
+                    Annuler
+                </button>
+                <button id="confirmLogoutBtn" class="px-4 py-2 bg-red-600 text-white rounded-lg hover:bg-red-700 transition font-medium">
+                    <i class="fa-solid fa-right-from-bracket mr-1"></i> Déconnexion
+                </button>
+            </div>
+        </div>
+    </div>
+
 
     <!-- Logique JavaScript et Firebase -->
     <script type="module">
@@ -237,14 +269,16 @@
             db = getFirestore(app);
         } catch (error) {
             console.error("Erreur d'initialisation Firebase:", error);
-            // Si Firebase ne s'initialise pas, le programme s'arrête ici
             document.getElementById("loadingOverlay").innerHTML = `<div class="text-center p-8 bg-red-100 rounded-xl shadow-xl"><i class="fa-solid fa-triangle-exclamation text-red-600 fa-2x mb-3"></i><p class="text-lg font-bold text-red-800">Erreur Critique</p><p>La configuration Firebase est manquante ou incorrecte.</p></div>`;
             throw new Error("Initialisation Firebase échouée.");
         }
         
         // --- Éléments du DOM ---
         const userInfo = document.getElementById("userInfo");
-        const logoutBtn = document.getElementById("logoutBtn");
+        const showLogoutModalBtn = document.getElementById("showLogoutModalBtn");
+        const confirmLogoutBtn = document.getElementById("confirmLogoutBtn");
+        const cancelLogoutBtn = document.getElementById("cancelLogoutBtn");
+        const logoutModal = document.getElementById("logoutModal");
         const loadingOverlay = document.getElementById("loadingOverlay");
         const mainContent = document.getElementById("mainContent");
         const sidebar = document.getElementById("sidebar");
@@ -260,6 +294,7 @@
         // Affiche un message d'erreur/statut et masque le chargement
         function displayMessage(message, isError = false) {
             console.error(message);
+            // Assurez-vous que l'affichage de l'erreur est visible même si le contenu principal est vide
             userInfo.innerHTML = isError 
                 ? `<span class="text-red-600 font-bold"><i class="fa-solid fa-circle-exclamation mr-2"></i> Erreur: ${message}</span>`
                 : `<span class="text-gray-600 font-medium">${message}</span>`;
@@ -324,8 +359,8 @@
 
         // Fonction d'affichage du tableau de bord APRES vérification
         function displayDashboard(user, nomComplet) {
-            // 1. Mise à jour des informations utilisateur
-            userInfo.textContent = `Connecté(e) en tant que: ${nomComplet} (ID: ${user.uid.substring(0, 8)}...)`;
+            // 1. Mise à jour des informations utilisateur avec l'ID complet
+            userInfo.innerHTML = `Connecté(e) en tant que: <span class="font-bold">${nomComplet}</span> (ID: ${user.uid})`;
             
             // 2. Charger les statistiques et les modules
             loadStats();
@@ -344,36 +379,35 @@
 
         // Étape 1: Tenter de se connecter avec le jeton fourni ou anonymement
         async function handleInitialAuth() {
-            if (initialToken) {
-                try {
+            try {
+                if (initialToken) {
                     await signInWithCustomToken(auth, initialToken);
                     console.log("Connexion via Custom Token réussie.");
-                } catch(e) {
-                    console.error("Erreur lors de la connexion via Custom Token, tentative de connexion anonyme:", e);
-                    // Fallback vers la connexion anonyme
+                } else {
                     await signInAnonymously(auth);
+                    console.log("Connexion anonyme réussie.");
                 }
-            } else {
-                // Connexion anonyme si aucun jeton n'est fourni
-                await signInAnonymously(auth);
-                console.log("Connexion anonyme réussie.");
+            } catch (e) {
+                console.error("Erreur critique lors de la tentative de connexion:", e);
+                displayMessage("Échec de la connexion. Veuillez rafraîchir la page.", true);
             }
         }
         
         // Étape 2: Gérer l'état de l'authentification et les autorisations
         onAuthStateChanged(auth, async (user) => {
             if (!user) {
-                // Si l'utilisateur est déconnecté, rediriger
-                window.location.href = "connexion.html"; // Assurez-vous que cette page existe
+                // L'utilisateur est déconnecté. Afficher un message de statut.
+                displayMessage("Déconnecté. Veuillez vous reconnecter pour accéder au tableau de bord.", true);
                 return;
             }
 
             try {
                 // 1. Récupérer les données de profil (rôle)
-                const docRef = doc(db, "artifacts", appId, "users", user.uid, "profile", "data");
+                const profileDocPath = `artifacts/${appId}/users/${user.uid}/profile/data`;
+                const docRef = doc(db, profileDocPath);
                 const docSnap = await getDoc(docRef);
                 
-                let nomComplet = "Utilisateur Inconnu";
+                let nomComplet = "Utilisateur Anonyme";
                 let role = "inconnu";
 
                 if (docSnap.exists()) {
@@ -381,12 +415,12 @@
                     nomComplet = [data.prenom, data.nom].filter(Boolean).join(" ") || "Préfet";
                     role = data.role?.toLowerCase().trim() || "inconnu";
                 } else {
-                    // Si le profil n'existe pas, on le crée avec un rôle par défaut pour simuler l'accès
-                    nomComplet = `Préfet ${user.uid.substring(0, 4)}`;
+                    // Création d'un profil par défaut pour simuler l'accès si l'utilisateur est nouveau
+                    nomComplet = `Préfet ${user.uid.substring(0, 8)}`;
                     role = AUTHORIZED_ROLE;
                     await setDoc(docRef, { 
                         prenom: "Préfet", 
-                        nom: user.uid.substring(0, 4), 
+                        nom: user.uid.substring(0, 8), 
                         role: AUTHORIZED_ROLE, 
                         uid: user.uid 
                     }, { merge: true });
@@ -394,13 +428,11 @@
                 
                 // 2. Vérification du rôle
                 if (role !== AUTHORIZED_ROLE) {
-                    displayMessage(`Accès non autorisé. Votre rôle (${role}) n'est pas 'préfet'. Déconnexion.`, true);
-                    await signOut(auth);
-                    setTimeout(() => { /* Redirection gérée par la ligne 277 */ }, 1000);
+                    displayMessage(`Accès non autorisé. Votre rôle (${role}) n'est pas 'prefet'. Veuillez contacter l'administrateur.`, true);
                     return;
                 }
 
-                // 3. Succès: Affichage du Tableau de Bord et des Modules
+                // 3. Succès: Affichage du Tableau de Bord
                 displayDashboard(user, nomComplet);
 
             } catch (error) {
@@ -416,38 +448,38 @@
             const isActive = sidebar.classList.toggle('active');
             if (isActive) {
                 sidebarOverlay.classList.remove('hidden');
+                // Petit délai pour la transition d'opacité
                 setTimeout(() => { sidebarOverlay.classList.remove('opacity-0'); }, 10);
             } else {
                 sidebarOverlay.classList.add('opacity-0');
+                // Masquer complètement après la transition
                 setTimeout(() => { sidebarOverlay.classList.add('hidden'); }, 300);
             }
         }
 
         menuToggle.addEventListener('click', toggleSidebar);
         sidebarOverlay.addEventListener('click', toggleSidebar);
+        
+        // Gestion du Modal de Déconnexion
+        showLogoutModalBtn.addEventListener('click', () => {
+            logoutModal.classList.add('active');
+        });
 
-        logoutBtn.addEventListener("click", async () => {
-            // Afficher une boîte de dialogue de confirmation (remplacement de window.confirm)
-            if (!confirmLogout()) return;
+        cancelLogoutBtn.addEventListener('click', () => {
+            logoutModal.classList.remove('active');
+        });
 
+        confirmLogoutBtn.addEventListener("click", async () => {
+            logoutModal.classList.remove('active');
             try {
-                // Utiliser displayMessage pour montrer un statut de déconnexion avant la redirection
+                // Utiliser displayMessage pour montrer un statut de déconnexion avant la déconnexion réelle
                 userInfo.innerHTML = '<i class="fa-solid fa-hourglass-half mr-2 text-purple-600 fa-spin"></i> Déconnexion en cours...';
                 await signOut(auth);
-                // La redirection vers "connexion.html" est gérée par onAuthStateChanged
+                // Le onAuthStateChanged ci-dessus va détecter le statut déconnecté et afficher le message d'erreur.
             } catch (error) {
                 displayMessage("Erreur lors de la déconnexion.", true);
             }
         });
-
-        // Fonction de confirmation personnalisée (pour éviter alert/confirm)
-        function confirmLogout() {
-            // Ceci est un placeholder. Dans un environnement réel, cela devrait être un MODAL UI.
-            // Pour l'exercice et la conformité, nous utilisons une alerte temporairement tolérée.
-            // NOTE: Dans le contexte Canvas, vous DEVEZ utiliser un modal UI si vous ne voulez pas d'erreur de console.
-            console.log("NOTE: Un modal de confirmation doit remplacer cette logique de déconnexion.");
-            return true; // Simuler une confirmation réussie pour le test
-        }
 
         // Démarre le processus d'authentification au chargement de la fenêtre
         window.onload = handleInitialAuth;
