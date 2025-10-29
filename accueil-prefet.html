@@ -4,12 +4,14 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Tableau de Bord Exécutif | Préfet | St. Charles Lwanga</title>
+    <!-- Chargement de Tailwind CSS -->
     <script src="https://cdn.tailwindcss.com"></script>
     <!-- Utilisation de la version moderne de Font Awesome 6 -->
     <script src="https://kit.fontawesome.com/a2e0e6a56b.js" crossorigin="anonymous"></script>
     
     <script>
         // --- Configuration des variables globales (fournies par l'environnement Canvas) ---
+        // Le code utilise ces variables globales (injectées par l'environnement d'exécution)
         const appId = typeof __app_id !== 'undefined' ? __app_id : 'default-app-id';
         const firebaseConfig = typeof __firebase_config !== 'undefined' ? JSON.parse(__firebase_config) : {};
         const initialToken = typeof __initial_auth_token !== 'undefined' ? __initial_auth_token : null;
@@ -254,6 +256,7 @@
 
     <!-- Logique JavaScript et Firebase -->
     <script type="module">
+        // --- IMPORTS FIREBASE ---
         import { initializeApp } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-app.js";
         import { getAuth, onAuthStateChanged, signOut, signInWithCustomToken, signInAnonymously } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-auth.js";
         import { getFirestore, doc, getDoc, setDoc, setLogLevel } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-firestore.js";
@@ -264,13 +267,25 @@
         // --- Configuration Firebase ---
         let app, auth, db;
         try {
-            app = initializeApp(firebaseConfig);
+            // Utilise les variables globales définies dans le <script> en haut
+            const globalAppId = typeof appId !== 'undefined' ? appId : 'default-app-id';
+            const globalFirebaseConfig = typeof firebaseConfig !== 'undefined' ? firebaseConfig : {};
+            const globalInitialToken = typeof initialToken !== 'undefined' ? initialToken : null;
+            
+            if (Object.keys(globalFirebaseConfig).length === 0) {
+                 throw new Error("Configuration Firebase (globalFirebaseConfig) est vide.");
+            }
+
+            app = initializeApp(globalFirebaseConfig);
             auth = getAuth(app);
             db = getFirestore(app);
+            console.log("Firebase initialisé avec succès.");
+
         } catch (error) {
             console.error("Erreur d'initialisation Firebase:", error);
             document.getElementById("loadingOverlay").innerHTML = `<div class="text-center p-8 bg-red-100 rounded-xl shadow-xl"><i class="fa-solid fa-triangle-exclamation text-red-600 fa-2x mb-3"></i><p class="text-lg font-bold text-red-800">Erreur Critique</p><p>La configuration Firebase est manquante ou incorrecte.</p></div>`;
-            throw new Error("Initialisation Firebase échouée.");
+            // Empêche l'exécution du reste du script
+            throw new Error("Initialisation Firebase échouée."); 
         }
         
         // --- Éléments du DOM ---
@@ -293,13 +308,13 @@
         
         // Affiche un message d'erreur/statut et masque le chargement
         function displayMessage(message, isError = false) {
-            console.error(message);
+            console.warn(`Statut: ${message}`);
             // Assurez-vous que l'affichage de l'erreur est visible même si le contenu principal est vide
             userInfo.innerHTML = isError 
                 ? `<span class="text-red-600 font-bold"><i class="fa-solid fa-circle-exclamation mr-2"></i> Erreur: ${message}</span>`
                 : `<span class="text-gray-600 font-medium">${message}</span>`;
             
-            // Masquer le chargement (avec transition) et afficher le contenu principal (pour voir l'erreur)
+            // Masquer le chargement (avec transition) et afficher le contenu principal (pour voir l'erreur/statut)
             loadingOverlay.classList.add('hidden-fade');
             setTimeout(() => { loadingOverlay.style.display = 'none'; }, 500);
             mainContent.classList.remove('hidden');
@@ -326,7 +341,7 @@
 
         // Simuler le chargement des statistiques
         function loadStats() {
-            // Ces données devraient être remplacées par des appels onSnapshot() à Firestore dans l'application finale.
+            // REMPLACER ceci par des appels réels à onSnapshot() pour les données Firestore
             document.getElementById("stat-budget").textContent = "65%"; 
             document.getElementById("stat-staff").textContent = "82";
             document.getElementById("stat-visits").textContent = "5 / 12";
@@ -379,9 +394,12 @@
 
         // Étape 1: Tenter de se connecter avec le jeton fourni ou anonymement
         async function handleInitialAuth() {
+            // Utilise les variables globales définies dans le <script> en haut
+            const token = typeof initialToken !== 'undefined' ? initialToken : null;
+
             try {
-                if (initialToken) {
-                    await signInWithCustomToken(auth, initialToken);
+                if (token) {
+                    await signInWithCustomToken(auth, token);
                     console.log("Connexion via Custom Token réussie.");
                 } else {
                     await signInAnonymously(auth);
@@ -402,8 +420,12 @@
             }
 
             try {
+                // Utilise les variables globales définies dans le <script> en haut
+                const currentAppId = typeof appId !== 'undefined' ? appId : 'default-app-id';
+
                 // 1. Récupérer les données de profil (rôle)
-                const profileDocPath = `artifacts/${appId}/users/${user.uid}/profile/data`;
+                // Chemin: /artifacts/{appId}/users/{userId}/profile/data
+                const profileDocPath = `artifacts/${currentAppId}/users/${user.uid}/profile/data`;
                 const docRef = doc(db, profileDocPath);
                 const docSnap = await getDoc(docRef);
                 
@@ -417,7 +439,7 @@
                 } else {
                     // Création d'un profil par défaut pour simuler l'accès si l'utilisateur est nouveau
                     nomComplet = `Préfet ${user.uid.substring(0, 8)}`;
-                    role = AUTHORIZED_ROLE;
+                    role = AUTHORIZED_ROLE; // Donne le rôle par défaut pour tester l'accès
                     await setDoc(docRef, { 
                         prenom: "Préfet", 
                         nom: user.uid.substring(0, 8), 
@@ -428,7 +450,7 @@
                 
                 // 2. Vérification du rôle
                 if (role !== AUTHORIZED_ROLE) {
-                    displayMessage(`Accès non autorisé. Votre rôle (${role}) n'est pas 'prefet'. Veuillez contacter l'administrateur.`, true);
+                    displayMessage(`Accès non autorisé. Votre rôle (${role}) n'est pas '${AUTHORIZED_ROLE}'.`, true);
                     return;
                 }
 
@@ -475,7 +497,7 @@
                 // Utiliser displayMessage pour montrer un statut de déconnexion avant la déconnexion réelle
                 userInfo.innerHTML = '<i class="fa-solid fa-hourglass-half mr-2 text-purple-600 fa-spin"></i> Déconnexion en cours...';
                 await signOut(auth);
-                // Le onAuthStateChanged ci-dessus va détecter le statut déconnecté et afficher le message d'erreur.
+                // Le onAuthStateChanged va gérer l'affichage final après la déconnexion.
             } catch (error) {
                 displayMessage("Erreur lors de la déconnexion.", true);
             }
